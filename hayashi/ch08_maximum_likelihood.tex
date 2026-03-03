@@ -1,0 +1,1902 @@
+% This LaTeX document needs to be compiled with XeLaTeX.
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{caption}
+\usepackage{bbold}
+\usepackage{multirow}
+\usepackage{fvextra, csquotes}
+% \usepackage[fallback]{xeCJK}
+\usepackage{polyglossia}
+\usepackage{fontspec}
+\usepackage{newunicodechar}
+\IfFontExistsTF{Noto Serif CJK TC}
+{\setCJKmainfont{Noto Serif CJK TC}}
+{\IfFontExistsTF{STSong}
+  {\setCJKmainfont{STSong}}
+  {\IfFontExistsTF{Droid Sans Fallback}
+    {\setCJKmainfont{Droid Sans Fallback}}
+    {\setCJKmainfont{SimSun}}
+}}
+
+\setmainlanguage{english}
+\IfFontExistsTF{CMU Serif}
+{\setmainfont{CMU Serif}}
+{\IfFontExistsTF{DejaVu Sans}
+  {\setmainfont{DejaVu Sans}}
+  {\setmainfont{Georgia}}
+}
+
+ Finite-Sample Properties of OLS }
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\newunicodechar{×}{\ifmmode\times\else{$\times$}\fi}
+\newunicodechar{⋮}{\ifmmode\vdots\else{$\vdots$}\fi}
+\newunicodechar{⇔}{\ifmmode\Leftrightarrow\else{$\Leftrightarrow$}\fi}
+\newunicodechar{¥}{\ifmmode\text{\yen}\else\yen\fi}
+\title{Chapter 8: Examples of Maximum Likelihood}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{CHAPTER 8 \\
+ Examples of Maximum Likelihood }
+\begin{abstract}
+The method of maximum likelihood (ML) was developed in the previous chapter as a special case of extremum estimators. In view of its importance in econometrics, this chapter considers applications of ML to some prominent models. We have already seen some of those models in Chapters 3 and 4 in the context of GMM estimation.\\
+In deriving the asymptotic properties of ML estimators for the models considered here, the general results for ML developed in Chapter 7 will be utilized. Before proceeding, you should review Section 7.1, Propositions 7.5, 7.6, 7.8, 7.9, and 7.11.\\
+A Note on Notation: We will maintain the notation, introduced in the previous chapter, of indicating the true parameter value by subscript 0 . So $\theta$ is a hypothetical parameter value, while $\theta_{0}$ is the true parameter value.
+\end{abstract}
+
+\subsection*{8.1 Qualitative Response (QR) Models}
+In many applications in economics and other sciences, the dependent variable is a categorical variable. For example, a person may be in the labor force or not; a commuter chooses a particular mode of transportation; a patient may die or not; and so on. Regression models in which the dependent variable takes on discrete values are called qualitative response (QR) models. A QR model is described by a parameterized density function $f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}\right)$ representing a family of discrete probability distributions of $y_{t}$ given $\mathbf{x}_{t}$, indexed by $\boldsymbol{\theta}$.
+
+A QR model is called a binary response model if the dependent variable can take on only two values (which can be taken to be 0 and 1 without loss of generality) and is called a multinomial response model if the dependent variable can take on more than two values. Only binary models are treated in this subsection. For a thorough treatment of binary and multinomial models, see Amemiya (1985, Chapter 9).
+
+The most popular binary response model is the probit model, which has already been presented in Example 7.3. Another popular binary model is the logit model:
+
+\[
+\left\{\begin{array}{l}
+f\left(y_{t}=1 \mid \mathbf{x}_{t} ; \boldsymbol{\theta}_{0}\right)=\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}_{0}\right)  \tag{8.1.1}\\
+f\left(y_{t}=0 \mid \mathbf{x}_{t} ; \boldsymbol{\theta}_{0}\right)=1-\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}_{0}\right)
+\end{array}\right.
+\]
+
+where $\Lambda$ is the cumulative density function of the logistic distribution:
+
+
+\begin{equation*}
+\Lambda(v) \equiv \frac{\exp (v)}{1+\exp (v)} \tag{8.1.2}
+\end{equation*}
+
+
+This density $f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}_{0}\right)$ can be written as
+
+
+\begin{equation*}
+f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}_{0}\right)=\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}_{0}\right)^{y_{t}} \times\left[1-\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}_{0}\right)\right]^{1-y_{t}} . \tag{8.1.3}
+\end{equation*}
+
+
+Taking logs of both sides and replacing the true parameter value $\boldsymbol{\theta}_{0}$ by its hypothetical value $\theta$, we obtain the $\log$ likelihood for observation $t$ :
+
+
+\begin{equation*}
+\log f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}\right)=y_{t} \log \Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right)+\left(1-y_{t}\right) \log \left[1-\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right)\right] \tag{8.1.4}
+\end{equation*}
+
+
+The logit objective function $Q_{n}(\boldsymbol{\theta})$ is $1 / n$ times the log likelihood of the sample $\left(y_{1}, \mathbf{x}_{1}, y_{2}, \mathbf{x}_{2}, \ldots, y_{n}, \mathbf{x}_{n}\right)$. Under the assumption that $\left\{y_{t}, \mathbf{x}_{t}\right\}$ is i.i.d., the log likelihood of the sample is the sum of the log likelihood for observation $t$ over $t$. Therefore,
+
+
+\begin{equation*}
+Q_{n}(\boldsymbol{\theta})=\frac{1}{n} \sum_{t=1}^{n}\left\{y_{t} \log \Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right)+\left(1-y_{t}\right) \log \left[1-\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right)\right]\right\} \tag{8.1.5}
+\end{equation*}
+
+
+For probit, we have proved that its log likelihood function is concave (Example 7.6), and that the ML estimator is consistent (Example 7.9) and asymptotically normal (Example 7.11) under the assumption that $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ is nonsingular. You are about to find out that doing the same for logit is easier. (On the first reading, however, you may wish to skip the discussion on consistency and asymptotic normality.)
+
+\section*{Score and Hessian for Observation $\boldsymbol{t}$}
+The logistic cumulative density function has the convenient property that
+
+
+\begin{equation*}
+\Lambda^{\prime}(v)=\Lambda(v)(1-\Lambda(v)), \quad \Lambda^{\prime \prime}(v)=[1-2 \Lambda(v)] \Lambda(v)[1-\Lambda(v)] . \tag{8.1.6}
+\end{equation*}
+
+
+Using this, it is easy to derive (see Review Question 1(a)) the following expressions for the score and the Hessian for observation $t$ :
+
+
+\begin{gather*}
+\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)\left(\equiv \frac{\partial \log f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}\right)}{\partial \boldsymbol{\theta}}\right)=\left[y_{t}-\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right)\right] \mathbf{x}_{t},  \tag{8.1.7}\\
+\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)\left(\equiv \frac{\partial \mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)}{\partial \boldsymbol{\theta}^{\prime}}\right)=-\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right)\left[1-\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right)\right] \mathbf{x}_{t} \mathbf{x}_{t}^{\prime}, \tag{8.1.8}
+\end{gather*}
+
+
+where $\mathbf{w}_{t}=\left(y_{t}, \mathbf{x}_{t}^{\prime}\right)^{\prime}$.
+
+\section*{Consistency}
+Since $\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}$ is positive semidefinite, it immediately follows from its expression that $\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)$ is negative semidefinite and hence $Q_{n}(\boldsymbol{\theta})$ is concave. The relevant consistency theorem, therefore, is Proposition 7.6. We show here that the conditions of the proposition are satisfied under the nonsingularity of $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$. Condition (a) of the proposition is the (conditional) density identification: $f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}\right) \neq f\left(y_{t} \mid\right. \left.\mathbf{x}_{t} ; \boldsymbol{\theta}_{0}\right)$ with positive probability for $\boldsymbol{\theta} \neq \boldsymbol{\theta}_{0}$. ${ }^{1}$ Since a logarithm is a strictly monotone transformation, this condition is equivalent to
+
+
+\begin{equation*}
+\log f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}\right) \neq \log f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}_{0}\right) \text { with positive probability for } \boldsymbol{\theta} \neq \boldsymbol{\theta}_{0}, \tag{8.1.9}
+\end{equation*}
+
+
+where $\boldsymbol{\theta}_{0}$ is the true parameter value and the density $f$ is given in (8.1.3). Verification of this condition is the same as in the probit example in Example 7.9 and proceeds as follows. The discussion in Example 7.8 has established that
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right) \text { nonsingular } \Rightarrow \mathbf{x}_{t}^{\prime} \boldsymbol{\theta} \neq \mathbf{x}_{t}^{\prime} \boldsymbol{\theta}_{0} \text { with positive probability for } \boldsymbol{\theta} \neq \boldsymbol{\theta}_{0} . \tag{8.1.10}
+\end{equation*}
+
+
+Since the logit function $\Lambda(v)$ is a strictly monotone function of $v$, we have $\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right) \neq \Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}_{0}\right)$ when $\mathbf{x}_{t}^{\prime} \boldsymbol{\theta} \neq \mathbf{x}_{t}^{\prime} \boldsymbol{\theta}_{0}$. Thus, condition (a) is implied by the nonsingularity of $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$. Turning to condition (b) (that $\mathrm{E}\left[\left|\log f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}\right)\right|\right]<\infty$ for all $\boldsymbol{\theta}$ ), it is easy to show that
+
+
+\begin{equation*}
+|\log \Lambda(v)| \leq|\log \Lambda(0)|+|v| \tag{8.1.11}
+\end{equation*}
+
+
+Condition (b) can then be verified in a way analogous to the verification of the same condition for probit in Example 7.9. Thus, as in probit, the nonsingularity of $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ ensures that logit ML is consistent.
+
+\footnotetext{${ }^{1}$ In other words, let $X \equiv f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}\right)$ and $Y \equiv f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}_{0}\right) . X$ and $Y$ are random variables because they are functions of $\mathbf{w}_{t} \equiv\left(y_{t}, \mathbf{x}_{t}^{\prime}\right)^{\prime}$. The condition can be stated simply as $\operatorname{Prob}(X \neq Y)>0$ for $\boldsymbol{\theta}^{\circ} \neq \boldsymbol{\theta}_{0}$.
+}\section*{Asymptotic Normality}
+To prove asymptotic normality under the same condition, we verify the conditions of Proposition 7.9. Condition (1) of the proposition is satisfied if the parameter space $\Theta$ is taken to be $\mathbb{R}^{p}$. Condition (2) is obviously satisfied. Condition (3) can be checked easily as follows. Since $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right)=\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right)$, we have $\mathrm{E}\left[\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right) \mid \mathbf{x}_{t}\right]= \mathbf{0}$ from (8.1.7). Hence, $\mathrm{E}\left[\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)\right]=\mathbf{0}$ by the Law of Total Expectations. It is left as Review Question 1(b) to derive the conditional information matrix equality
+
+
+\begin{equation*}
+\mathrm{E}\left[\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right) \mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)^{\prime} \mid \mathbf{x}_{t}\right]=-\mathrm{E}\left[\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right) \mid \mathbf{x}_{t}\right] . \tag{8.1.12}
+\end{equation*}
+
+
+Hence, (3) is satisfied by the Law of Total Expectations. The local dominance condition (condition (4)) is easy to verify for logit because, since $\mid \Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right)[1- \Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right) \|<1$, we have: $\left\|\mathbf{H}_{t}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)\right\| \leq\left\|\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right\|$ for all $\boldsymbol{\theta}$. The expectation of $\left\|\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right\|^{2}$ (the sum of squares of the elements of $\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}$ ) is finite if $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ is nonsingular (and hence finite). So $\mathrm{E}\left(\left\|\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right\|\right)$ is finite. Regarding condition (5), the argument in footnote 29 of Newey and McFadden (1994) used for verifying the same condition for probit can be used for logit as well. ${ }^{2}$
+
+Thus, we conclude that if $\left\{y_{t}, \mathbf{x}_{t}\right\}$ is i.i.d. and $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ is nonsingular, then the logit ML estimator $\hat{\boldsymbol{\theta}}$ of $\boldsymbol{\theta}_{0}$ is consistent and asymptotically normal, with the asymptotic variance consistently estimated by
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}(\hat{\boldsymbol{\theta}})}=-\left[\frac{1}{n} \sum_{t=1}^{n} \mathbf{H}\left(\mathbf{w}_{t} ; \hat{\boldsymbol{\theta}}\right)\right]^{-1}, \tag{8.1.13}
+\end{equation*}
+
+
+where $\mathbf{w}_{t}=\left(y_{t}, \mathbf{x}_{t}^{\prime}\right)^{\prime}$ and $\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)$ is given in (8.1.8).
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item (Score and Hessian for observation $t$ for general densities) In (8.1.1), replace the logit cumulative density function (c.d.f.) $\Lambda\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}_{0}\right)$ by a general c.d.f. $F\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}_{0}\right)$.\\
+(a) Verify that the score and Hessian for observation $t$ are given by
+\end{enumerate}
+
+$$
+\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)=\frac{y_{t}-F_{t}}{F_{t} \cdot\left(1-F_{t}\right)} f_{t} \mathbf{x}_{t},
+$$
+
+\footnotetext{${ }^{2}$ Only for interested readers, here's the argument. For any $\tilde{v}>0$, there exists a $C$ such that $\Lambda(v)[1-\Lambda(v)] \geq C>0$ for $|v| \leq \bar{v}$. So $\mathrm{E}\left[\Lambda\left(\mathbf{x}^{\prime} \theta\right)\left[1-\Lambda\left(\mathbf{x}^{\prime} \theta\right)\right] \mathbf{x x}^{\prime}\right] \geq \mathrm{E}\left[1\left(\left|\mathbf{x}^{\prime} \theta\right| \leq \bar{v}\right) \Lambda\left(\mathbf{x}^{\prime} \theta\right)\left[1-\Lambda\left(\mathbf{x}^{\prime} \theta\right)\right] \mathbf{x} \mathbf{x}^{\prime}\right] \geq C \mathrm{E}\left[1\left(\left|\mathbf{x}^{\prime} \theta\right| \leq\right.\right. \left.\bar{v}) \mathbf{x x}^{\prime}\right]$ in the matrix inequality sense, where $1(|v| \leq \bar{v})$ is the indicator function. The last term is positive definite (not just positive semi-definite) for large enough $\bar{v}$ by non-singularity of $\mathrm{E}\left(\mathbf{x x}^{\prime}\right)$.
+}
+$$
+\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)=-\left[\frac{y_{t}-F_{t}}{F_{t} \cdot\left(1-F_{t}\right)}\right]^{2} f_{t}^{2} \mathbf{x}_{t} \mathbf{x}_{t}^{\prime}+\left[\frac{y_{t}-F_{t}}{F_{t} \cdot\left(1-F_{t}\right)}\right] f_{t}^{\prime} \mathbf{x}_{t} \mathbf{x}_{t}^{\prime}
+$$
+where $F_{t}=F\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right), f_{t}=f\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\theta}\right)$, and $f(\cdot)=F^{\prime}(\cdot)$ is the density function.\\
+(b) Verify the conditional information matrix equality (8.1.12) for the general c.d.f. F. Hint: Show that the expected value of the second term in the expression for the Hessian in the previous question is zero.\\
+2. Verify (8.1.7) and (8.1.8).\\
+3. (Logit for serially correlated observations) Suppose $\left\{y_{t}, \mathbf{x}_{t}\right\}$ is ergodic stationary but not necessarily i.i.d. Is the logit ML estimator described in the text consistent? [Answer: Yes, because the relevant consistency theorem, Proposition 7.6, does not require a random sample. However, the expression for $\operatorname{Avar}(\hat{\boldsymbol{\theta}})$ is not given by the negative of the inverse of the sample Hessian.]
+
+\subsection*{8.2 Truncated Regression Models}
+A limited dependent variable (LDV) model is a regression model in which either the dependent variable $y_{t}$ is constrained in some way or the observations for which $y_{t}$ does not meet some prespecified criterion are excluded from the sample. The LDV model of the former sort is called a censored regression model, while the latter is called a truncated regression model. This section presents truncated regression models; censored regression models are presented in the next section.
+
+\section*{The Model}
+Suppose that $\left\{y_{t}, \mathbf{x}_{t}\right\}$ is i.i.d. satisfying
+
+
+\begin{equation*}
+y_{t}=\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}+\varepsilon_{t}, \quad \varepsilon_{t} \mid \mathbf{x}_{t} \sim N\left(0, \sigma_{0}^{2}\right) . \tag{8.2.1}
+\end{equation*}
+
+
+The model would be just the standard linear regression model with normal errors, were it not for the following feature: only those observations that meet some prespecified rule for $y_{t}$ are included in the sample. We will consider only the simplest truncation rule: $y_{t}>c$ where $c$ is a known constant. This rule is sometimes called a "truncation from below." Once this case is worked out, it should not be hard to consider more general truncation rules.
+
+\begin{figure}[h]
+\begin{center}
+  \includegraphics[alt={},max width=\textwidth]{14fb0795-6d81-4e76-9788-792298f1ddae-529_572_1118_274_316}
+\captionsetup{labelformat=empty}
+\caption{Figure 8.1: Effect of Truncation}
+\end{center}
+\end{figure}
+
+\section*{Truncated Distributions}
+To proceed, we need two results from probability theory.\\
+Density of a Truncated Random Variable: If a continuous random variable $y$ has a density function $f(y)$ and $c$ is a constant, then its distribution after the truncation $y>c$ is defined over the interval $(c, \infty)$ and is given by
+
+
+\begin{equation*}
+f(y \mid y>c)=\frac{f(y)}{\operatorname{Prob}(y>c)} . \tag{8.2.2}
+\end{equation*}
+
+
+Figure 8.1 illustrates how truncation alters the distribution for $N(0,1)$. The solid curve is the density of $N(0,1)$. Because it is a density, the area under the curve is unity. The dotted curve is the distribution after truncation, which is defined over the interval ( $c, \infty$ ). It lies above the solid curve over this interval so that the area under the dotted curve is unity.
+
+The second result follows.\\
+Moments of the Truncated Normal Distribution: If $y \sim N\left(\mu_{0}, \sigma_{0}^{2}\right)$ and $c$ is a constant, then the mean and the variance of the truncated distribution are
+
+
+\begin{align*}
+\mathrm{E}(y \mid y>c) & =\mu_{0}+\sigma_{0} \lambda(v),  \tag{8.2.3}\\
+\operatorname{Var}(y \mid y>c) & =\sigma_{0}^{2}\{1-\lambda(v)[\lambda(v)-v]\}, \tag{8.2.4}
+\end{align*}
+
+
+where $v=\left(c-\mu_{0}\right) / \sigma_{0}$ and $\lambda(v) \equiv \frac{\phi(v)}{1-\Phi(v)}$.
+
+This formula for the mean clearly shows that the sample mean of draws from the truncated distribution is not consistent for $\mu_{0}$. This is an example of the sample selection bias. The bias equals $\sigma_{0} \lambda(v)$. The function $\lambda(v)$ is called the inverse Mill's ratio or the hazard function. The function $\lambda(v)$ is convex and asymptotes to $v$ as $v \rightarrow \infty$ and to zero as $v \rightarrow-\infty$. So its derivative $\lambda^{\prime}(v)$ is between 0 and 1. It is easy to show that
+
+
+\begin{equation*}
+\lambda^{\prime}(v)=\lambda(v)(\lambda(v)-v) . \tag{8.2.5}
+\end{equation*}
+
+
+Using (8.2.3) and (8.2.4), we can show how truncation alters the form of the regression of $y_{t}$ on $\mathbf{x}_{t}$. By (8.2.1), the distribution of $y_{t}$ conditional on $\mathbf{x}_{t}$ before truncation is $N\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}, \sigma_{0}^{2}\right)$. Observation $t$ is in the sample if and only if $y_{t}>c$. So
+
+
+\begin{align*}
+\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, t \text { in the sample }\right) & =\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}+\sigma_{0} \lambda\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right)  \tag{8.2.6}\\
+\operatorname{Var}\left(y_{t} \mid \mathbf{x}_{t}, t \text { in the sample }\right) & =\sigma_{0}^{2}\left\{1-\lambda\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right)\left[\lambda\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right)-\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right]\right\} . \tag{8.2.7}
+\end{align*}
+
+
+This formula shows that the OLS estimate of the $\mathbf{x}_{t}$ coefficient from the linear regression of $y_{t}$ on $\mathbf{x}_{t}$ is not consistent because the correction term $\sigma_{0} \lambda\left(\frac{c-\mathbf{x}_{t}^{\prime} \beta_{0}}{\sigma_{0}}\right)$, which is correlated with $\mathbf{x}_{t}$, would be included in the error term in the linear regression. Since the functional form of the hazard function $\lambda(v)$ is known (under the normality assumption for $\varepsilon_{t}$ ), we could avoid the sample selection bias by applying nonlinear least squares to estimate ( $\boldsymbol{\beta}_{0}, \sigma_{0}^{2}$ ), but maximum likelihood should be the preferred estimation method because it is asymptotically more efficient.
+
+In passing, we note that the sample selection bias does not arise if selection is based on the regressors, not on the dependent variable. Suppose that observation $t$ is in the sample if $\phi\left(\mathbf{x}_{t}\right) \geq 0$. Then
+
+
+\begin{align*}
+\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, t \text { in the sample }\right) & =\mathrm{E}\left[\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}+\varepsilon_{t} \mid \mathbf{x}_{t}, \phi\left(\mathbf{x}_{t}\right) \geq 0\right] \\
+& =\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}+\mathrm{E}\left[\varepsilon_{t} \mid \mathbf{x}_{t}, \phi\left(\mathbf{x}_{t}\right) \geq 0\right] \\
+& =\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0} \tag{8.2.8}
+\end{align*}
+
+
+The last equality holds since $\mathrm{E}\left[\varepsilon_{t} \mid \mathbf{x}_{t}, \phi\left(\mathbf{x}_{t}\right) \geq 0\right]=\mathrm{E}\left(\varepsilon_{t} \mid \mathbf{x}_{t}\right)=0$ if $\phi\left(\mathbf{x}_{t}\right) \geq 0$.
+
+\section*{The Likelihood Function}
+Derivation of the likelihood function utilizes (8.2.2). As just noted, the pretruncation distribution of $y_{t} \mid \mathbf{x}_{t}$ is $N\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}, \sigma_{0}^{2}\right)$, whose density function is
+
+
+\begin{equation*}
+\frac{1}{\sqrt{2 \pi \sigma_{0}^{2}}} \exp \left[-\frac{1}{2}\left(\frac{y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right)^{2}\right]=\frac{1}{\sigma_{0}} \phi\left(\frac{y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right), \tag{8.2.9}
+\end{equation*}
+
+
+where $\phi(\cdot)$ is the density of $N(0,1)$. The probability that observation $t$ is in the sample is given by
+
+
+\begin{align*}
+\operatorname{Prob}\left(y_{t}>c \mid \mathbf{x}_{t}\right) & =1-\operatorname{Prob}\left(y_{t} \leq c \mid \mathbf{x}_{t}\right) \\
+& =1-\operatorname{Prob}\left(\left.\frac{y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}} \leq \frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}} \right\rvert\, \mathbf{x}_{t}\right) \\
+& =1-\Phi\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right)\left(\text { since } \left.\frac{y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}} \right\rvert\, \mathbf{x}_{t} \sim N(0,1)\right) \tag{8.2.10}
+\end{align*}
+
+
+Therefore, by (8.2.2), the post-truncation density, defined over ( $c, \infty$ ), is
+
+
+\begin{equation*}
+f\left(y_{t} \mid \mathbf{x}_{t}, t \text { in the sample } ; \boldsymbol{\beta}_{0}, \sigma_{0}^{2}\right)=\frac{\frac{1}{\sigma_{0}} \phi\left(\frac{y_{t}-\mathbf{x}_{t}^{\prime} \beta_{0}}{\sigma_{0}}\right)}{1-\Phi\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right)} \tag{8.2.11}
+\end{equation*}
+
+
+This is the density (conditional on $\mathbf{x}_{t}$ ) of observation $t$ in the sample. Taking logs and replacing $\left(\boldsymbol{\beta}_{0}, \sigma_{0}^{2}\right)$ by their hypothetical values $\left(\boldsymbol{\beta}, \boldsymbol{\sigma}^{2}\right)$, we obtain the log conditional likelihood for observation $t$ :
+
+
+\begin{align*}
+& \log f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\beta}, \sigma^{2}\right) \\
+& \quad=\left\{-\frac{1}{2} \log (2 \pi)-\frac{1}{2} \log \left(\sigma^{2}\right)-\frac{1}{2}\left(\frac{y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}}{\sigma}\right)^{2}\right\}-\log \left[1-\Phi\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}}{\sigma}\right)\right] \tag{8.2.12}
+\end{align*}
+
+
+Were it not for the last term, this would be the log likelihood (conditional on $\mathbf{x}_{t}$ ) for the usual linear regression model. The last term is needed because the value of the dependent variable for observation $t$, having passed the test $y_{t}>c$ and thus being in the sample, is never less than or equal to $c$.
+
+\section*{Reparameterizing the Likelihood Function}
+This log likelihood function can be made easier to analyze if we introduce the following reparameterization:
+
+
+\begin{equation*}
+\delta=\beta / \sigma, \quad \gamma=1 / \sigma . \tag{8.2.13}
+\end{equation*}
+
+
+(We have considered this reparameterization in Example 7.7 for the linear regression model.) This is a one-to-one mapping between ( $\boldsymbol{\beta}, \sigma^{2}$ ) and ( $\boldsymbol{\delta}, \boldsymbol{\gamma}$ ), with the inverse mapping given by $\boldsymbol{\beta}=\delta / \gamma, \sigma^{2}=1 / \gamma^{2}$. The reparameterized log\\
+conditional likelihood is
+
+
+\begin{align*}
+& \log \tilde{f}\left(y_{t} \mid \mathbf{x}_{t} ; \lambda\right) \\
+& \quad=\left[-\frac{1}{2} \log (2 \pi)+\log (\gamma)-\frac{1}{2}\left(\gamma y_{t}-\mathbf{x}_{t}^{\prime} \delta\right)^{2}\right]-\log \left[1-\Phi\left(\gamma c-\mathbf{x}_{t}^{\prime} \delta\right)\right] \tag{8.2.14}
+\end{align*}
+
+
+The objective function in ML estimation is $1 / n$ times the log likelihood of the sample. For a random sample, the log likelihood of the sample is the sum over $t$ of the log likelihood for observation $t$. Thus, the objective function in the ML estimation of the reparameterized truncated regression model, denoted $\widetilde{Q}_{n}(\delta, \gamma)$, is the average over $t$ of (8.2.14). The ML estimator $(\hat{\boldsymbol{\delta}}, \hat{\gamma})$ of $\left(\boldsymbol{\delta}_{0}, \gamma_{0}\right)$ is the $(\boldsymbol{\delta}, \gamma)$ that maximizes this objective function.
+
+\section*{Verifying Consistency and Asymptotic Normality}
+The next task is to derive the score and the Hessian and check the conditions for consistency and asymptotic normality for the reparameterized log likelihood (8.2.14). (On the first reading, you may wish to skip the discussion on consistency and asymptotic normality.)
+
+\section*{Score and Hessian for Observation $t$}
+A tedious calculation yields
+
+
+\begin{align*}
+\underset{((K+1) \times 1)}{\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}, \gamma\right)} & =\left[\begin{array}{c}
+\left(\gamma y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\right) \mathbf{x}_{t} \\
+\frac{1}{\gamma}-\left(\gamma y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\right) y_{t}
+\end{array}\right]+\lambda\left(v_{t}\right)\left[\begin{array}{c}
+-\mathbf{x}_{t} \\
+c
+\end{array}\right]  \tag{8.2.15}\\
+\underset{((K+1) \times(K+1))}{\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}, \gamma\right)} & =-\left[\begin{array}{cc}
+\mathbf{x}_{t} \mathbf{x}_{t}^{\prime} & -y_{t} \mathbf{x}_{t} \\
+-y_{t} \mathbf{x}_{t}^{\prime} & \frac{1}{\gamma^{2}}+y_{t}^{2}
+\end{array}\right]+\lambda\left(v_{t}\right)\left[\lambda\left(v_{t}\right)-v_{t}\right]\left[\begin{array}{cc}
+\mathbf{x}_{t} \mathbf{x}_{t}^{\prime} & -c \mathbf{x}_{t} \\
+-c \mathbf{x}_{t}^{\prime} & c^{2}
+\end{array}\right] \tag{8.2.16}
+\end{align*}
+
+
+where $K$ is the number of regressors, $\mathbf{w}_{t}=\left(y_{t}, \mathbf{x}_{t}^{\prime}\right)^{\prime}$, and $v_{t} \equiv \gamma c-\mathbf{x}_{t}^{\prime} \delta\left(=\frac{c-\mathbf{x}_{t}^{\prime} \beta}{\sigma}\right)$. The Hessian is not everywhere negative semidefinite even after the reparameterization. So the objective function $\widetilde{Q}_{n}(\delta, \gamma)$ is not concave. ${ }^{3}$ The relevant consistency theorem, therefore, is Proposition 7.5, not Proposition 7.6, while the relevant asymptotic normality theorem remains Proposition 7.9.
+
+\footnotetext{${ }^{3}$ However, it can be shown that the Hessian of the objective function $Q_{n}(\theta)$ is negative semidefinite at any solution to the likelihood equations (see Orme, 1989). Since this rules out any saddle points or local minima, having more than two local maxima is impossible. Therefore, provided that the maximum of $\widetilde{Q}_{n}(\delta, \gamma)$ occurs at a point interior to the parameter space, the first-order condition is necessary and sufficient for a global maximum. If an algorithm such as Newton-Raphson produces convergence, the point of convergence is the global maximum.
+}\section*{Consistency}
+Condition (a) of Proposition 7.5 is the (conditional) density identification
+
+$$
+\tilde{f}\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\delta}, \gamma\right) \neq \tilde{f}\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\delta}_{0}, \gamma_{0}\right)
+$$
+
+with positive probability for $(\boldsymbol{\delta}, \gamma) \neq\left(\boldsymbol{\delta}_{0}, \gamma_{0}\right)$,\\
+where ( $\delta_{0}, \gamma_{0}$ ) is the true parameter value and the parameterized log density $\tilde{f}\left(y_{t} \mid\right. \left.\mathbf{x}_{t} ; \boldsymbol{\delta}, \gamma\right)$ is given in (8.2.14). Clearly, given ( $y_{t}, \mathbf{x}_{t}$ ), the value of $\tilde{f}\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\delta}, \gamma\right)$ is different for different values of $\gamma$. So identification boils down to the condition that $\mathbf{x}_{t}^{\prime} \boldsymbol{\delta} \neq \mathbf{x}_{t}^{\prime} \boldsymbol{\delta}_{0}$ with positive probability for $\boldsymbol{\delta} \neq \boldsymbol{\delta}_{0}$. But (8.1.10) indicates that this condition is satisfied if $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ is nonsingular. Turning to condition (b) of the proposition (the dominance condition for $\tilde{f}\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\delta}, \gamma\right)$ ), it is easy to show that the condition is satisfied under the nonsingularity of $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$. ${ }^{4}$ Therefore, the ML estimator $(\hat{\boldsymbol{\delta}}, \hat{\gamma})$ of $\left(\boldsymbol{\delta}_{0}, \gamma_{0}\right)$ is consistent under the nonsingularity of $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$.
+
+\section*{Asymptotic Normality}
+A rather tedious calculation using (8.2.6), (8.2.7), and (8.2.13) shows that $\mathrm{E}[\mathrm{s} \mid \left.\mathbf{x}_{t}\right]=\mathbf{0}$. An extremely tedious calculation yields the conditional information matrix equality: $\mathrm{E}\left[\mathbf{s s}^{\prime} \mid \mathbf{x}_{t}\right]=-\mathrm{E}\left[\mathbf{H} \mid \mathbf{x}_{t}\right]$. Therefore, condition (3) of Proposition 7.9 is satisfied. We will not discuss verification of conditions (4) and (5) of the proposition. ${ }^{5}$
+
+Thus, we conclude: if $\left\{y_{t}, \mathbf{x}_{t}\right\}$ is i.i.d. and $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ is nonsingular, then the ML estimator $(\hat{\boldsymbol{\delta}}, \hat{\gamma})$ of the truncated regression model is consistent and asymptotically normal with the asymptotic variance consistently estimated by
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}(\hat{\boldsymbol{\delta}}, \hat{\gamma})}=-\left[\frac{1}{n} \sum_{t=1}^{n} \mathbf{H}\left(\mathbf{w}_{t} ; \hat{\boldsymbol{\delta}}, \hat{\gamma}\right)\right]^{-1}, \tag{8.2.17}
+\end{equation*}
+
+
+where $\mathbf{w}_{t}=\left(y_{t}, \mathbf{x}_{t}^{\prime}\right)^{\prime}$ and $\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)$ is given in (8.2.16).
+
+\footnotetext{${ }^{4}$ Only for interested readers, what needs to be shown is $\mathrm{E}\left[\sup _{\boldsymbol{\theta} \in \Theta}\left|\log \tilde{f}\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\theta}\right)\right|\right]<\infty$, where $\boldsymbol{\theta}= \left(\delta^{\prime}, \gamma\right)^{\prime}$ and $\Theta$ is a compact set. An extension of the argument in Example 7.8 shows that there is a dominating function for the bracketed term in (8.2.14). The inequality (7.2.14) can be used to show that there is a dominating function for $\log \left[1-\Phi\left(c \gamma-\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\right)\right]$.\\
+${ }^{5}$ There seems to be no published work that verifies conditions (4) and (5). For the case where $\left\{\mathbf{x}_{t}\right\}$ is a sequence of fixed constants, Sapra (1992) proved asymptotic normality under the assumption that $\mathbf{x}_{t}$ is bounded and $\lim _{n \rightarrow \infty} \frac{1}{n} \sum_{t=1}^{n} \mathbf{x}_{t} \mathbf{x}_{t}^{\prime}$ is nonsingular. (His proof is for the more general setting of serially correlated observations.) It would seem reasonable to conjecture that for the case where $\mathbf{x}_{t}$ is random (as here), a sufficient condition for consistency and asymptotic normality is the nonsingularity of $\mathrm{E}\left(\mathbf{x}_{I} \mathbf{x}_{t}^{\prime}\right)$.
+}\section*{Recovering Original Parameters}
+By the invariance property of ML (see Section 7.1), the ML estimate of ( $\boldsymbol{\beta}_{0}, \boldsymbol{\sigma}_{0}^{2}$ ) is $\widehat{\boldsymbol{\beta}}=\hat{\boldsymbol{\delta}} / \hat{\gamma}$ and $\hat{\sigma}^{2}=1 / \hat{\gamma}^{2}$, the value of the inverse mapping. Clearly, if the ML estimate of the reparameterized model, ( $\hat{\boldsymbol{\delta}}, \hat{\gamma}$ ), is consistent, then so is the ML estimate ( $\widehat{\boldsymbol{\beta}}, \hat{\sigma}^{2}$ ) thus recovered. The asymptotic variance of ( $\widehat{\boldsymbol{\beta}}, \hat{\sigma}^{2}$ ) can be obtained by the delta method (see Lemma 2.5) as $\widehat{\mathbf{J}} \widehat{\operatorname{var}(\hat{\boldsymbol{\delta}}, \hat{\gamma})} \widehat{\mathbf{J}^{\prime}}$, where $\widehat{\mathbf{J}}$ is the estimate of the Jacobian matrix for the inverse mapping $\left(\boldsymbol{\beta}=\boldsymbol{\delta} / \gamma, \sigma^{2}=1 / \gamma^{2}\right)$ evaluated at $(\hat{\boldsymbol{\delta}}, \hat{\gamma})$ :
+
+\[
+\widehat{\mathbf{J}}=\left[\begin{array}{cc}
+\frac{1}{\hat{\gamma}} \mathbf{I} & -\frac{\hat{\delta}}{\hat{\gamma}^{2}}  \tag{8.2.18}\\
+\mathbf{0}^{\prime} & -\frac{2}{\hat{\gamma}^{3}}
+\end{array}\right]
+\]
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item (Second moment of $y_{t}$ ) From (8.2.6) and (8.2.7), derive:
+\end{enumerate}
+
+$$
+\mathrm{E}\left(y_{t}^{2} \mid \mathbf{x}_{t}, t \text { in sample }\right)=\frac{1}{\gamma^{2}}\left[1+\lambda\left(v_{t}\right) \gamma c+\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\right)^{2}+\lambda\left(v_{t}\right) \mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\right]
+$$
+
+where $v_{t} \equiv \gamma c-\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}$.\\
+2. (Estimation of truncated regression model by GMM) The truncated regression model can also be estimated by GMM. Consider the following $K+1$ orthogonality conditions. The first $K$ of them are
+
+
+\begin{equation*}
+\mathbf{g}_{1}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}, \gamma\right)=\left(y_{t}-\frac{1}{\gamma} \mathbf{x}_{t}^{\prime} \boldsymbol{\delta}-\frac{\lambda\left(v_{t}\right)}{\gamma}\right) \cdot \mathbf{x}_{t}, \tag{8.2.19}
+\end{equation*}
+
+
+where $\mathbf{w}_{t}=\left(y_{t}, \mathbf{x}_{t}^{\prime}\right)^{\prime}$ and $v_{t} \equiv \gamma c-\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}$. The $(K+1)$-th orthogonality condition is
+
+
+\begin{equation*}
+g_{2}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}, \gamma\right)=y_{t}^{2}-\frac{1}{\gamma^{2}}\left[1+\lambda\left(v_{t}\right) \gamma c+\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\right)^{2}+\lambda\left(v_{t}\right) \mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\right] . \tag{8.2.20}
+\end{equation*}
+
+
+(a) Verify that $\mathrm{E}\left[\mathbf{g}_{1}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}_{0}, \gamma_{0}\right)\right]=\mathbf{0}$ and $\mathrm{E}\left[g_{2}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}_{0}, \gamma_{0}\right)\right]=0$. Hint: Use the Law of Total Expectations. $v_{t}$ is a function of $\mathbf{x}_{t}$.\\
+(b) Show that $\left(\delta^{*}, \gamma^{*}\right)$ satisfies the likelihood equations if and only if it satisfies the $K+1$ orthogonality conditions. Hint: Let $s_{2}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}, \gamma\right)$ be the $(K+1)$-th\\
+element of $\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}, \gamma\right)$ in (8.2.15). Then
+
+$$
+s_{2}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}, \gamma\right)+\gamma g_{2}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}, \gamma\right)=\left(\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\right)\left(y_{t}-\frac{1}{\gamma} \mathbf{x}_{t}^{\prime} \boldsymbol{\delta}-\frac{\lambda\left(v_{t}\right)}{\gamma}\right) .
+$$
+
+\subsection*{8.3 Censored Regression (Tobit) Models}
+The censored regression model is also called the Tobit model to pay respect to Tobin (1958), who was the first to introduce censoring in economics. The simplest Tobit model can be written as follows:
+
+
+\begin{align*}
+& y_{t}^{*}=\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}+\varepsilon_{t}, \quad t=1,2, \ldots, n,  \tag{8.3.1}\\
+& y_{t}=\left\{\begin{aligned}
+y_{t}^{*} & \text { if } y_{t}^{*}>c, \\
+c & \text { if } y_{t}^{*} \leq c .
+\end{aligned}\right. \tag{8.3.2}
+\end{align*}
+
+
+Here, $\varepsilon_{t} \mid \mathbf{x}_{t}$ is $N\left(0, \sigma_{0}^{2}\right)$ and $\left\{y_{t}, \mathbf{x}_{t}\right\}(t=1,2, \ldots, n)$ is i.i.d. The threshold value $c$ is known. Unlike in the truncated regression model, there is no truncation here: observations for which the value of the dependent variable $y_{t}^{*}$ fails to pass the test $y_{t}^{*}>c$ are in the sample. The feature that distinguishes the censored regression model from the usual regression model is that the dependent variable is censored, that is, constrained to lie in a certain range, which necessitates a distinction between the observable dependent variable $y_{t}$ and the unobservable or latent variable $y_{t}^{*}$. The former is the censored value of the latter. An equivalent way to write the model is
+
+
+\begin{equation*}
+y_{t}=\max \left\{\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}+\varepsilon_{t}, c\right\} \tag{8.3.3}
+\end{equation*}
+
+
+\section*{Tobit Likelihood Function}
+For those observations that remain intact after censoring (Tobin (1958) called those observations nonlimit observations), the density of $y_{t}$ (conditional on $\mathbf{x}_{t}$ ) is
+
+
+\begin{equation*}
+\frac{1}{\sigma_{0}} \phi\left(\frac{y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right) \tag{8.3.4}
+\end{equation*}
+
+
+This differs from the density for the truncated model (8.2.11) simply because there is no truncation. For those observations, called limit observations, for which the value of the dependent variable is altered by censoring, all we know is that $y_{t}^{*} \leq c$,\\
+the probability of which is given by
+
+
+\begin{align*}
+\operatorname{Prob}\left(y_{t}^{*} \leq c \mid \mathbf{x}_{t}\right) & =\operatorname{Prob}\left(\left.\frac{y_{t}^{*}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}} \leq \frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}} \right\rvert\, \mathbf{x}_{t}\right) \\
+& =\Phi\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right) \quad\left(\text { since } \left.\frac{y_{t}^{*}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}} \right\rvert\, \mathbf{x}_{t} \sim N(0,1)\right) \tag{8.3.5}
+\end{align*}
+
+
+Therefore, the density of $y_{t}$, defined over the interval $[c, \infty)$, is (8.3.4) for $y_{t}>c$ and a probability mass of size $\Phi\left(\frac{c-\mathbf{x}_{t}^{\prime} \beta_{0}}{\sigma_{0}}\right)$ at $y_{t}=c$. This density can be written as
+
+
+\begin{equation*}
+\left[\frac{1}{\sigma_{0}} \phi\left(\frac{y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right)\right]^{1-D_{t}} \times\left[\Phi\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right)\right]^{D_{t}} \tag{8.3.6}
+\end{equation*}
+
+
+where the dummy variable $D_{t}$ is a function of $y_{t}$ defined as
+
+\[
+D_{t}= \begin{cases}0 & \text { if } y_{t}>c\left(\text { i.e., } y_{t}^{*}>c\right)  \tag{8.3.7}\\ 1 & \text { if } y_{t}=c\left(\text { i.e., } y_{t}^{*} \leq c\right)\end{cases}
+\]
+
+Taking logs and replacing ( $\boldsymbol{\beta}_{0}, \sigma_{0}^{2}$ ) by their hypothetical values ( $\boldsymbol{\beta}, \sigma^{2}$ ), we obtain the log conditional likelihood for observation $t$ :
+
+
+\begin{equation*}
+\log f\left(y_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\beta}, \sigma^{2}\right)=\left(1-D_{t}\right) \log \left[\frac{1}{\sigma} \phi\left(\frac{y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}}{\sigma}\right)\right]+D_{t} \log \Phi\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}}{\sigma}\right) \tag{8.3.8}
+\end{equation*}
+
+
+Thus, the Tobit average log likelihood for a random sample can be written as
+
+
+\begin{align*}
+Q_{n}(\boldsymbol{\theta}) & =\frac{1}{n} \sum_{t=1}^{n}\left\{\left(1-D_{t}\right) \log \left[\frac{1}{\sigma} \phi\left(\frac{y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}}{\sigma}\right)\right]+D_{t} \log \Phi\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}}{\sigma}\right)\right\} \\
+& =\frac{1}{n} \sum_{y_{t}>c}\left\{\log \left[\frac{1}{\sigma} \phi\left(\frac{y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}}{\sigma}\right)\right]\right\}+\frac{1}{n} \sum_{y_{t}=c}\left\{\log \Phi\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}}{\sigma}\right)\right\} \tag{8.3.9}
+\end{align*}
+
+
+\section*{Reparameterization}
+As in the truncated regression model, the discussion is simplified if we introduce the reparameterization (8.2.13). The reparameterized log conditional likelihood is
+
+
+\begin{align*}
+\log \tilde{f}\left(y_{t} \mid \mathbf{x}_{t} ; \delta, \gamma\right)=\left(1-D_{t}\right)\left\{-\frac{1}{2} \log (2 \pi)\right. & \left.+\log (\gamma)-\frac{1}{2}\left(\gamma y_{t}-\mathbf{x}_{t}^{\prime} \delta\right)^{2}\right\} \\
+& +D_{t} \log \Phi\left(\gamma c-\mathbf{x}_{t}^{\prime} \delta\right) \tag{8.3.10}
+\end{align*}
+
+
+We have seen that the term in braces is concave in $(\boldsymbol{\delta}, \boldsymbol{\gamma})$ (see Example 7.7). We have also seen that $\log \Phi(v)$ is concave (see Example 7.6), which implies that $\log \Phi\left(\gamma c-\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\right)$ is concave in ( $\boldsymbol{\delta}, \gamma$ ). It follows that the reparameterized Tobit average log likelihood for observation $t$, being a non-negative weighted average of two concave functions, is concave in the parameters (this finding is due to Olsen, 1978). Accordingly, as in probit and logit, the relevant consistency theorem for Tobit is Proposition 7.6.
+
+The remaining task is to write down the score and the Hessian and check the conditions for consistency and asymptotic normality for the reparameterized log likelihood (8.3.10).
+
+Score and Hessian for Observation $t$\\
+A straightforward calculation utilizing the fact that $\lambda(-v)=\frac{\phi(-v)}{1-\Phi(-v)}=\frac{\phi(v)}{\Phi(v)}$ and (8.2.5) produces
+
+
+\begin{align*}
+& \underset{((K+1) \times 1)}{\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}, \gamma\right)}=\left(1-D_{t}\right) \cdot {\left[\begin{array}{c}
+\left(\gamma y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\right) \mathbf{x}_{t} \\
+\frac{1}{\gamma}-\left(\gamma y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\right) y_{t}
+\end{array}\right]+D_{t} \cdot \lambda\left(-v_{t}\right)\left[\begin{array}{c}
+-\mathbf{x}_{t} \\
+c
+\end{array}\right], }  \tag{8.3.11}\\
+& \underset{((K+1) \times(K+1))}{\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\delta}, \gamma\right)=-\left(1-D_{t}\right)} \cdot\left[\begin{array}{cc}
+\mathbf{x}_{t} \mathbf{x}_{t}^{\prime} & -y_{t} \mathbf{x}_{t} \\
+-y_{t} \mathbf{x}_{t}^{\prime} & \frac{1}{\gamma^{2}}+y_{t}^{2}
+\end{array}\right] \\
+&-D_{t} \cdot \lambda\left(-v_{t}\right)\left[\lambda\left(-v_{t}\right)+v_{t}\right]\left[\begin{array}{cc}
+\mathbf{x}_{t} \mathbf{x}_{t}^{\prime} & -c \mathbf{x}_{t} \\
+-c \mathbf{x}_{t}^{\prime} & c^{2}
+\end{array}\right], \tag{8.3.12}
+\end{align*}
+
+
+where $v_{t} \equiv \gamma c-\mathbf{x}_{t}^{\prime} \boldsymbol{\delta}\left(=\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}}{\sigma}\right)$.
+
+\section*{Consistency and Asymptotic Normality}
+For Tobit, we will not verify the conditions for consistency and asymptotic normality. For the case where $\left\{\mathbf{x}_{t}\right\}$ is a sequence of fixed constants, Amemiya (1973) has proved the consistency and asymptotic normality of Tobit ML under the assumption that $\mathbf{x}_{t}$ is bounded and $\lim \frac{1}{n} \sum_{t=1}^{n} \mathbf{x}_{t} \mathbf{x}_{t}^{\prime}$ is nonsingular. It seems a reasonable guess that for the case where $\mathbf{x}_{t}$ is stochastic (as here), a sufficient condition for consistency and asymptotic normality is the nonsingularity of $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$.
+
+\section*{Recovering Original Parameters}
+As in the truncated regression model, the ML estimate of $\left(\boldsymbol{\beta}_{0}, \sigma_{0}^{2}\right)$ can be recovered as $\widehat{\boldsymbol{\beta}}=\hat{\boldsymbol{\delta}} / \hat{\gamma}$ and $\hat{\sigma}^{2}=1 / \hat{\gamma}^{2}$. The asymptotic variance of ( $\widehat{\boldsymbol{\beta}}, \hat{\sigma}^{2}$ ) can be obtained\\
+by the delta method as $\widehat{\mathbf{J}} \widehat{\operatorname{Avar}(\hat{\boldsymbol{\delta}}, \hat{\gamma})} \widehat{\mathbf{J}^{\prime}}$, where $\widehat{\mathbf{J}}$ is as in (8.2.18) and $\widehat{\operatorname{Avar}(\hat{\boldsymbol{\delta}}, \hat{\gamma})}$ is $-\left[\frac{1}{n} \sum_{t=1}^{n} \mathbf{H}\left(\mathbf{w}_{t} ; \hat{\boldsymbol{\delta}}, \hat{\gamma}\right)\right]^{-1}$.
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item (Censored vs. truncated regression) One way to see the difference between truncation and censoring is to calculate $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right)$ for the censored regression model. Show that
+\end{enumerate}
+
+$$
+\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right)=\left[1-\Phi\left(\frac{c-\mathbf{x}_{t}^{\prime} \beta_{0}}{\sigma_{0}}\right)\right] \times\left[\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}+\sigma_{0} \lambda\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right)\right]+\Phi\left(\frac{c-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}}{\sigma_{0}}\right) c .
+$$
+
+Hint: Conditional on $y_{t}>c$, the distribution of $y_{t}$ (conditional on $\mathbf{x}_{t}$ ) is none other than the truncated distribution derived in the previous section, whose expectation is given in (8.2.6). The probability that $y_{t}>c$ is given in (8.2.10).\\
+2. Show that the Hessian given in (8.3.12) is negative semidefinite. Hint:
+
+$$
+\begin{gathered}
+{\left[\begin{array}{cc}
+\mathbf{x}_{t} \mathbf{x}_{t}^{\prime} & -y_{t} \mathbf{x}_{t} \\
+-y_{t} \mathbf{x}_{t}^{\prime} & \frac{1}{\gamma^{2}}+y_{t}^{2}
+\end{array}\right]=\left[\begin{array}{c}
+\mathbf{x}_{t} \\
+-y_{t}
+\end{array}\right]\left[\begin{array}{ll}
+\mathbf{x}_{t}^{\prime} & -y_{t}
+\end{array}\right]+\left[\begin{array}{cc}
+\mathbf{0} & \mathbf{0} \\
+\mathbf{0}^{\prime} & \frac{1}{\gamma^{2}}
+\end{array}\right],} \\
+{\left[\begin{array}{cc}
+\mathbf{x}_{t} \mathbf{x}_{t}^{\prime} & -c \mathbf{x}_{t} \\
+-c \mathbf{x}_{t}^{\prime} & c^{2}
+\end{array}\right]=\left[\begin{array}{c}
+\mathbf{x}_{t} \\
+-c
+\end{array}\right]\left[\begin{array}{ll}
+\mathbf{x}_{t}^{\prime} & -c
+\end{array}\right] .}
+\end{gathered}
+$$
+
+Also, $\lambda(v) \geq v$ for all $v$ (i.e., $\lambda(-v)+v \geq 0$ for all $-v$ ).\\
+3. (Tobit for serially correlated observations) Suppose $\left\{y_{t}, \mathbf{x}_{t}\right\}$ is ergodic stationary but not necessarily i.i.d. Is the Tobit ML estimator described in the text consistent? [Answer: Yes.]
+
+\subsection*{8.4 Multivariate Regressions}
+In Section 1.5 and also in Example 7.2 of Chapter 7, we pointed out that the OLS estimator of the linear regression model is numerically the same as the ML estimator of the same model with normal errors. We have derived the GMM estimators for the single-equation models with endogenous regressors in Chapter 3 and for their multiple-equation versions in Chapter 4, but we have not indicated what the ML estimators for those models are. In this section and the next, we derive those ML counterparts. This section examines the ML estimation of the multivariate regression model, which is the simplest multiple-equation model.
+
+\section*{The Multivariate Regression Model Restated}
+The multivariate regression model is described by Assumptions 4.1-4.5 and 4.7, with $\mathbf{z}_{t m}=\mathbf{x}_{t m}=\mathbf{x}_{t}$ for all $m=1,2, \ldots, M$. To change the notation of Chapter 4, the system of $M$ equations can be written as
+
+
+\begin{equation*}
+y_{t m}=\underset{(1 \times K)}{\mathbf{x}_{t}^{\prime}} \underset{(K \times 1)}{\boldsymbol{\pi}_{0 m}}+v_{t m}(m=1,2, \ldots, M ; t=1,2, \ldots, n) . \tag{8.4.1}
+\end{equation*}
+
+
+Here, we maintain the convention of designating the true parameter vector by subscript 0 . If we define
+
+\[
+\underset{(M \times 1)}{\mathbf{y}_{t}}=\left[\begin{array}{c}
+y_{t 1}  \tag{8.4.2}\\
+y_{t 2} \\
+\vdots \\
+y_{t M}
+\end{array}\right], \quad \underset{(M \times 1)}{\mathbf{v}_{t}}=\left[\begin{array}{c}
+v_{t 1} \\
+v_{t 2} \\
+\vdots \\
+v_{t M}
+\end{array}\right], \quad \underset{(K \times M)}{\boldsymbol{\Pi}_{0}}=\left[\begin{array}{llll}
+\boldsymbol{\pi}_{01} & \boldsymbol{\pi}_{02} & \cdots & \boldsymbol{\pi}_{0 M}
+\end{array}\right],
+\]
+
+then the $M$-equation system can be written compactly as
+
+
+\begin{equation*}
+\mathbf{y}_{t}=\mathbf{\Pi}_{0}^{\prime} \mathbf{x}_{t}+\mathbf{v}_{t} \quad(t=1,2, \ldots, n) . \tag{8.4.3}
+\end{equation*}
+
+
+The model has the following features.
+
+\begin{itemize}
+  \item $\left\{y_{t}, \mathbf{x}_{t}\right\}$ is ergodic stationary (Assumption 4.2).
+  \item The common regressors $\mathbf{x}_{t}$ are predetermined in that $\mathrm{E}\left(\mathbf{x}_{t} \cdot v_{t m}\right)=\mathbf{0}$ for all $m$ (Assumption 4.3).
+  \item The rank condition for identification (Assumption 4.4) reduces to the familiar condition that $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ be nonsingular.
+  \item The error vector is conditionally homoskedastic in that $\mathrm{E}\left(\mathbf{v}_{t} \mathbf{v}_{t}^{\prime} \mid \mathbf{x}_{t}\right)=\boldsymbol{\Omega}_{0}$, and $\mathbf{\Omega}_{0}$ is positive definite (Assumption 4.7).
+\end{itemize}
+
+The GMM estimator of $\pi_{0 m}$ is the OLS estimator:
+
+
+\begin{equation*}
+\widehat{\pi}_{m}=\left(\frac{1}{n} \sum_{t=1}^{n} \mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)^{-1}\left(\frac{1}{n} \sum_{t=1}^{n} \mathbf{x}_{t} \cdot y_{t m}\right) . \tag{8.4.4}
+\end{equation*}
+
+
+So the GMM (OLS) estimate of $\mathbf{\Pi}_{0}$ is given by
+
+
+\begin{equation*}
+\widehat{\Pi}_{(K \times M)}=\left(\frac{1}{n} \sum_{\substack{t=1 \\(K \times K)}}^{n} \mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)^{-1}\left(\frac{1}{n} \sum_{\substack{t=1 \\(K \times M)}}^{n} \mathbf{x}_{t} \mathbf{y}_{t}^{\prime}\right) . \tag{8.4.5}
+\end{equation*}
+
+
+\section*{The Likelihood Function}
+The model is not yet specific enough to lend itself to ML estimation. We make the supplementary assumptions that (1) $\mathbf{v}_{t} \mid \mathbf{x}_{t} \sim N\left(\mathbf{0}, \boldsymbol{\Omega}_{0}\right)$, and (2) $\left\{\mathbf{y}_{t}, \mathbf{x}_{t}\right\}$ is i.i.d. (This assumption strengthens Assumptions 4.2 and 4.5.)
+
+The multivariate regression model with the normality assumption (1) implies that $\mathbf{y}_{t} \mid \mathbf{x}_{t} \sim N\left(\boldsymbol{\Pi}_{0}^{\prime} \mathbf{x}_{t}, \boldsymbol{\Omega}_{0}\right)$. The density of this multivariate normal distribution is
+
+
+\begin{equation*}
+(2 \pi)^{-M / 2}\left|\mathbf{\Omega}_{0}\right|^{-1 / 2} \exp \left[-\frac{1}{2}\left(\mathbf{y}_{t}-\Pi_{0}^{\prime} \mathbf{x}_{t}\right)^{\prime} \mathbf{\Omega}_{0}^{-1}\left(\mathbf{y}_{t}-\Pi_{0}^{\prime} \mathbf{x}_{t}\right)\right] . \tag{8.4.6}
+\end{equation*}
+
+
+Replacing the true parameter values ( $\boldsymbol{\Pi}_{0}, \boldsymbol{\Omega}_{0}$ ) by their hypothetical values ( $\boldsymbol{\Pi}, \boldsymbol{\Omega}$ ) and taking logs, we obtain the log conditional likelihood for observation $t$ :
+
+
+\begin{align*}
+& \log f\left(\mathbf{y}_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\Pi}, \boldsymbol{\Omega}\right) \\
+& \quad=-\frac{M}{2} \log (2 \pi)+\frac{1}{2} \log \left(\left|\boldsymbol{\Omega}^{-1}\right|\right)-\frac{1}{2}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime} \boldsymbol{\Omega}^{-1}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right) \tag{8.4.7}
+\end{align*}
+
+
+where use has been made of the fact that $-\log (|\boldsymbol{\Omega}|)=\log \left(\left|\boldsymbol{\Omega}^{-1}\right|\right)$.\\
+For a random sample, $1 / n$ times the log conditional likelihood of the sample is the average over $t$ of the log conditional likelihood for observation $t$. So the objective function $Q_{n}(\Pi, \Omega)$ is
+
+
+\begin{equation*}
+Q_{n}(\boldsymbol{\Pi}, \boldsymbol{\Omega})=-\frac{M}{2} \log (2 \pi)+\frac{1}{2} \log \left(\left|\boldsymbol{\Omega}^{-1}\right|\right)-\frac{1}{2 n} \sum_{t=1}^{n}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime} \boldsymbol{\Omega}^{-1}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right) \tag{8.4.8}
+\end{equation*}
+
+
+It is left as Review Question 2 to show that the last term can be written as
+
+
+\begin{equation*}
+\frac{1}{2 n} \sum_{t=1}^{n}\left(\mathbf{y}_{t}-\Pi^{\prime} \mathbf{x}_{t}\right)^{\prime} \mathbf{\Omega}^{-1}\left(\mathbf{y}_{t}-\Pi^{\prime} \mathbf{x}_{t}\right)=\frac{1}{2} \operatorname{trace}\left[\mathbf{\Omega}^{-1} \widehat{\mathbf{\Omega}}(\Pi)\right] \tag{8.4.9}
+\end{equation*}
+
+
+where $\widehat{\boldsymbol{\Omega}}(\boldsymbol{\Pi})$ is defined as
+
+
+\begin{equation*}
+\underset{(M \times M)}{\widehat{\boldsymbol{\Omega}}}(\boldsymbol{\Pi}) \equiv \frac{1}{n} \sum_{t=1}^{n}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime} \tag{8.4.10}
+\end{equation*}
+
+
+So the objective function can be rewritten as
+
+
+\begin{equation*}
+Q_{n}(\boldsymbol{\Pi}, \boldsymbol{\Omega})=-\frac{M}{2} \log (2 \pi)+\frac{1}{2} \log \left(\left|\boldsymbol{\Omega}^{-1}\right|\right)-\frac{1}{2} \operatorname{trace}\left[\boldsymbol{\Omega}^{-1} \widehat{\boldsymbol{\Omega}}(\boldsymbol{\Pi})\right] \tag{8.4.11}
+\end{equation*}
+
+
+The ML estimate of ( $\boldsymbol{\Pi}_{0}, \boldsymbol{\Omega}_{0}$ ) is the ( $\boldsymbol{\Pi}, \boldsymbol{\Omega}$ ) that maximizes this objective function.
+
+The parameter space for ( $\boldsymbol{\Pi}_{0}, \boldsymbol{\Omega}_{0}$ ) is
+
+\begin{displayquote}
+$\{(\boldsymbol{\Pi}, \boldsymbol{\Omega}) \mid \boldsymbol{\Omega}$ is symmetric and positive definite $\}$.
+\end{displayquote}
+
+\section*{Maximizing the Likelihood Function}
+We now prove that the solution to the maximization problem is numerically the same as the GMM estimator. That is, the ML estimator of $\boldsymbol{\Pi}_{0}$ is given by the GMM/OLS estimator $\widehat{\boldsymbol{\Pi}}$ in (8.4.5) and the ML estimate of $\boldsymbol{\Omega}_{0}$ is given by
+
+
+\begin{equation*}
+\widehat{\boldsymbol{\Omega}}=\frac{1}{n} \sum_{t=1}^{n} \hat{\mathbf{v}}_{t} \hat{\mathbf{v}}_{t}^{\prime}=\widehat{\boldsymbol{\Omega}}(\widehat{\boldsymbol{\Pi}}), \tag{8.4.12}
+\end{equation*}
+
+
+where $\hat{\mathbf{v}}_{t} \equiv \mathbf{y}_{t}-\widehat{\boldsymbol{\Pi}}^{\prime} \mathbf{x}_{t}$.\\
+It is left as Analytical Exercise 2 to show that, under the assumptions of the multivariate regression model stated above, $\widehat{\boldsymbol{\Omega}}(\boldsymbol{\Pi})$ is positive definite with probability one for any given $\boldsymbol{\Pi}$ for sufficiently large $n$. So we can assume that $\widehat{\Omega}(\boldsymbol{\Pi})$ is positive definite, not just positive semidefinite. The proof that the GMM estimator is numerically the same as the ML estimator is based on the following two-step maximization of the objective function.
+
+Step 1: The first step is to maximize $Q_{n}(\boldsymbol{\Pi}, \boldsymbol{\Omega})$ with respect to $\boldsymbol{\Omega}$, taking $\boldsymbol{\Pi}$ as given. For this purpose, the following fact from matrix algebra is useful.
+
+An Inequality Involving Trace and Determinant: ${ }^{6}$ Let $\mathbf{A}$ and $\mathbf{B}$ be two symmetric and positive definite matrices of the same size. Then the function
+
+$$
+f(\mathbf{A}) \equiv \log (|\mathbf{A}|)-\operatorname{trace}(\mathbf{A B})
+$$
+
+is maximized uniquely by $\mathbf{A}=\mathbf{B}^{-1}$.\\
+This result, with $\mathbf{A}=\boldsymbol{\Omega}^{-1}$ and $\mathbf{B}=\widehat{\boldsymbol{\Omega}}(\boldsymbol{\Pi})$, immediately implies that the objective function (8.4.11) is maximized uniquely by $\boldsymbol{\Omega}=\widehat{\boldsymbol{\Omega}}(\boldsymbol{\Pi})$, given $\boldsymbol{\Pi}$. Substituting this $\boldsymbol{\Omega}$ into (8.4.11) gives ( $1 / n$ times) the concentrated $\log$ likelihood function (concentrated with respect to $\Omega$ ):
+
+\footnotetext{${ }^{6}$ This result is implied by Lemma A. 6 of Johansen (1995). The uniqueness of the minimizer is due to the linearity of the trace operator and the strict concavity of $\log (|\mathbf{A}|)$ noted in Magnus and Neudecker (1988, p. 222).
+}
+
+\begin{align*}
+& Q_{n}^{*}(\Pi) \equiv Q_{n}(\Pi, \widehat{\Omega}(\Pi)) \\
+& =-\frac{M}{2} \log (2 \pi)+\frac{1}{2} \log \left(\left|\widehat{\Omega}(\Pi)^{-1}\right|\right)-\frac{1}{2} \operatorname{trace}\left[\widehat{\Omega}(\Pi)^{-1} \widehat{\Omega}(\Pi)\right] \\
+& =-\frac{M}{2} \log (2 \pi)-\frac{1}{2} \log (|\widehat{\Omega}(\Pi)|)-\frac{M}{2} \tag{8.4.13}
+\end{align*}
+
+
+Step 2: Looking at the concentrated log likelihood function $Q_{n}^{*}(\Pi)$, we see that the ML estimator of $\boldsymbol{\Pi}_{0}$ should minimize
+
+
+\begin{equation*}
+|\widehat{\mathbf{\Omega}}(\boldsymbol{\Pi})|=\left|\frac{1}{n} \sum_{t=1}^{n}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime}\right| \tag{8.4.14}
+\end{equation*}
+
+
+It is left as Analytical Exercise 1 to show that this is minimized by the OLS estimator $\widehat{\Pi}$ given in (8.4.5). Finally, setting $\Pi=\widehat{\Pi}$ in (8.4.10) gives (8.4.12).
+
+\section*{Consistency and Asymptotic Normality}
+We have shown in Chapter 4, without the normality assumption (that $\varepsilon_{t} \mid \mathbf{x}_{t}$ is normal) or the i.i.d. assumption for $\left\{y_{t}, \mathbf{x}_{t}\right\}$, that the GMM/OLS estimator $\widehat{\boldsymbol{\Pi}}$ in (8.4.5) is consistent and asymptotically normal and that $\widehat{\boldsymbol{\Omega}}$ in (8.4.12) is consistent. It then follows, trivially, that the ML estimator of $\boldsymbol{\Pi}_{0}$ is consistent and asymptotically normal and the ML estimator of $\mathbf{\Omega}_{0}$ is consistent. It is worth emphasizing that the ML estimator of $\Pi_{0}$ based on the likelihood function that assumes normality is consistent and asymptotically normal even if the error term is not normally distributed.
+
+We will not be concerned with the asymptotic normality of the ML estimator of $\boldsymbol{\Omega}_{0}, \widehat{\boldsymbol{\Omega}}(\widehat{\boldsymbol{\Pi}})$. One way to demonstrate the asymptotic normality would be to verify the conditions of the relevant asymptotic normality theorem of the previous chapter.
+
+\section*{QUESTION FOR REVIEW}
+\begin{enumerate}
+  \item Prove (8.4.9). Hint: Use the following properties of the trace operator. (1) $\operatorname{trace}(x)=x$ if $x$ is a scalar, (2) $\operatorname{trace}(\mathbf{A}+\mathbf{B})=\operatorname{trace}(\mathbf{A})+\operatorname{trace}(\mathbf{B})$, and (3) $\operatorname{trace}(\mathbf{A B})=\operatorname{trace}(\mathbf{B A})$ provided $\mathbf{A B}$ and $\mathbf{B A}$ are well defined. The answer is
+\end{enumerate}
+
+$$
+\begin{aligned}
+& \frac{1}{n} \sum_{t=1}^{n}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime} \boldsymbol{\Omega}^{-1}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right) \\
+& =\operatorname{trace}\left[\frac{1}{n} \sum_{t=1}^{n}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime} \boldsymbol{\Omega}^{-1}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\right]
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+& =\frac{1}{n} \sum_{t=1}^{n} \operatorname{trace}\left[\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime} \boldsymbol{\Omega}^{-1}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\right] \\
+& =\frac{1}{n} \sum_{t=1}^{n} \operatorname{trace}\left[\boldsymbol{\Omega}^{-1}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime}\right] \\
+& =\operatorname{trace}\left[\frac{1}{n} \sum_{t=1}^{n} \boldsymbol{\Omega}^{-1}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime}\right] \\
+& =\operatorname{trace}\left[\boldsymbol{\Omega}^{-1} \frac{1}{n} \sum_{t=1}^{n}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime}\right]
+\end{aligned}
+$$
+
+\subsection*{8.5 FIML}
+As seen in Chapter 4, the multivariate regression model is a specialization of the seemingly unrelated regression (SUR) model, which in turn is a specialization of the multiple-equation system to which three-stage least squares (3SLS) is applicable. The two-stage least squares (2SLS) estimator is the GMM estimator when each equation of the system is estimated separately, while 3SLS is the GMM estimator when the system as a whole is estimated. This section presents the ML counterparts of 2SLS and 3SLS.
+
+\section*{The Multiple-Equation Model with Common Instruments Restated}
+To refresh your memory, the model is an $M$-equation system described by Assumptions 4.1-4.5 and 4.7, with $\mathbf{x}_{t m}=\mathbf{x}_{t}$ for all $m=1,2, \ldots, M$ (so the set of instruments is the same across equations). Still maintaining the convention of denoting the true parameter value by subscript 0 , we can write the $M$ equations of the system as
+
+
+\begin{equation*}
+y_{t m}=\underset{\left(1 \times L_{m}\right)}{\mathbf{z}_{t m}^{\prime}} \underset{\left(L_{m} \times 1\right)}{\boldsymbol{\delta}_{0 m}}+\varepsilon_{t m}(m=1,2, \ldots, M ; t=1,2, \ldots, n) . \tag{8.5.1}
+\end{equation*}
+
+
+The model has the following features.
+
+\begin{itemize}
+  \item Unlike in the multivariate regression model, for each equation $m$, the regressors $\mathbf{z}_{t m}$ may not be orthogonal to the error term, but there are available $K$ predetermined variables $\mathbf{x}_{t}$ that are known to satisfy the orthogonality conditions $\mathrm{E}\left(\mathbf{x}_{t} \cdot \varepsilon_{t m}\right)=\mathbf{0}$ for all $m$ (this is Assumption 4.3). Defining the $M \times 1$ vector $\boldsymbol{\varepsilon}_{t}$ as
+\end{itemize}
+
+\[
+\underset{(M \times 1)}{\varepsilon_{t}}=\left[\begin{array}{c}
+\varepsilon_{t 1}  \tag{8.5.2}\\
+\varepsilon_{t 2} \\
+\vdots \\
+\varepsilon_{t M}
+\end{array}\right]
+\]
+
+the orthogonality conditions can be expressed as
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{x}_{t} \boldsymbol{\varepsilon}_{t}^{\prime}\right)=\underset{(K \times M)}{\mathbf{0}} . \tag{8.5.3}
+\end{equation*}
+
+
+These $K$ predetermined variables serve as the common set of instruments in the GMM estimation.
+
+\begin{itemize}
+  \item The endogenous variables of the system are those variables (apart from the errors) in the system that are not included in $\mathbf{x}_{t}$.
+  \item The rank condition for identification (Assumption 4.4) is that the $K \times L_{m}$ matrix $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{z}_{t m}^{\prime}\right)$ be of full column rank for all $m$. Equation $m$ is said to be overidentified if the rank condition is satisfied and $L_{m}<K$.
+  \item The error vector is conditionally homoskedastic in that $\mathrm{E}\left(\boldsymbol{\varepsilon}_{t} \boldsymbol{\varepsilon}_{t}^{\prime} \mid \mathbf{x}_{t}\right)=\boldsymbol{\Sigma}_{0}$, and $\boldsymbol{\Sigma}_{0}$ is positive definite (Assumption 4.7).
+  \item $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ is nonsingular (a consequence of conditional homoskedasticity and the nonsingularity requirement in Assumption 4.5).
+\end{itemize}
+
+The GMM estimator for this system as a whole is the 3SLS estimator given in (4.5.12), while the single-equation GMM estimator of each equation in isolation is 2SLS given in (3.8.3).
+
+The following examples will be used to illustrate the concepts to be introduced shortly.
+
+Example 8.1 (A model of market equilibrium): An expanded version of Working's example considered in Section 3.1 is a two-equation system:
+
+\[
+\begin{array}{ll}
+q_{t}=\gamma_{11} p_{t}+\beta_{11}+\beta_{12} a_{t}+\varepsilon_{t 1} & (\text { demand }), \\
+q_{t}=\gamma_{21} p_{t}+\beta_{21}+\beta_{22} w_{t}+\varepsilon_{t 2} & (\text { supply }) . \tag{8.5.5}
+\end{array}
+\]
+
+In this system, $q_{t}$ is the amount of coffee transacted and $p_{t}$ is the coffee price. The variable $a_{t}$ appearing in the demand equation is a taste shifter, while the variable $w_{t}$ is the amount of rainfall that affects the supply of coffee. The\\
+system can be cast in the general format by setting
+
+$$
+\begin{gathered}
+y_{t 1}=q_{t}, y_{t 2}=q_{t}, \mathbf{z}_{t 1}=\left[\begin{array}{c}
+p_{t} \\
+1 \\
+a_{t}
+\end{array}\right], \mathbf{z}_{t 2}=\left[\begin{array}{c}
+p_{t} \\
+1 \\
+w_{t}
+\end{array}\right] \\
+\delta_{01}=\left[\begin{array}{l}
+\gamma_{11} \\
+\beta_{11} \\
+\beta_{12}
+\end{array}\right], \delta_{02}=\left[\begin{array}{l}
+\gamma_{21} \\
+\beta_{21} \\
+\beta_{22}
+\end{array}\right] .
+\end{gathered}
+$$
+
+(Note that $y_{t 1}$ and $y_{t 2}$ are the same variable.) If $\mathrm{E}\left(\varepsilon_{t j}\right)=0, \mathrm{E}\left(a_{t} \varepsilon_{t j}\right)=0$, and $\mathrm{E}\left(w_{t} \varepsilon_{t j}\right)=0$ for $j=1,2$, then $\left(1, a_{t}, w_{t}\right)$ can be included in the common set of instruments. So
+
+$$
+\mathbf{x}_{t}=\left[\begin{array}{c}
+1 \\
+a_{t} \\
+w_{t}
+\end{array}\right]
+$$
+
+The other nonerror variables in the system, $p_{t}$ and $q_{t}$, are endogenous variables. Provided that the rank condition for identification is satisfied, each equation is just identified because the number of right-hand side variables equals that of instruments.
+
+Example 8.2 (Wage equation): In the empirical exercise of Chapter 3, we estimated a standard wage equation. Consider supplementing the wage equation by an equation explaining $K W W$ (the score on the "Knowledge of the World of Work" test):
+
+
+\begin{align*}
+L W_{t} & =\gamma_{11} S_{t}+\beta_{11}+\beta_{12} I Q_{t}+\varepsilon_{t 1},  \tag{8.5.6}\\
+K W W_{t} & =\gamma_{21} S_{t}+\beta_{21}+\varepsilon_{t 2}, \tag{8.5.7}
+\end{align*}
+
+
+where $S_{t}$, for example, is years in schooling for individual $t$. Assume that $\mathrm{E}\left(\varepsilon_{t j}\right)=0$ and $\mathrm{E}\left(I Q_{t} \varepsilon_{t j}\right)=0$ for $j=1,2$. Assume also that there is a variable $M E D$ (mother's education), which does not appear in either equation but which is predetermined in that $\mathrm{E}\left(M E D_{t} \varepsilon_{t j}\right)=0$ for $j=1,2$. So the common set of instruments is $\mathbf{x}_{t}=\left(1, I Q_{t}, M E D_{t}\right)^{\prime}$. The rest of the nonerror variables in the system are endogenous variables. This two-equation system has three endogenous variables, $L W, S$, and $K W W$. Provided that the rank condition is satisfied, the first equation is just identified because the number of right-hand side variables equals the number of instruments, while the second equation is overidentified.
+
+\section*{The Complete System of Simultaneous Equations}
+The ML counterpart of 3SLS is called the full-information maximum likelihood (FIML) estimator. If it is to be estimated by FIML, the multiple-equation model needs to be further specialized before introducing the normality and i.i.d. assumptions. The required specialization is that those $M$ equations form a "complete" system of simultaneous equations. Completeness requires two things.
+
+\begin{enumerate}
+  \item There are as many endogenous variables as there are equations. This condition implies that, if $\mathbf{y}_{t}$ is an $M$-dimensional vector collecting those $M$ endogenous variables, then $\left(y_{t 1}, \ldots, y_{t M}, \mathbf{z}_{t 1}, \ldots, \mathbf{z}_{t M}\right)$ are all elements of $\left(\mathbf{y}_{t}, \mathbf{x}_{t}\right)$, which allows one to write the $M$-equation system (8.5.1) as\\
+with the $m$-th equation being $y_{t m}=\mathbf{z}_{t m}^{\prime} \delta_{0 m}+\varepsilon_{t m}$. (This is illustrated for Example 8.1 below.) The equation system written in this way is called the structural form, and ( $\boldsymbol{\Gamma}_{0}, \mathbf{B}_{0}$ ) are called the structural form parameters. As will be illustrated below, each of the structural form parameters is a function of $\left(\boldsymbol{\delta}_{01}, \ldots, \boldsymbol{\delta}_{0 M}\right)$.
+\end{enumerate}
+
+The system in Example 8.1 satisfies this first requirement. The system in Example 8.2 is not a complete system because the number of endogenous variables is greater than the number of equations. It is not possible to estimate incomplete systems by FIML (unless we complete the system by adding appropriate equations, see the discussion about LIML below). This is in contrast to GMM; incomplete systems can be estimated by 3SLS (or more generally by multiple-equation GMM if conditional homoskedasticity is not assumed), as long as they satisfy the rank condition for identification.\\
+2. The square matrix $\Gamma_{0}$ is nonsingular. This implies that the structural form can be solved for the endogenous variables $\mathbf{y}_{t}$ as
+
+
+\begin{equation*}
+\mathbf{y}_{t}=-\Gamma_{0}^{-1} \mathbf{B}_{0} \mathbf{x}_{t}+\Gamma_{0}^{-1} \varepsilon_{t} \equiv \Pi_{0}^{\prime} \mathbf{x}_{t}+\mathbf{v}_{t} \tag{8.5.9}
+\end{equation*}
+
+
+where
+
+
+\begin{align*}
+\underset{(M \times K)}{\Pi_{0}^{\prime}} & \equiv-\underset{(M \times M)}{\Gamma_{0}^{-1}} \underset{(M \times K)}{\mathbf{B}_{0}},  \tag{8.5.10}\\
+\underset{(M \times 1)}{\mathbf{v}_{t}} & \equiv{\underset{(M \times M)}{\Gamma_{0}^{-1}}}_{(M \times 1)}^{\varepsilon_{t}} \tag{8.5.11}
+\end{align*}
+
+
+Expression (8.5.9) is known as the reduced-form representation of the structural form, and the elements of $\boldsymbol{\Pi}_{0}$ are called the reduced-form coefficients. In\\
+each equation of the reduced form, the regressors are the same set of variables, $\mathbf{x}_{t}$. From (8.5.3) and (8.5.11), it follows that $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{v}_{t}^{\prime}\right)=\mathbf{0}$, namely, that all the regressors are predetermined. The reduced form, therefore, is a multivariate regression model.
+
+\section*{Relationship between ( $\boldsymbol{\Gamma}_{\mathbf{0}}, \mathbf{B}_{\mathbf{0}}$ ) and $\boldsymbol{\delta}_{\mathbf{0}}$}
+Let $\delta_{0}$ be the stacked vector collecting all the coefficients in the $M$-equation system (8.5.1):
+
+\[
+\underset{\left(\sum_{m=1}^{M} L_{m} \times 1\right)}{\delta_{0}}=\left[\begin{array}{c}
+\boldsymbol{\delta}_{01}  \tag{8.5.12}\\
+\boldsymbol{\delta}_{02} \\
+\vdots \\
+\boldsymbol{\delta}_{0 M}
+\end{array}\right]
+\]
+
+For understanding the mechanics of FIML, it is important to see how the coefficient matrices ( $\boldsymbol{\Gamma}_{0}, \mathbf{B}_{0}$ ) depend on $\boldsymbol{\delta}_{0}$. To illustrate, consider Example 8.1. The $\boldsymbol{\delta}_{0}$ vector is
+
+\[
+\underset{(6 \times 1)}{\delta_{0}}=\left[\begin{array}{c}
+\gamma_{11}  \tag{8.5.13}\\
+\beta_{11} \\
+\beta_{12} \\
+\gamma_{21} \\
+\beta_{21} \\
+\beta_{22}
+\end{array}\right]
+\]
+
+The two endogenous variables are ( $p_{t}, q_{t}$ ). It does not matter how the endogenous variables are ordered, so arbitrarily put $p_{t}$ first in $\mathbf{y}_{t}: \mathbf{y}_{t}=\left(p_{t}, q_{t}\right)^{\prime}$. The structural form parameters can be written as
+
+\[
+\underset{(2 \times 2)}{\boldsymbol{\Gamma}_{0}}=\left[\begin{array}{ll}
+-\gamma_{11} & 1  \tag{8.5.14}\\
+-\gamma_{21} & 1
+\end{array}\right], \quad \underset{(2 \times 3)}{\mathbf{B}_{0}}=\left[\begin{array}{ccc}
+-\beta_{11} & -\beta_{12} & 0 \\
+-\beta_{21} & 0 & -\beta_{22}
+\end{array}\right] .
+\]
+
+This example serves to illustrate three points. First, each row of $\Gamma_{0}$ has an element of unity, reflecting the fact that the coefficient of the dependent variable in each of the $M$ equations (8.5.1) is unity. In this sense $\boldsymbol{\Gamma}_{0}$ is already normalized. Second, some elements of $\boldsymbol{\Gamma}_{0}$ and $\mathbf{B}_{0}$ are zeros, reflecting the fact that some endogenous or predetermined variables do not appear in certain equations of the $M$-equation system. This feature of the structural form coefficient matrices is called the exclusion restrictions. (In Example 8.1, no elements of $\boldsymbol{\Gamma}_{0}$ happen to be zero because the two endogenous variables appear in both equations.) Third,\\
+the system involves no cross-equation restrictions, so each element of $\boldsymbol{\delta}_{0}$ appears in ( $\boldsymbol{\Gamma}_{0}, \mathbf{B}_{0}$ ) just once.
+
+\section*{The FIML Likelihood Function}
+To make the complete system of simultaneous equations estimable by FIML, we assume (1) that the structural error vector $\boldsymbol{\varepsilon}_{t}$ is jointly normal conditional on $\mathbf{x}_{t}$, i.e., $\boldsymbol{\varepsilon}_{t} \mid \mathbf{x}_{t} \sim N\left(\mathbf{0}, \boldsymbol{\Sigma}_{0}\right)$, and (2) that $\left\{\mathbf{y}_{t}, \mathbf{x}_{t}\right\}$ is i.i.d., not just ergodic stationary martingale differences (this assumption strengthens Assumptions 4.2 and 4.5).
+
+By the normality assumption (1) about the structural errors $\boldsymbol{\varepsilon}_{t}$ and (8.5.11), we have $\mathbf{v}_{t} \mid \mathbf{x}_{t} \sim N\left(\mathbf{0}, \boldsymbol{\Gamma}_{0}^{-1} \boldsymbol{\Sigma}_{0}\left(\boldsymbol{\Gamma}_{0}^{-1}\right)^{\prime}\right)$. Combining this and the reduced form $\mathbf{y}_{t}=\boldsymbol{\Pi}_{0}^{\prime} \mathbf{x}_{t}+\mathbf{v}_{t}$ with (8.5.10) produces
+
+
+\begin{equation*}
+\mathbf{y}_{t} \mid \mathbf{x}_{t} \sim N\left(-\Gamma_{0}^{-1} \mathbf{B}_{0} \mathbf{x}_{t}, \Gamma_{0}^{-1} \Sigma_{0}\left(\Gamma_{0}^{-1}\right)^{\prime}\right) . \tag{8.5.15}
+\end{equation*}
+
+
+So the log conditional likelihood for observation $t$ is
+
+
+\begin{align*}
+\log f\left(\mathbf{y}_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\delta}, \boldsymbol{\Sigma}\right) & =-\frac{M}{2} \log (2 \pi)-\frac{1}{2} \log \left(\left|\boldsymbol{\Gamma}^{-1} \boldsymbol{\Sigma}\left(\boldsymbol{\Gamma}^{-1}\right)^{\prime}\right|\right) \\
+- & \frac{1}{2}\left[\mathbf{y}_{t}+\boldsymbol{\Gamma}^{-1} \mathbf{B} \mathbf{x}_{t}\right]^{\prime}\left[\boldsymbol{\Gamma}^{-1} \boldsymbol{\Sigma}\left(\boldsymbol{\Gamma}^{-1}\right)^{\prime}\right]^{-1}\left[\mathbf{y}_{t}+\boldsymbol{\Gamma}^{-1} \mathbf{B} \mathbf{x}_{t}\right] \tag{8.5.16}
+\end{align*}
+
+
+The likelihood is a function of $(\boldsymbol{\delta}, \boldsymbol{\Sigma})$ because, as illustrated in (8.5.14), the structural form coefficients ( $\boldsymbol{\Gamma}, \mathbf{B}$ ) are functions of $\boldsymbol{\delta}$. Now
+
+
+\begin{align*}
+& {\left[\mathbf{y}_{t}+\boldsymbol{\Gamma}^{-1} \mathbf{B} \mathbf{x}_{t}\right]^{\prime}\left[\boldsymbol{\Gamma}^{-1} \boldsymbol{\Sigma}\left(\boldsymbol{\Gamma}^{-1}\right)^{\prime}\right]^{-1}\left[\mathbf{y}_{t}+\boldsymbol{\Gamma}^{-1} \mathbf{B} \mathbf{x}_{t}\right]} \\
+& =\left[\mathbf{y}_{t}+\boldsymbol{\Gamma}^{-1} \mathbf{B} \mathbf{x}_{t}\right]^{\prime}\left[\boldsymbol{\Gamma}^{\prime} \boldsymbol{\Sigma}^{-1} \boldsymbol{\Gamma}\right]\left[\mathbf{y}_{t}+\boldsymbol{\Gamma}^{-1} \mathbf{B} \mathbf{x}_{t}\right] \\
+& =\left[\boldsymbol{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right]^{\prime} \boldsymbol{\Sigma}^{-1}\left[\boldsymbol{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right] \tag{8.5.17}
+\end{align*}
+
+
+and
+
+
+\begin{equation*}
+\left|\boldsymbol{\Gamma}^{-1} \boldsymbol{\Sigma}\left(\boldsymbol{\Gamma}^{-1}\right)^{\prime}\right|=\left|\boldsymbol{\Gamma}^{-1} \| \boldsymbol{\Sigma}\right|\left|\left(\boldsymbol{\Gamma}^{-1}\right)^{\prime}\right|=|\boldsymbol{\Sigma}| /|\boldsymbol{\Gamma}|^{2} . \tag{8.5.18}
+\end{equation*}
+
+
+Substituting these into (8.5.16),
+
+
+\begin{align*}
+\log f\left(\mathbf{y}_{t} \mid \mathbf{x}_{t} ; \boldsymbol{\delta}, \mathbf{\Sigma}\right)=-\frac{M}{2} \log (2 \pi) & +\frac{1}{2} \log \left(|\boldsymbol{\Gamma}|^{2}\right)-\frac{1}{2} \log (|\mathbf{\Sigma}|) \\
+& -\frac{1}{2}\left[\boldsymbol{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right]^{\prime} \mathbf{\Sigma}^{-1}\left[\boldsymbol{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right] \tag{8.5.19}
+\end{align*}
+
+
+Taking the average over $t$, we obtain the FIML objective function for a random sample:
+
+
+\begin{align*}
+Q_{n}(\boldsymbol{\delta}, \boldsymbol{\Sigma})=-\frac{M}{2} \log (2 \pi)+ & \frac{1}{2} \log \left(|\boldsymbol{\Gamma}|^{2}\right)-\frac{1}{2} \log (|\boldsymbol{\Sigma}|) \\
+& -\frac{1}{2 n} \sum_{t=1}^{n}\left[\boldsymbol{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right]^{\prime} \boldsymbol{\Sigma}^{-1}\left[\boldsymbol{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right] \tag{8.5.20}
+\end{align*}
+
+
+The FIML estimate of $\left(\boldsymbol{\delta}_{0}, \boldsymbol{\Sigma}_{0}\right)$ is the $(\boldsymbol{\delta}, \boldsymbol{\Sigma})$ that maximizes this objective function.
+
+\section*{The FIML Concentrated Likelihood Function}
+As in the maximization of the objective function of the multivariate regression model, we can proceed in two steps. The first step is to maximize $Q_{n}(\boldsymbol{\delta}, \boldsymbol{\Sigma})$ with respect to $\boldsymbol{\Sigma}$ given $\boldsymbol{\delta}$. This yields
+
+
+\begin{equation*}
+\underset{(M \times M)}{\widehat{\mathbf{\Sigma}}(\delta)}=\frac{1}{n} \sum_{t=1}^{n}\left(\boldsymbol{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right)\left(\boldsymbol{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right)^{\prime} \tag{8.5.21}
+\end{equation*}
+
+
+Its ( $m, h$ ) element can be written as
+
+
+\begin{equation*}
+\hat{\sigma}_{m h}=\frac{1}{n} \sum_{t=1}^{n}\left(y_{t m}-\mathbf{z}_{t m}^{\prime} \boldsymbol{\delta}_{m}\right)\left(y_{t h}-\mathbf{z}_{t h}^{\prime} \boldsymbol{\delta}_{h}\right) . \tag{8.5.22}
+\end{equation*}
+
+
+By substituting (8.5.21) back into the objective function (8.5.20), (1/n times) the FIML concentrated likelihood function can be derived as
+
+
+\begin{align*}
+Q_{n}^{*}(\delta) & \equiv Q_{n}(\delta, \widehat{\Sigma}(\delta)) \\
+& =-\frac{M}{2} \log (2 \pi)-\frac{M}{2}+\frac{1}{2} \log \left(|\Gamma|^{2}\right)-\frac{1}{2} \log (|\widehat{\Sigma}(\delta)|) \\
+& =-\frac{M}{2} \log (2 \pi)-\frac{M}{2}-\frac{1}{2} \log \left|\frac{1}{n} \sum_{t=1}^{n}\left(\mathbf{y}_{t}+\Gamma^{-1} \mathbf{B} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}+\Gamma^{-1} \mathbf{B} \mathbf{x}_{t}\right)^{\prime}\right| \tag{8.5.23}
+\end{align*}
+
+
+The second step is to maximize this FIML concentrated likelihood with respect to $\boldsymbol{\delta}$. The FIML estimator $\hat{\boldsymbol{\delta}}$ of $\boldsymbol{\delta}_{0}$ is the $\boldsymbol{\delta}$ that maximizes this function. ${ }^{7}$ The FIML estimator of $\mathbf{\Sigma}_{0}$ is $\widehat{\mathbf{\Sigma}}(\hat{\boldsymbol{\delta}})$.\\
+${ }^{7}$ So the FIML estimator $\hat{\delta}$ is an extremum estimator that maximizes
+
+$$
+-\left|\frac{1}{n} \sum_{t=1}^{n}\left(\mathbf{y}_{t}+\Gamma^{-1} \mathbf{B} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}+\Gamma^{-1} \mathbf{B} \mathbf{x}_{t}\right)^{\prime}\right|
+$$
+
+Some aspects of this extremum estimator are explored in an optional analytical exercise (see Analytical Exercise 3 ).
+
+\section*{Testing Overidentifying Restrictions}
+Now compare this FIML concentrated likelihood $Q_{n}^{*}(\boldsymbol{\delta})$ given in (8.5.23) with that for the multivariate regression model, $Q_{n}^{*}(\Pi)$ given in (8.4.13). The FIML concentrated likelihood $Q_{n}^{*}(\boldsymbol{\delta})$ is what obtains when we impose on $Q_{n}^{*}(\boldsymbol{\Pi})$ the restrictions implied by the null hypothesis that
+
+
+\begin{equation*}
+\mathrm{H}_{0}: \boldsymbol{\Pi}_{0}^{\prime}=-\boldsymbol{\Gamma}_{0}^{-1} \mathbf{B}_{0} \text { or } \boldsymbol{\Gamma}_{0} \boldsymbol{\Pi}_{0}^{\prime}+\mathbf{B}_{0}=\mathbf{0} . \tag{8.5.24}
+\end{equation*}
+
+
+Put differently, FIML estimation of $\boldsymbol{\delta}_{0}$ is a constrained multivariate regression. Therefore, the truth of the null hypothesis can be tested by the likelihood ratio principle. Since the OLS estimator $\widehat{\Pi}$ given in (8.4.5) maximizes the multivariate regression concentrated likelihood function $Q_{n}^{*}(\boldsymbol{\Pi})$ given in (8.4.13) and the FIML estimator $\hat{\boldsymbol{\delta}}$ maximizes the FIML concentrated likelihood function $Q_{n}^{*}(\hat{\boldsymbol{\delta}})$ given in (8.5.23), the likelihood ratio test statistic is
+
+
+\begin{align*}
+L R & =2 n \cdot\left(Q_{n}^{*}(\widehat{\Pi})-Q_{n}^{*}(\hat{\delta})\right) \\
+& =n \times\left(\log \left|\widehat{\Omega}\left(-\left(\widehat{\Gamma}^{-1} \widehat{\mathbf{B}}\right)^{\prime}\right)\right|-\log |\widehat{\Omega}(\widehat{\Pi})|\right) \tag{8.5.25}
+\end{align*}
+
+
+where $\widehat{\boldsymbol{\Omega}}(\boldsymbol{\Pi})$ is defined in (8.4.10) and ( $\widehat{\boldsymbol{\Gamma}}, \widehat{\mathbf{B}}$ ) is the value of ( $\boldsymbol{\Gamma}, \mathbf{B}$ ) implied by $\hat{\boldsymbol{\delta}}$. Since the dimension of $\delta$ equals $\sum_{m=1}^{M} L_{m}$, the number of restrictions implied by the null hypothesis $\mathrm{H}_{0}$ above is
+
+
+\begin{equation*}
+K M-\sum_{m=1}^{M} L_{m}=\sum_{m=1}^{M}\left(K-L_{m}\right), \tag{8.5.26}
+\end{equation*}
+
+
+which is the total number of overidentifying restrictions of the system. Therefore, the likelihood ratio test based on the $L R$ statistic (8.5.25) is a test of overidentifying restrictions. It is a specification test because the restriction being tested is a condition assumed in the model.
+
+\section*{Properties of the FIML Estimator}
+There is no closed-form solution to the FIML estimator. So, in order to establish the consistency and asymptotic normality, we would have to verify the conditions of relevant theorems of the previous chapter. We summarize here, without proof, the main properties of the FIML estimator.
+
+\section*{Identification}
+Stating the identification condition in various forms for complete simultaneous equations systems is a major topic in most textbooks. Here it is left as an optional\\
+analytical exercise (Analytical Exercise 3) to show that the identification condition for FIML as an extremum estimator is equivalent to the rank condition for identification (that $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{z}_{t m}^{\prime}\right)$ be of full column rank for all $m=1,2, \ldots, M$ ).
+
+\section*{Asymptotic Properties}
+Although the FIML objective function (8.5.20) is derived under the normality of $\boldsymbol{\varepsilon}_{t} \mid \mathbf{x}_{t}$, the FIML estimator of $\delta_{0}$ is consistent and asymptotically normal without the normality assumption. For a proof of consistency without normality, see, e.g., Amemiya (1985, pp. 232-233). There is a nice proof of asymptotic normality of $\hat{\delta}$ due to Hausman (1975), which shows that an iterative instrumental variable estimation can be viewed as an algorithm for solving the first-order conditions for the maximization of $Q_{n}(\boldsymbol{\delta}, \boldsymbol{\Sigma}) .^{8}$ This argument shows that the FIML estimator of $\boldsymbol{\delta}_{0}$ is asymptotically equivalent to the 3SLS estimator. ${ }^{9}$ Therefore, its asymptotic variance is given by (4.5.15), and a consistent estimator of the asymptotic variance is $(4.5 .17)$.
+
+\section*{Invariance}
+Since the FIML estimator is an ML estimator, it has the invariance property discussed in Section 7.1. To illustrate, consider Example 8.1 and suppose you wish to reparameterize the supply equation as
+
+
+\begin{equation*}
+p_{t}=\tilde{\gamma}_{21} q_{t}+\widetilde{\beta}_{21}+\widetilde{\beta}_{22} w_{t}+\tilde{\varepsilon}_{t 2} \quad \text { (supply) } \tag{8.5.27}
+\end{equation*}
+
+
+The old supply parameters ( $\gamma_{21}, \beta_{21}, \beta_{22}$ ) and the new supply parameters ( $\tilde{\gamma}_{21}, \widetilde{\beta}_{21}$, $\widetilde{\beta}_{22}$ ) are connected by the one-to-one mapping
+
+
+\begin{equation*}
+\tilde{\gamma}_{21}=1 / \gamma_{21}, \widetilde{\beta}_{21}=-\beta_{21} / \gamma_{21}, \widetilde{\beta}_{22}=-\beta_{22} / \gamma_{21} . \tag{8.5.28}
+\end{equation*}
+
+
+If ( $\hat{\gamma}_{21}, \widehat{\beta}_{21}, \widehat{\beta}_{22}$ ) is the FIML estimator of ( $\gamma_{21}, \beta_{21}, \beta_{22}$ ) for the system consisting of the demand equation (8.5.4) and the old supply equation (8.5.5), then the FIML estimator based on the system consisting of (8.5.4) and the new supply equation is numerically the same as the value of the above mapping at ( $\hat{\gamma}_{21}, \widehat{\beta}_{21}, \widehat{\beta}_{22}$ ). The 3SLS estimator (and 2SLS for that matter) does not have this invariance property.
+
+\footnotetext{${ }^{8}$ We will not display the first-order conditions (the likelihood equations) for FIML because it requires some cumbersome matrix notation. See Amemiya (1985, pp. 233-234) or Davidson and MacKinnon (1993, pp. 658660) for more details. For the SUR model, the likelihood equations and the iterative procedure are much easier to describe; see the next subsection.\\
+${ }^{9}$ This asymptotic equivalence does not carry over to nonlinear equation systems; nonlinear FIML is more efficient than nonlinear 3SLS. See Amemiya (1985, Section 8.2).
+}The foregoing discussion about FIML can be summarized as
+
+Proposition 8.1 (Asymptotic properties of FIML): Consider the M-equation system (8.5.1) and let $\delta_{0}$ be the stacked vector collecting all the coefficients in the M-equation system. Make the following assumptions.
+
+\begin{itemize}
+  \item the rank condition for identification (that $\mathrm{E}\left(\mathbf{x}_{i} \mathbf{z}_{t m}^{\prime}\right)$ be of full column rank for all $m=1,2, \ldots, M$ ) is satisfied,
+  \item $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ is nonsingular,
+  \item the M-equation system can be written as a complete system of simultaneous equations (8.5.8) with $\boldsymbol{\Gamma}_{0}$ nonsingular,
+  \item $\varepsilon_{t} \mid \mathbf{x}_{t} \sim N\left(\mathbf{0}, \boldsymbol{\Sigma}_{0}\right), \boldsymbol{\Sigma}_{0}$ positive definite,
+  \item $\left\{\mathbf{y}_{t}, \mathbf{x}_{t}\right\}$ is i.i.d.,
+  \item the parameter space for ( $\boldsymbol{\delta}_{0}, \boldsymbol{\Sigma}_{0}$ ) is compact with the true parameter vector ( $\boldsymbol{\delta}_{0}, \boldsymbol{\Sigma}_{0}$ ) included as an interior point.
+\end{itemize}
+
+Then\\
+(a) the FIML estimator ( $\hat{\boldsymbol{\delta}}, \widehat{\mathbf{\Sigma}}$ ), which maximizes (8.5.20), is consistent and asymptotically normal,\\
+(b) the asymptotic variance of $\hat{\boldsymbol{\delta}}$ is given by (4.5.15), and a consistent estimator of the asymptotic variance is (4.5.17) where $\hat{\sigma}^{m h}$ is the ( $m, h$ ) element of $\widehat{\mathbf{\Sigma}}^{-1}$,\\
+(c) the likelihood ratio statistic (8.5.25) for testing overidentifying restrictions is asymptotically $\chi^{2}$ with $K M-\sum_{m=1}^{M} L_{m}$ degrees of freedom.\\
+Furthermore, these asymptotic results about $\hat{\boldsymbol{\delta}}$ hold even if $\varepsilon_{t} \mid \mathbf{x}_{t}$ is not normal.
+
+\section*{ML Estimation of the SUR Model}
+The SUR model is a specialization of the FIML model with $\mathbf{z}_{t m}$ being a subvector of $\mathbf{x}_{t}$. It is therefore an $M$-equation system (8.5.1) where the regressors $\mathbf{z}_{t m}$ are predetermined. Unlike in the multivariate regression model, the set of regressors could differ across equations. It is easy to show (see Review Question 3) that no two dependent variables can be the same variable, so $\mathbf{y}_{t}(M \times 1)$ in the structural form (8.5.8) simply collects the $M$ dependent variables. Furthermore, since $\mathbf{z}_{t m}$ includes no endogenous variables, $\boldsymbol{\Gamma}_{0}$ in the structural form is the identity matrix. Thus, the FIML objective function (8.5.20) becomes
+
+
+\begin{equation*}
+Q_{n}(\boldsymbol{\delta}, \mathbf{\Sigma})=-\frac{M}{2} \log (2 \pi)-\frac{1}{2} \log (|\mathbf{\Sigma}|)-\frac{1}{2 n} \sum_{t=1}^{n}\left[\mathbf{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right]^{\prime} \mathbf{\Sigma}^{-1}\left[\mathbf{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right] \tag{8.5.29}
+\end{equation*}
+
+
+where $\boldsymbol{\Gamma}$ is understood to be the identity matrix. (We continue to carry $\boldsymbol{\Gamma}$ around in order to facilitate the comparison to the objective function for LIML to be introduced in the next subsection.) As in FIML, the $\boldsymbol{\Sigma}$ that maximizes the objective function given $\boldsymbol{\delta}$ is given by $\widehat{\boldsymbol{\Sigma}}(\boldsymbol{\delta})$ in (8.5.21).
+
+For the SUR model, the score with respect to $\delta$ can be written down rather easily. The $m$-th row of $\boldsymbol{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}$ is $y_{t m}-\mathbf{z}_{t m}^{\prime} \boldsymbol{\delta}_{m}$. Define $\mathbf{y}(M n \times 1)$ and $\mathbf{Z} \left(M n \times \sum_{m=1}^{M} L_{m}\right)$ as in the first analytical exercise to Chapter 4. Then
+
+
+\begin{equation*}
+\sum_{t=1}^{n}\left[\boldsymbol{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right]^{\prime} \mathbf{\Sigma}^{-1}\left[\boldsymbol{\Gamma} \mathbf{y}_{t}+\mathbf{B} \mathbf{x}_{t}\right]=(\mathbf{y}-\mathbf{Z} \boldsymbol{\delta})^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{n}\right)(\mathbf{y}-\mathbf{Z} \boldsymbol{\delta}) \tag{8.5.30}
+\end{equation*}
+
+
+Therefore,
+
+
+\begin{equation*}
+\frac{\partial Q_{n}(\boldsymbol{\delta}, \mathbf{\Sigma})}{\partial \boldsymbol{\delta}}=\frac{1}{n} \mathbf{Z}^{\prime}\left(\mathbf{\Sigma}^{-1} \otimes \mathbf{I}_{n}\right)(\mathbf{y}-\mathbf{Z} \boldsymbol{\delta}) \tag{8.5.31}
+\end{equation*}
+
+
+(Doing the same for the more general case of FIML is not as easy because, although (8.5.30) holds for FIML as well, the score $\frac{\partial Q_{n}}{\partial \delta}$ is more complicated thanks to the term $\log \left(|\boldsymbol{\Gamma}|^{2}\right)$ in the FIML likelihood function. Put differently, if $|\boldsymbol{\Gamma}|$ is a constant (i.e., independent of $\boldsymbol{\delta}$ ), then $\frac{\partial Q_{n}}{\partial \delta}$ for FIML is the same as (8.5.31).) Setting this equal to zero and solving for $\boldsymbol{\delta}$, we obtain
+
+
+\begin{equation*}
+\hat{\boldsymbol{\delta}}(\boldsymbol{\Sigma}) \equiv\left[\mathbf{Z}^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{n}\right) \mathbf{Z}\right]^{-1} \mathbf{Z}^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{n}\right) \mathbf{y} . \tag{8.5.32}
+\end{equation*}
+
+
+Given some consistent estimator $\widehat{\mathbf{\Sigma}}$ of $\mathbf{\Sigma}_{0}, \hat{\boldsymbol{\delta}}(\widehat{\mathbf{\Sigma}})$ is the SUR estimator of $\boldsymbol{\delta}_{0}$ derived in Chapter 4.
+
+These two functions $(\hat{\boldsymbol{\delta}}(\boldsymbol{\Sigma}), \widehat{\boldsymbol{\Sigma}}(\boldsymbol{\delta}))$ define a mapping from the parameter space for $(\boldsymbol{\delta}, \boldsymbol{\Sigma})$ to itself, and a solution to the first-order conditions for the maximization of $Q_{n}(\boldsymbol{\delta}, \boldsymbol{\Sigma})$ is a fixed point in this mapping. Such a fixed point can be calculated by the following iterative SUR. Let $\left(\hat{\boldsymbol{\delta}}^{(j)}, \widehat{\mathbf{\Sigma}}^{(j)}\right)$ be the estimate of $\left(\boldsymbol{\delta}_{0}, \boldsymbol{\Sigma}_{0}\right)$ in the $j$-th iteration. The estimate in the next iteration is
+
+
+\begin{equation*}
+\hat{\boldsymbol{\delta}}^{(j+1)}=\hat{\boldsymbol{\delta}}\left(\widehat{\boldsymbol{\Sigma}}^{(j)}\right), \widehat{\boldsymbol{\Sigma}}^{(j+1)}=\widehat{\mathbf{\Sigma}}\left(\hat{\boldsymbol{\delta}}^{(j+1)}\right) \tag{8.5.33}
+\end{equation*}
+
+
+The first part of this iteration is the SUR estimation given $\widehat{\mathbf{\Sigma}}^{(j)}$, while the latter\\
+part updates the estimate of $\boldsymbol{\Sigma}_{0}$ using the current estimate of $\boldsymbol{\delta}_{0}$. If this process converges, then the limit is a solution to the first-order conditions.
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item (Deriving $f\left(\mathbf{y}_{t} \mid \mathbf{x}_{t}\right)$ from $\left.f\left(\boldsymbol{\varepsilon}_{t} \mid \mathbf{x}_{t}\right)\right)$ In this exercise, we wish to derive the likelihood for observation $t$ for the FIML model by the following fact from probability theory:
+\end{enumerate}
+
+Change of Variable Formula: Suppose $\varepsilon$ is a continuous M-dimensional random vector with density $f_{\boldsymbol{\epsilon}}(\boldsymbol{\varepsilon})$ and $\mathbf{g}: \mathbb{R}^{M} \rightarrow \mathbb{R}^{M}$ is a one-to-one and differentiable mapping on an open set $S$, with the inverse mapping denoted as $\mathbf{g}^{-1}(\cdot)$. Let the $M \times M$ matrix $\mathbf{J}(\varepsilon)$ be the Jacobian matrix $\frac{\partial g(\varepsilon)}{\partial \varepsilon^{\prime}}$ (the $M \times M$ matrix of partial derivatives, whose ( $i, j$ ) element is $\frac{\partial g_{i}(\boldsymbol{\varepsilon})}{\partial \varepsilon_{j}}$ ). Assume that $|\mathbf{J}(\boldsymbol{\varepsilon})|$ is not zero at any point in $S$. Then the density of $\mathbf{y}=\mathbf{g}(\boldsymbol{\varepsilon})$ is given by
+
+$$
+f(\mathbf{y})=\frac{f_{\varepsilon}\left(\mathbf{g}^{-1}(\mathbf{y})\right)}{\operatorname{abs}\left(\left|\mathbf{J}\left(\mathbf{g}^{-1}(\mathbf{y})\right)\right|\right)}
+$$
+
+(Note that $\left|\mathbf{J}\left(\mathbf{g}^{-1}(\mathbf{y})\right)\right|$ is a determinant, which may or may not be positive.) Using this fact, derive the density of $\mathbf{y}_{t} \mid \mathbf{x}_{t}$ from the density of $\boldsymbol{\varepsilon}_{t} \mid \mathbf{x}_{t}$ and verify that the associated log likelihood is given by (8.5.16). Hint: The inverse mapping $\mathbf{g}^{-1}\left(\mathbf{y}_{t}\right)$ is the left-hand side of (8.5.8). So $\mathbf{J}\left(\boldsymbol{\varepsilon}_{t}\right)=\boldsymbol{\Gamma}_{0}^{-1}$. Also, $\log (\operatorname{abs}(|\boldsymbol{\Gamma}|))=\frac{1}{2} \log \left(|\boldsymbol{\Gamma}|^{2}\right)$.\\
+2. (Instruments outside the system) Consider the complete system of simultaneous equations (8.5.8) with $\left|\boldsymbol{\Gamma}_{0}\right| \neq 0$. Suppose that one of the $K$ predetermined variables, say $x_{t K}$, does not appear in any of the $M$-equations. Let $\widehat{\mathrm{E}}^{*}(y \mid \mathbf{x})$ be the least squares projection of $y$ on $\mathbf{x}$. Show that $\widehat{\mathrm{E}}^{*}\left(y_{t m} \mid \mathbf{x}_{t}\right)=\widehat{\mathrm{E}}^{*}\left(y_{t m} \mid \tilde{\mathbf{x}}_{t}\right)$, where $\tilde{\mathbf{x}}_{t}=\left(x_{t 1}, \ldots, x_{t, K-1}\right)^{\prime}$ (so $\mathbf{x}_{t}=\left(\tilde{\mathbf{x}}_{t}^{\prime}, x_{t K}\right)^{\prime}$ ). (As you will show in Analytical Exercise 4, including $x_{t K}$ in the list of instruments in addition to $\tilde{\mathbf{x}}_{t}$ will not change the asymptotic variance of the FIML estimator of $\boldsymbol{\delta}_{0}$; it probably makes the small sample properties only worse.)\\
+3. Recall that in Example $8.1 y_{t 1}$ and $y_{t 2}$ are the same variable. In the SUR model, this cannot happen; that is, no two elements of $\left(y_{t 1}, y_{t 2}, \ldots, y_{t M}\right)$ are the same variable if the assumptions describing the model are satisfied. Prove this. Hint: Suppose $y_{t 1}$ and $y_{t 2}$ are the same variable. Then
+
+$$
+\varepsilon_{t 1}-\varepsilon_{t 2}=\mathbf{z}_{t 1}^{\prime} \boldsymbol{\delta}_{0,1}-\mathbf{z}_{t 2}^{\prime} \boldsymbol{\delta}_{0,2} .
+$$
+
+Since $\mathbf{z}_{t 1}$ and $\mathbf{z}_{t 2}$ are subvectors of $\mathbf{x}_{t}$, the right-hand side can be written as $\mathbf{x}_{t}^{\prime} \boldsymbol{\alpha}$ for some $K$-dimensional vector $\boldsymbol{\alpha}$. Use the orthogonality conditions that $\mathrm{E}\left(\mathbf{x}_{t} \varepsilon_{t}^{\prime}\right)=\mathbf{0}$ and the nonsingularity of $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ to show that $\boldsymbol{\alpha}=\mathbf{0}$.
+
+\subsection*{8.6 LIML}
+\section*{LIML Defined}
+The advantage of the FIML estimator is that it allows you to exploit all the information afforded by the complete system of simultaneous equations. This, however, is also a weakness because, as is true with any other system or joint estimation procedure, the estimator is not consistent if any part of the system is misspecified. If you are confident that the equation in question is correctly specified but not so sure about the rest of the system, you may well prefer to employ single-equation methods such as 2SLS. The rest of this section derives the ML estimator called the limited-information maximum likelihood (LIML) estimator, which is the ML counterpart of 2SLS.
+
+Let the $m$-th equation of the $M$-equation system be the equation of interest. The $L_{m}$ regressors, $\mathbf{z}_{t m}$, are either endogenous or predetermined. Let $\tilde{\mathbf{y}}_{t}$ be the vector of $M_{m}$ endogenous variables and $\tilde{\mathbf{x}}_{t}$ be the vector of $K_{m}$ predetermined variables, with $M_{m}+K_{m}=L_{m}$. Partition $\boldsymbol{\delta}_{0 m}$ conformably as $\boldsymbol{\delta}_{0 m}=\left(\boldsymbol{\gamma}_{0 m}^{\prime}, \boldsymbol{\beta}_{0 m}^{\prime}\right)^{\prime}$. Then the $m$-th equation can be written as
+
+
+\begin{equation*}
+y_{t m}=\underset{\left(1 \times L_{m}\right)\left(L_{m} \times 1\right)}{\mathbf{x}_{t m}^{\prime}}+\varepsilon_{t m}^{\boldsymbol{\delta}_{0 m}}=\underset{\left(1 \times M_{m}\right)\left(M_{m} \times 1\right)}{\tilde{\mathbf{y}}_{t}^{\prime}}+\underset{\left(1 \times K_{m}\right)\left(K_{m} \times 1\right)}{\boldsymbol{\gamma}_{0 m}^{\prime}}+\varepsilon_{t m}^{\boldsymbol{\beta}_{0 m}} . \tag{8.6.1}
+\end{equation*}
+
+
+Obviously, this single equation in isolation is an incomplete system because of the existence of the $M_{m}$ included endogenous variables $\tilde{\mathbf{y}}_{t}$. However, if this equation is supplemented by the $M_{m}$ reduced-form equations for $\tilde{\mathbf{y}}_{t}$ taken from (8.5.9), then the system of $1+M_{m}$ equations thus formed is a complete system of simultaneous equations. To describe this idea more fully, let $\boldsymbol{\Pi}_{0}$ be the associated reducedform coefficient matrix and collect appropriate $M_{m}$ columns from $\Pi_{0}$ and write the reduced-form equations for the $M_{m}$ included endogenous variables as
+
+
+\begin{equation*}
+\underset{\left(M_{m} \times 1\right)}{\tilde{\mathbf{y}}_{t}}=\underset{\left(M_{m} \times K\right)(K \times 1)}{\tilde{\boldsymbol{\Pi}}_{0}^{\prime}}+\underset{\left(M_{m} \times 1\right)}{\tilde{\mathbf{v}}_{t}} . \tag{8.6.2}
+\end{equation*}
+
+
+Combining (8.6.1) and (8.6.2), we obtain the system of $1+M_{m}$ equations:
+
+
+\begin{equation*}
+\underset{\left(\left(1+M_{m}\right) \times\left(1+M_{m}\right)\right)}{\overline{\mathbf{\Gamma}}_{0}} \underset{\left(\left(1+M_{m}\right) \times 1\right)}{\overline{\mathbf{y}}_{t}}+\underset{\left(\left(1+M_{m}\right) \times K\right)}{\overline{\mathbf{B}}_{0}} \underset{(K \times 1)}{\mathbf{x}_{t}}=\underset{\left(\left(1+M_{m}\right) \times 1\right)}{\overline{\boldsymbol{\varepsilon}}_{t}}, \tag{8.6.3}
+\end{equation*}
+
+
+where
+
+
+\begin{align*}
+\overline{\mathbf{y}}_{t} \equiv\left[\begin{array}{c}
+y_{t m} \\
+\tilde{\mathbf{y}}_{t} \\
+\left(M_{m} \times 1\right)
+\end{array}\right], \overline{\boldsymbol{\varepsilon}}_{t} \equiv\left[\begin{array}{c}
+\varepsilon_{t m} \\
+\tilde{\mathbf{v}}_{t} \\
+\left(M_{m} \times 1\right)
+\end{array}\right], \\
+\overline{\boldsymbol{\Gamma}}_{0} \equiv\left[\begin{array}{cc}
+1 & -\boldsymbol{\gamma}_{0 m}^{\prime} \\
+\underset{\left(1 \times M_{m}\right)}{\mathbf{0}} & \mathbf{I}_{M_{m}}
+\end{array}\right], \overline{\mathbf{B}}_{0} \equiv\left[\begin{array}{cc}
+-\boldsymbol{\beta}_{0 m}^{\prime} & \mathbf{0}^{\prime} \\
+\left(1 \times K_{m}\right) & \left(1 \times\left(K-K_{m}\right)\right) \\
+- & \tilde{\Pi}_{0}^{\prime} \\
+\left(M_{m} \times K\right)
+\end{array}\right] . \tag{8.6.4}
+\end{align*}
+
+
+Here, we have assumed, without loss of generality, that the included predetermined variables $\tilde{\mathbf{x}}_{t}$ are the first $K_{m}$ elements of $\mathbf{x}_{t}$. The equation system (8.6.3) is a complete system of $1+M_{m}$ simultaneous equations because
+
+
+\begin{equation*}
+\left|\bar{\Gamma}_{0}\right|=1 \neq 0 . \tag{8.6.5}
+\end{equation*}
+
+
+For example, consider Example 8.2. The included endogenous variable in the wage equation is $S_{t}$. Supplement the wage equation by a reduced-form equation for $S_{t}$, a regression of $S_{t}$ on a constant, $I Q_{t}$, and $M E D_{t}$. The $\bar{\Gamma}_{0}$ matrix for the two-equation system that results is
+
+$$
+\overline{\boldsymbol{\Gamma}}_{0}=\left[\begin{array}{cc}
+1 & -\gamma_{11} \\
+0 & 1
+\end{array}\right] .
+$$
+
+The hypothetical value $\bar{\Gamma}$ of $\bar{\Gamma}_{0}$ has the same structure shown in (8.6.4) for $\overline{\boldsymbol{\Gamma}}_{0}$. So $|\overline{\boldsymbol{\Gamma}}|=1$. Replacing in the FIML objective function (8.5.20) ( $\boldsymbol{\delta}, \mathbf{B}$ ) by ( $\boldsymbol{\gamma}_{m}, \boldsymbol{\beta}_{m}, \overline{\boldsymbol{\Pi}}$ ), $\boldsymbol{\Gamma}$ by $\overline{\boldsymbol{\Gamma}}$, and $\boldsymbol{\Sigma}$ by $\overline{\boldsymbol{\Sigma}}$, and noting that $|\overline{\boldsymbol{\Gamma}}|=1$, we obtain the LIML objective function:
+
+
+\begin{align*}
+Q_{n}\left(\boldsymbol{\gamma}_{m}, \boldsymbol{\beta}_{m}, \overline{\boldsymbol{\Pi}}, \overline{\boldsymbol{\Sigma}}\right)= & -\frac{M_{m}}{2} \log (2 \pi)-\frac{1}{2} \log (|\overline{\boldsymbol{\Sigma}}|) \\
+& -\frac{1}{2 n} \sum_{t=1}^{n}\left[\overline{\boldsymbol{\Gamma}} \overline{\mathbf{y}}_{t}+\overline{\mathbf{B}} \mathbf{x}_{t}\right]^{\prime} \overline{\boldsymbol{\Sigma}}^{-1}\left[\overline{\boldsymbol{\Gamma}} \overline{\mathbf{y}}_{t}+\overline{\mathbf{B}} \mathbf{x}_{t}\right] \tag{8.6.6}
+\end{align*}
+
+
+where $\overline{\boldsymbol{\Sigma}}$ is the $\left(1+M_{m}\right) \times\left(1+M_{m}\right)$ variance matrix of $\overline{\boldsymbol{\varepsilon}}_{t}$. Let $\left(\hat{\boldsymbol{\gamma}}_{m}, \widehat{\boldsymbol{\beta}}_{m}, \widehat{\overline{\boldsymbol{\Pi}}}, \widehat{\overline{\boldsymbol{\Sigma}}}\right)$ be the FIML estimator of this system. The LIML estimator of $\boldsymbol{\delta}_{0 m}=\left(\boldsymbol{\gamma}_{0 m}^{\prime}, \boldsymbol{\beta}_{0 m}^{\prime}\right)^{\prime}$ is $\left(\hat{\boldsymbol{\gamma}}_{m}^{\prime}, \widehat{\boldsymbol{\beta}}_{m}^{\prime}\right)^{\prime}$. This derivation of the LIML estimator, which is different from the\\
+original derivation by Anderson and Rubin (1949), is due to Pagan (1979). Since LIML is a FIML estimator, Proposition 8.1 assures us that the LIML estimator is consistent and asymptotically normal even if the error is not normally distributed.
+
+\section*{Computation of LIML}
+For the SUR model, we have shown that the ML estimator can be obtained from the iterative SUR procedure. If you reexamine the argument, you should see that it does not depend on $\boldsymbol{\Gamma}$ in the SUR objective function (8.5.29) being the identity matrix; all that is needed is that the determinant of $\Gamma$ is a constant. Therefore, the same argument also applies to the LIML objective function (8.6.6). That is, we can obtain the LIML estimator of $\delta_{0 m}$ by applying the iterative SUR procedure to the ( $1+M_{m}$ )-equation system (8.6.3). In particular, if $\boldsymbol{\Sigma}_{0}$ is known, the LIML estimator is the SUR estimator. On the face of it, this conclusion - that SUR can be used to estimate the coefficients of included endogenous variables - is surprising, but it is true. The essential reason is this: the sampling error $\hat{\boldsymbol{\delta}}_{m}-\boldsymbol{\delta}_{0 m}$ depends not only on the correlation between the included endogenous variables $\tilde{\mathbf{y}}_{t}$ and the error term $\varepsilon_{t m}$ but also on the correlation between $\tilde{\mathbf{y}}_{t}$ and $\tilde{\mathbf{v}}_{t}$. Those two correlations cancel each other out. Review Question 1 verifies this for a simple example.
+
+The iterative SUR procedure, however, is not how the LIML estimator is usually calculated, because there is a closed-form expression for the estimator. The simultaneous equation system (8.6.3) has two special features. One is the special structure of $\bar{\Gamma}$, which we have noted, and the other is the fact that there are no exclusion restrictions in the rows of $\overline{\mathbf{B}}$ corresponding to the included endogenous variables $\tilde{\mathbf{y}}_{t}$. Thanks to these features, the LIML estimator $\hat{\boldsymbol{\delta}}_{m}=\left(\hat{\boldsymbol{\gamma}}_{m}^{\prime}, \widehat{\boldsymbol{\beta}}_{m}^{\prime}\right)^{\prime}$ and also the likelihood ratio statistic (8.5.25) can be calculated explicitly.
+
+To write down the closed-form expressions for the LIML estimator and the likelihood ratio statistic, we need to introduce some more notation. Let $\mathbf{Z}_{m}, \widetilde{\mathbf{Y}}, \widetilde{\mathbf{X}}$, $\mathbf{X}$, and $\mathbf{y}_{m}$ be the data matrices and the data vector associated with $\mathbf{z}_{t m}, \tilde{\mathbf{y}}_{t}, \tilde{\mathbf{x}}_{t}, \mathbf{x}_{t}$, and $y_{t m}$, respectively:
+
+\[
+\begin{array}{r}
+\underset{\left(n \times L_{m}\right)}{\mathbf{Z}_{m}} \equiv\left[\begin{array}{c}
+\mathbf{z}_{1 m}^{\prime} \\
+\vdots \\
+\mathbf{z}_{n m}^{\prime}
+\end{array}\right], \underset{\left(n \times M_{m}\right)}{\widetilde{\mathbf{Y}}} \equiv\left[\begin{array}{c}
+\tilde{\mathbf{y}}_{1}^{\prime} \\
+\vdots \\
+\tilde{\mathbf{y}}_{n}^{\prime}
+\end{array}\right], \underset{\left(n \times K_{m}\right)}{\widetilde{\mathbf{X}}} \equiv\left[\begin{array}{c}
+\tilde{\mathbf{x}}_{1}^{\prime} \\
+\vdots \\
+\tilde{\mathbf{x}}_{n}^{\prime}
+\end{array}\right], \\
+\underset{(n \times K)}{\mathbf{X}} \equiv\left[\begin{array}{c}
+\mathbf{x}_{1}^{\prime} \\
+\vdots \\
+\mathbf{x}_{n}^{\prime}
+\end{array}\right], \underset{(n \times 1)}{\mathbf{y}_{m}} \equiv\left[\begin{array}{c}
+y_{1 m} \\
+\vdots \\
+y_{n m}
+\end{array}\right], \tag{8.6.7}
+\end{array}
+\]
+
+and let $\mathbf{M}$ and $\tilde{\mathbf{M}}$ be the annihilators based on $\mathbf{X}$ and $\tilde{\mathbf{X}}$, respectively:
+
+
+\begin{equation*}
+\underset{(n \times n)}{\mathbf{M}} \equiv \mathbf{I}_{n}-\mathbf{X}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime}, \underset{(n \times n)}{\tilde{\mathbf{M}}} \equiv \mathbf{I}_{n}-\widetilde{\mathbf{X}}\left(\widetilde{\mathbf{X}^{\prime}} \widetilde{\mathbf{X}}\right)^{-1} \widetilde{\mathbf{X}}^{\prime} \tag{8.6.8}
+\end{equation*}
+
+
+Then the LIML estimator $\hat{\boldsymbol{\delta}}_{m}$ can be written as
+
+
+\begin{equation*}
+\hat{\boldsymbol{\delta}}_{m} \equiv\left[\mathbf{Z}_{m}^{\prime}\left(\mathbf{I}_{n}-k \mathbf{M}\right) \mathbf{Z}_{m}\right]^{-1} \mathbf{Z}_{m}^{\prime}\left(\mathbf{I}_{n}-k \mathbf{M}\right) \mathbf{y}_{m}, \tag{8.6.9}
+\end{equation*}
+
+
+where $k$ is the smallest characteristic root of
+
+
+\begin{equation*}
+\tilde{\mathbf{W}} \mathbf{W}^{-1}, \tag{8.6.10}
+\end{equation*}
+
+
+with $\left(1+M_{m}\right) \times\left(1+M_{m}\right)$ matrices $\tilde{\mathbf{W}}$ and $\mathbf{W}$ defined by
+
+
+\begin{equation*}
+\widetilde{\mathbf{W}} \equiv\left[\mathbf{y}_{m}: \widetilde{\mathbf{Y}}\right]^{\prime} \tilde{\mathbf{M}}\left[\mathbf{y}_{m}: \widetilde{\mathbf{Y}}\right], \mathbf{W} \equiv\left[\mathbf{y}_{m} \vdots \tilde{\mathbf{Y}}\right]^{\prime} \mathbf{M}\left[\mathbf{y}_{m} \vdots \tilde{\mathbf{Y}}\right] . \tag{8.6.11}
+\end{equation*}
+
+
+(See, e.g., Davidson and MacKinnon, 1993, pp. 645-649, for a derivation.) The likelihood ratio statistic (8.5.25) for testing overidentifying restrictions reduces to
+
+
+\begin{equation*}
+L R=n \log k \tag{8.6.12}
+\end{equation*}
+
+
+Since there are no overidentifying restrictions in the supplementary $M_{m}$ equations (8.6.2), the equation of interest is the only source of overidentifying restrictions, which are $K-L_{m}$ in number. Therefore, by Proposition 8.1, this statistic for testing overidentifying restrictions is asymptotically $\chi^{2}\left(K-L_{m}\right)$. When the equation is just identified so that $K=L_{m}$, then the $L R$ statistic should be zero. Indeed, it can be shown that $k=1$ in this case (see, e.g., p. 647 of Davidson and MacKinnon, 1993).
+
+If we do not necessarily require $k$ to be as just defined, the estimator (8.6.9) is called a $\boldsymbol{k}$-class estimator. The LIML estimator is thus a $k$-class estimator with $k$ defined above. Inspection of the 2SLS formula in terms of data matrices (see (3.8.3') on page 230 ) immediately shows that the 2SLS estimator is a $k$-class estimator with $k=1$, and the OLS estimator is a $k$-class estimator with $k=0$. It follows that LIML and 2SLS are numerically the same when the equation is just identified (so that $k=1$ ).
+
+We have already shown that LIML is consistent and asymptotically normal. Moreover, using the explicit formula (8.6.9), it can be shown that the LIML estimator of $\boldsymbol{\delta}_{0 m}$ has the same asymptotic distribution as 2SLS (see, e.g., Amemiya, 1985, Section 7.3.4). So the formula for the asymptotic variance of LIML is given by (3.8.4) and its consistent estimate by (3.8.5).
+
+\section*{LIML versus 2SLS}
+Since LIML and 2SLS share the same asymptotic distribution, you cannot prefer one over the other on asymptotic grounds. For any finite sample, LIML has the invariance property, while 2SLS is not invariant. Furthermore, the conclusion one could draw from the large literature on finite-sample properties (see, e.g., Judge et al., 1985, Section 15.4) is that LIML should be preferred to 2SLS. Major conclusions from the literature are listed below. They assume that the predetermined variables $\mathbf{x}_{t}$ are fixed constants, however.
+
+\begin{itemize}
+  \item Suppose errors are normally distributed. The $p$-th moment of the 2SLS estimator exists if and only if $p<K-L_{m}+1$, where $K$ is the number of predetermined variables and $L_{m}$ is the number of regressors in the $m$-th equation. Thus, 2SLS does not even have a mean if the equation is just identified (i.e., if $K=L_{m}$ ), and this is true even if the distribution of errors is a normal distribution, whose moments are all finite.
+  \item The LIML estimator has no finite moments even if errors are normally distributed.
+  \item However, in most Monte Carlo simulations (see, e.g., Anderson, Kunitomo, and Sawa, 1982), LIML approaches its asymptotic normal distribution much more rapidly than does 2SLS.
+\end{itemize}
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item (Why SUR can be used for a structural equation) To see why SUR can be used to estimate the coefficients of included endogenous variables, consider the following simple example:
+\end{enumerate}
+
+$$
+\left\{\begin{array}{l}
+y_{t 1}=\gamma_{0} y_{t 2}+\varepsilon_{t 1} \\
+y_{t 2}=\beta_{0} x_{t}+v_{t}
+\end{array}\right.
+$$
+
+where $x_{t}$ is predetermined. Suppose for simplicity that
+
+$$
+\underset{(2 \times 2)}{\boldsymbol{\Sigma}_{0}} \equiv \mathrm{E}\left(\left[\begin{array}{c}
+\varepsilon_{t 1} \\
+v_{t}
+\end{array}\right]\left[\begin{array}{ll}
+\varepsilon_{t 1} & v_{t}
+\end{array}\right]\right)
+$$
+
+is known. Let $(\hat{\gamma}, \widehat{\beta})$ be the SUR estimator of $\left(\gamma_{0}, \beta_{0}\right)$.\\
+(a) Show that
+
+$$
+\left.\left.\left.\begin{array}{l}
+{[\hat{\gamma}} \\
+\hat{\beta}
+\end{array}\right]-\left[\begin{array}{l}
+\gamma_{0} \\
+\beta_{0}
+\end{array}\right]\right]^{\sigma^{11} \frac{1}{n} \sum y_{t 2}^{2}} \sigma^{12 \frac{1}{n} \sum y_{t 2} x_{t}}\right]^{\sigma^{21} \frac{1}{n} \sum x_{t} y_{t 2}} \quad \sigma^{22} \frac{1}{n} \sum x_{t}^{2} \quad\left[\begin{array}{c}
+\sigma^{11} \frac{1}{n} \sum y_{t 2} \varepsilon_{t 1}+\sigma^{12} \frac{1}{n} \sum y_{t 2} v_{t} \\
+\sigma^{21} \frac{1}{n} \sum x_{t} \varepsilon_{t 1}+\sigma^{22} \frac{1}{n} \sum x_{t} v_{t}
+\end{array}\right], ~ l_{1}
+$$
+
+where $\sigma^{m h}$ is the ( $m, h$ ) element of $\boldsymbol{\Sigma}_{0}^{-1}$. Hint: The formula for the SUR estimator is given by (4.5.12) with (4.5.13') and (4.5.14') on page 280.\\
+(b) Show that
+
+$$
+\sigma^{11} \frac{1}{n} \sum_{t=1}^{n} y_{t 2} \varepsilon_{t 1}+\sigma^{12} \frac{1}{n} \sum_{t=1}^{n} y_{t 2} v_{t}
+$$
+
+converges to zero in probability. Hint:
+
+$$
+\mathrm{E}\left(y_{t 2} \varepsilon_{t 1}\right)=\mathrm{E}\left(\varepsilon_{t 1} v_{t}\right)=\sigma_{12}, \mathrm{E}\left(y_{t 2} v_{t}\right)=\mathrm{E}\left(v_{t}^{2}\right)=\sigma_{22} .
+$$
+
+\subsection*{8.7 Serially Correlated Observations}
+So far, we have assumed i.i.d. observations in deriving the asymptotic variance of ML estimators. This section is concerned with ML estimation when observations are serially correlated.
+
+\section*{Two Questions}
+When observations are serially correlated, there arise two distinct questions. The first is whether the ML estimator that maximizes a likelihood function derived from the assumption of i.i.d. observations is consistent and asymptotically normal when indeed the observations are serially correlated. More precisely, suppose that the observation vector $\mathbf{w}_{t}$ is ergodic stationary but not necessarily i.i.d., and consider the ML estimator that maximizes
+
+
+\begin{equation*}
+Q_{n}(\boldsymbol{\theta})=\frac{1}{n} \sum_{t=1}^{n} \log f\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right) \tag{8.7.1}
+\end{equation*}
+
+
+where $\log f\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)$ is the log likelihood for observation $t$. This objective function would be ( $1 / n$ times) the log likelihood of the sample ( $\mathbf{w}_{1}, \ldots, \mathbf{w}_{n}$ ) if the observations were i.i.d. Even though the $\log$ likelihood for observation $t, \log f\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)$, is correctly specified, this objective function is misspecified because it assumes, incorrectly, that $\left\{\mathbf{w}_{t}\right\}$ is i.i.d. The ML estimator that maximizes this objective function is a quasi-ML estimator because the likelihood function is misspecified. Is a quasi-ML estimator that incorrectly assumes no serial correlation consistent and asymptotically normal?
+
+We have actually answered this first question in the previous chapter. By Propositions 7.5 and 7.6, the quasi-ML estimator is consistent because it is an M-estimator, with $m\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)$ given by the log likelihood for observation $t$. For asymptotic normality, the relevant theorem is Proposition 7.8, which spells out conditions under which an M-estimator is asymptotically normal. Just reproducing the conclusion of Proposition 7.8, the expression for the asymptotic variance is given by
+
+
+\begin{equation*}
+\operatorname{Avar}(\hat{\boldsymbol{\theta}})=\left(\mathrm{E}\left[\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)\right]\right)^{-1} \boldsymbol{\Sigma}\left(\mathrm{E}\left[\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)\right]\right)^{-1} \tag{8.7.2}
+\end{equation*}
+
+
+where $\boldsymbol{\theta}_{0}$ is the true value of $\boldsymbol{\theta}, \mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)$ is the Hessian for observation $t$, and $\boldsymbol{\Sigma}$ is the long-run variance of the score for observation $t$ evaluated at $\boldsymbol{\theta}_{0}, \mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)$. This asymptotic variance can be consistently estimated by
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}(\hat{\boldsymbol{\theta}})}=\left\{\frac{1}{n} \sum_{t=1}^{n} \mathbf{H}\left(\mathbf{w}_{t} ; \hat{\boldsymbol{\theta}}\right)\right\}^{-1} \widehat{\Sigma}\left\{\frac{1}{n} \sum_{t=1}^{n} \mathbf{H}\left(\mathbf{w}_{t} ; \hat{\boldsymbol{\theta}}\right)\right\}^{-1} \tag{8.7.3}
+\end{equation*}
+
+
+where $\widehat{\boldsymbol{\Sigma}}$ is a consistent estimate of $\boldsymbol{\Sigma}$. Any of the "nonparametric" methods discussed in Chapter 6 (such as the VARHAC) can be used to calculate $\widehat{\boldsymbol{\Sigma}}$ from the estimated series $\left\{\mathbf{s}\left(\mathbf{w}_{t} ; \hat{\boldsymbol{\theta}}\right)\right\}$; there is no need to parameterize the serial correlation in $\left\{\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)\right\}$.
+
+The second question is what is the likelihood function that properly accounts for serial correlation in observations and what are the properties of the "genuine" ML estimator that maximizes it. The question can be posed for conditional ML as well as unconditional ML. In conditional ML, we divide the observation vector $\mathbf{w}_{t}$ into two groups, the dependent variable $y_{t}$ and the regressors $\mathbf{x}_{t}$, and examine the conditional distribution of $\left(y_{1}, \ldots, y_{n}\right)$ conditional on $\left(\mathbf{x}_{1}, \ldots, \mathbf{x}_{n}\right)$. Parameterizing this conditional distribution is relatively straightforward when $\left\{\mathbf{w}_{t}\right\}$ is i.i.d., because it can be written as a product over $t$ of the conditional distribution of $y_{t}$ given $\mathbf{x}_{t}$. In fact, this i.i.d. case is what we have examined in this and previous chapters. If $\left\{\mathbf{w}_{t}\right\}$ is serially correlated, however, the researcher does not know the\\
+dynamic interaction between $y_{t}$ and $\mathbf{x}_{t}$ well enough to be able to write down the conditional distribution. ${ }^{10}$ In the rest of this section, we deal only with examples of unconditional ML estimation with serially correlated observations.
+
+\section*{Unconditional ML for Dependent Observations}
+We start out with the simplest case of a univariate series. Let $\left(y_{0}, y_{1}, \ldots, y_{n}\right)$ be the sample. (For notational convenience, we assume that the sample includes observation for $t=0$.) When the observations are serially correlated, the density function of the sample can no longer be expressed as a product of individual densities. However, it can be written down in terms of a series of conditional probability density functions. The joint density function of $\left(y_{0}, y_{1}\right)$ can be written as
+
+
+\begin{equation*}
+f\left(y_{0}, y_{1}\right)=f\left(y_{1} \mid y_{0}\right) f\left(y_{0}\right) \tag{8.7.4}
+\end{equation*}
+
+
+Similarly, for $\left(y_{0}, y_{1}, y_{2}\right)$,
+
+
+\begin{equation*}
+f\left(y_{0}, y_{1}, y_{2}\right)=f\left(y_{2} \mid y_{1}, y_{0}\right) f\left(y_{0}, y_{1}\right) . \tag{8.7.5}
+\end{equation*}
+
+
+Substituting (8.7.4) into this, we obtain
+
+
+\begin{equation*}
+f\left(y_{0}, y_{1}, y_{2}\right)=f\left(y_{2} \mid y_{1}, y_{0}\right) f\left(y_{1} \mid y_{0}\right) f\left(y_{0}\right) \tag{8.7.6}
+\end{equation*}
+
+
+A repeated use of this sort of sequential substitution produces
+
+
+\begin{equation*}
+f\left(y_{0}, y_{1}, \ldots, y_{n}\right)=\prod_{t=1}^{n} f\left(y_{t} \mid y_{t-1}, \ldots, y_{1}, y_{0}\right) f\left(y_{0}\right) \tag{8.7.7}
+\end{equation*}
+
+
+If the conditional density $f\left(y_{t} \mid y_{t-1}, \ldots, y_{1}, y_{0}\right)$ and the unconditional density $f\left(y_{0}\right)$ are parameterized by a finite-dimensional parameter vector $\boldsymbol{\theta}$, then $(1 / n$ times) the log likelihood of the sample $\left(y_{0}, y_{1}, \ldots, y_{n}\right)$ can be written as
+
+
+\begin{equation*}
+\frac{1}{n} \sum_{t=1}^{n} \log f\left(y_{t} \mid y_{t-1}, \ldots, y_{1}, y_{0} ; \theta\right)+\frac{1}{n} \log f\left(y_{0} ; \theta\right) \tag{8.7.8}
+\end{equation*}
+
+
+The ML estimator $\tilde{\boldsymbol{\theta}}$ of the true parameter value $\boldsymbol{\theta}_{0}$ is the $\boldsymbol{\theta}$ that maximizes this log likelihood function. We will call this ML estimator the exact ML estimator.
+
+\footnotetext{${ }^{10}$ For a discussion of conditional ML when the complete specification of the dynamic interaction is not possible or undesirable, see Wooldridge (1994, Section 5). For a discussion of possible restrictions on the dynamic interaction (such as "Granger causality" and "weak exogeneity"), see, e.g., Davidson and MacKinnon (1993, Section 18.2).
+}\section*{ML Estimation of AR(1) Processes}
+In Section 6.2, we considered in some detail first-order autoregressive (AR(1)) processes. If we assume for an $\operatorname{AR}(1)$ process that the error term is normally distributed, we obtain a Gaussian AR(1) process:
+
+
+\begin{equation*}
+y_{t}=c_{0}+\phi_{0} y_{t-1}+\varepsilon_{t}, \tag{8.7.9}
+\end{equation*}
+
+
+with $\varepsilon_{t} \sim$ i.i.d. $N\left(0, \sigma_{0}^{2}\right)$. We assume the stationarity condition that $\left|\phi_{0}\right|<1$. So $\left\{y_{t}\right\}$ is ergodic stationary by Proposition 6.1(d). From Section 6.2, we know that the unconditional mean of $y_{t}$ is $c_{0} /\left(1-\phi_{0}\right)$ and the unconditional variance is $\sigma_{0}^{2} /\left(1-\phi_{0}^{2}\right)$. Furthermore, since $y_{t}$ can be written as a weighted average of $\left(\varepsilon_{t}, \varepsilon_{t-1}, \ldots\right)$, its distribution is normal when $\varepsilon_{t}$ is normal. Therefore,
+
+
+\begin{equation*}
+y_{0} \sim N\left(\frac{c_{0}}{1-\phi_{0}}, \frac{\sigma_{0}^{2}}{1-\phi_{0}^{2}}\right) . \tag{8.7.10}
+\end{equation*}
+
+
+Also, it follows directly from (8.7.9) and the normality assumption that
+
+
+\begin{equation*}
+y_{t} \mid\left(y_{t-1}, \ldots, y_{1}, y_{0}\right) \sim N\left(c_{0}+\phi_{0} y_{t-1}, \sigma_{0}^{2}\right) . \tag{8.7.11}
+\end{equation*}
+
+
+Therefore, using the formula (8.7.7), the joint density of $\left(y_{0}, y_{1}, \ldots, y_{n}\right)$ for a hypothetical parameter value $\boldsymbol{\theta} \equiv\left(c, \phi, \sigma^{2}\right)^{\prime}$ can be written as
+
+
+\begin{align*}
+f\left(y_{0}, y_{1}, \ldots, y_{n} ; \boldsymbol{\theta}\right)=\prod_{t=1}^{n} & \left\{\frac{1}{\sqrt{2 \pi \sigma^{2}}} \exp \left[-\frac{1}{2 \sigma^{2}}\left(y_{t}-c-\phi y_{t-1}\right)^{2}\right]\right\} \\
+& \times \frac{1}{\sqrt{2 \pi \frac{\sigma^{2}}{1-\phi^{2}}}} \exp \left[\frac{-\left(y_{0}-\frac{c}{1-\phi}\right)^{2}}{2 \frac{\sigma^{2}}{1-\phi^{2}}}\right] \tag{8.7.12}
+\end{align*}
+
+
+Taking logs and dividing both sides by $n$, we obtain the objective function for exact ML:
+
+
+\begin{align*}
+\widetilde{Q}_{n}(\theta)= & \frac{1}{n} \sum_{t=1}^{n}\left\{-\frac{1}{2} \log (2 \pi)-\frac{1}{2} \log \left(\sigma^{2}\right)-\frac{1}{2 \sigma^{2}}\left(y_{t}-c-\phi y_{t-1}\right)^{2}\right\} \\
+& +\frac{1}{n}\left\{-\frac{1}{2} \log (2 \pi)-\frac{1}{2} \log \left(\frac{\sigma^{2}}{1-\phi^{2}}\right)-\left[\frac{\left(y_{0}-\frac{c}{1-\phi}\right)^{2}}{2 \frac{\sigma^{2}}{1-\phi^{2}}}\right]\right\} . \tag{8.7.13}
+\end{align*}
+
+
+The exact ML estimator $\tilde{\theta}$ of the AR(1) process is the $\theta$ that maximizes this objective function. Assuming an interior solution, the estimator solves the first-order conditions (the likelihood equations) obtained by setting $\frac{\partial \widetilde{Q}_{n}}{\partial \theta}$ to zero. They are a\\
+system of equations that are nonlinear in $\boldsymbol{\theta}$, so finding $\tilde{\boldsymbol{\theta}}$ requires iterative algorithms such as those described in Section 7.5.
+
+\section*{Conditional ML Estimation of AR(1) Processes}
+The source of the nonlinearity in the likelihood equations is the log likelihood of $y_{0}$. As an alternative, consider dropping this term and maximizing
+
+
+\begin{equation*}
+Q_{n}(\boldsymbol{\theta})=\frac{1}{n} \sum_{t=1}^{n}\left\{-\frac{1}{2} \log (2 \pi)-\frac{1}{2} \log \left(\sigma^{2}\right)-\frac{1}{2 \sigma^{2}}\left(y_{t}-c-\phi y_{t-1}\right)^{2}\right\} . \tag{8.7.14}
+\end{equation*}
+
+
+Using the relation $f\left(y_{0}, y_{1}, \ldots, y_{n}\right)=f\left(y_{1}, \ldots, y_{n} \mid y_{0}\right) f\left(y_{0}\right)$ and (8.7.12), we see that this objective function is ( $1 / n$ times) the log of the likelihood conditional on the first observation $y_{0}$,
+
+
+\begin{equation*}
+f\left(y_{1}, y_{2}, \ldots, y_{n} \mid y_{0} ; \boldsymbol{\theta}\right)=\prod_{t=1}^{n}\left\{\frac{1}{\sqrt{2 \pi \sigma^{2}}} \exp \left[-\frac{1}{2 \sigma^{2}}\left(y_{t}-c-\phi y_{t-1}\right)^{2}\right]\right\} . \tag{8.7.15}
+\end{equation*}
+
+
+Let $\hat{\boldsymbol{\theta}}$ be the $\boldsymbol{\theta}$ that maximizes the log conditional likelihood (8.7.14) (conditional on $y_{0}$ ). This ML estimator will henceforth be called the $\boldsymbol{y}_{\mathbf{0}}$-conditional ML estimator. Here, conditioning is on $y_{0}$, which makes the estimator here conceptually different from the conditional ML estimators of the previous sections where conditioning is on $\mathbf{x}_{t}$.
+
+Before examining the relationship between the two ML estimators, the exact ML estimator $\tilde{\boldsymbol{\theta}}$ and the $y_{0}$-conditional ML estimator $\hat{\boldsymbol{\theta}}$, we give two derivations of the asymptotic properties of the latter. The first derivation is based on the explicit solution for the estimator. Recall from Section 1.5 and Example 7.2 that the objective function in the ML estimation of the linear regression model $y_{t}=\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}_{0}+\varepsilon_{t}$ for i.i.d. observations is
+
+
+\begin{equation*}
+\frac{1}{n} \sum_{t=1}^{n}\left\{-\frac{1}{2} \log (2 \pi)-\frac{1}{2} \log \left(\sigma^{2}\right)-\frac{1}{2 \sigma^{2}}\left(y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}\right)^{2}\right\} . \tag{8.7.16}
+\end{equation*}
+
+
+It was shown in Section 1.5, and is very easy to show, that the ML estimator of $\boldsymbol{\beta}_{0}$ is the OLS coefficient estimator and the ML estimator of $\sigma_{0}^{2}$ equals the sum of squared residuals divided by the sample size. Now, with $\mathbf{x}_{t}=\left(1, y_{t-1}\right)^{\prime}$ and $\boldsymbol{\beta}_{0}=\left(c_{0}, \phi_{0}\right)^{\prime}$, the objective function for the linear regression model reduces to $Q_{n}(\boldsymbol{\theta})$ in (8.7.14), the conditional log likelihood for the AR(1) process. Therefore, algebraically, the conditional ML estimator ( $\hat{c}, \hat{\phi}$ ) of ( $c_{0}, \phi_{0}$ ) is numerically the\\
+same as the OLS coefficient estimator in the regression of $y_{t}$ on a constant and $y_{t-1}$, and the conditional ML estimator $\hat{\sigma}^{2}$ of $\sigma_{0}^{2}$ is the sum of squared residuals divided by $n$. Regarding the asymptotic properties of the estimator, we have shown in Section 6.4 that $(\hat{c}, \hat{\phi})$ is consistent and asymptotically normal with the asymptotic variance indicated in Proposition 6.7 for $p=1$ and that $\hat{\sigma}_{2}$ is consistent for $\sigma_{0}^{2}$. Therefore, for the asymptotic normality of the conditional ML estimator ( $\hat{c}, \hat{\phi}$ ), which maximizes the $y_{0}$-conditional likelihood for normal errors, the normality assumption is not needed.
+
+The second derivation is more indirect but nevertheless more instructive. As just noted, the objective function $Q_{n}(\boldsymbol{\theta})$ coincides with (8.7.16) with $\mathbf{x}_{t}=\left(1, y_{t-1}\right)^{\prime}$ and $\boldsymbol{\beta}_{0}=\left(c_{0}, \phi_{0}\right)^{\prime}$. Since $\left\{y_{t}, \mathbf{x}_{t}\right\}$ is merely ergodic stationary and not necessarily i.i.d., the conditional ML estimator ( $\hat{c}, \hat{\phi}, \hat{\sigma}^{2}$ ) can be viewed as the quasi-ML estimator considered in Proposition 7.6. It has been verified in Example 7.8 that the objective function satisfies all the conditions of Proposition 7.6 if $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ where $\mathbf{x}_{t}=\left(1, y_{t-1}\right)^{\prime}$ is nonsingular. We have shown in Section 6.4 that this nonsingularity condition is satisfied for $\operatorname{AR}(1)$ processes if $\sigma_{0}^{2}>0$. Thus, the conditional ML is consistent. To prove asymptotic normality, view the conditional ML estimator as an M-estimator with $\mathbf{w}_{t}=\left(y_{t}, y_{t-1}\right)^{\prime}$ and
+
+
+\begin{equation*}
+m\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)=-\frac{1}{2} \log (2 \pi)-\frac{1}{2} \log \left(\sigma^{2}\right)-\frac{1}{2 \sigma^{2}}\left(y_{t}-c-\phi y_{t-1}\right)^{2} . \tag{8.7.17}
+\end{equation*}
+
+
+The relevant theorem, therefore, is Proposition 7.8. Let $\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)$ be the score for observation $t$ and let $\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)$ be the Hessian for observation $t$ associated with this $m$ function, and consider the conditions (1)-(5) of Proposition 7.8. The discussion in Example 7.10 implies that all the conditions except for (3) hold if $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ where $\mathbf{x}_{t}=\left(1, y_{t-1}\right)^{\prime}$ is nonsingular, which as just noted is satisfied if $\sigma_{0}^{2}>0$. This leaves condition (3) that $\frac{1}{\sqrt{n}} \sum_{t=1}^{n} \mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right) \rightarrow_{\mathrm{d}} N(\mathbf{0}, \boldsymbol{\Sigma})$. In the AR(1) model, $f\left(y_{t} \mid\right. \left.y_{t-1}, \ldots, y_{1}, y_{0}\right)=f\left(y_{t} \mid y_{t-1}\right)$. As you will show in Review Question 1, this special feature of the joint density function implies that the sequence $\left\{\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)\right\}$ is a martingale difference sequence. Since $\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)$ is a function of $\mathbf{w}_{t}=\left(y_{t}, y_{t-1}\right)^{\prime}$ and $\left\{y_{t}\right\}$ is ergodic stationary, the sequence $\left\{\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)\right\}$ also is ergodic stationary. So by the ergodic stationary martingale difference CLT of Chapter 2, we can claim that condition (3) is satisfied with
+
+
+\begin{equation*}
+\boldsymbol{\Sigma}=\mathrm{E}\left[\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right) \mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)^{\prime}\right] \tag{8.7.18}
+\end{equation*}
+
+
+Finally, it is easy to show the information matrix equality for observation $t$ that $-\mathrm{E}\left[\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)\right]=\mathrm{E}\left[\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right) \mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)^{\prime}\right]$ (a proof is in Example 7.10). Substituting this and (8.7.18) into (8.7.2), we conclude that the asymptotic variance of the\\
+$y_{0}$-conditional ML estimator $\hat{\boldsymbol{\theta}}$ of $\boldsymbol{\theta}_{0}$ is given by
+
+
+\begin{equation*}
+\operatorname{Avar}(\hat{\boldsymbol{\theta}})=-\left(\mathrm{E}\left[\mathbf{H}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)\right]\right)^{-1}=\left(\mathrm{E}\left[\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right) \mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)^{\prime}\right]\right)^{-1} . \tag{8.7.19}
+\end{equation*}
+
+
+That is, the usual conclusion for a correctly specified ML estimator for i.i.d. observations is applicable to the $y_{0}$-conditional ML estimator that maximizes the correctly specified conditional likelihood (8.7.14) for dependent observations. ${ }^{11}$
+
+The difference between (8.7.13) and (8.7.14) is the log likelihood of $y_{0}$ divided by $n$. If the sample size $n$ is sufficiently large, then the first observation $y_{0}$ makes a negligible contribution to the likelihood of the sample. The exact ML estimator and the $y_{0}$-conditional ML estimator turn out to have the same asymptotic distribution, provided that $|\phi|<1$ (see, e.g., Fuller, 1996, Sections 8.1 and 8.4). For this reason, in most applications the parameters of an autoregression are estimated by OLS ( $y_{0}$-conditional ML) rather than exact ML.
+
+\section*{Conditional ML Estimation of AR( $p$ ) and VAR( $p$ ) Processes}
+A Gaussian AR(p) process can be written as
+
+
+\begin{equation*}
+y_{t}=c_{0}+\phi_{01} y_{t-1}+\phi_{02} y_{t-2}+\cdots+\phi_{0 p} y_{t-p}+\varepsilon_{t}, \tag{8.7.20}
+\end{equation*}
+
+
+with $\varepsilon_{t} \sim$ i.i.d. $N\left(0, \sigma_{0}^{2}\right)$. The conditional ML estimation of the $\operatorname{AR}(p)$ process is completely analogous to the $\mathrm{AR}(1)$ case. If the sample is $\left(y_{-p+1}, y_{-p+2}, \ldots, y_{0}\right.$, $y_{1}, \ldots, y_{n}$ ), then ( $1 / n$ times) the log likelihood of the sample conditional on ( $y_{-p+1}, \ldots, y_{0}$ ) is (8.7.16) with
+
+$$
+\mathbf{x}_{t}=\left(1, y_{t-1}, \ldots, y_{t-p}\right)^{\prime} \quad \text { and } \quad \boldsymbol{\beta}_{0}=\left(c_{0}, \phi_{01}, \phi_{02}, \ldots, \phi_{0 p}\right)^{\prime} .
+$$
+
+Therefore, the conditional ML (conditional on $\left(y_{-p+1}, y_{-p+2}, \ldots, y_{0}\right)$ ) estimator of ( $c_{0}, \phi_{01}, \ldots, \phi_{0 p}$ ) is numerically the same as the OLS coefficient estimator in the regression of $y_{t}$ on a constant and $p$ lagged values of $y_{t}$. The conditional ML estimate of $\sigma_{0}^{2}$ is the sum of squared residuals divided by the sample size. By Proposition 6.7, the conditional ML estimator of the coefficients is consistent and asymptotically normal if the stationarity condition (that the roots of $1-\phi_{01} z-\cdots- \phi_{0 p} z^{p}=0$ be greater than 1 in absolute value) is satisfied. Again as in the $\operatorname{AR}(1)$ case, the error term does not need to be normal for consistency and asymptotic normality. The exact ML estimates and the conditional ML estimates have the same asymptotic distribution if the stationarity condition is satisfied.
+
+\footnotetext{${ }^{11}$ This argument can be applied to models more general than autoregressive processes. See Lemma 5.2 of Wooldridge (1994).
+}These results generalize readily to vector processes. A Gaussian VAR(p) ( $p$-th order vector autoregression) can be written as
+
+
+\begin{equation*}
+\underset{(M \times 1)}{\mathbf{y}_{t}}=\mathbf{c}_{0}+\boldsymbol{\Phi}_{01} \mathbf{y}_{t-1}+\cdots+\boldsymbol{\Phi}_{0 p} \mathbf{y}_{t-p}+\boldsymbol{\varepsilon}_{t}, \tag{8.7.21}
+\end{equation*}
+
+
+with $\boldsymbol{\varepsilon}_{t} \sim$ i.i.d. $N\left(\mathbf{0}, \boldsymbol{\Omega}_{0}\right)$. The objective function in the conditional ML estimation is ( $1 / n$ times) the log conditional likelihood:
+
+
+\begin{equation*}
+Q_{n}(\boldsymbol{\theta})=-\frac{M}{2} \log (2 \pi)+\frac{1}{2} \log \left(\left|\boldsymbol{\Omega}^{-1}\right|\right)-\frac{1}{2 n} \sum_{t=1}^{n}\left\{\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime} \boldsymbol{\Omega}^{-1}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\right\} \tag{8.7.22}
+\end{equation*}
+
+
+where
+
+\[
+\boldsymbol{\Pi}^{\prime} \equiv\left[\begin{array}{ccccc}
+\mathbf{c} & \boldsymbol{\Phi}_{1} & \boldsymbol{\Phi}_{2} & \cdots & \boldsymbol{\Phi}_{p}
+\end{array}\right], \mathbf{x}_{t} \equiv\left[\begin{array}{c}
+1  \tag{8.7.23}\\
+\mathbf{y}_{t-1} \\
+\mathbf{y}_{t-2} \\
+\vdots \\
+\mathbf{y}_{t-p}
+\end{array}\right] \text {. }
+\]
+
+This coincides with the objective function in the ML estimation of the multivariate regression model considered in Section 8.4. Therefore, the conditional ML estimate of ( $\mathbf{c}_{0}, \boldsymbol{\Pi}_{0}$ ) is numerically the same as the equation-by-equation OLS estimator. It is consistent and asymptotically normal if the coefficient matrices satisfy the stationarity condition (that all the roots of $\left|\mathbf{I}_{M}-\boldsymbol{\Phi}_{01} z-\cdots-\boldsymbol{\Phi}_{0 p} z^{p}\right|=0$ be greater than 1 in absolute value). This result does not require the error vector $\boldsymbol{\varepsilon}_{t}$ to be normally distributed.
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item (Score is m.d.s.) Consider the Gaussian AR(1) process (8.7.9) and let $\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)$ be the score for observation $t$ (the gradient of (8.7.17)) with $\mathbf{w}_{t}=\left(y_{t}, y_{t-1}\right)^{\prime}$ and $\boldsymbol{\theta}=\left(c, \phi, \sigma^{2}\right)^{\prime}$.\\
+(a) Show that
+\end{enumerate}
+
+$$
+\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}\right)=\left[\begin{array}{c}
+\frac{1}{\sigma^{2}} \mathbf{x}_{t} \cdot\left(y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}\right) \\
+-\frac{1}{2 \sigma^{2}}+\frac{1}{2 \sigma^{4}}\left(y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}\right)^{2}
+\end{array}\right],
+$$
+
+where $\boldsymbol{\beta}=(c, \phi)^{\prime}$ and $\mathbf{x}_{t}=\left(1, y_{t-1}\right)^{\prime}$.\\
+(b) Show that
+
+$$
+\mathrm{E}\left[\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right) \mid y_{t-1}, y_{t-2}, \ldots\right]=\mathbf{0} .
+$$
+
+Hint: At $\boldsymbol{\theta}=\boldsymbol{\theta}_{0}, y_{t}-\mathbf{x}_{t}^{\prime} \boldsymbol{\beta}=\varepsilon_{t}$.\\
+(c) Show that $\left\{\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)\right\}$ is a martingale difference sequence. Hint: $\mathbf{s}\left(\mathbf{w}_{t} ; \boldsymbol{\theta}_{0}\right)$ is a (measurable) function of $\left(y_{t}, y_{t-1}\right)$. So $\mathbf{s}\left(\mathbf{w}_{t-j} ; \boldsymbol{\theta}_{0}\right)(j \geq 1)$ can be calculated from $\left(y_{t-1}, y_{t-2}, \ldots\right)$.\\[0pt]
+(d) Does this result in (c) carry over to Gaussian AR(p)? [Answer: Yes.]
+
+\section*{PROBLEM SET FOR CHAPTER 8}
+$\_\_\_\_$
+
+\section*{ANALYTICAL EXERCISES}
+\begin{enumerate}
+  \item Show that
+\end{enumerate}
+
+
+\begin{equation*}
+\left|\frac{1}{n} \sum_{t=1}^{n}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime}\right| \geq\left|\frac{1}{n} \sum_{t=1}^{n} \hat{\mathbf{v}}_{t} \hat{\mathbf{v}}_{t}^{\prime}\right|, \tag{1}
+\end{equation*}
+
+
+where $\hat{\mathbf{v}}_{t} \equiv \mathbf{y}_{t}-\widehat{\Pi}^{\prime} \mathbf{x}_{t}$ and $\widehat{\Pi}$ is given in (8.4.5). (Since $\hat{\mathbf{v}}_{t}$ does not depend on $\boldsymbol{\Pi}$ by construction, this inequality shows that the left-hand side is minimized at $\boldsymbol{\Pi}=\widehat{\boldsymbol{\Pi}}$.) Hint: Use the "add-and-subtract" strategy to derive
+
+$$
+\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}=\hat{\mathbf{v}}_{t}+(\widehat{\boldsymbol{\Pi}}-\boldsymbol{\Pi})^{\prime} \mathbf{x}_{t} .
+$$
+
+So
+
+$$
+\begin{aligned}
+& \sum_{t=1}^{n}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime} \\
+& =\sum_{t=1}^{n} \hat{\mathbf{v}}_{t} \hat{\mathbf{v}}_{t}^{\prime}+(\widehat{\boldsymbol{\Pi}}-\boldsymbol{\Pi})^{\prime} \sum_{t=1}^{n} \mathbf{x}_{t} \hat{\mathbf{v}}_{t}^{\prime}+\sum_{t=1}^{n} \hat{\mathbf{v}}_{t} \mathbf{x}_{t}^{\prime}(\widehat{\boldsymbol{\Pi}}-\boldsymbol{\Pi}) \\
+& \quad+(\widehat{\boldsymbol{\Pi}}-\boldsymbol{\Pi})^{\prime}\left(\sum_{t=1}^{n} \mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)(\widehat{\boldsymbol{\Pi}}-\boldsymbol{\Pi}) \\
+& =\sum_{t=1}^{n} \hat{\mathbf{v}}_{t} \hat{\mathbf{v}}_{t}^{\prime}+(\widehat{\boldsymbol{\Pi}}-\boldsymbol{\Pi})^{\prime}\left(\sum_{t=1}^{n} \mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)(\widehat{\boldsymbol{\Pi}}-\boldsymbol{\Pi}) \quad\left(\text { since } \sum_{t=1}^{n} \mathbf{x}_{t} \hat{\mathbf{v}}_{t}^{\prime}=\mathbf{0}\right) .
+\end{aligned}
+$$
+
+Then use the following result from matrix algebra:\\
+Let $\mathbf{A}$ and $\mathbf{B}$ be two positive semidefinite matrices of the same size. Then $|\mathbf{A}+\mathbf{B}| \geq|\mathbf{A}|$.\\
+2. ( $\widehat{\Omega}(\boldsymbol{\Pi})$ is positive definite.) Under the conditions of the multivariate regression model, show that $\widehat{\Omega}(\Pi)$ defined in (8.4.10) is positive definite for any given $\boldsymbol{\Pi}$. Hint: Derive $\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}=\mathbf{v}_{t}+\left(\boldsymbol{\Pi}_{0}-\boldsymbol{\Pi}\right)^{\prime} \mathbf{x}_{t}$. Since $\left\{y_{t}, \mathbf{x}_{t}\right\}$ is i.i.d., $\widehat{\boldsymbol{\Omega}}(\boldsymbol{\Pi})$ converges almost surely to $\mathrm{E}\left[\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime}\right]$. Show that
+
+$$
+\mathrm{E}\left[\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime}\right]=\boldsymbol{\Omega}_{0}+\left(\boldsymbol{\Pi}_{0}-\boldsymbol{\Pi}\right)^{\prime} \mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)\left(\boldsymbol{\Pi}_{0}-\boldsymbol{\Pi}\right) .
+$$
+
+Then use the matrix inequaltiy mentioned in the previous exercise. $\boldsymbol{\Omega}_{0}$ is positive definite by assumption.\\
+3. (Optional, identification of $\delta$ in FIML) As noted in footnote 7 of Section 8.5, the FIML estimator of $\delta_{0}$ is an extremum estimator whose objective function is
+
+
+\begin{equation*}
+Q_{n}(\boldsymbol{\delta})=-|\widehat{\boldsymbol{\Omega}}(\boldsymbol{\delta})| \tag{2}
+\end{equation*}
+
+
+where
+
+
+\begin{equation*}
+\widehat{\boldsymbol{\Omega}}(\delta) \equiv \frac{1}{n} \sum_{t=1}^{n}\left(\mathbf{y}_{t}+\Gamma^{-1} \mathbf{B} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}+\Gamma^{-1} \mathbf{B} \mathbf{x}_{t}\right)^{\prime} \tag{3}
+\end{equation*}
+
+
+Let
+
+
+\begin{equation*}
+Q_{0}(\boldsymbol{\delta}) \equiv \operatorname{plim}_{n \rightarrow \infty} Q_{n}(\boldsymbol{\delta}) \tag{4}
+\end{equation*}
+
+
+To show the consistency of this extremum estimator, we would verify the two conditions of Proposition 7.1 of the previous chapter. Reproducing these two conditions in the current notation:\\
+identification: $Q_{0}(\delta)$ is uniquely maximized on the compact parameter space at $\boldsymbol{\delta}_{0}$,\\
+uniform convergence: $Q_{n}(\cdot)$ converges uniformly in probability to $Q_{0}(\cdot)$.\\
+In this exercise we prove that the rank condition for identification (that $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{z}_{t m}^{\prime}\right)$ be of full column rank for all $m$ ) is equivalent to the above extremum estimator identification condition. In the proof, take for granted all the assumptions we made about FIML in the text.
+
+To set up the discussion, we need to introduce some new notation. Reproducing the $m$-th equation of the structural form from the text:
+
+
+\begin{equation*}
+y_{t m}=\underset{\left(1 \times L_{m}\right)\left(L_{m} \times 1\right)}{\mathbf{z}_{t m}^{\prime}} \underset{(1 m}{\boldsymbol{\delta}_{0 m}}+\varepsilon_{t m} \tag{5}
+\end{equation*}
+
+
+The regressors $\mathbf{z}_{t m}$ consist of $M_{m}$ endogenous variables and $K_{m}$ predetermined variables with $M_{m}+K_{m}=L_{m}$. Define\\
+$\underset{\left(M_{m} \times M\right)}{\mathbf{S}_{m}}$ : a matrix that selects those $M_{m}$ endogenous regressors from $\mathbf{y}_{t}$,\\
+$\underset{\left(K_{m} \times K\right)}{\mathbf{C}_{m}}$ : a matrix that selects those $K_{m}$ predetermined regressors from $\mathbf{x}_{t}$.\\
+To illustrate, $\mathbf{S}_{1}$ and $\mathbf{C}_{1}$ for Example 8.1 with $\mathbf{y}_{t}=\left(p_{t}, q_{t}\right)^{\prime}$ and $\mathbf{x}_{t}=\left(1, a_{t}, w_{t}\right)^{\prime}$ is
+
+$$
+\mathbf{S}_{1}=\left[\begin{array}{ll}
+1 & 0
+\end{array}\right], \mathbf{C}_{1}=\left[\begin{array}{lll}
+1 & 0 & 0 \\
+0 & 1 & 0
+\end{array}\right]
+$$
+
+So the regressors in the $m$-th equation can be written as
+
+$$
+\mathbf{z}_{t m}^{\prime}=\left(\mathbf{y}_{t}^{\prime} \mathbf{S}_{m}^{\prime} \vdots \mathbf{x}_{t}^{\prime} \mathbf{C}_{m}^{\prime}\right) .
+$$
+
+(a) Show that
+
+\[
+\underset{\left(K \times L_{m}\right)}{\mathrm{E}\left(\mathbf{x}_{t} \mathbf{z}_{t m}^{\prime}\right)}=\underset{(K \times K)}{\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)} \underbrace{\left[\begin{array}{ccc}
+\mathbf{\Pi}_{0} & \mathbf{S}_{m}^{\prime} & \vdots  \tag{6}\\
+(K \times M)_{\left(M \times M_{m}\right)} & \mathbf{C}_{m}^{\prime} \\
+\left(K \times K_{m}\right)
+\end{array}\right]}_{\left(K \times L_{m}\right)} .
+\]
+
+Hint: Use the reduced form (8.5.9) and the fact that $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{v}_{t}^{\prime}\right)=\mathbf{0}$.\\
+Since multiplication by a nonsingular matrix ( $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ here) does not alter rank, equation (6) implies that the rank condition for identification is equivalent to the condition that the rank of $\left[\boldsymbol{\Pi}_{0} \boldsymbol{S}_{m}^{\prime} \vdots \boldsymbol{C}_{m}^{\prime}\right]$ be $L_{m}$.\\
+(b) Show that
+
+
+\begin{equation*}
+\operatorname{plim}_{n \rightarrow \infty} \widehat{\boldsymbol{\Omega}}(\boldsymbol{\delta})=\boldsymbol{\Gamma}_{0}^{-1} \boldsymbol{\Sigma}_{0}\left(\boldsymbol{\Gamma}_{0}^{-1}\right)^{\prime}+\left[\boldsymbol{\Pi}_{0}^{\prime}+\boldsymbol{\Gamma}^{-1} \mathbf{B}\right] \mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)\left[\boldsymbol{\Pi}_{0}^{\prime}+\boldsymbol{\Gamma}^{-1} \mathbf{B}\right]^{\prime} \tag{7}
+\end{equation*}
+
+
+where $\boldsymbol{\Pi}_{0}^{\prime} \equiv-\boldsymbol{\Gamma}_{0}^{-1} \mathbf{B}_{0}$. Hint: Since $\left\{\mathbf{y}_{t}, \mathbf{x}_{t}\right\}$ is i.i.d., the probability limit is given by $\mathrm{E}\left[\left(\mathbf{y}_{t}+\boldsymbol{\Gamma}^{-1} \mathbf{B} \mathbf{x}_{t}\right)\left(\mathbf{y}_{t}+\boldsymbol{\Gamma}^{-1} \mathbf{B} \mathbf{x}_{t}\right)^{\prime}\right]$. Also,
+
+$$
+\mathbf{y}_{t}+\boldsymbol{\Gamma}^{-1} \mathbf{B} \mathbf{x}_{t}=\mathbf{v}_{t}+\left(\boldsymbol{\Pi}_{0}^{\prime}+\boldsymbol{\Gamma}^{-1} \mathbf{B}\right) \mathbf{x}_{t} .
+$$
+
+(c) Show that $|\widehat{\boldsymbol{\Omega}}(\boldsymbol{\delta})|$ is minimized only if $\boldsymbol{\Gamma} \boldsymbol{\Pi}_{0}^{\prime}+\mathbf{B}=\mathbf{0}$. Hint: Since $\mathrm{E}\left(\mathbf{x}_{t} \mathbf{x}_{t}^{\prime}\right)$ is positive definite, the second term on the right-hand side of (7) is zero only if $\boldsymbol{\Pi}_{0}+\mathbf{B}^{\prime}\left(\boldsymbol{\Gamma}^{-1}\right)^{\prime}=\mathbf{0}$. Use the fact from matrix algebra noted in Exercise 1 above.
+
+Therefore, the extremum estimator identification condition (that $Q_{0}(\delta)$ be maximized uniquely at $\boldsymbol{\delta}_{0}$ ) holds if and only if $(\boldsymbol{\Gamma}, \mathbf{B})=\left(\boldsymbol{\Gamma}_{0}, \mathbf{B}_{0}\right)$ is the only solution to $\boldsymbol{\Gamma} \boldsymbol{\Pi}_{0}^{\prime}+\mathbf{B}=\mathbf{0}$ viewed as a system of simultaneous equations for ( $\boldsymbol{\Gamma}, \mathbf{B}$ ).\\
+(d) Let $\boldsymbol{\alpha}_{m}^{\prime}(1 \times(M+K))$ be the $m$-th row of $[\mathbf{\Gamma} \vdots \mathbf{B}]$, and let $\mathbf{e}_{m}^{\prime}$ be a $(1 \times(M+ K$ )) vector whose element corresponding to $y_{t m}$ is one and whose other elements are zero. To illustrate, $\mathbf{e}_{1}^{\prime}$ for Example 8.1 with $\mathbf{y}_{t}=\left(p_{t}, q_{t}\right)^{\prime}$ and $\mathbf{x}_{t}=\left(1, a_{t}, w_{t}\right)^{\prime}$ is $(0,1,0,0,0)$. Verify for Example 8.1 the general result that
+
+\[
+\underset{(1 \times(M+K))}{\boldsymbol{\alpha}_{m}^{\prime}}=\mathbf{e}_{m}^{\prime}-\underset{\left(1 \times\left(M_{m}+K_{m}\right)\right)}{\boldsymbol{\delta}_{m}^{\prime}}\left[\begin{array}{cc}
+\mathbf{S}_{m} & \mathbf{0}  \tag{8}\\
+\left(M_{m} \times M\right) & \left(M_{m} \times K\right) \\
+\left(K_{m} \times M\right) & \mathbf{C}_{m} \\
+\left(K_{m} \times K\right)
+\end{array}\right]
+\]
+
+(e) Rewrite $\boldsymbol{\Gamma} \boldsymbol{\Pi}_{0}^{\prime}+\mathbf{B}=\mathbf{0}$ as
+
+\[
+[\boldsymbol{\Gamma} \vdots \mathbf{B}]\left[\begin{array}{l}
+\boldsymbol{\Pi}_{0}^{\prime}  \tag{9}\\
+\mathbf{I}_{K}
+\end{array}\right]=\mathbf{0}
+\]
+
+Show that the $m$-th row of $\boldsymbol{\Gamma} \boldsymbol{\Pi}_{0}^{\prime}+\mathbf{B}=\mathbf{0}$ can be written as
+
+\[
+\boldsymbol{\delta}_{m}^{\prime}\left[\begin{array}{c}
+\mathbf{S}_{m} \boldsymbol{\Pi}_{0}^{\prime}  \tag{10}\\
+\mathbf{C}_{m}
+\end{array}\right]=\boldsymbol{\pi}_{0 m}^{\prime}
+\]
+
+where
+
+
+\begin{equation*}
+\boldsymbol{\pi}_{0 m} \equiv\left[\boldsymbol{\Pi}_{0} \vdots \mathbf{I}_{K}\right] \mathbf{e}_{m} . \tag{11}
+\end{equation*}
+
+
+(f) Verify that $\delta_{m}=\delta_{0 m}$ is $a$ solution to (10). Show that a necessary and sufficient condition that $\delta_{m}=\delta_{0 m}$ is the only solution to (10) is the rank condition for identification for equation $m$. Hint: Recall the following fact from linear algebra: Suppose $\mathbf{A x}=\mathbf{y}$ has a solution $\mathbf{x}_{0}$. A necessary and sufficient condition that it is the only solution is that $\mathbf{A}$ is of full column rank.\\
+(g) Explain why we can conclude that the only solution to $\boldsymbol{\Gamma} \boldsymbol{\Pi}_{0}+\mathbf{B}=\mathbf{0}$ is $(\boldsymbol{\Gamma}, \mathbf{B})=\left(\boldsymbol{\Gamma}_{0}, \mathbf{B}_{0}\right)$. Hint: Each element of $\boldsymbol{\delta}$ appears in either $\boldsymbol{\Gamma}$ or $\mathbf{B}$ only once.\\
+4. (Optional, instruments that do not show up in the system) Consider the complete system of simultaneous equations discussed in Section 8.5. Let
+
+$$
+\underset{(K \times 1)}{\mathbf{x}_{t}}=\left[\begin{array}{c}
+\tilde{\mathbf{x}}_{t} \\
+((K-1) \times 1) \\
+x_{t K}
+\end{array}\right]
+$$
+
+Suppose that $x_{t K}$ does not appear in any of the $M$ structural equations. Show that dropping $x_{t K}$ from the list of instruments changes neither the rank condition for identification nor the asymptotic variance of the FIML estimator of $\boldsymbol{\delta}_{0}$. Hint: Define the two matrices, $\mathbf{S}_{m}$ and $\mathbf{C}_{m}$ as in Exercise 3, so that $\mathbf{z}_{t m}^{\prime}=\left(\mathbf{y}_{t}^{\prime} \mathbf{S}_{m}^{\prime} \vdots \mathbf{x}_{t}^{\prime} \mathbf{C}_{m}^{\prime}\right)$ and (6) holds. FIML is asymptotically equivalent to 3SLS, so its asymptotic variance is given in (4.5.15). The last row of $\mathbf{C}_{m}^{\prime}$ is a vector of zeros. Let $\widetilde{\Pi}_{0}((K-1) \times M)$ be the matrix of reduced-form coefficients when $x_{I K}$ is dropped from the system. Then
+
+$$
+\boldsymbol{\Pi}_{0}=\left[\begin{array}{c}
+\widetilde{\Pi}_{0} \\
+((K-1) \times M) \\
+\underset{(1 \times M)}{\mathbf{0}^{\prime}}
+\end{array}\right]
+$$
+
+\section*{References}
+Amemiya, T., 1973, "Regression Analysis When the Dependent Variable is Truncated Normal," Econometrica, 41, 997-1016.\\
+$\_\_\_\_$ , 1985, Advanced Econometrics, Cambridge: Harvard University Press.\\
+Anderson, T. W., and H. Rubin, 1949, "Estimator of the Parameters of a Single Equation in a Complete System of Stochastic Equations," Annals of Mathematical Statistics, 20, 46-63.\\
+Anderson, T. W., N. Kunitomo, and T. Sawa, 1982, "Evaluation of the Distribution Function of the Limited Information Maximum Likelihood Estimator," Econometrica, 50, 1009-1027.\\
+Davidson, R., and J. MacKinnon, 1993, Estimation and Inference in Econometrics, New York: Oxford University Press.\\
+Fuller, W.. 1996, Introduction to Statistical Time Series (2d ed.), New York: Wiley.\\
+Hausman, J., 1975, "An Instrumental Variable Approach to Full Information Estimators for Linear and Certain Nonlinear Econometric Models," Econometrica, 43, 727-738.\\
+Johansen, S., 1995, Likelihood-Based Inference in Cointegrated Vector Auto-Regressive Models, New York: Oxford University Press.\\
+Judge, G., W. Griffiths, R. Hill, H. Lütkepohl, and T, Lee, 1985, The Theory and Practice of Econometrics (2d ed.), New York: Wiley.\\
+Magnus, J., and H. Neudecker, 1988, Matrix Differential Calculus with Applications in Statistics and Econometrics, New York: Wiley.\\
+Newey, W., and D. McFadden. 1994, "Large Sample Estimation and Hypothesis Testing," Chapter 36 in R. Engle and D. McFadden (eds.), Handbook of Econometrics, Volume IV, New York: North-Holland.
+
+Olsen, R. J., 1978, "Note on the Uniqueness of the Maximum Likelihood Estimator for the Tobit Model," Econometrica, 46, 1211-1215.\\
+Orme, C., 1989, "On the Uniqueness of the Maximum Likelihood Estimator in Truncated Regression Models," Econometric Reviews, 8, 217-222.\\
+Pagan, A., 1979, "Some Consequences of Viewing LIML As an Iterated Aitken Estimator," Economics Letters, 3, 369-372.\\
+Sapra, S. K., 1992, "Asymptotic Properties of a Quasi-Maximum Likelihood Estimator in Truncated Regression Model with Serial Correlation," Econometric Reviews, 11, 253-260.\\
+Tobin, J., 1958, "Estimation of Relationships for Limited Dependent Variables," Econometrica, 26, 24-36.\\
+Wooldridge, J., 1994, "Estimation and Inference for Dependent Processes," Chapter 45 in R. Engle and D. McFadden (eds.), Handbook of Econometrics, Volume IV, New York: North-Holland.
+
+
+\end{document}

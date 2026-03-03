@@ -1,0 +1,517 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 16: Multinomial Response Models}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\includegraphics[max width=\textwidth, alt={}]{2e17339c-7635-4ef8-aded-2191d8d853ff-0674_111_834_116_283}
+\end{center}}
+\subsection*{16.1 Introduction}
+In this chapter we consider discrete response models with more than two outcomes. Most applications fall into one of two categories. The first is an unordered response, sometimes called a nominal response, where the values attached to different outcomes are arbitrary and have no effect on estimation, inference, or interpretation. Examples of unordered responses include occupational choice, health plan choice, and transportation mode for commuting to work. For example, if there are four health plans to choose from, we might label these $0,1,2$, and 3 -or $100,200,300,400$-and it does not matter which plan we assign to which number (provided, of course, that we use the same labels across across all observations). In Section 16.2 we cover the general class of multinomial response models, which can be used to analyze unordered responses.
+
+For an ordered response, the values we assign to each outcome are no longer arbitrary, although the magnitudes (usually) are. An example of an ordered response is a credit rating, where there are seven possible ratings. We might assign each person a rating in the set $\{0,1,2,3,4,5,6\}$, where zero is the lowest rating and six is the highest. The fact that five is a better rating than four conveys important information, but nothing is lost if we use another set of numbers to denote credit rating-provided they maintain the same ordering. We treat ordered response models in Section 16.3.
+
+In addition to covering standard methods devised for cross section data with exogenous explanatory variables, we discuss some simple strategies for handling roughly continuous endogenous explanatory variables as well as unobserved heterogeneity in a panel data context.
+
+\subsection*{16.2 Multinomial Response Models}
+\subsection*{16.2.1 Multinomial Logit}
+The first model we cover applies when a unit's response or choice depends on individual characteristics of the unit-but not on attributes of the choices. Thus, it makes sense to define the model in terms of random variables representing the underlying population. Let $y$ denote a random variable taking on the values $\{0,1, \ldots, J\}$ for $J$ a positive integer, and let $\mathbf{x}$ denote a set of conditioning variables. For example, if $y$ denotes occupational choice, $\mathbf{x}$ can contain things like education, age, gender, race, and marital status. As usual, $\left(\mathbf{x}_{i}, y_{i}\right)$ is a random draw from the population.
+
+As in the binary response case, we are interested in how ceteris paribus changes in the elements of $\mathbf{x}$ affect the response probabilities, $\mathrm{P}(y=j \mid \mathbf{x}), j=0,1,2, \ldots, J$.
+
+Since the probabilities must sum to unity, $\mathrm{P}(y=0 \mid \mathbf{x})$ is determined once we know the probabilities for $j=1, \ldots, J$.
+
+Let $\mathbf{x}$ be a $1 \times K$ vector with first-element unity. The multinomial logit (MNL) model has response probabilities\\
+$\mathrm{P}(y=j \mid \mathbf{x})=\exp \left(\mathbf{x} \boldsymbol{\beta}_{j}\right) /\left[1+\sum_{h=1}^{J} \exp \left(\mathbf{x} \boldsymbol{\beta}_{h}\right)\right], \quad j=1, \ldots, J$,\\
+where $\boldsymbol{\beta}_{j}$ is $K \times 1, j=1, \ldots, J$. Because the response probabilities must sum to unity, $\mathrm{P}(y=0 \mid \mathbf{x})=1 /\left[1+\sum_{h=1}^{J} \exp \left(\mathbf{x} \boldsymbol{\beta}_{h}\right)\right]$.\\
+When $J=1, \boldsymbol{\beta}_{1}$ is the $K \times 1$ vector of unknown parameters, and we get the binary logit model.
+
+The partial effects for this model are complicated. For continuous $x_{k}$, we can write\\
+$\frac{\partial \mathrm{P}(y=j \mid \mathbf{x})}{\partial x_{k}}=\mathrm{P}(y=j \mid \mathbf{x})\left\{\beta_{j k}-\left[\sum_{h=1}^{J} \beta_{h k} \exp \left(\mathbf{x} \boldsymbol{\beta}_{h}\right)\right] / g(\mathbf{x}, \boldsymbol{\beta})\right\}$,\\
+where $\beta_{h k}$ is the $k$ th element of $\boldsymbol{\beta}_{h}$ and $g(\mathbf{x}, \boldsymbol{\beta})=1+\sum_{h=1}^{J} \exp \left(\mathbf{x} \boldsymbol{\beta}_{h}\right)$. Equation (16.2) shows that even the direction of the effect is not determined entirely by $\beta_{j k}$. A simpler interpretation of $\boldsymbol{\beta}_{j}$ is given by\\
+$p_{j}(\mathbf{x}, \boldsymbol{\beta}) / p_{0}(\mathbf{x}, \boldsymbol{\beta})=\exp \left(\mathbf{x} \boldsymbol{\beta}_{j}\right), \quad j=1,2, \ldots, J$,\\
+where $p_{j}(\mathbf{x}, \boldsymbol{\beta})$ denotes the response probability in equation (16.1). Thus the change in $p_{j}(\mathbf{x}, \boldsymbol{\beta}) / p_{0}(\mathbf{x}, \boldsymbol{\beta})$ is approximately $\beta_{j k} \exp \left(\mathbf{x} \boldsymbol{\beta}_{j}\right) \Delta x_{k}$ for roughly continuous $x_{k}$. Equivalently, the log-odds ratio is linear in $\mathbf{x}: \log \left[p_{j}(\mathbf{x}, \boldsymbol{\beta}) / p_{0}(\mathbf{x}, \boldsymbol{\beta})\right]=\mathbf{x} \boldsymbol{\beta}_{j}$. This result extends to general $j$ and $h: \log \left[p_{j}(\mathbf{x}, \boldsymbol{\beta}) / p_{h}(\mathbf{x}, \boldsymbol{\beta})\right]=\mathbf{x}\left(\boldsymbol{\beta}_{j}-\boldsymbol{\beta}_{h}\right)$.
+
+Here is another useful fact about the multinomial logit model. Since $\mathrm{P}(y=j$ or $y=h \mid \mathbf{x})=p_{j}(\mathbf{x}, \boldsymbol{\beta})+p_{h}(\mathbf{x}, \boldsymbol{\beta})$,\\
+$\mathrm{P}(y=j \mid y=j$ or $y=h, \mathbf{x})=p_{j}(\mathbf{x}, \boldsymbol{\beta}) /\left[p_{j}(\mathbf{x}, \boldsymbol{\beta})+p_{h}(\mathbf{x}, \boldsymbol{\beta})\right]=\Lambda\left[\mathbf{x}\left(\boldsymbol{\beta}_{j}-\boldsymbol{\beta}_{h}\right)\right]$,\\
+where $\Lambda(\cdot)$ is the logistic function. In other words, conditional on the choice being either $j$ or $h$, the probability that the outcome is $j$ follows a standard logit model with parameter vector $\boldsymbol{\beta}_{j}-\boldsymbol{\beta}_{h}$.
+
+Since we have fully specified the density of $y$ given $\mathbf{x}$, estimation of the MNL model is best carried out by maximum likelihood. For each $i$ the conditional $\log$ likelihood can be written as\\
+$\ell_{i}(\boldsymbol{\beta})=\sum_{j=0}^{J} 1\left[y_{i}=j\right] \log \left[p_{j}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]$,\\
+where the indicator function selects out the appropriate response probability for each observation $i$. As usual, we estimate $\boldsymbol{\beta}$ by maximizing $\sum_{i=1}^{N} \ell_{i}(\boldsymbol{\beta})$. McFadden (1974) has shown that the log-likelihood function is globally concave, and this fact makes the maximization problem straightforward. The conditions needed to apply Theorems 13.1 and 13.2 for consistency and asymptotic normality are broadly applicable; see McFadden (1984).
+
+Example 16.1 (School and Employment Decisions for Young Men): The data KEANE.RAW (a subset from Keane and Wolpin, 1997) contains employment and schooling history for a sample of men for the years 1981 to 1987. We use the data for 1987. The three possible outcomes are enrolled in school (status $=0$ ), not in school and not working (status $=1$ ), and working (status $=2$ ). The explanatory variables are education, a quadratic in past work experience, and a black binary indicator. The base category is enrolled in school. Out of 1,717 observations, 99 are enrolled in school, 332 are at home, and 1,286 are working. The results are given in Table 16.1.
+
+Another year of education reduces the log-odds between at home and enrolled in school by -.674 , and the $\log$-odds between at home and enrolled in school is .813
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 16.1\\
+Multinomial Logit Estimates of School and Labor Market Decisions}
+\begin{tabular}{|l|l|l|}
+\hline
+\multicolumn{3}{|l|}{Dependent Variable: status} \\
+\hline
+Explanatory Variable & Home (status = 1) & Work (status = 2) \\
+\hline
+educ & -. 674 (.070) & -. 315 (.065) \\
+\hline
+exper & -. 106 (.173) & . 849 (.157) \\
+\hline
+exper ${ }^{2}$ & -. 013 (.025) & -. 077 (.023) \\
+\hline
+black & . 813 (.303) & . 311 (.282) \\
+\hline
+constant & 10.28 (1.13) & 5.54 (1.09) \\
+\hline
+Number of observations & 1,717 &  \\
+\hline
+Percent correctly predicted & 79.6 &  \\
+\hline
+Log-likelihood value & -907.86 &  \\
+\hline
+Pseudo- $R$-squared & . 243 &  \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+higher for black men. The magnitudes of these coefficients are difficult to interpret. Instead, we can either compute partial effects, as in equation (16.2), or compute differences in probabilities. For example, consider two black men, each with five years of experience. A black man with 16 years of education has an employment probability that is .042 higher than a man with 12 years of education, and the at-home probability is .072 lower. (Necessarily, the in-school probability is .030 higher for the man with 16 years of education.) These results are easily obtained by comparing fitted probabilities after multinomial logit estimation.
+
+The experience terms are each insignificant in the home column, but the Wald test for joint significance of exper and exper ${ }^{2}$ gives $p$-value $=.047$, and so they are jointly significant at the 5 percent level. We would probably leave their coefficients unrestricted in $\boldsymbol{\beta}_{1}$ rather than setting them to zero.
+
+The fitted probabilities can be used for prediction purposes: for each observation $i$, the outcome with the highest estimated probability is the predicted outcome. This can be used to obtain a percent correctly predicted, by category if desired. For the previous example, the overall percent correctly predicted is almost 80 percent, but the model does a much better job of predicting that a man is employed ( 95.2 percent correct) than in school (12.1 percent) or at home ( 39.2 percent).
+
+\subsection*{16.2.2 Probabilistic Choice Models}
+McFadden (1974) showed that a model closely related to the MNL model can be obtained from an underlying utility comparison. Suppose that, for a random draw $i$ from the underlying population (usually, but not necessarily, individuals), the utility from choosing alternative $j$ is\\
+$y_{i j}^{*}=\mathbf{x}_{i j} \boldsymbol{\beta}+a_{i j}, \quad j=0, \ldots, J$,\\
+where $a_{i j}, j=0,1,2, \ldots, J$ are unobservables affecting tastes. Here, $\mathbf{x}_{i j}$ is a $1 \times K$ vector that differs across alternatives and possibly across individuals as well. For example, $\mathbf{x}_{i j}$ might contain the commute time for individual $i$ using transportation mode $j$, or the co-payment required by health insurance plan $j$ (which may or may not differ by individual). For reasons we will see, $\mathbf{x}_{i j}$ cannot contain elements that vary only across $i$ and not $j$; in particular, $\mathbf{x}_{i j}$ does not contain unity. We assume that the ( $J+1$ )-vector $\mathbf{a}_{i}$ is independent of $\mathbf{x}_{i}$, which contains $\left\{\mathbf{x}_{i j}: j=0, \ldots, J\right\}$.
+
+Let $y_{i}$ denote the choice of individual $i$ that maximizes utility:\\
+$y_{i}=\operatorname{argmax}\left(y_{i 0}^{*}, y_{i 2}^{*}, \ldots, y_{i J}^{*}\right)$,\\
+so that $y_{i}$ takes on a value in $\{0,1, \ldots, J\}$. As shown by McFadden (1974), if the $a_{i j}$, $j=0, \ldots, J$ are independently distributed with $\operatorname{cdf} F(a)=\exp [-\exp (-a)]$-the type I extreme value distribution-then\\
+$\mathrm{P}\left(y_{i}=j \mid \mathbf{x}_{i}\right)=\exp \left(\mathbf{x}_{i j} \boldsymbol{\beta}\right) /\left[\sum_{h=0}^{J} \exp \left(\mathbf{x}_{i h} \boldsymbol{\beta}\right)\right], \quad j=0, \ldots, J$.
+
+The response probabilities in equation (16.5) constitute what is usually called the conditional logit (CL) model. Dropping the subscript $i$ and differentiating shows that the marginal effects are given by\\
+$\partial p_{j}(\mathbf{x}) / \partial x_{j k}=p_{j}(\mathbf{x})\left[1-p_{j}(\mathbf{x})\right] \beta_{k}, \quad j=0, \ldots, J, k=1, \ldots, K$,\\
+and\\
+$\partial p_{j}(\mathbf{x}) / \partial x_{h k}=-p_{j}(\mathbf{x}) p_{h}(\mathbf{x}) \beta_{k}, \quad j \neq h, k=1, \ldots, K$,\\
+where $p_{j}(\mathbf{x})$ is the response probability in equation (16.5) and $\beta_{k}$ is the $k$ th element of $\boldsymbol{\beta}$. As usual, if the $\mathbf{x}_{j}$ contain nonlinear functions of underlying explanatory variables, this fact will be reflected in the partial derivatives.
+
+The CL and MNL models have similar response probabilities, but they differ in some important respects. In the MNL model, the conditioning variables do not change across alternative: for each $i$, $\mathbf{x}_{i}$ contains variables specific to the individual but not to the alternatives. This model is appropriate for problems where characteristics of the alternatives are unimportant or are not of interest, or where the data are simply not available. For example, in a model of occupational choice, we do not usually know how much someone could make in every occupation. What we can usually collect data on are things that affect individual productivity and tastes, such as education and past experience. The MNL model allows these characteristics to have different effects on the relative probabilities between any two choices.
+
+The CL model is intended specifically for problems where consumer or firm choices are at least partly based on observable attributes of each alternative. The utility level of each choice is assumed to be a linear function in choice attributes, $\mathbf{x}_{i j}$, with common parameter vector $\boldsymbol{\beta}$. This turns out to actually contain the MNL model as a special case by appropriately choosing $\mathbf{x}_{i j}$. Suppose that $\mathbf{w}_{i}$ is a vector of individual characteristics and that $\mathrm{P}\left(y_{i}=j \mid \mathbf{w}_{i}\right)$ follows the MNL in equation (16.1) with parameters $\boldsymbol{\delta}_{j}, j=1, \ldots, J$. We can cast this model as the CL model by defining $\mathbf{x}_{i j}=\left(d 1_{j} \mathbf{w}_{i}, d 2_{j} \mathbf{w}_{i}, \ldots, d J_{j} \mathbf{w}_{i}\right)$, where $d j_{h}$ is a dummy variable equal to unity when $j=h$, and $\boldsymbol{\beta}=\left(\boldsymbol{\delta}_{1}^{\prime}, \ldots, \boldsymbol{\delta}_{J}^{\prime}\right)^{\prime}$. Consequently, some authors refer to the CL model as\\
+the MNL model, with the understanding that alternative-specific characteristics are allowed in the response probability.
+
+Empirical applications of the CL model often include individual-specific variables by allowing them to have separate effects on the latent utilities. A general model is\\
+$y_{i j}^{*}=\mathbf{z}_{i j} \gamma+\mathbf{w}_{i} \boldsymbol{\delta}_{j}+a_{i j}, \quad j=0,1, \ldots, J$,\\
+with $\boldsymbol{\delta}_{0}=\mathbf{0}$ as a normalization, where $\mathbf{z}_{i j}$ varies across $j$ and possibly $i$. If $\boldsymbol{\delta}_{j}=\boldsymbol{\delta}$ for all $j$, then $\mathbf{w}_{i} \boldsymbol{\delta}$ drops out of all response probabilities. The model with both kinds of explanatory variables in (16.8) is called the mixed logit model.
+
+The CL model is very convenient for modeling probabilistic choice, but it has some limitations. An important restriction is\\
+$p_{j}\left(\mathbf{x}_{j}\right) / p_{h}\left(\mathbf{x}_{h}\right)=\exp \left(\mathbf{x}_{j} \boldsymbol{\beta}\right) / \exp \left(\mathbf{x}_{h} \boldsymbol{\beta}\right)=\exp \left[\left(\mathbf{x}_{j}-\mathbf{x}_{h}\right) \boldsymbol{\beta}\right]$,\\
+so that relative probabilities for any two alternatives depend only on the attributes of those two alternatives. This is called the independence from irrelevant alternatives\\
+(IIA) assumption because it implies that adding another alternative or changing the characteristics of a third alternative does not affect the relative odds between alternatives $j$ and $h$. This implication is often implausible, especially for applications with similar alternatives. A well-known example is due to McFadden (1974). Consider commuters initially choosing between two modes of transportation, car and red bus. Suppose that a consumer chooses between the buses with equal probability, .5, so that the ratio in equation (16.9) is unity. Now suppose a third mode, blue bus, is added. Assuming bus commuters do not care about the color of the bus, consumers will choose between these with equal probability. But then IIA implies that the probability of each mode is $\frac{1}{3}$; therefore, the fraction of commuters taking a car would fall from $\frac{1}{2}$ to $\frac{1}{3}$, a result that is not very realistic. This example is admittedly extreme-in practice, we would lump the blue bus and red bus into the same category, provided there are no other differences-but it indicates that the IIA property can impose unwanted restrictions in the conditional logit model.
+
+Hausman and McFadden (1984) offer tests of the IIA assumption based on the observation that, if the CL model is true, $\boldsymbol{\beta}$ can be consistently estimated by conditional logit by focusing on any subset of alternatives. They apply the Hausman principle, which compares the estimate of $\boldsymbol{\beta}$ using all alternatives to the estimate using a subset of alternatives.
+
+Several models that relax the IIA assumption have been suggested. In the context of the random utility model, the IIA assumption comes about because the $\left\{a_{i j}: j=\right.$\\
+$0,1, \ldots, J\}$ are assumed to be independent Wiebull random variables. A more flexible assumption is that $\mathbf{a}_{i}$ has a multivariate normal distribution with arbitrary correlations between $a_{i j}$ and $a_{i h}$, all $j \neq h$. The resulting model is called the multinomial probit model. (In keeping with the spirit of the previous names, conditional probit model is a better name, which is used by Hausman and Wise (1978) but not by many others.)
+
+Theoretically, the multinomial probit model is attractive, but it has some practical limitations. The response probabilities are very complicated, involving a $(J+1)$ dimensional integral. This complexity not only makes it difficult to obtain the partial effects on the response probabilities, it also makes maximum likelihood estimation (MLE) infeasible for more than about five alternatives. For details, see Maddala (1983, Chap. 3) and Amemiya (1985, Chap. 9). Hausman and Wise (1978) contain an application to transportation mode for three alternatives.
+
+Recent advances in estimation through simulation make multinomial probit estimation feasible for many alternatives. See Hajivassilou and Ruud (1994) and Keane (1993) for recent surveys of simulation estimation. Keane and Moffitt (1998) apply simulation methods to structural multinomial response models, where the econometric model is obtained from utility maximization subject to constraints. Keane and Moffitt study the tax effects of labor force participation allowing for participation in multiple welfare programs.
+
+A different approach to relaxing IIA is to specify a hierarchical model. The most popular of these is called the nested logit model. McFadden (1984) gives a detailed treatment of these and other models; here we illustrate the basic approach where there are only two hierarchies.
+
+Suppose that the total number of alternatives can be put into $S$ groups of similar alternatives, and let $G_{s}$ denote the alternatives within group $s$. Thus the first hierarchy corresponds to which of the $S$ groups $y$ falls into, and the second corresponds to the actual alternative within each group. McFadden (1981) studied the model
+
+
+\begin{equation*}
+\mathbf{P}\left(y \in G_{s} \mid \mathbf{x}\right)=\left\{\alpha_{s}\left[\sum_{j \in G_{s}} \exp \left(\rho_{s}^{-1} \mathbf{x}_{j} \boldsymbol{\beta}\right)\right]^{\rho_{s}}\right\} /\left\{\sum_{r=1}^{S} \alpha_{r}\left[\sum_{j \in G_{r}} \exp \left(\rho_{r}^{-1} \mathbf{x}_{j} \boldsymbol{\beta}\right)\right]^{\rho_{r}}\right\} \tag{16.10}
+\end{equation*}
+
+
+and
+
+
+\begin{equation*}
+\mathrm{P}\left(y=j \mid y \in G_{s}, \mathbf{x}\right)=\exp \left(\rho_{s}^{-1} \mathbf{x}_{j} \boldsymbol{\beta}\right) /\left[\sum_{h \in G_{s}} \exp \left(\rho_{s}^{-1} \mathbf{x}_{h} \boldsymbol{\beta}\right)\right], \tag{16.11}
+\end{equation*}
+
+
+where equation (16.10) is defined for $s=1,2, \ldots, S$ while equation (16.11) is defined for $j \in G_{s}$ and $s=1,2, \ldots, S$; of course, if $j \notin G_{s}, \mathrm{P}\left(y=j \mid y \in G_{s}, \mathbf{x}\right)=0$. This model\\
+requires a normalization restriction, usually $\alpha_{1}=1$. Equation (16.10) gives the probability that the outcome is in group $s$ (conditional on $\mathbf{x}$ ); then, conditional on $y \in G_{s}$, equation (16.11) gives the probability of choosing alternative $j$ within $G_{s}$. The response probability $\mathrm{P}(y=j \mid \mathbf{x})$, which is ultimately of interest, is obtained by multiplying equations (16.10) and (16.11). This model can be derived by specifying a particular joint distribution for $\mathbf{a}_{i}$ in equation (16.4); see Amemiya (1985, p. 303).
+
+Equation (16.11) implies that, conditional on choosing group $s$, the response probabilities take a CL form with parameter vector $\rho_{s}^{-1} \boldsymbol{\beta}$. This suggests a natural two-step estimation procedure. First, estimate $\boldsymbol{\lambda}_{s} \equiv \rho_{s}^{-1} \boldsymbol{\beta}, s=1,2, \ldots, S$, by applying CL analysis separately to each of the groups. Then, plug the $\hat{\boldsymbol{\lambda}}_{s}$ into equation (16.10) and estimate $\alpha_{s}, s=2, \ldots, S$ and $\rho_{s}, s=1, \ldots, S$ by maximizing the log-likelihood function\\
+$\sum_{i=1}^{N} \sum_{s=1}^{S} 1\left[y_{i} \in G_{s}\right] \log \left[q_{s}\left(\mathbf{x}_{i} ; \hat{\boldsymbol{\lambda}}, \boldsymbol{\alpha}, \boldsymbol{\rho}\right)\right]$,\\
+where $q_{s}(\mathbf{x} ; \boldsymbol{\lambda}, \boldsymbol{\alpha}, \boldsymbol{\rho})$ is the probability in equation (16.10) with $\boldsymbol{\lambda}_{s}=\rho_{s}^{-1} \boldsymbol{\beta}$. This twostep conditional MLE is consistent and $\sqrt{N}$-asymptotically normal under general conditions, but the asymptotic variance needs to be adjusted for the first-stage estimation of the $\lambda_{s}$; see Chapters 12 and 13 for more on two-step estimators.
+
+Of course, we can also use full MLE. The log likelihood for observation $i$ can be written as
+
+
+\begin{equation*}
+\ell_{i}(\boldsymbol{\beta}, \boldsymbol{\alpha}, \boldsymbol{\rho})=\sum_{s=1}^{S}\left(1\left[y_{i} \in G_{s}\right]\left\{\log \left[q_{s}\left(\mathbf{x}_{i} ; \boldsymbol{\beta}, \boldsymbol{\alpha}, \boldsymbol{\rho}\right)\right]+\sum_{j \in G_{s}} 1\left[y_{i}=j\right] \log \left[p_{s j}\left(\mathbf{x}_{i} ; \boldsymbol{\beta}, \rho_{s}\right)\right]\right\}\right), \tag{16.12}
+\end{equation*}
+
+
+where $q_{s}\left(\mathbf{x}_{i} ; \boldsymbol{\beta}, \boldsymbol{\alpha}, \boldsymbol{\rho}\right)$ is the probability in equation (16.10) and $p_{s j}\left(\mathbf{x}_{i} ; \boldsymbol{\beta}, \rho_{s}\right)$ is the probability in equation (16.11). The regularity conditions for MLE are satisfied under weak assumptions.
+
+When $\alpha_{s}=1$ and $\rho_{s}=1$ for all $s$, the nested logit model reduces to the CL model. Thus, a test of IIA (as well as the other assumptions underlying the CL model) is a test of $\mathrm{H}_{0}: \alpha_{2}=\cdots=\alpha_{S}=\rho_{1}=\cdots=\rho_{S}=1$. McFadden (1987) suggests a score test, which only requires estimation of the CL model.
+
+Often special cases of the model are used, such as setting each $\alpha_{s}$ to unity and estimating the $\rho_{s}$. In his study of community choice and type of dwelling within a community, McFadden (1978) imposes this restriction along with $\rho_{s}=\rho$ for all $s$, so that the model has only one more parameter than the CL model. This approach allows for correlation among the $a_{j}$ for $j$ belonging to the same community group, but the correlation is assumed to be the same for all communities.
+
+The nested logit model allows different explanatory variables, which can also differ by alternative, to appear in the different levels. For example, one set of variables may be relevant for community choice, such as quality of schools, crime rates, property tax rates, and other measures of community quality. Another set of variables would affect the kind of dwelling, such as the prices of the different kinds of dwellings. Higher-level nested logit models are covered in McFadden (1984) and Amemiya (1985, Chap. 9).
+
+A different approach to modifying CL to arrive at a model that relaxes IIA is to include unobserved heterogeneity in the model-almost always assumed independent of the covariates in cross section applications-and then integrate it out. If $c_{i}$ represents scalar heterogeneity, we can extend equation (6.8) to
+
+
+\begin{equation*}
+y_{i j}^{*}=\mathbf{x}_{i j} \boldsymbol{\beta}+c_{i}+a_{i j}, \quad j=0, \ldots, J, \tag{16.13}
+\end{equation*}
+
+
+where $\left\{a_{i j}: j=0,1, \ldots, J\right\}$ conditional on ( $\mathbf{x}_{i}, c_{i}$ ) are independent, identically distributed (i.i.d.) with the type I extreme value distribution, then the presence of $c_{i}$ allows correlation in the utilities of the different choices conditional only on $\mathbf{x}_{i}$. Typically, $c_{i}$ is assumed independent of $\mathbf{x}_{i}$ with a normal distribution. If $c_{i}$ has a discrete distribution with a known number of support points, then the resulting model is usually called a mixture model or latent class model, the idea being that each cross section unit $i$ belongs to an unobserved, or latent, class. Swait (2003) provides a recent example, where ( $a_{i 0}, \ldots, a_{i J}$ ) has the generalized extreme value distribution, which contains the CL model and nested logit model as special cases. In addition to discussing parameter estimates, Swait shows how to obtain partial effects after averaging out the heterogeneity.
+
+We can go even further by replacing $\boldsymbol{\beta}$ in equation (16.13) with a random coefficient, say $\mathbf{b}_{i}$, where $\mathrm{E}\left(\mathbf{b}_{i}\right)=\boldsymbol{\beta}$. In fact, $\mathbf{b}_{i}$ is typically assumed to be independent of $\mathbf{x}_{i}$ with a multivariate normal distribution. Such models can add considerable flexibility to the standard models, but they are more difficult to estimate. McFadden and Train (2000) provide a comprehensive treatment, and Cameron and Trividi (2005) provide an overview and additional references.
+
+\subsection*{16.2.3 Endogenous Explanatory Variables}
+Because explanatory variables can be correlated with unobservables, it is natural to study multinomial response models with endogenous explanatory variables. Rather than start with a linear index with an additive error, as in the derivation of the CL model, we can start with a model for $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, r_{i 1}\right), j=0,1, \ldots, J$, where $r_{i 1}$ represents unobserved, omitted factors thought to be correlated with the vector $\mathbf{y}_{i 2}$. (The vector $\mathbf{z}_{i 1}$, and even $y_{i 2}$, can contain variables that change with $j$, as well as\\
+those that change only with $i$. That is, the exogenous and endogenous variables can be specific to the alternative.) Then, we would use a reduced form for $\mathbf{y}_{i 2}$, say $\mathbf{y}_{i 2}= \mathbf{z}_{i} \boldsymbol{\Pi}_{2}+\mathbf{v}_{i 2}$, assume that ( $r_{i 1}, \mathbf{v}_{i 2}$ ) is independent of $\mathbf{z}_{i}$, and that ( $r_{i 1}, \mathbf{v}_{i 2}$ ) has a convenient distribution, such as multivariate normal. This approach is similar to the control function approach for probit we covered in Section 15.7.2.
+
+In fact, the approach described in the previous paragraph has been applied when the response probabilities have the CL form. For example, Villas-Boas and Winer (1999) apply this approach to modeling brand choice, where prices are allowed to correlate with unobserved tastes that affect brand choice. The problem in starting with an MNL or CL model for $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, r_{i 1}\right)$ in implementing the control function approach is computational: just as the binary logit model does not mix well with normally distributed unobservables, neither does the CL model. Nevertheless, estimation is possible, particular if one uses simulation methods of estimation briefly mentioned in the previous subsection.
+
+A much simpler control function approach is obtained if we skip the step of modeling $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, r_{i 1}\right)$ and jump directly to convenient models for $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}\right.$, $\left.\mathbf{y}_{i 2}, \mathbf{v}_{i 2}\right)=\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i}, \mathbf{y}_{i 2}\right)$. Kuksov and Villas-Boas (2008) and Petrin and Train (2010) are proponents of this solution. The idea is that any parametric model for $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, r_{i 1}\right)$ is essentially arbitrary, so, if we can recover quantities of interest directly from $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, \mathbf{v}_{i 2}\right)$, why not specify these probabilities directly? If we assume that $\mathrm{D}\left(r_{i 1} \mid \mathbf{z}_{i}, \mathbf{y}_{i 2}\right)=\mathrm{D}\left(r_{i 1} \mid \mathbf{v}_{i 2}\right)$, and that $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, \mathbf{v}_{i 2}\right)$ can be obtained from $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, r_{i 1}\right)$ by integrating the latter with respect to $\mathrm{D}\left(r_{i 1} \mid \mathbf{v}_{i 2}\right)$, then we can apply the results on average partial effects (APEs) that we used in Sections 15.7.2 (because $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, r_{i 1}\right)=\mathrm{E}\left(1\left[y_{i 1}=j\right] \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, r_{i 1}\right)$ is a conditional expectation). The weakness of this approach is that it implicitly maintains that, say, an MNL model for $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, \mathbf{v}_{i 2}\right)$ is consistent with underlying specifications for $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, r_{i 1}\right)$ and $\mathrm{D}\left(r_{i 1} \mid \mathbf{v}_{i 2}\right)$, and those underlying specifications would not have recognizable forms.
+
+Once we have selected a model for $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}, \mathbf{y}_{i 2}, \mathbf{v}_{i 2}\right)$, which could be CL or nested logit, we can apply a simple two-step procedure. First, we estimate the reduced form for $\mathbf{y}_{i 2}$ and obtain the residuals, $\hat{\mathbf{v}}_{i 2}=\mathbf{y}_{i 2}-\mathbf{z}_{i} \hat{\boldsymbol{\Pi}}_{2}$. (Alternatively, we can use strictly monotonic transformations of the elements of $\mathbf{y}_{i 2}$, such as the logarithim if $y_{i 2 g}>0$ or $\log \left[y_{i 2 g} /\left(1-y_{i 2 g}\right)\right]$ if $0<y_{i 2 g}<1$, as dependent variables in the reduced forms. As we discussed in the binary response case, using transformations of continuous endogenous explanatory variables allows for more realistic linear reduced forms with additive, independent errors.) Then, we estimate one of the multinomial response models we just covered with explanatory variables $\mathbf{z}_{i 1}, \mathbf{y}_{i 2}$, and $\hat{\mathbf{v}}_{i 2}$. As always with control function approaches, we need enough exclusion restrictions in $\mathbf{z}_{i 1}$ to iden-\\
+tify the parameters and APEs. We can include nonlinear functions of $\left(\mathbf{z}_{i 1}, \mathbf{y}_{i 2}, \hat{\mathbf{v}}_{i 2}\right)$, including quadratics and interactions.
+
+Given estimates of the probabilities $\mathrm{P}\left(y_{i 1}=j \mid \mathbf{z}_{i 1}=\mathbf{z}_{1}, \mathbf{y}_{i 2}=\mathbf{y}_{2}, \mathbf{v}_{i 2}=\mathbf{v}_{2}\right) \equiv p_{j}\left(\mathbf{z}_{1}, \mathbf{y}_{2}, \mathbf{v}_{2}\right)$, we can estimate the APEs on the structural probabilities by estimating the average structural function (ASF):
+
+
+\begin{equation*}
+\widehat{\operatorname{ASF}}\left(\mathbf{z}_{1}, \mathbf{y}_{2}\right)=N^{-1} \sum_{i=1}^{N} p_{j}\left(\mathbf{z}_{1}, \mathbf{y}_{2}, \hat{\mathbf{v}}_{i 2}\right) . \tag{16.14}
+\end{equation*}
+
+
+Then, we can take derivatives or changes of $\widehat{\operatorname{ASF}}\left(\mathbf{z}_{1}, \mathbf{y}_{2}\right)$ with respect to elements of $\left(\mathbf{z}_{1}, \mathbf{y}_{2}\right)$, as usual. While the delta method can be used to obtain analytical standard errors, the bootstrap is simpler and feasible if one uses, say, CL.
+
+If we adopt a multinomial probit model as the underlying structural model, then we can derive a multinomial probit model in implementing the control function approach. But, as in the case with exogenous explanatory variables, such an approach is computationally much more difficult. Implementing the bootstrap to obtain standard errors for the parameters or APEs would create a computational challenge, even with a small number of alternatives.
+
+\subsection*{16.2.4 Panel Data Methods}
+We can use reasoning similar to that in the previous subsection to obtain simple strategies for allowing correlated random effects in panel data models. Ideally, we would specify a popular model for the response probabilities conditional on unobserved heterogeneity. However, for the same reasons discussed in Section 16.2.3, such an approach leads to computational difficulties.
+
+To be more precise about the issues, for each time period $t$, let $y_{i t}$ be an unordered response taking values in $\{0, \ldots, J\}$, and let $\mathbf{x}_{i t}$ denote a vector of explanatory variables (that includes a constant and can, as usual, include a full set of time dummies and even time-constant variables). Letting $\mathbf{c}_{i}$ be a vector of unobserved heteogeneity, we would like to start by specifying
+
+
+\begin{equation*}
+\mathrm{P}\left(y_{i t}=j \mid \mathbf{x}_{i t}, \mathbf{c}_{i}\right)=\mathrm{P}\left(y_{i t}=j \mid \mathbf{x}_{i}, \mathbf{c}_{i}\right), \tag{16.15}
+\end{equation*}
+
+
+where the equality of the two probabilities means that we assume strict exogeneity of $\left\{\mathbf{x}_{i t}: t=1, \ldots, T\right\}$ conditional on $\mathbf{c}_{i}$. If we specify equation (16.15) as, say, an MNL, then integrating out $\mathbf{c}_{i}$, after specifying $\mathrm{D}\left(\mathbf{c}_{i} \mid \mathbf{x}_{i}\right)$, is typically nontrivial. For example, suppose we start with an MNL model with a single source of heterogeneity,
+
+
+\begin{equation*}
+\mathrm{P}\left(y_{i t}=j \mid \mathbf{x}_{i t}, c_{i}\right)=\exp \left(\mathbf{x}_{i t} \boldsymbol{\beta}_{j}+\alpha_{j} c_{i}\right) /\left[1+\sum_{h=1}^{J} \exp \left(\mathbf{x}_{i t} \boldsymbol{\beta}_{h}+\alpha_{h} c_{i}\right)\right] . \tag{16.16}
+\end{equation*}
+
+
+If we specify\\
+$c_{i} \mid \mathbf{x}_{i} \sim \operatorname{Normal}\left(\eta+\overline{\mathbf{w}}_{i} \boldsymbol{\xi}, \sigma_{a}^{2}\right)$,\\
+where $\mathbf{w}_{i t}$ is the subset of $\mathbf{x}_{i t}$ that changes across $i$ and $t$, then, in principle, we can obtain $\mathrm{P}\left(y_{i t}=j \mid \mathbf{x}_{i}\right)=\mathrm{P}\left(y_{i t}=j \mid \mathbf{x}_{i t}, \overline{\mathbf{w}}_{i}\right)$. But the result is not in closed form and not easy to deal with computationally. Simulation methods of estimation of the kind mentioned in Section 16.2.2 are usually needed.
+
+Instead, if we assume only that $\mathrm{D}\left(\mathbf{c}_{i} \mid \mathbf{x}_{i}\right)=\mathrm{D}\left(\mathbf{c}_{i} \mid \overline{\mathbf{w}}_{i}\right)$, then
+
+
+\begin{equation*}
+\mathrm{P}\left(y_{i t}=j \mid \mathbf{x}_{i}\right)=\mathrm{P}\left(y_{i t}=j \mid \mathbf{x}_{i t}, \overline{\mathbf{w}}_{i}\right), \quad j=0, \ldots, J ; t=1, \ldots, T . \tag{16.18}
+\end{equation*}
+
+
+Further, we know that the APEs of $\mathrm{P}\left(y_{i t}=j \mid \mathbf{x}_{i t}=\mathbf{x}_{t}, \mathbf{c}_{i}\right)$-that is, the partial effects with $\mathbf{c}_{i}$ averaged out-can be obtained by averaging out $\overline{\mathbf{w}}_{i}$ in $\mathrm{P}\left(y_{i t}=j \mid \mathbf{x}_{i t}=\mathbf{x}_{t}, \overline{\mathbf{w}}_{i}\right)$. We used this fact several times in Section 15.8; see also Section 2.2.5. Therefore, it may be useful to directly specify models for $\mathrm{P}\left(y_{i t}=j \mid \mathbf{x}_{i t}, \overline{\mathbf{w}}_{i}\right)$. A simple approach is to specify $\mathrm{P}\left(y_{i t}=j \mid \mathbf{x}_{i t}, \overline{\mathbf{w}}_{i}\right)$ as, say, MNL:
+
+
+\begin{equation*}
+y_{i t} \mid\left(\mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}\right) \sim \operatorname{Multinomial}\left(\mathbf{x}_{i t} \boldsymbol{\beta}_{1}+\overline{\mathbf{w}}_{i} \boldsymbol{\xi}_{1}, \ldots, \mathbf{x}_{i t} \boldsymbol{\beta}_{J}+\overline{\mathbf{w}}_{i} \boldsymbol{\xi}_{J}\right), \tag{16.19}
+\end{equation*}
+
+
+where $\mathbf{x}_{i t}$ is assumed to include an intercept (and probably $T-1$ time period dummies). We can then just apply pooled multinomial logit estimation and include the time averages, $\overline{\mathbf{w}}_{i}$, as additional explanatory variables. Inference should be made robust to arbitrary serial dependence because, at a minimum, part of the heterogeneity is still omitted. Plus, the pooled MNL estimator allows any kind of dependence in $\mathrm{D}\left(y_{i 1}, \ldots, y_{i T} \mid \mathbf{x}_{i}, \mathbf{c}_{i}\right)$. Of course, this approach imposes IIA conditional on ( $\mathbf{x}_{i t}, \overline{\mathbf{w}}_{i}$ ), but, interestingly, it does not impose IIA on the average response proba-bilities-the average structural function, in this case-which we would estimate as
+
+
+\begin{equation*}
+\widehat{\operatorname{ASF}}_{j}\left(\mathbf{x}_{t}\right)=N^{-1} \sum_{i=1}^{N}\left\{\exp \left(\mathbf{x}_{t} \hat{\boldsymbol{\beta}}_{j}+\overline{\mathbf{w}}_{i} \hat{\boldsymbol{\xi}}_{j}\right) /\left[1+\sum_{h=1}^{J} \exp \left(\mathbf{x}_{t} \hat{\boldsymbol{\beta}}_{h}+\overline{\mathbf{w}}_{i} \hat{\boldsymbol{\xi}}_{h}\right)\right]\right\} . \tag{16.20}
+\end{equation*}
+
+
+Allowing a mixed model, where some elements of $\mathbf{x}_{i t}$ are choice specific, causes no difficulties. We can use the same strategy applied to nested logit models: we simply add the time averages, $\overline{\mathbf{w}}_{i}$, as additional explanatory variables, used pooled MLE, and make inference robust to arbitrary serial dependence. Many econometrics packages make this approach very straightforward to implement.
+
+We gain even more flexibility by allowing $\mathbf{x}_{i t}$ and $\overline{\mathbf{w}}_{i}$ to interact in the MNL or CL model. In other words, we can add $\left[\operatorname{vec}\left(\overline{\mathbf{w}}_{i} \otimes \mathbf{x}_{i t}\right)\right]^{\prime} \lambda_{j}$ to the probabilities implicit in equation (16.19). Other nonlinear functions, such as general polynomials, are easy to include, too.
+
+\subsection*{16.3 Ordered Response Models}
+\subsection*{16.3.1 Ordered Logit and Ordered Probit}
+We now turn to models for ordered responses. Let $y$ be an ordered response taking on the values $\{0,1,2, \ldots, J\}$ for some known integer $J$. The ordered probit model for $y$ (conditional on explanatory variables $\mathbf{x}$ ) can be derived from a latent variable model. Assume that a latent variable $y^{*}$ is determined by
+
+
+\begin{equation*}
+y^{*}=\mathbf{x} \boldsymbol{\beta}+e, \quad e \mid \mathbf{x} \sim \operatorname{Normal}(0,1) \tag{16.21}
+\end{equation*}
+
+
+where $\boldsymbol{\beta}$ is $K \times 1$ and, for reasons to be seen, $\mathbf{x}$ does not contain a constant. Let $\alpha_{1}<\alpha_{2}<\cdots<\alpha_{J}$ be unknown cut points (or threshold parameters), and define\\
+$y=0 \quad$ if $y^{*} \leq \alpha_{1}$\\
+$y=1 \quad$ if $\alpha_{1}<y^{*} \leq \alpha_{2}$\\
+$y=J \quad$ if $y^{*}>\alpha_{J}$\\
+For example, if $y$ takes on the values 0,1 , and 2 , then there are two cut points, $\alpha_{1}$ and $\alpha_{2}$.
+
+Given the standard normal assumption for $e$, it is straightforward to derive the conditional distribution of $y$ given $\mathbf{x}$; we simply compute each response probability:\\
+$\mathrm{P}(y=0 \mid \mathbf{x})=\mathrm{P}\left(y^{*} \leq \alpha_{1} \mid \mathbf{x}\right)=\mathrm{P}\left(\mathbf{x} \boldsymbol{\beta}+e \leq \alpha_{1} \mid \mathbf{x}\right)=\Phi\left(\alpha_{1}-\mathbf{x} \boldsymbol{\beta}\right)$
+
+
+\begin{equation*}
+\mathrm{P}(y=1 \mid \mathbf{x})=\mathrm{P}\left(\alpha_{1}<y^{*} \leq \alpha_{2} \mid \mathbf{x}\right)=\Phi\left(\alpha_{2}-\mathbf{x} \boldsymbol{\beta}\right)-\Phi\left(\alpha_{1}-\mathbf{x} \boldsymbol{\beta}\right) \tag{16.23}
+\end{equation*}
+
+
+⋮\\
+$\mathrm{P}(y=J-1 \mid \mathbf{x})=\mathrm{P}\left(\alpha_{J-1}<y^{*} \leq \alpha_{J} \mid \mathbf{x}\right)=\Phi\left(\alpha_{J}-\mathbf{x} \boldsymbol{\beta}\right)-\Phi\left(\alpha_{J-1}-\mathbf{x} \boldsymbol{\beta}\right)$\\
+$\mathrm{P}(y=J \mid \mathbf{x})=\mathrm{P}\left(y^{*}>\alpha_{J} \mid \mathbf{x}\right)=1-\Phi\left(\alpha_{J}-\mathbf{x} \boldsymbol{\beta}\right)$.\\
+You can easily verify that these sum to unity. When $J=1$ we get the binary probit model: $\mathrm{P}(y=1 \mid \mathbf{x})=1-\mathrm{P}(y=0 \mid \mathbf{x})=1-\Phi\left(\alpha_{1}-\mathbf{x} \boldsymbol{\beta}\right)=\Phi\left(\mathbf{x} \boldsymbol{\beta}-\alpha_{1}\right)$, and so $-\alpha_{1}$ is the intercept inside $\Phi$. It is for this reason that $\mathbf{x}$ does not contain an intercept in this formulation of the ordered probit model. (When there are only two outcomes, zero and one, we set the single cut point to zero and estimate the intercept; this approach leads to the standard probit model.)
+
+The parameters $\boldsymbol{\alpha}$ and $\boldsymbol{\beta}$ can be estimated by MLE. For each $i$, the log-likelihood function is
+
+
+\begin{align*}
+\ell_{i}(\boldsymbol{\alpha}, \boldsymbol{\beta})= & 1\left[y_{i}=0\right] \log \left[\Phi\left(\alpha_{1}-\mathbf{x}_{i} \boldsymbol{\beta}\right)\right]+1\left[y_{i}=1\right] \log \left[\Phi\left(\alpha_{2}-\mathbf{x}_{i} \boldsymbol{\beta}\right)\right. \\
+& \left.-\Phi\left(\alpha_{1}-\mathbf{x}_{i} \boldsymbol{\beta}\right)\right]+\cdots+1\left[y_{i}=J\right] \log \left[1-\Phi\left(\alpha_{J}-\mathbf{x}_{i} \boldsymbol{\beta}\right)\right] \tag{16.24}
+\end{align*}
+
+
+This log-likelihood function is well behaved, and many statistical packages routinely estimate ordered probit models.
+
+Other distribution functions can be used in place of $\Phi$. Replacing $\Phi$ with the logit function, $\Lambda$, gives the ordered logit model. In either case we must remember that $\boldsymbol{\beta}$, by itself, is of limited interest. In most cases we are not interested in $\mathrm{E}\left(y^{*} \mid \mathbf{x}\right)=\mathbf{x} \boldsymbol{\beta}$, as $y^{*}$ is an abstract construct. Instead, we are interested in the response probabilities $\mathrm{P}(y=j \mid \mathbf{x})$, just as in the ordered response case. For the ordered probit model\\
+$\partial p_{0}(\mathbf{x}) / \partial x_{k}=-\beta_{k} \phi\left(\alpha_{1}-\mathbf{x} \boldsymbol{\beta}\right), \partial p_{J}(\mathbf{x}) / \partial x_{k}=\beta_{k} \phi\left(\alpha_{J}-\mathbf{x} \boldsymbol{\beta}\right)$\\
+$\partial p_{j}(\mathbf{x}) / \partial x_{k}=\beta_{k}\left[\phi\left(\alpha_{j-1}-\mathbf{x} \boldsymbol{\beta}\right)-\phi\left(\alpha_{j}-\mathbf{x} \boldsymbol{\beta}\right)\right], \quad 0<j<J$,\\
+and the formulas for the ordered logit model are similar. In making comparisons across different models—in particular, comparing ordered probit and ordered logit— we must remember to compare estimated response probabilities at various values of $\mathbf{x}$, such as $\overline{\mathbf{x}}$; the $\hat{\boldsymbol{\beta}}$ are not directly comparable. In particular, the $\hat{\alpha}_{j}$ are important determinants of the magnitudes of the estimated probabilities and partial effects. (Therefore, treatments of ordered probit that refer to the $\alpha_{j}$ as ancillary, or secondary, parameters are misleading.)
+
+While the direction of the effect of $x_{k}$ on the probabilities $\mathrm{P}(y=0 \mid \mathbf{x})$ and $\mathrm{P}(y=J \mid \mathbf{x})$ is unambiguously determined by the sign of $\beta_{k}$, the sign of $\beta_{k}$ does not always determine the direction of the effect for the intermediate outcomes, $1,2, \ldots$, $J-1$. To see this point, suppose there are three possible outcomes, 0,1 , and 2 , and that $\beta_{k}>0$. Then $\partial p_{0}(\mathbf{x}) / \partial x_{k}<0$ and $\partial p_{2}(\mathbf{x}) / \partial x_{k}>0$, but $\partial p_{1}(\mathbf{x}) / \partial x_{k}$ could be either sign. If $\left|\alpha_{1}-\mathbf{x} \boldsymbol{\beta}\right|<\left|\alpha_{2}-\mathbf{x} \boldsymbol{\beta}\right|$, the scale factor, $\phi\left(\alpha_{1}-\mathbf{x} \boldsymbol{\beta}\right)-\phi\left(\alpha_{2}-\mathbf{x} \boldsymbol{\beta}\right)$, is positive; otherwise it is negative. (This conclusion follows because the standard normal pdf is symmetric about zero, reaches its maximum at zero, and declines monotonically as its argument increases in absolute value.)
+
+As with multinomial logit, for ordered responses we can compute the percent correctly predicted, for each outcome as well as overall: our prediction for $y$ is simply the outcome with the highest estimated probability.
+
+Ordered probit and logit can also be applied when $y$ is given quantitative meaning but we wish to acknowledge the discrete, ordered nature of the response. For example, suppose that individuals are asked to give one of three responses on how their pension funds are invested: "mostly bonds," "mixed," and "mostly stocks." One\\
+possibility is to assign these outcomes as $0,1,2$ and apply ordered probit or ordered logit to estimate the effects of various factors on the probability of each outcome. Instead, we could assign the percent invested in stocks as, say, 0,50 , and 100 , or 25 , 50, and 75. For estimating the probabilities of each category it is irrelevant how we assign the percentages as long as the order is preserved. However, if we give quantitative meaning to $y$, the expected value of $y$ has meaning. We have
+
+
+\begin{equation*}
+\mathrm{E}(y \mid \mathbf{x})=a_{0} \mathrm{P}\left(y=a_{0} \mid \mathbf{x}\right)+a_{1} \mathrm{P}\left(y=a_{1} \mid \mathbf{x}\right)+\cdots+a_{J} \mathrm{P}\left(y=a_{J} \mid \mathbf{x}\right), \tag{16.25}
+\end{equation*}
+
+
+where $a_{0}<a_{1}<\cdots<a_{J}$ are the $J$ values taken on by $y$. Once we have estimated the response probabilities by ordered probit or ordered logit, we can easily estimate $\mathrm{E}(y \mid \mathbf{x})$ for any value of $\mathbf{x}$, for example, $\overline{\mathbf{x}}$. Estimates of the expected values can be compared at different values of the explanatory variables to obtain partial effects for discrete $x_{j}$. Alternatively, we can compute average partial effects by averaging the partial derivatives across $i$ or discrete changes.
+
+Example 16.2 (Asset Allocation in Pension Plans): The data in PENSION.RAW are a subset of data used by Papke (1998) in assessing the impact of allowing individuals to choose their own allocations on asset allocation in pension plans. Initially, Papke codes the responses "mostly bonds," "mixed," and "mostly stocks" as 0,50 , and 100, and uses a linear regression model estimated by OLS. The binary explanatory variable choice is unity if the person has choice in how his or her pension fund is invested. Controlling for age, education, gender, race, marital status, income (via a set of dummy variables), wealth, and whether the plan is profit sharing gives the OLS estimate $\hat{\beta}_{\text {choice }}=12.05$ (se $=6.30$ ), where $N=194$. This result means that, other things equal, a person having choice has about 12 percentage points more assets in stocks.
+
+The ordered probit coefficient on choice is .371 ( $\mathrm{se}=.184$ ). The magnitude of the ordered probit coefficient does not have a simple interpretation, but its sign and statistical significance agree with the linear regression results. (The estimated cut points are $\hat{\alpha}_{1}=-3.087$ and $\hat{\alpha}_{2}=-2.054$.) To get an idea of the magnitude of the estimated effect of choice on the expected percent in stocks, we can estimate $\mathrm{E}(y \mid \mathbf{x})$ with choice $=1$ and choice $=0$, and obtain the difference. However, we need to choose values for the other regressors. For illustration, suppose the person is 60 years old, has 13.5 years of education (roughly the averages in the sample), is a single, nonblack male, has annual income between $\$ 50,000$ and $\$ 75,000$, had wealth in 1989 of $\$ 200,000$ (also close to the sample average), and does not have a profit-sharing plan. Then, for choice $=1, \hat{\mathrm{E}}($ pctstck $\mid \mathbf{x}) \approx 40.0$, and with choice $=0, \hat{\mathrm{E}}($ pctstck $\mid \mathbf{x}) \approx$ 28.1. The difference, 11.9, is remarkably close to the linear model estimate of the effect on choice.
+
+For ordered probit, the percentages correctly predicted for each category are 51.6 (mostly bonds), 43.1 (mixed), and 37.9 (mostly stocks). The overall percentage correctly predicted is about 44.3 .
+
+\subsection*{16.3.2 Specification Issues in Ordered Models}
+As with binary probit and logit in Chapter 15, as well as the unordered models discussed in Section 16.1, we can investigate the consequences of various specification problems with ordered probit and logit. Some writers have focused on the parallel regression assumption, which arises because of the underlying latent variable formulation with a single unobservable independent of the covariates. In particular, if we write $y^{*}$ as in equation (16.21), where $\mathrm{D}(e \mid \mathbf{x})$ is standard normal or logistic, then\\
+$\mathrm{P}(y \leq j \mid \mathbf{x})=\mathrm{P}\left(y^{*} \leq \alpha_{j} \mid \mathbf{x}\right)=G\left(\alpha_{j}-\mathbf{x} \boldsymbol{\beta}\right), \quad j=0,1, \ldots, J-1$,\\
+where $G(\cdot)=\Phi(\cdot)$ or $G(\cdot)=\Lambda(\cdot)$, and so the probabilities differ across $j$ only because of the cut parameters, $\alpha_{j}$. In effect, an intercept shift inside the nonlinear cdf determines the differences in probabilities. A more general specification allows the vector $\boldsymbol{\beta}$ to change across $j$, too:\\
+$\mathrm{P}(y \leq j \mid \mathbf{x})=G\left(\alpha_{j}-\mathbf{x} \boldsymbol{\beta}_{j}\right), \quad j=0,1, \ldots, J-1$.
+
+Clearly, equation (16.27) is more general than (16.26), and the vector ( $\alpha_{j}, \boldsymbol{\beta}_{j}$ ) is easily estimated by applying binary reponse MLE to the response variable $w_{i j}=1\left[y_{i} \leq j\right]$, $j=0, \ldots, J-1$. As discussed in Long and Freese (2001), estimation of (16.27) and estimation of the ordered response model (which is the restricted model) can be used to obtain the $L R$ statistic for the hypothesis that the $\boldsymbol{\beta}_{j}$ are all equal.
+
+Testing that the $\boldsymbol{\beta}_{j}$ are the same in equations (16.27) is certainly a valid specification test of the standard ordered probit or logit model, but it is not clear how to proceed if we reject a common $\boldsymbol{\beta}$. Presumably, logic dictates whether $y$ is an ordered response or an unordered response; if $y$ is an ordered response, the possibility that the estimated probabilities $\hat{\mathrm{P}}(y \leq j \mid \mathbf{x})$ are not increasing in $j$ for all values of $\mathbf{x}$-which can happen if the $\boldsymbol{\beta}_{j}$ are allowed to differ-does not make sense, and it makes little sense to estimate an unordered model (such as multinomial logit). Furthermore, a statistical rejection need not imply that ordered probit or ordered logit estimates of the response probabilities are poor estimates of the true response probabilities. If we specify the more general model $\mathrm{P}(y \leq j \mid \mathbf{x})=G\left(\alpha_{j}-\mathbf{x} \boldsymbol{\beta}_{j}\right)$, then we are left with a bunch of unconnected binary response models for $w_{j}=1[y \leq j], j=0, \ldots, J-1$, and it is not clear what we would learn in the end. (Estimating separate binary response models for the $w_{j}$ is how one carries out an $L R$ test of the parallel regression\\
+function, where the restricted model is just the usual ordered probit or ordered logit; see Long and Freese (2001) for further details.)
+
+Equation (16.26) is useful in its own right. For a continuous variable $x_{h}$,\\
+$\frac{\partial \mathbf{P}(y \leq j \mid \mathbf{x})}{\partial x_{h}}=-\beta_{h} g\left(\alpha_{j}-\mathbf{x} \boldsymbol{\beta}\right)$,\\
+where $g(\cdot)$ is the density associated with $G(\cdot)$, which means that the signs of the partial effects on $\mathrm{P}(y \leq j \mid \mathbf{x})$ are unambiguously determined by the signs of the coefficients. If $\beta_{h}>0$, an increase in $x_{h}$ decreases the probability that $y$ is less than or equal to any value $j$.
+
+Other specification issues follow our treatment of binary response models in Chapter 15. For reasons discussed in Section 15.7, these are most easily studied in the context of ordered probit. For example, if we add a normally distributed unobserved heterogeneity term that is independent of $\mathbf{x}$, we consistently estimate the APEs on the response probabilities, and expected value, if we simply ignore the heterogeneity. Just as in the binary response case, we estimate precisely the quantities of interest when we just ignore the heterogeneity. More generally, if we specify $\mathrm{P}\left(y_{i}=j \mid \mathbf{x}_{i}, c_{i}\right)$ for heterogeneity $c_{i}$ independent of $\mathbf{x}_{i}$, the APEs are obtained by computing partial effects on $\mathrm{P}\left(y_{i}=j \mid \mathbf{x}_{i}\right)$. Therefore, one can argue that we might as well just specify more flexible models for $\mathrm{P}\left(y_{i}=j \mid \mathbf{x}_{i}\right)$.
+
+One way to specify more flexible models is to introduce heteroskedasticity or nonnormality in the latent variable equation, just as in the binary response case. So, assume in equation (16.21) that\\
+$e \mid \mathbf{x} \sim \operatorname{Normal}\left(0, \exp \left(2 \mathbf{x}_{1} \boldsymbol{\delta}\right)\right)$,\\
+where $\mathbf{x}_{1}$ is a subset of $\mathbf{x}$ (possibly $\mathbf{x}_{1}=\mathbf{x}$ ). The response probabilities are obtained by simply multiplying ( $\alpha_{j}-\mathbf{x} \boldsymbol{\beta}$ ) everywhere in equations (16.23) by $\exp \left(-\mathbf{x}_{1} \boldsymbol{\delta}\right)$. A score test of $H_{0}: \boldsymbol{\delta}=\mathbf{0}$, or a variable addition version of the test, are straightforward to derive; see Problem 16.4. MLE of the unrestricted model is not too difficult, either. But, as in the binary response case, we must remember to compare estimated partial effects across different models, rather than just coefficient estimates. The same issues that arise in the binary case for how to define the APEs arise here, too; see Section 15.7.4.
+
+As in the binary response case, it is possible to relax the normality or logistic assumption on the latent error, e. Again, the key issue in considering such extensions is whether implementing them changes the estimated partial effects in important ways. As usual, it is not necessary or sufficient to consider only the effects on the estimates of $\boldsymbol{\beta}$ and the $\alpha_{j}$.
+
+\subsection*{16.3.3 Endogenous Explanatory Variables}
+Handling one or more continuous endogenous explanatory variables is relatively straightforward in ordered probit models, provided we are willing to make distributional assumptions on the reduced form. In fact, the Rivers and Vuong (1988) approach (see Section 15.7.2) extends immediately to ordered probit. Write the model now as
+
+
+\begin{equation*}
+y_{1}^{*}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\gamma_{1} y_{2}+u_{1} \tag{16.30}
+\end{equation*}
+
+
+$y_{2}=\mathbf{z} \boldsymbol{\delta}_{2}+v_{2}$,\\
+where ( $u_{1}, v_{2}$ ) is independent of $\mathbf{z}$ and jointly normally distributed. (As in the binary case, we can relax these assumptions a bit.) In keeping with the typical ordered probit approach, $\mathbf{z}_{1}$ does not contain an intercept. Instead, there are cut points, $\alpha_{j}, j= 1, \ldots, J$. We define the observed ordered response, $y_{1}$, in terms of the latent response, $y_{1}^{*}$, just as in equations (16.22).
+
+By now the approach should be clear. If we write $u_{1}=\theta_{1} v_{2}+e_{1}$ and plug into (16.30) we obtain\\
+$y_{1}^{*}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\gamma_{1} y_{2}+\theta_{1} v_{2}+e_{1}$,\\
+where $\theta_{1}=\eta_{1} / \tau_{2}^{2}, \eta_{1}=\operatorname{Cov}\left(v_{2}, u_{1}\right), \tau_{2}^{2}=\operatorname{Var}\left(v_{2}\right), e_{1} \mid \mathbf{z}, v_{2} \sim \operatorname{Normal}\left(0,1-\rho_{1}^{2}\right)$, and $\rho_{1}=\theta_{1}^{2} \tau_{2}^{2}=\eta_{1}^{2} / \tau_{2}^{2}$. It follows from the standard results on two-step estimation that if we obtain the OLS residuals, $\hat{v}_{i 2}$, from the first-stage regression $y_{i 2}$ on $\mathbf{z}_{i}, i=1, \ldots$, $N$, and then run ordered probit of $y_{i 1}$ on $\mathbf{z}_{i 1}, y_{i 2}$, and $\hat{v}_{i 2}$ in a second stage, we consistently estimate the scaled coefficients $\boldsymbol{\delta}_{\rho 1} \equiv \boldsymbol{\delta}_{1} /\left(1-\rho_{1}^{2}\right)^{1 / 2}, \gamma_{\rho 1} \equiv \gamma_{1} /\left(1-\rho_{1}^{2}\right)^{1 / 2}$, $\theta_{\rho 1} \equiv \theta_{1} /\left(1-\rho_{1}^{2}\right)^{1 / 2}$, and $\alpha_{\rho j}=\alpha_{j} /\left(1-\rho_{1}^{2}\right)^{1 / 2}$. A simple test of the null hypothesis that $y_{2}$ is exogenous (where we maintain, of course, that $\mathbf{z}$ is exogenous) is just the standard $t$ statistic on $\hat{v}_{i 2}$. As in Section 15.7.2, we can estimate the original parameters by dividing each of the scaled coefficients by $\left(1+\hat{\theta}_{\rho 1}^{2} \hat{\tau}_{2}^{2}\right)^{1 / 2}$. Bootstrapping is a natural way to obtain standard errors; the delta method can also be used.
+
+Alternatively, as in the binary case, we can compute the response probabilities (or expected values) for the second-step ordered probit that includes the residuals, $\hat{v}_{i 2}$. Then, the response probabilities, or their derivatives, can be averaged out over $\hat{v}_{i 2}$ to obtain consistent estimators of the APEs.
+
+Naturally, allowing endogenous explanatory variables that do not have a conditional, homoskedastic normal distribution is more difficult. One can replace equation (16.31) with $y_{2}=1\left[\mathbf{z} \boldsymbol{\delta}_{2}+v_{2}>0\right]$ where $v_{2}$ has a standard normal distribution, and then use MLE. That requires obtaining $\mathrm{P}\left(y_{1}=j \mid \mathbf{z}, y_{2}\right), j=0, \ldots, J-1$ for $y_{2}=0$\\
+and $y_{2}=1$, just as in the binary case. The estimation problem is not particularly difficult; see, for example, Adams, Chiang, and Jensen (2003). As discussed in Section 15.7.3, a two-stage approach that replaces $y_{2}$ with fitted probabilities from the firststage probit is not justified; it produces inconsistent estimators of the parameters and (probably) the APEs.
+
+A simpler but more radical solution is to assume that a single (estimable) function of $\left(\mathbf{z}, y_{2}\right)$ is correlated with the unobservables in the structural ordered probit model. This assumption is implicit in all of the control function approaches we have implemented. For example, in the case of equation (16.31), $v_{2}$ plays the role of the single, estimable function. To be precise, suppose we explicitly introduce unobservables, $r_{1}$, thought to be correlated with $y_{2}$. Then, we are interested in the response probabilities
+
+
+\begin{equation*}
+P\left(y_{1}=j \mid \mathbf{z}_{1}, y_{2}, r_{1}\right)=P\left(y_{1}=j \mid \mathbf{z}, y_{2}, r_{1}\right), \tag{16.33}
+\end{equation*}
+
+
+where the equality simply implies an exclusion restriction. Because $r_{1}$ is not observed, we will integrate $r_{1}$ out of the response probabilities when computing partial effects. Define the standardized residual for $y_{2}$ as
+
+
+\begin{equation*}
+e_{2} \equiv\left[y_{2}-\Phi\left(\mathbf{z} \boldsymbol{\delta}_{2}\right)\right] /\left\{\Phi\left(\mathbf{z} \boldsymbol{\delta}_{2}\right)\left[1-\Phi\left(\mathbf{z} \boldsymbol{\delta}_{2}\right)\right]\right\}^{1 / 2}, \tag{16.34}
+\end{equation*}
+
+
+under the assumption that $D\left(y_{2} \mid \mathbf{z}\right)$ follows a probit model. By construction, $\mathrm{E}\left(e_{2} \mid \mathbf{z}\right) =0$ and $\operatorname{Var}\left(e_{2} \mid \mathbf{z}\right)=1$. Unlike $v_{2}$ in equation (16.31), $e_{2}$ cannot be independent of $\mathbf{z}$ because its support depends directly on $\mathbf{z}$. Nevertheless, suppose we simply assert that
+
+
+\begin{equation*}
+D\left(r_{1} \mid \mathbf{z}, y_{2}\right)=D\left(r_{1} \mid e_{2}\right) \tag{16.35}
+\end{equation*}
+
+
+Under assumption (16.35), it follows that we can consistently estimate the APEs of $\left(\mathbf{z}_{1}, y_{2}\right)$ on $P\left(y_{1}=j \mid \mathbf{z}_{1}, y_{2}, r_{1}\right)$ by estimating $P\left(y_{1}=j \mid \mathbf{z}_{1}, y_{2}, e_{1}\right)$ and then averaging out $e_{1}$. In the language of Blundell and Powell (2004), the ASF for the response probabilities is
+
+
+\begin{equation*}
+\operatorname{ASF}_{j}\left(\mathbf{z}_{1}, y_{2}\right)=\mathrm{E}_{e_{i 2}}\left[p_{j}\left(\mathbf{z}_{1}, y_{2}, e_{i 2}\right)\right] \tag{16.36}
+\end{equation*}
+
+
+where $p_{j}\left(\mathbf{z}_{1}, y_{2}, e_{2}\right) \equiv P\left(y_{1}=j \mid \mathbf{z}_{1}, y_{2}, e_{2}\right)$. Now, the approach to estimating APEs is, in principle, straightforward. In the first stage, we estimate a probit of $y_{i 2}$ on $\mathbf{z}_{i}$ and construct the standardized residuals, $\hat{e}_{i 2} \equiv\left(y_{i 2}-\hat{\Phi}_{i 2}\right) /\left[\hat{\Phi}_{i 2}\left(1-\hat{\Phi}_{i 2}\right)\right]^{1 / 2}$. Next, we estimate a model for the $p_{j}\left(\mathbf{z}_{1}, y_{2}, e_{2}\right)$ by inserting $\hat{e}_{i 2}$ for the unobserved $e_{i 2}$. Because $y_{1}$ is an ordered outcome, any estimation approach should recognize the ordered nature. Because ordered probit (and ordered logit) are straightforward, we might, as an approximation, use an ordered probit with $\hat{e}_{i 2}$ entered in a flexible way, for example, polynomials, and possibly interacted with $\left(\mathbf{z}_{i 1}, y_{i 2}\right)$. The parameter estimates from such an ordered probit would not necessarily mean much, but the APEs would be\\
+easy to estimate by averaging out the $\hat{e}_{i 2}$ in the estimated response probabilities. At the very least, just adding $\hat{e}_{i 2}$ as a single explanatory to the ordered probit and conducting a $t$ test on $\hat{e}_{i 2}$ is valid as an endogeneity test; as usual, the null hypothesis is that $y_{2}$ is exogenous. (Of course, putting in the residuals from an LPM, or the unstandardized probit residuals, also provides a valid test.) Naturally, because the ordered probit contains binary probit as a special case, the method can be applied to the standard binary probit model.
+
+The key drawback to the computationally simple procedure just described is that there is little basis for assumption (16.35) when $y_{2}$ is binary. Nevertheless, it could hold, and then the only issue is choosing functional forms. One could use nonparametric or semiparametric methods in each step, similar to Blundell and Powell (2004), to overcome objections caused by specific functional forms (such as ordered probit in the second stage).
+
+\subsection*{16.3.4 Panel Data Methods}
+We can easily adapt the correlated random effects (CRE) methods for binary probit (see Section 15.8.2) to ordered probit. We start with the standard latent variable model\\
+$y_{i t}^{*}=\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}+e_{i t}, \quad t=1, \ldots, T$,\\
+where\\
+$e_{i t} \mid \mathbf{x}_{i}, c_{i} \sim \operatorname{Normal}(0,1), \quad t=1, \ldots, T$,\\
+and $\mathbf{x}_{i t}$ can contain time-period dummies but not an overall intercept. Then, the observed ordered response is $y_{i t}=0$ if $y_{i t}^{*} \leq \alpha_{1}, y_{i t 1}=1$ if $\alpha_{1}<y_{i t}^{*} \leq \alpha_{2}$, and so on. We can add the Chamberlain-Mundlak device:\\
+$c_{i}=\psi+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}, \quad a_{i} \mid \mathbf{x}_{i} \sim \operatorname{Normal}\left(0, \sigma_{a}^{2}\right)$.
+
+Now, if we compute the response probabilities $p_{j}\left(\mathbf{x}_{i t}, \overline{\mathbf{x}}_{i}\right)=P\left(y_{i t}=j \mid \mathbf{x}_{i t}, \overline{\mathbf{x}}_{i}\right)= P\left(y_{i t}=j \mid \mathbf{x}_{i}\right)$, it is easily seen that these have the ordered probit form with parameters $\boldsymbol{\beta}_{a}, \boldsymbol{\xi}_{a}$, and $\alpha_{a j}, j=1, \ldots, J$, where the $a$ subscript denotes division by $\left(1+\sigma_{a}^{2}\right)^{1 / 2}$ and $\psi_{a}$ is absorbed into the cut points. Estimation of the scaled parameters proceeds by pooled ordered probit, where we allow for unrestricted serial dependence. Naturally, the APEs of $P\left(y_{i t}=j \mid \mathbf{x}_{i t}=\mathbf{x}_{t}, c_{i}=c\right)$ with respect to elements of $\mathbf{x}_{t}$ are obtained from\\
+$N^{-1} \sum_{i=1}^{N} p_{j}\left(\mathbf{x}_{t}, \overline{\mathbf{x}}_{i}, \hat{\boldsymbol{\theta}}_{a}\right)$,\\
+where $\hat{\boldsymbol{\theta}}_{a}$ represents the vector of all scaled parameter estimates; the only ones we can obtain without further assumption.
+
+A full MLE approach is possible if we assume that the $e_{i t}$ are independent conditional on $\left(\mathbf{x}_{i}, c_{i}\right)$, but, computationally, full MLE is more difficult than the pooled (partial) MLE. As always, the pooled method identifies only the APEs, but it is more robust than the full MLE.
+
+Wooldridge (2005b) provides a framework to estimate dynamic ordered probit models. An important issue concerns how the dynamics should enter the response probabilities. Wooldridge proposes including a set of dummies indicating the previous period's outcome. Namely, define $J$ dummies, say $w_{i, t-1,1}, \ldots, w_{i, t-1, J}$, where $w_{i, t-1, j}=1\left[y_{i, t-1}=j\right]$, and then $\mathbf{w}_{i, t-1}=\left(w_{i, t-1,1}, \ldots, w_{i, t-1, J}\right)$ is included among the explanatory variables. So, the latent variable model is\\
+$y_{i t}^{*}=\mathbf{z}_{i t} \boldsymbol{\delta}+\mathbf{w}_{i, t-1} \boldsymbol{\rho}+c_{i}+u_{i t}, \quad t=1, \ldots, T$.
+
+To account for the initial conditions problem, the unobserved effect, $c_{i}$, is modeled as $c_{i}=\psi+\mathbf{w}_{i 0} \boldsymbol{\eta}+\mathbf{z}_{i} \boldsymbol{\xi}+a_{i}$, where $\mathbf{w}_{i 0}$ is the $J$-vector of initial conditions, $w_{i 0 j}$, and $\mathbf{z}_{i}$ is the entire history of the strictly exogenous explanatory variables $\mathbf{z}_{i t}$. If $a_{i}$ is independent of ( $\mathbf{w}_{i 0}, \mathbf{z}_{i}$ ) and distributed as $\operatorname{Normal}\left(0, \sigma_{a}^{2}\right)$, we can apply random effects ordered probit to the latent variable equation\\
+$y_{i t}^{*}=\mathbf{z}_{i t} \boldsymbol{\delta}+\mathbf{w}_{i, t-1} \boldsymbol{\rho}+\mathbf{w}_{i 0} \boldsymbol{\eta}+\mathbf{z}_{i} \boldsymbol{\xi}+a_{i}+u_{i t}, \quad t=1, \ldots, T$,\\
+where we absorb the intercept into the cut parameters, $\alpha_{j}$. Any software that estimates RE ordered probit models can be applied directly to estimate all parameters, including $\sigma_{a}^{2}$; we simply specify the explanatory variables at time $t$ as $\left(\mathbf{z}_{i t}, \mathbf{w}_{i, t-1}, \mathbf{w}_{i 0}, \mathbf{z}_{i}\right)$. (Pooled ordered probit does not consistently estimate any interesting parameters; see the discussion in Section 15.8.4 for the binary probit case.) APEs are easily computed, as discussed in Wooldridge (2005b). Not surprisingly, the APEs depend on the coefficients multiplied by $\left(1+\hat{\sigma}_{a}^{2}\right)^{-1 / 2}$.
+
+\section*{Problems}
+16.1. Use the data in KEANE.RAW to answer this question.\\
+a. Estimate the model reported in Table 16.1, using the data for 1981. Do any of the coefficients differ in important ways from those in Table 16.1 (for 1987)?\\
+b. Estimate the model pooled across all years, and include year dummies for 1982 to 1987. Explain why, in general, the standard errors and test statistics should be made\\
+robust to arbitrary serial dependence. Do the usual and robust standard errors differ substantially?\\
+c. Should the year dummies be kept in the model? Explain.\\
+d. Using the model estimated in part b, estimate the change in the probability of being employed for a black man with five years of experience when educ increases from 12 to 16. Obtain the estimates for both 1981 and 1987, and comment.\\
+e. How would you test whether the coefficients on exper and exper ${ }^{2}$ have changed over time?\\
+16.2. Use the data in PENSION.RAW for this exercise.\\
+a. Estimate a linear model for pctstck, where the explanatory variables are choice, age, educ, female, black, married, finc25,... finc101, wealth89, and prftshr. Why might you compute heteroskedasticity-robust standard errors?\\
+b. The sample contains separate observations for some husband-wife pairs. Compute standard errors of the estimates from the model in part a that account for the cluster correlation within family. (These should also be heteroskedasticity-robust.) Do the standard errors differ much from the usual OLS standard errors, or from the heteroskedasticity-robust standard errors?\\
+c. Estimate the model from part a by ordered probit. Estimate E (pctstck $\mid \mathbf{x}$ ) for a single, nonblack female with 12 years of education who is 60 years old. Assume she has net worth (in 1989) equal to $\$ 150,000$ and earns $\$ 45,000$ a year, and her plan is not profit sharing. Compare this with the estimate of E (pctstck $\mid \mathbf{x}$ ) from the linear model.\\
+d. If you want to choose between the linear model and ordered probit based on how well each estimates $\mathrm{E}(y \mid \mathbf{x})$, how would you proceed?\\
+16.3. Consider the ordered probit model under exponential heteroskedasticity, as in (16.29).\\
+a. Derive the response probabilities $\mathrm{P}(y=j \mid \mathbf{x})$.\\
+b. Write down the log likelihood as a function of all parameters, $\boldsymbol{\alpha}, \boldsymbol{\beta}$, and $\boldsymbol{\delta}$. Find the gradient of the $\log$ likelihood with respect to $\boldsymbol{\delta}$, and evaluate the gradient at $\boldsymbol{\delta}=\mathbf{0}$.\\
+c. What might be a useful variable addition test for $\mathrm{H}_{0}: \boldsymbol{\delta}=\mathbf{0}$ ?\\
+d. For the outcome $y=1$ (just for concreteness), define the average structural function as\\
+$\operatorname{ASF}_{1}(\mathbf{x})=\mathrm{E}_{e_{i}}\left(1\left[\alpha_{1}-\mathbf{x} \boldsymbol{\beta}<e_{i} \leq \alpha_{2}-\mathbf{x} \boldsymbol{\beta}\right]\right)$.
+
+Find the ASF in terms of the (unconditional) cdf of $e_{i}$ (and $\mathbf{x}$ and the parameters). Is the cdf of $e_{i}$ known?\\
+e. Use iterated expectations to show that\\
+$\operatorname{ASF}_{1}(\mathbf{x})=\mathrm{E}_{\mathbf{x}_{i 1}}\left\{\Phi\left[\exp \left(-\mathbf{x}_{i 1} \boldsymbol{\delta}\right)\left(\alpha_{2}-\mathbf{x} \boldsymbol{\beta}\right)\right]-\Phi\left[\exp \left(-\mathbf{x}_{i 1} \boldsymbol{\delta}\right)\left(\alpha_{1}-\mathbf{x} \boldsymbol{\beta}\right)\right]\right.$.\\
+If you have estimated the parameters by MLE, how would you estimate $\operatorname{ASF}_{1}(\mathbf{x})$, and how would you use it to estimate APEs?\\
+16.4. Using the data in PENSION.RAW, define a variable invest $=0$ if pctstck $=0$, invest $=1$ if pctstck $=50$, and invest $=2$ if pctstck $=100$.\\
+a. Estimate the ordered probit model in Example 16.2 but with invest as the dependent variable. What do you conclude?\\
+b. Are there any interesting quantities that would differ between using pctstck and invest as the dependent variables?\\
+16.5. Consider the ordered probit model in (16.30) and (16.31), but assume that $v_{2} \mid \mathbf{z} \sim \operatorname{Normal}\left(0, \exp \left(\mathbf{z} \boldsymbol{\xi}_{2}\right)\right)$. In other words, $v_{2}$ contains heteroskedasticity. Assume that ( $u_{1}, e_{2}$ ) is jointly normal and independent of $\mathbf{z}$, where $e_{2} \equiv \exp \left(-\mathbf{z} \boldsymbol{\xi}_{2} / 2\right) v_{2}$ is the standardized error; in particular, both $u_{1}$ and $e_{2}$ are independent of $\mathbf{z}$ with a standard normal distribution.\\
+a. Propose $\sqrt{N}$-consistent estimators of $\boldsymbol{\delta}_{2}$ and $\boldsymbol{\xi}_{2}$.\\
+b. Show that $u_{1}=\theta_{1} e_{2}+e_{1}$, where $e_{1}$ is independent of $\left(\mathbf{z}, e_{2}\right)$. Why is $e_{1}$ also independent of $y_{2}$ ?\\
+c. Propose a two-step method for consistently estimating the parameters in equation (16.30) and the cut points up to scale.\\
+d. How would you consistently estimate the APEs?\\
+e. If equation (16.30) holds but $y_{2}>0$, and (16.31) holds with $\log \left(y_{2}\right)$ in place of $y_{2}$, how would you proceed?\\
+f. Now suppose that $\mathrm{E}\left(y_{2} \mid \mathbf{z}\right)=\exp \left(\mathbf{z} \boldsymbol{\delta}_{2}\right)$ and $\operatorname{Var}\left(y_{2} \mid \mathbf{z}\right)=\exp \left(\mathbf{z} \boldsymbol{\xi}_{2}\right)$, and assume that $e_{2} \equiv\left[y_{2}-\mathrm{E}\left(y_{2} \mid \mathbf{z}\right)\right] /\left[\operatorname{Var}\left(y_{2} \mid \mathbf{z}\right)\right]^{1 / 2}$ is independent of $\mathbf{z}$. How would you allow for endogeneity of $y_{2}$ in an ordered probit model?\\
+16.6. Write a panel data unobserved effects ordered probit model, with a potentially endogenous explanatory variable, in latent variable form as\\
+$y_{i t 1}^{*}=\mathbf{z}_{i t 1} \boldsymbol{\delta}_{1}+\gamma_{1} y_{i t 2}+c_{i 1}+u_{i t 1}, \quad u_{i t 1} \mid \mathbf{z}_{i}, c_{i 1} \sim \operatorname{Normal}(0,1)$,\\
+where, we assume the observed outcome, $y_{i t 1}$, is defined to take on values in $\{0,1, \ldots, J\}$ with cut points $\alpha_{1}, \ldots, \alpha_{J}$. The notation extends in a natural way that of Section 15.8.5. Assume, in addition, that\\
+$c_{i 1}=\psi_{1}+\overline{\mathbf{z}}_{i} \xi_{1}+a_{i 1}, \quad a_{i 1} \mid \mathbf{z}_{i} \sim \operatorname{Normal}\left(0, \sigma_{a_{1}}^{2}\right)$\\
+$y_{i t 2}=\mathbf{z}_{i t} \boldsymbol{\delta}_{2}+\psi_{2}+\overline{\mathbf{z}}_{i} \xi_{2}+v_{i t 2}, \quad v_{i t 2} \mid \mathbf{z}_{i} \sim \operatorname{Normal}\left(0, \tau_{2}^{2}\right), \quad t=1, \ldots, T$.\\
+a. Propose a two-step control function approach to estimate $\boldsymbol{\delta}_{1}, \gamma_{1}$, and the cut parameters $\alpha_{j}$ up to scale. Put a $g$ index on the scaled parameters to distinguish them from the original parameters.\\
+b. Show that the average structural function for outcome $1 \leq j \leq J-1$ can be written as
+
+$$
+\begin{aligned}
+\operatorname{ASF}\left(\mathbf{z}_{t 1}, y_{t 2}\right)= & \mathrm{E}_{\left(\overline{\mathbf{z}}_{i}, v_{i t 2}\right)}\left[\Phi\left(\alpha_{g j}-\mathbf{z}_{t 1} \boldsymbol{\delta}_{g 1}-\gamma_{g 1} y_{t 2}-\overline{\mathbf{z}}_{i} \boldsymbol{\xi}_{g 1}-\theta_{g 1} v_{i t 2}\right)\right. \\
+& \left.-\Phi\left(\alpha_{g, j-1}-\mathbf{z}_{t 1} \boldsymbol{\delta}_{g 1}-\gamma_{g 1} y_{t 2}-\overline{\mathbf{z}}_{i} \boldsymbol{\xi}_{g 1}-\theta_{g 1} v_{i t 2}\right)\right]
+\end{aligned}
+$$
+
+where $\mathrm{E}_{\left(\overline{\mathbf{z}}_{i}, v_{i t 2}\right)}(\cdot)$ denotes the expected value with respect to the distribution of $\left(\overline{\mathbf{z}}_{i}, v_{i t 2}\right)$.\\
+c. How would you estimate the APEs and obtain valid standard errors?\\
+d. Are the estimators of the parameters and APEs consistent if $v_{i r 2}$ is correlated with $u_{i t 1}$ for some $r \neq t$ ? Explain.
+
+\section*{17}
+
+\end{document}

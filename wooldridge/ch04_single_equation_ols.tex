@@ -1,0 +1,686 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 4: Single-Equation Linear Model and OLS}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsection*{4.1 Overview of the Single-Equation Linear Model}
+This and the next couple of chapters cover what is still the workhorse in empirical economics: the single-equation linear model. Though you are assumed to be comfortable with ordinary least squares (OLS) estimation, we begin with OLS for a couple of reasons. First, it provides a bridge between more traditional approaches to econometrics, which treat explanatory variables as fixed, and the current approach, which is based on random sampling with stochastic explanatory variables. Second, we cover some topics that receive at best cursory treatment in first-semester texts. These topics, such as proxy variable solutions to the omitted variable problem, arise often in applied work.
+
+The population model we study is linear in its parameters,
+
+
+\begin{equation*}
+y=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\cdots+\beta_{K} x_{K}+u, \tag{4.1}
+\end{equation*}
+
+
+where $y, x_{1}, x_{2}, x_{3}, \ldots, x_{K}$ are observable random scalars (that is, we can observe them in a random sample of the population), $u$ is the unobservable random disturbance or error, and $\beta_{0}, \beta_{1}, \beta_{2}, \ldots, \beta_{K}$ are the parameters (constants) we would like to estimate.
+
+The error form of the model in equation (4.1) is useful for presenting a unified treatment of the statistical properties of various econometric procedures. Nevertheless, the steps one uses for getting to equation (4.1) are just as important. Goldberger (1972) defines a structural model as one representing a causal relationship, as opposed to a relationship that simply captures statistical associations. A structural equation can be obtained from an economic model, or it can be obtained through informal reasoning. Sometimes the structural model is directly estimable. Other times we must combine auxiliary assumptions about other variables with algebraic manipulations to arrive at an estimable model. In addition, we will often have reasons to estimate nonstructural equations, sometimes as a precursor to estimating a structural equation.
+
+The error term $u$ can consist of a variety of things, including omitted variables and measurement error (we will see some examples shortly). The parameters $\beta_{j}$ hopefully correspond to the parameters of interest, that is, the parameters in an underlying structural model. Whether this is the case depends on the application and the assumptions made.
+
+As we will see in Section 4.2, the key condition needed for OLS to consistently estimate the $\beta_{j}$ (assuming we have available a random sample from the population) is that the error (in the population) has mean zero and is uncorrelated with each of the regressors:
+
+
+\begin{equation*}
+\mathrm{E}(u)=0, \quad \operatorname{Cov}\left(x_{j}, u\right)=0, \quad j=1,2, \ldots, K . \tag{4.2}
+\end{equation*}
+
+
+The zero-mean assumption is for free when an intercept is included, and we will restrict attention to that case in what follows. It is the zero covariance of $u$ with each $x_{j}$ that is important. From Chapter 2 we know that equation (4.1) and assumption (4.2) are equivalent to defining the linear projection of $y$ onto $\left(1, x_{1}, x_{2}, \ldots, x_{K}\right)$ as $\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\cdots+\beta_{K} x_{K}$.
+
+Sufficient for assumption (4.2) is the zero conditional mean assumption\\
+$\mathrm{E}\left(u \mid x_{1}, x_{2}, \ldots, x_{K}\right)=\mathrm{E}(u \mid \mathbf{x})=0$.
+
+Under equation (4.1) and assumption (4.3), we have the population regression function\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}, \ldots, x_{K}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\cdots+\beta_{K} x_{K}$.
+
+As we saw in Chapter 2, equation (4.4) includes the case where the $x_{j}$ are nonlinear functions of underlying explanatory variables, such as
+
+$$
+\begin{aligned}
+\mathrm{E}(\text { savings } \mid \text { income }, \text { size }, \text { age }, \text { college })= & \beta_{0}+\beta_{1} \log (\text { income })+\beta_{2} \text { size }+\beta_{3} \text { age } \\
+& +\beta_{4} \text { college }+\beta_{5} \text { college } \text { ⋅ } \text { age. }
+\end{aligned}
+$$
+
+We will study the asymptotic properties of OLS primarily under assumption (4.2), because it is weaker than assumption (4.3). As we discussed in Chapter 2, assumption (4.3) is natural when a structural model is directly estimable because it ensures that no additional functions of the explanatory variables help to explain $y$.
+
+An explanatory variable $x_{j}$ is said to be endogenous in equation (4.1) if it is correlated with $u$. You should not rely too much on the meaning of "endogenous" from other branches of economics. In traditional usage, a variable is endogenous if it is determined within the context of a model. The usage in econometrics, while related to traditional definitions, has evolved to describe any situation where an explanatory variable is correlated with the disturbance. If $x_{j}$ is uncorrelated with $u$, then $x_{j}$ is said to be exogenous in equation (4.1). If assumption (4.3) holds, then each explanatory variable is necessarily exogenous.
+
+In applied econometrics, endogeneity usually arises in one of three ways:\\
+Omitted Variables Omitted variables are an issue when we would like to control for one or more additional variables but, usually because of data unavailability, we cannot include them in a regression model. Specifically, suppose that $\mathrm{E}(y \mid \mathbf{x}, q)$ is the conditional expectation of interest, which can be written as a function linear in parameters and additive in $q$. If $q$ is unobserved, we can always estimate $\mathrm{E}(y \mid \mathbf{x})$, but this need have no particular relationship to $\mathrm{E}(y \mid \mathbf{x}, q)$ when $q$ and $\mathbf{x}$ are allowed to be correlated. One way to represent this situation is to write equation (4.1) where $q$ is\\
+part of the error term $u$. If $q$ and $x_{j}$ are correlated, then $x_{j}$ is endogenous. The correlation of explanatory variables with unobservables is often due to self-selection: if agents choose the value of $x_{j}$, this might depend on factors ( $q$ ) that are unobservable to the analyst. A good example is omitted ability in a wage equation, where an individual's years of schooling are likely to be correlated with unobserved ability. We discuss the omitted variables problem in detail in Section 4.3.
+
+Measurement Error In this case we would like to measure the (partial) effect of a variable, say $x_{K}^{*}$, but we can observe only an imperfect measure of it, say $x_{K}$. When we plug $x_{K}$ in for $x_{K}^{*}$-thereby arriving at the estimable equation (4.1)-we necessarily put a measurement error into $u$. Depending on assumptions about how $x_{K}^{*}$ and $x_{K}$ are related, $u$ and $x_{K}$ may or may not be correlated. For example, $x_{K}^{*}$ might denote a marginal tax rate, but we can only obtain data on the average tax rate. We will study the measurement error problem in Section 4.4.
+
+Simultaneity Simultaneity arises when at least one of the explanatory variables is determined simultaneously along with $y$. If, say, $x_{K}$ is determined partly as a function of $y$, then $x_{K}$ and $u$ are generally correlated. For example, if $y$ is city murder rate and $x_{K}$ is size of the police force, size of the police force is partly determined by the murder rate. Conceptually, this is a more difficult situation to analyze, because we must be able to think of a situation where we could vary $x_{K}$ exogenously, even though in the data that we collect $y$ and $x_{K}$ are generated simultaneously. Chapter 9 treats simultaneous equations models in detail.
+
+The distinctions among the three possible forms of endogeneity are not always sharp. In fact, an equation can have more than one source of endogeneity. For example, in looking at the effect of alcohol consumption on worker productivity (as typically measured by wages), we would worry that alcohol usage is correlated with unobserved factors, possibly related to family background, that also affect wage; this is an omitted variables problem. In addition, alcohol demand would generally depend on income, which is largely determined by wage; this is a simultaneity problem. And measurement error in alcohol usage is always a possibility. For an illuminating discussion of the three kinds of endogeneity as they arise in a particular field, see Deaton's (1995) survey chapter on econometric issues in development economics.
+
+\subsection*{4.2 Asymptotic Properties of Ordinary Least Squares}
+We now briefly review the asymptotic properties of OLS for random samples from a population, focusing on inference. It is convenient to write the population equation\\
+of interest in vector form as\\
+$y=\mathbf{x} \boldsymbol{\beta}+u$,\\
+where $\mathbf{x}$ is a $1 \times K$ vector of regressors and $\boldsymbol{\beta} \equiv\left(\beta_{1}, \beta_{2}, \ldots, \beta_{K}\right)^{\prime}$ is a $K \times 1$ vector. Because most equations contain an intercept, we will just assume that $x_{1} \equiv 1$, as this assumption makes interpreting the conditions easier.
+
+We assume that we can obtain a random sample of size $N$ from the population in order to estimate $\boldsymbol{\beta}$; thus, $\left\{\left(\mathbf{x}_{i}, y_{i}\right): i=1,2, \ldots, N\right\}$ are treated as independent, identically distributed random variables, where $\mathbf{x}_{i}$ is $1 \times K$ and $y_{i}$ is a scalar. For each observation $i$ we have\\
+$y_{i}=\mathbf{x}_{i} \boldsymbol{\beta}+u_{i}$,\\
+which is convenient for deriving statistical properties of estimators. As for stating and interpreting assumptions, it is easiest to focus on the population model (4.5).
+
+Defining the vector of explanatory variables $\mathbf{x}_{i}$ as a row vector is less popular than defining it as a column vector, but the row vector notation can be justified along many dimensions, especially when we turn to models with multiple equations or time periods. For now, we can justify the row vector notation by thinking about the most convenient, and by far the most common, method of entering and storing data-in tabular form, where the table has a row for each observation. In other words, if $\left(\mathbf{x}_{i}, y_{i}\right)$ are the outcomes for unit $i$, then it makes sense to view $\left(\mathbf{x}_{i}, y_{i}\right)$ as the $i$ th row of our data matrix or table. Similarly, when we turn to estimation, it makes sense to define $\mathbf{x}_{i}$ to be the $i$ th row of the matrix of explanatory variables.
+
+\subsection*{4.2.1 Consistency}
+As discussed in Section 4.1, the key assumption for OLS to consistently estimate $\boldsymbol{\beta}$ is the population orthogonality condition:\\
+assumption OLS.1: $\quad \mathrm{E}\left(\mathbf{x}^{\prime} u\right)=\mathbf{0}$.\\
+Because $\mathbf{x}$ contains a constant, Assumption OLS. 1 is equivalent to saying that $u$ has mean zero and is uncorrelated with each regressor, which is how we will refer to Assumption OLS.1. Sufficient for Assumption OLS.1 is the zero conditional mean assumption (4.3).
+
+It is critical to understand the population nature of Assumption OLS.1. The vector $(\mathbf{x}, u)$ represents a population, and OLS. 1 is a restriction on the joint distribution in that population. For example, if $\mathbf{x}$ contains years of schooling and workforce experience, and the main component of $u$ is cognitive ability, then OLS. 1 implies that\\
+ability is uncorrelated with education and experience in the population; it has nothing to do with relationships in a sample of data.
+
+The other assumption needed for consistency of OLS is that the expected outer product matrix of $\mathbf{x}$ has full rank, so that there are no exact linear relationships among the regressors in the population. This is stated succinctly as follows:\\
+assumption OLS.2: $\quad$ rank $\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)=K$.\\
+As with Assumption OLS.1, Assumption OLS. 2 is an assumption about the population. Because $\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)$ is a symmetric $K \times K$ matrix, Assumption OLS. 2 is equivalent to assuming that $\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)$ is positive definite. Since $x_{1}=1$, Assumption OLS. 2 is also equivalent to saying that the (population) variance matrix of the $K-1$ nonconstant elements in $\mathbf{x}$ is nonsingular. This is a standard assumption, which fails if and only if at least one of the regressors can be written as a linear function of the other regressors (in the population). Usually Assumption OLS. 2 holds, but it can fail if the population model is improperly specified (for example, if we include too many dummy variables in $\mathbf{x}$ or mistakenly use something like $\log ($ age $)$ and $\log \left(\right.$ age $\left.{ }^{2}\right)$ in the same equation).
+
+Under Assumptions OLS. 1 and OLS.2, the parameter vector $\boldsymbol{\beta}$ is identified. In the context of models that are linear in the parameters under random sampling, identification of $\boldsymbol{\beta}$ simply means that $\boldsymbol{\beta}$ can be written in terms of population moments in observable variables. (Later, when we consider nonlinear models, the notion of identification will have to be more general. Also, special issues arise if we cannot obtain a random sample from the population, something we treat in Chapters 19 and 20.) To see that $\boldsymbol{\beta}$ is identified under Assumptions OLS. 1 and OLS.2, premultiply equation (4.5) by $\mathbf{x}^{\prime}$, take expectations, and solve to get\\
+$\boldsymbol{\beta}=\left[\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)\right]^{-1} \mathrm{E}\left(\mathbf{x}^{\prime} y\right)$.\\
+Because $(\mathbf{x}, y)$ is observed, $\boldsymbol{\beta}$ is identified. The analogy principle for choosing an estimator says to turn the population problem into its sample counterpart (see Goldberger, 1968; Manski, 1988). In the current application this step leads to the method of moments: replace the population moments $\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)$ and $\mathrm{E}\left(\mathbf{x}^{\prime} y\right)$ with the corresponding sample averages. Doing so leads to the OLS estimator:\\
+$\hat{\boldsymbol{\beta}}=\left(N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} y_{i}\right)=\boldsymbol{\beta}+\left(N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} u_{i}\right)$,\\
+which can be written in full matrix form as $\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Y}$, where $\mathbf{X}$ is the $N \times K$ data\\
+matrix of regressors with $i$ th row $\mathbf{x}_{i}$ and $\mathbf{Y}$ is the $N \times 1$ data vector with $i$ th element $y_{i}$. Under Assumption OLS.2, $\mathbf{X}^{\prime} \mathbf{X}$ is nonsingular with probability approaching one and plim $\left[\left(N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)^{-1}\right]=\mathbf{A}^{-1}$, where $\mathbf{A} \equiv \mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)$ (see Corollary 3.1). Further, under Assumption OLS.1, $\operatorname{plim}\left(N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} u_{i}\right)=\mathrm{E}\left(\mathbf{x}^{\prime} u\right)=\mathbf{0}$. Therefore, by Slutsky's theorem (Lemma 3.4), plim $\hat{\boldsymbol{\beta}}=\boldsymbol{\beta}+\mathbf{A}^{-1} \cdot \mathbf{0}=\boldsymbol{\beta}$. We summarize with a theorem:\\
+theorem 4.1 (Consistency of OLS): Under Assumptions OLS. 1 and OLS.2, the OLS estimator $\hat{\boldsymbol{\beta}}$ obtained from a random sample following the population model (4.5) is consistent for $\boldsymbol{\beta}$.
+
+The simplicity of the proof of Theorem 4.1 should not undermine its usefulness. Whenever an equation can be put into the form (4.5) and Assumptions OLS. 1 and OLS. 2 hold, OLS using a random sample consistently estimates $\boldsymbol{\beta}$. It does not matter where this equation comes from, or what the $\beta_{j}$ actually represent. As we will see in Sections 4.3 and 4.4, often an estimable equation is obtained only after manipulating an underlying structural equation. An important point to remember is that, once the linear (in parameters) equation has been specified with an additive error and Assumptions OLS. 1 and OLS. 2 are verified, there is no need to reprove Theorem 4.1.
+
+Under the assumptions of Theorem 4.1, $\mathbf{x} \boldsymbol{\beta}$ is the linear projection of $y$ on $\mathbf{x}$. Thus, Theorem 4.1 shows that OLS consistently estimates the parameters in a linear projection, subject to the rank condition in Assumption OLS.2. This is very general, as it places no restrictions on the nature of $y$-for example, $y$ could be a binary variable or some other variable with discrete characteristics. Because a conditional expectation that is linear in parameters is also the linear projection, Theorem 4.1 also shows that OLS consistently estimates conditional expectations that are linear in parameters. We will use this fact often in later sections.
+
+There are a few final points worth emphasizing. First, if either Assumption OLS. 1 or OLS. 2 fails, then $\boldsymbol{\beta}$ is not identified (unless we make other assumptions, as in Chapter 5). Usually it is correlation between $u$ and one or more elements of $\mathbf{x}$ that causes lack of identification. Second, the OLS estimator is not necessarily unbiased even under Assumptions OLS. 1 and OLS.2. However, if we impose the zero conditional mean assumption (4.3), then it can be shown that $\mathrm{E}(\hat{\boldsymbol{\beta}} \mid \mathbf{X})=\boldsymbol{\beta}$ if $\mathbf{X}^{\prime} \mathbf{X}$ is nonsingular; see Problem 4.2. By iterated expectations, $\hat{\boldsymbol{\beta}}$ is then also unconditionally unbiased, provided the expected value $\mathrm{E}(\hat{\boldsymbol{\beta}})$ exists.
+
+Finally, we have not made the much more restrictive assumption that $u$ and $\mathbf{x}$ are independent. If $\mathrm{E}(u)=0$ and $u$ is independent of $\mathbf{x}$, then assumption (4.3) holds, but not vice versa. For example, $\operatorname{Var}(u \mid \mathbf{x})$ is entirely unrestricted under assumption (4.3), but $\operatorname{Var}(u \mid \mathbf{x})$ is necessarily constant if $u$ and $\mathbf{x}$ are independent.
+
+\subsection*{4.2.2 Asymptotic Inference Using Ordinary Least Squares}
+The asymptotic distribution of the OLS estimator is derived by writing\\
+$\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})=\left(N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} u_{i}\right)$.\\
+As we saw in Theorem 4.1, $\left(N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)^{-1}-\mathbf{A}^{-1}=\mathrm{o}_{p}(1)$. Also, $\left\{\left(\mathbf{x}_{i}^{\prime} u_{i}\right): i=\right. 1,2, \ldots\}$ is an i.i.d. sequence with zero mean, and we assume that each element has finite variance. Then the central limit theorem (Theorem 3.2) implies that $N^{-1 / 2} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} u_{i} \xrightarrow{d} \operatorname{Normal}(\mathbf{0}, \mathbf{B})$, where $\mathbf{B}$ is the $K \times K$ matrix\\
+$\mathbf{B} \equiv \mathrm{E}\left(u^{2} \mathbf{x}^{\prime} \mathbf{x}\right)$.
+
+This implies $N^{-1 / 2} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} u_{i}=\mathrm{O}_{p}(1)$, and so we can write
+
+
+\begin{equation*}
+\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})=\mathbf{A}^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} u_{i}\right)+\mathrm{o}_{p}(1) \tag{4.8}
+\end{equation*}
+
+
+because $\mathrm{o}_{p}(1) \cdot \mathrm{O}_{p}(1)=\mathrm{o}_{p}(1)$. We can use equation (4.8) to immediately obtain the asymptotic distribution of $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$. A homoskedasticity assumption simplifies the form of OLS asymptotic variance:\\
+assumption OLS.3: $\mathrm{E}\left(u^{2} \mathbf{x}^{\prime} \mathbf{x}\right)=\sigma^{2} \mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)$, where $\sigma^{2} \equiv \mathrm{E}\left(u^{2}\right)$.\\
+Because $\mathrm{E}(u)=0, \sigma^{2}$ is also equal to $\operatorname{Var}(u)$. Assumption OLS. 3 is the weakest form of the homoskedasticity assumption. If we write out the $K \times K$ matrices in Assumption OLS. 3 element by element, we see that Assumption OLS. 3 is equivalent to assuming that the squared error, $u^{2}$, is uncorrelated with each $x_{j}, x_{j}^{2}$, and all cross products of the form $x_{j} x_{k}$. By the law of iterated expectations, sufficient for Assumption OLS. 3 is $\mathrm{E}\left(u^{2} \mid \mathbf{x}\right)=\sigma^{2}$, which is the same as $\operatorname{Var}(u \mid \mathbf{x})=\sigma^{2}$ when $\mathrm{E}(u \mid \mathbf{x})=0$. The constant conditional variance assumption for $u$ given $\mathbf{x}$ is the easiest to interpret, but it is stronger than needed.\\
+theorem 4.2 (Asymptotic Normality of OLS): Under Assumptions OLS.1-OLS.3,\\
+$\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}) \stackrel{a}{\sim} \operatorname{Normal}\left(0, \sigma^{2}\left[\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)\right]^{-1}\right)$.
+
+Proof: From equation (4.8) and definition of $\mathbf{B}$, it follows from Lemma 3.7 and Corollary 3.2 that\\
+$\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}) \stackrel{a}{\sim} \operatorname{Normal}\left(0, \mathbf{A}^{-1} \mathbf{B A}^{-1}\right)$,\\
+where $\mathbf{A}=\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)$. Under Assumption OLS.3, $\mathbf{B}=\sigma^{2} \mathbf{A}$, which proves the result.
+
+Practically speaking, equation (4.9) allows us to treat $\hat{\boldsymbol{\beta}}$ as approximately normal with mean $\boldsymbol{\beta}$ and variance $\sigma^{2}\left[\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)\right]^{-1} / N$. The usual estimator of $\sigma^{2}, \hat{\sigma}^{2} \equiv \mathrm{SSR} / (N-K)$, where $\mathrm{SSR}=\sum_{i=1}^{N} \hat{u}_{i}^{2}$ is the OLS sum of squared residuals, is easily shown to be consistent. (Using $N$ or $N-K$ in the denominator does not affect consistency.) When we also replace $\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)$ with the sample average $N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}=\left(\mathbf{X}^{\prime} \mathbf{X} / N\right)$, we get\\
+$\widehat{\operatorname{Avar}(\hat{\boldsymbol{\beta}})}=\hat{\sigma}^{2}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}$.
+
+The right-hand side of equation (4.10) should be familiar: it is the usual OLS variance matrix estimator under the classical linear model assumptions. The bottom line of Theorem 4.2 is that, under Assumptions OLS.1-OLS.3, the usual OLS standard errors, $t$ statistics, and $F$ statistics are asymptotically valid. Showing that the $F$ statistic is approximately valid is done by deriving the Wald test for linear restrictions of the form $\mathbf{R} \boldsymbol{\beta}=\mathbf{r}$ (see Chapter 3). Then the $F$ statistic is simply a degrees-of-freedomadjusted Wald statistic, which is where the $F$ distribution (as opposed to the chisquare distribution) arises.
+
+\subsection*{4.2.3 Heteroskedasticity-Robust Inference}
+If Assumption OLS. 1 fails, we are in potentially serious trouble, as OLS is not even consistent. In the next chapter we discuss the important method of instrumental variables that can be used to obtain consistent estimators of $\boldsymbol{\beta}$ when Assumption OLS. 1 fails. Assumption OLS. 2 is also needed for consistency, but there is rarely any reason to examine its failure.
+
+Failure of Assumption OLS. 3 has less serious consequences than failure of Assumption OLS.1. As we have already seen, Assumption OLS. 3 has nothing to do with consistency of $\hat{\boldsymbol{\beta}}$. Further, the proof of asymptotic normality based on equation (4.8) is still valid without Assumption OLS.3, but the final asymptotic variance is different. We have assumed OLS. 3 for deriving the limiting distribution because it implies the asymptotic validity of the usual OLS standard errors and test statistics. Typically, regression packages assume OLS. 3 as the default in reporting statistics.
+
+Often there are reasons to believe that Assumption OLS. 3 might fail, in which case equation (4.10) is no longer a valid estimate of even the asymptotic variance matrix. If we make the zero conditional mean assumption (4.3), one solution to violation of Assumption OLS. 3 is to specify a model for $\operatorname{Var}(y \mid \mathbf{x})$, estimate this model, and apply weighted least squares (WLS): for observation $i, y_{i}$, and every element of $\mathbf{x}_{i}$ (including unity) are divided by an estimate of the conditional standard deviation $\left[\operatorname{Var}\left(y_{i} \mid \mathbf{x}_{i}\right)\right]^{1 / 2}$, and OLS is applied to the weighted data (see Wooldridge (2009a, Chap. 8) for details). This procedure leads to a different estimator of $\boldsymbol{\beta}$. We discuss
+
+WLS in the more general context of nonlinear regression in Chapter 12. Lately, it has become more popular to estimate $\boldsymbol{\beta}$ by OLS even when heteroskedasticity is suspected but to adjust the standard errors and test statistics so that they are valid in the presence of arbitrary heteroskedasticity. Because these standard errors are valid whether or not Assumption OLS. 3 holds, this method is easier than a weighted least squares procedure. What we sacrifice is potential efficiency gains from WLS (see Chapter 14). But, efficiency gains from WLS are guaranteed only if the model for $\operatorname{Var}(y \mid \mathbf{x})$ is correct (although gains can often be realized with a misspecified variance model). As a more subtle point, WLS is generally inconsistent if $\mathrm{E}(u \mid \mathbf{x}) \neq 0$ but Assumption OLS. 1 holds, so WLS is inappropriate for estimating linear projections. Especially with large sample sizes, the presence of heteroskedasticity need not affect one's ability to perform accurate inference using OLS. But we need to compute standard errors and test statistics appropriately.
+
+The adjustment needed to the asymptotic variance follows from the proof of Theorem 4.2: without OLS.3, the asymptotic variance of $\hat{\boldsymbol{\beta}}$ is $\operatorname{Avar}(\hat{\boldsymbol{\beta}})=\mathbf{A}^{-1} \mathbf{B A}^{-1} / N$, where the $K \times K$ matrices $\mathbf{A}$ and $\mathbf{B}$ were defined earlier. We already know how to consistently estimate $\mathbf{A}$. Estimation of $\mathbf{B}$ is also straightforward. First, by the law of large numbers, $N^{-1} \sum_{i=1}^{N} u_{i}^{2} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i} \xrightarrow{p} \mathrm{E}\left(u^{2} \mathbf{x}^{\prime} \mathbf{x}\right)=\mathbf{B}$. Now, since the $u_{i}$ are not observed, we replace $u_{i}$ with the OLS residual $\hat{u}_{i}=y_{i}-\mathbf{x}_{i} \hat{\boldsymbol{\beta}}$. This leads to the consistent estimator $\hat{\mathbf{B}} \equiv N^{-1} \sum_{i=1}^{N} \hat{u}_{i}^{2} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}$. See White (2001) and Problem 4.4.
+
+The heteroskedasticity-robust variance matrix estimator of $\hat{\boldsymbol{\beta}}$ is $\hat{\mathbf{A}}^{-1} \hat{\mathbf{B}} \hat{\mathbf{A}}^{-1} / N$ or, after cancellations involving the sample sizes,\\
+$\widehat{\operatorname{Avar}(\hat{\boldsymbol{\beta}})}=\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}\left(\sum_{i=1}^{N} \hat{u}_{i}^{2} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}$.
+
+This matrix was introduced in econometrics by White (1980b), although some attribute it to either Eicker (1967) or Huber (1967), statisticians who discovered robust variance matrices. The square roots of the diagonal elements of equation (4.11) are often called the White standard errors or Huber standard errors, or some hyphenated combination of the names Eicker, Huber, and White. It is probably best to just call them heteroskedasticity-robust standard errors, since this term describes their purpose. Remember, these standard errors are asymptotically valid in the presence of any kind of heteroskedasticity, including homoskedasticity.
+
+Robust standard errors are often reported in applied cross-sectional work, especially when the sample size is large. Sometimes they are reported along with the usual OLS standard errors; sometimes they are presented in place of them. Several regression packages now report these standard errors as an option, so it is easy to obtain heteroskedasticity-robust standard errors.
+
+Sometimes, as a degrees-of-freedom correction, the matrix in equation (4.11) is multiplied by $N /(N-K)$. This procedure guarantees that, if the $\hat{u}_{i}^{2}$ were constant across $i$ (an unlikely event in practice, but the strongest evidence of homoskedasticity possible), then the usual OLS standard errors would be obtained. There is some evidence that the degrees-of-freedom adjustment improves finite sample performance. There are other ways to adjust equation (4.11) to improve its small-sample propertiessee, for example, MacKinnon and White (1985)-but if $N$ is large relative to $K$, these adjustments typically make little difference.
+
+Once standard errors are obtained, $t$ statistics are computed in the usual way. These are robust to heteroskedasticity of unknown form, and can be used to test single restrictions. The $t$ statistics computed from heteroskedasticity robust standard errors are heteroskedasticity-robust $\boldsymbol{t}$ statistics. Confidence intervals are also obtained in the usual way.
+
+When Assumption OLS. 3 fails, the usual $F$ statistic is not valid for testing multiple linear restrictions, even asymptotically. Many packages allow robust testing with a simple command. If the hypotheses are written as\\
+$\mathrm{H}_{0}: \mathbf{R} \boldsymbol{\beta}=\mathbf{r}$,\\
+where $\mathbf{R}$ is $Q \times K$ and has rank $Q \leq K$, and $\mathbf{r}$ is $Q \times 1$, then the heteroskedasticityrobust Wald statistic for testing equation (4.12) is\\
+$W=(\mathbf{R} \hat{\boldsymbol{\beta}}-\mathbf{r})^{\prime}\left(\mathbf{R} \hat{\mathbf{V}} \mathbf{R}^{\prime}\right)^{-1}(\mathbf{R} \hat{\boldsymbol{\beta}}-\mathbf{r})$,\\
+where $\hat{\mathbf{V}}$ is given in equation (4.11). Under $\mathrm{H}_{0}, W \stackrel{a}{\sim} \chi_{Q}^{2}$. The Wald statistic can be turned into an approximate $\mathscr{F}_{Q, N-K}$ random variable by dividing it by $Q$ (and usually making the degrees-of-freedom adjustment to $\hat{\mathbf{V}}$ ). But there is nothing wrong with using equation (4.13) directly.
+
+\subsection*{4.2.4 Lagrange Multiplier (Score) Tests}
+In the partitioned model\\
+$y=\mathbf{x}_{1} \boldsymbol{\beta}_{1}+\mathbf{x}_{2} \boldsymbol{\beta}_{2}+u$,\\
+under Assumptions OLS.1-OLS.3, where $\mathbf{x}_{1}$ is $1 \times K_{1}$ and $\mathbf{x}_{2}$ is $1 \times K_{2}$, we know that the hypothesis $\mathrm{H}_{0}: \boldsymbol{\beta}_{2}=\mathbf{0}$ is easily tested (asymptotically) using a standard $F$ test. There is another approach to testing such hypotheses that is sometimes useful, especially for computing heteroskedasticity-robust tests and for nonlinear models.
+
+Let $\tilde{\boldsymbol{\beta}}_{1}$ be the estimator of $\boldsymbol{\beta}_{1}$ under the null hypothesis $\mathrm{H}_{0}: \boldsymbol{\beta}_{2}=\mathbf{0}$; this is called the estimator from the restricted model. Define the restricted OLS residuals as $\tilde{u}_{i}=$\\
+$y_{i}-\mathbf{x}_{i 1} \tilde{\boldsymbol{\beta}}_{1}, i=1,2, \ldots, N$. Under $\mathrm{H}_{0}, \mathbf{x}_{i 2}$ should be, up to sample variation, uncorrelated with $\tilde{u}_{i}$ in the sample. The Lagrange multiplier or score principle is based on this observation. It turns out that a valid test statistic is obtained as follows: Run the OLS regression\\
+$\tilde{u}$ on $\mathbf{x}_{1}, \mathbf{x}_{2}$\\
+(where the observation index $i$ has been suppressed). Assuming that $\mathbf{x}_{1}$ contains a constant (that is, the null model contains a constant), let $R_{u}^{2}$ denote the usual $R$ squared from the regression (4.15). Then the Lagrange multiplier (LM) or score statistic is $L M \equiv N R_{u}^{2}$. These names come from different features of the constrained optimization problem; see Rao (1948), Aitchison and Silvey (1958), and Chapter 12. Because of its form, $L M$ is also referred to as an N-R-squared test. Under $\mathrm{H}_{0}$, $L M \stackrel{a}{\sim} \chi_{K_{2}}^{2}$, where $K_{2}$ is the number of restrictions being tested. If $N R_{u}^{2}$ is sufficiently large, then $\tilde{u}$ is significantly correlated with $\mathbf{x}_{2}$, and the null hypothesis will be rejected.
+
+It is important to include $\mathbf{x}_{1}$ along with $\mathbf{x}_{2}$ in regression (4.15). In other words, the OLS residuals from the null model should be regressed on all explanatory variables, even though $\tilde{u}$ is orthogonal to $\mathbf{x}_{1}$ in the sample. If $\mathbf{x}_{1}$ is excluded, then the resulting statistic generally does not have a chi-square distribution when $\mathbf{x}_{2}$ and $\mathbf{x}_{1}$ are correlated. If $\mathrm{E}\left(\mathbf{x}_{1}^{\prime} \mathbf{x}_{2}\right)=\mathbf{0}$, then we can exclude $\mathbf{x}_{1}$ from regression (4.15), but this orthogonality rarely holds in applications. If $\mathbf{x}_{1}$ does not include a constant, $R_{u}^{2}$ should be the uncentered $\mathbf{R}$-squared: the total sum of squares in the denominator is obtained without demeaning the dependent variable, $\tilde{u}$. When $\mathbf{x}_{1}$ includes a constant, the usual centered $R$-squared and uncentered $R$-squared are identical because $\sum_{i=1}^{N} \tilde{u}_{i}=0$.
+
+Example 4.1 (Wage Equation for Married, Working Women): Consider a wage equation for married, working women:
+
+
+\begin{align*}
+\log (\text { wage })= & \beta_{0}+\beta_{1} \text { exper }+\beta_{2} \text { exper }^{2}+\beta_{3} \text { educ } \\
+& +\beta_{4} \text { age }+\beta_{5} \text { kidslt6 }+\beta_{6} \text { kidsge } 6+u, \tag{4.16}
+\end{align*}
+
+
+where the last three variables are the woman's age, number of children less than six, and number of children at least six years of age, respectively. We can test whether, after the productivity variables experience and education are controlled for, women are paid differently depending on their age and number of children. The $F$ statistic for the hypothesis $\mathrm{H}_{0}: \beta_{4}=0, \beta_{5}=0, \beta_{6}=0$ is $F=\left[\left(R_{u r}^{2}-R_{r}^{2}\right) /\left(1-R_{u r}^{2}\right)\right] \cdot[(N-7) / 3]$, where $R_{u r}^{2}$ and $R_{r}^{2}$ are the unrestricted and restricted $R$-squareds; under $\mathrm{H}_{0}$ (and homoskedasticity), $F \sim \mathscr{F}_{3, N-7}$. To obtain the $L M$ statistic, we estimate the equation\\
+without age, kidsltb, and kidsge6; let $\tilde{u}$ denote the OLS residuals. Then, the LM statistic is $N R_{u}^{2}$ from the regression $\tilde{u}$ on 1, exper, exper ${ }^{2}$, educ, age, kidsltb, and kidsge6, where the 1 denotes that we include an intercept. Under $\mathrm{H}_{0}$ and homoskedasticity, $N R_{u}^{2} \stackrel{a}{\sim} \chi_{3}^{2}$.
+
+Using the data on the 428 working, married women in MROZ.RAW (from Mroz, 1987), we obtain the following estimated equation:
+
+$$
+\begin{aligned}
+& \widehat{\log (\widehat{w a g e})}=-.421+.040 \text { exper }-.00078 \text { exper }^{2}+.108 \text { educ } \\
+& \text { (.317) (.013) (.00040) (.014) } \\
+& \text { [.318] [.015] [.00041] [.014] } \\
+& -.0015 \text { age - . } 061 \text { kidslt6 - . } 015 \text { kidsge6, } \quad R^{2}=.158 \\
+& \text { (.0053) (.089) (.028) } \\
+& \text { [.0059] [.106] [.029] }
+\end{aligned}
+$$
+
+where the quantities in brackets are the heteroskedasticity-robust standard errors. The F statistic for joint significance of age, kidsltb, and kidsge6 turns out to be about .24 , which gives $p$-value $\approx .87$. Regressing the residuals $\tilde{u}$ from the restricted model on all exogenous variables gives an $R$-squared of .0017 , so $L M=428(.0017)=.728$, and $p$-value $\approx .87$. Thus, the $F$ and $L M$ tests give virtually identical results.
+
+The test from regression (4.15) maintains Assumption OLS. 3 under $\mathrm{H}_{0}$, just like the usual $F$ test. It turns out to be easy to obtain a heteroskedasticity-robust $L M$ statistic. To see how to do so, let us look at the formula for the $L M$ statistic from regression (4.15) in more detail. After some algebra we can write\\
+$L M=\left(N^{-1 / 2} \sum_{i=1}^{N} \hat{\mathbf{r}}_{i}^{\prime} \tilde{u}_{i}\right)^{\prime}\left(\tilde{\sigma}^{2} N^{-1} \sum_{i=1}^{N} \hat{\mathbf{r}}_{i}^{\prime} \hat{\mathbf{r}}_{i}\right)^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \hat{\mathbf{r}}_{i}^{\prime} \tilde{u}_{i}\right)$,\\
+where $\tilde{\sigma}^{2} \equiv N^{-1} \sum_{i=1}^{N} \tilde{u}_{i}^{2}$ and each $\hat{\mathbf{r}}_{i}$ is a $1 \times K_{2}$ vector of OLS residuals from the (multivariate) regression of $\mathbf{x}_{i 2}$ on $\mathbf{x}_{i 1}, i=1,2, \ldots, N$. This statistic is not robust to heteroskedasticity because the matrix in the middle is not a consistent estimator of the asymptotic variance of ( $N^{-1 / 2} \sum_{i=1}^{N} \hat{\mathbf{r}}_{i}^{\prime} \tilde{u}_{i}$ ) under heteroskedasticity. Following the reasoning in Section 4.2.3, a heteroskedasticity-robust statistic is
+
+$$
+\begin{aligned}
+L M & =\left(N^{-1 / 2} \sum_{i=1}^{N} \hat{\mathbf{r}}_{i}^{\prime} \tilde{u}_{i}\right)^{\prime}\left(N^{-1} \sum_{i=1}^{N} \tilde{u}_{i}^{2} \hat{\mathbf{r}}_{i}^{\prime} \hat{\mathbf{r}}_{i}\right)^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \hat{\mathbf{r}}_{i}^{\prime} \tilde{u}_{i}\right) \\
+& =\left(\sum_{i=1}^{N} \hat{\mathbf{r}}_{i}^{\prime} \tilde{u}_{i}\right)^{\prime}\left(\sum_{i=1}^{N} \tilde{u}_{i}^{2} \hat{\mathbf{r}}_{i}^{\prime} \hat{\mathbf{r}}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \hat{\mathbf{r}}_{i}^{\prime} \tilde{u}_{i}\right) .
+\end{aligned}
+$$
+
+Dropping the $i$ subscript, this is easily obtained, as $N-\mathrm{SSR}_{0}$ from the OLS regression (without an intercept)
+
+1 on $\tilde{u} \cdot \hat{\mathbf{r}}$,\\
+where $\tilde{u} \cdot \hat{\mathbf{r}}=\left(\tilde{u} \cdot \hat{r}_{1}, \tilde{u} \cdot \hat{r}_{2}, \ldots, \tilde{u} \cdot \hat{r}_{K_{2}}\right)$ is the $1 \times K_{2}$ vector obtained by multiplying $\tilde{u}$ by each element of $\hat{\mathbf{r}}$ and $\mathrm{SSR}_{0}$ is just the usual sum of squared residuals from regression (4.17). Thus, we first regress each element of $\mathbf{x}_{2}$ onto all of $\mathbf{x}_{1}$ and collect the residuals in $\hat{\mathbf{r}}$. Then we form $\tilde{u} \cdot \hat{\mathbf{r}}$ (observation by observation) and run the regression in (4.17); $N-\mathrm{SSR}_{0}$ from this regression is distributed asymptotically as $\chi_{K_{2}}^{2}$. (Do not be thrown off by the fact that the dependent variable in regression (4.17) is unity for each observation; a nonzero sum of squared residuals is reported when you run OLS without an intercept.) For more details, see Davidson and MacKinnon $(1985,1993)$ or Wooldridge (1991a, 1995b).
+
+Example 4.1 (continued): To obtain the heteroskedasticity-robust LM statistic for $\mathrm{H}_{0}: \beta_{4}=0, \beta_{5}=0, \beta_{6}=0$ in equation (4.16), we estimate the restricted model as before and obtain $\tilde{u}$. Then we run the regressions (1) age on 1, exper, exper ${ }^{2}$, educ; (2) kidslto on 1, exper, exper ${ }^{2}$, educ; (3) kidsge6 on 1, exper, exper ${ }^{2}$, educ; and obtain the residuals $\hat{r}_{1}, \hat{r}_{2}$, and $\hat{r}_{3}$, respectively. The $L M$ statistic is $N-\mathrm{SSR}_{0}$ from the regression 1 on $\tilde{u} \cdot \hat{r}_{1}, \tilde{u} \cdot \hat{r}_{2}, \tilde{u} \cdot \hat{r}_{3}$, and $N-\mathrm{SSR}_{0} \stackrel{a}{\sim} \chi_{3}^{2}$.
+
+When we apply this result to the data in MROZ.RAW we get $L M=.51$, which is very small for a $\chi_{3}^{2}$ random variable: $p$-value $\approx .92$. For comparison, the hetero-skedasticity-robust Wald statistic (scaled by Stata to have an approximate $F$ distribution) also yields $p$-value $\approx .92$.
+
+\subsection*{4.3 Ordinary Least Squares Solutions to the Omitted Variables Problem}
+\subsection*{4.3.1 Ordinary Least Squares Ignoring the Omitted Variables}
+Because it is so prevalent in applied work, we now consider the omitted variables problem in more detail. A model that assumes an additive effect of the omitted variable is
+
+
+\begin{equation*}
+\mathrm{E}\left(y \mid x_{1}, x_{2}, \ldots, x_{K}, q\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\cdots+\beta_{K} x_{K}+\gamma q, \tag{4.18}
+\end{equation*}
+
+
+where $q$ is the omitted factor. In particular, we are interested in the $\beta_{j}$, which are the partial effects of the observed explanatory variables, holding the other explanatory variables constant, including the unobservable $q$. In the context of this additive model, there is no point in allowing for more than one unobservable; any omitted factors are lumped into $q$. Henceforth we simply refer to $q$ as the omitted variable.
+
+A good example of equation (4.18) is seen when $y$ is $\log$ (wage) and $q$ includes ability. If $x_{K}$ denotes a measure of education, $\beta_{K}$ in equation (4.18) measures the partial effect of education on wages controlling for-or holding fixed-the level of ability (as well as other observed characteristics). This effect is most interesting from a policy perspective because it provides a causal interpretation of the return to education: $\beta_{K}$ is the expected proportionate increase in wage if someone from the working population is exogenously given another year of education.
+
+Viewing equation (4.18) as a structural model, we can always write it in error form as\\
+$y=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\cdots+\beta_{K} x_{K}+\gamma q+v$,\\
+$\mathrm{E}\left(v \mid x_{1}, x_{2}, \ldots, x_{K}, q\right)=0$,\\
+where $v$ is the structural error. One way to handle the nonobservability of $q$ is to put it into the error term. In doing so, nothing is lost by assuming $\mathrm{E}(q)=0$, because an intercept is included in equation (4.19). Putting $q$ into the error term means we rewrite equation (4.19) as\\
+$y=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\cdots+\beta_{K} x_{K}+u$,\\
+$u \equiv \gamma q+v$.
+
+The error $u$ in equation (4.21) consists of two parts. Under equation (4.20), $v$ has zero mean and is uncorrelated with $x_{1}, x_{2}, \ldots, x_{K}$ (and $q$ ). By normalization, $q$ also has zero mean. Thus, $\mathrm{E}(u)=0$. However, $u$ is uncorrelated with $x_{j}$ if and only if $q$ is uncorrelated with $x_{j}$. If $q$ is correlated with any of the regressors, then so is $u$, and we have an endogeneity problem. We cannot expect OLS to consistently estimate any $\beta_{j}$. Although $\mathrm{E}(u \mid \mathbf{x}) \neq \mathrm{E}(u)$ in equation (4.21), the $\beta_{j}$ do have a structural interpretation because they appear in equation (4.19).
+
+It is easy to characterize the plims of the OLS estimators when the omitted variable is ignored; we will call this the OLS omitted variables inconsistency or OLS omitted variables bias (even though the latter term is not always precise). Write the linear projection of $q$ onto the observable explanatory variables as\\
+$q=\delta_{0}+\delta_{1} x_{1}+\cdots+\delta_{K} x_{K}+r$,\\
+where, by definition of a linear projection, $\mathrm{E}(r)=0, \operatorname{Cov}\left(x_{j}, r\right)=0, j=1,2, \ldots, K$. The parameter $\delta_{j}$ measures the relationship between $q$ and $x_{j}$ after "partialing out" the other $x_{h}$. Then we can easily infer the plim of the OLS estimators from regressing $y$ onto $1, x_{1}, \ldots, x_{K}$ by finding an equation that does satisfy Assumptions OLS. 1 and
+
+OLS.2. Plugging equation (4.23) into equation (4.19) and doing simple algrebra gives $y=\left(\beta_{0}+\gamma \delta_{0}\right)+\left(\beta_{1}+\gamma \delta_{1}\right) x_{1}+\left(\beta_{2}+\gamma \delta_{2}\right) x_{2}+\cdots+\left(\beta_{K}+\gamma \delta_{K}\right) x_{K}+v+\gamma r$
+
+Now, the error $v+\gamma r$ has zero mean and is uncorrelated with each regressor. It follows that we can just read off the plim of the OLS estimators from the regression of $y$ on $1, x_{1}, \ldots, x_{K}$ : $\operatorname{plim} \hat{\beta}_{j}=\beta_{j}+\gamma \delta_{j}$. Sometimes it is assumed that most of the $\delta_{j}$ are zero. When the correlation between $q$ and a particular variable, say $x_{K}$, is the focus, a common (usually implicit) assumption is that all $\delta_{j}$ in equation (4.23) except the intercept and coefficient on $x_{K}$ are zero. Then plim $\hat{\beta}_{j}=\beta_{j}, j=1, \ldots, K-1$, and
+
+
+\begin{equation*}
+\operatorname{plim} \hat{\beta}_{K}=\beta_{K}+\gamma\left[\operatorname{Cov}\left(x_{K}, q\right) / \operatorname{Var}\left(x_{K}\right)\right] \tag{4.24}
+\end{equation*}
+
+
+(because $\delta_{K}=\operatorname{Cov}\left(x_{K}, q\right) / \operatorname{Var}\left(x_{K}\right)$ in this case). This formula gives us a simple way to determine the sign, and perhaps the magnitude, of the inconsistency in $\hat{\beta}_{K}$. If $\gamma>0$ and $x_{K}$ and $q$ are positively correlated, the asymptotic bias is positive. The other combinations are easily worked out. If $x_{K}$ has substantial variation in the population relative to the covariance between $x_{K}$ and $q$, then the bias can be small. In the general case of equation (4.23), it is difficult to sign $\delta_{K}$ because it measures a partial correlation. It is for this reason that $\delta_{j}=0, j=1, \ldots, K-1$ is often maintained for determining the likely asymptotic bias in $\hat{\beta}_{K}$ when only $x_{K}$ is endogenous.
+
+Example 4.2 (Wage Equation with Unobserved Ability): Write a structural wage equation explicitly as\\
+$\log ($ wage $)=\beta_{0}+\beta_{1}$ exper $+\beta_{2}$ exper $^{2}+\beta_{3}$ educ $+\gamma$ abil $+v$,\\
+where $v$ has the structural error property $\mathrm{E}(v \mid$ exper, educ, abil $)=0$. If abil is uncorrelated with exper and exper ${ }^{2}$ once educ has been partialed out-that is, abil $=\delta_{0}+ \delta_{3} e d u c+r$ with $r$ uncorrelated with exper and exper ${ }^{2}$-then plim $\hat{\beta}_{3}=\beta_{3}+\gamma \delta_{3}$. Under these assumptions, the coefficients on exper and exper ${ }^{2}$ are consistently estimated by the OLS regression that omits ability. If $\delta_{3}>0$ then plim $\hat{\beta}_{3}>\beta_{3}$ (because $\gamma>0$ by definition), and the return to education is likely to be overestimated in large samples.
+
+\subsection*{4.3.2 Proxy Variable-Ordinary Least Squares Solution}
+Omitted variables bias can be eliminated, or at least mitigated, if a proxy variable is available for the unobserved variable $q$. There are two formal requirements for a proxy variable for $q$. The first is that the proxy variable should be redundant (sometimes called ignorable) in the structural equation. If $z$ is a proxy variable for $q$, then\\
+the most natural statement of redundancy of $z$ in equation (4.18) is\\
+$\mathrm{E}(y \mid \mathbf{x}, q, z)=\mathrm{E}(y \mid \mathbf{x}, q)$.
+
+Condition (4.25) is easy to interpret: $z$ is irrelevant for explaining $y$, in a conditional mean sense, once $\mathbf{x}$ and $q$ have been controlled for. This assumption on a proxy variable is virtually always made (sometimes only implicitly), and it is rarely controversial: the only reason we bother with $z$ in the first place is that we cannot get data on $q$. Anyway, we cannot get very far without condition (4.25). In the wage-education example, let $q$ be ability and $z$ be IQ score. By definition it is ability that affects wage: IQ would not matter if true ability were known.
+
+Condition (4.25) is somewhat stronger than needed when unobservables appear additively as in equation (4.18); it suffices to assume that $v$ in equation (4.19) is simply uncorrelated with $z$. But we will focus on condition (4.25) because it is natural, and because we need it to cover models where $q$ interacts with some observed covariates.
+
+The second requirement of a good proxy variable is more complicated. We require that the correlation between the omitted variable $q$ and each $x_{j}$ be zero once we partial out $z$. This is easily stated in terms of a linear projection:\\
+$\mathrm{L}\left(q \mid 1, x_{1}, \ldots, x_{K}, z\right)=\mathrm{L}(q \mid 1, z)$.
+
+It is also helpful to see this relationship in terms of an equation with an unobserved error. Write $q$ as a linear function of $z$ and an error term as\\
+$q=\theta_{0}+\theta_{1} z+r$,\\
+where, by definition, $\mathrm{E}(r)=0$ and $\operatorname{Cov}(z, r)=0$ because $\theta_{0}+\theta_{1} z$ is the linear projection of $q$ on $1, z$. If $z$ is a reasonable proxy for $q, \theta_{1} \neq 0$ (and we usually think in terms of $\theta_{1}>0$ ). But condition (4.26) assumes much more: it is equivalent to\\
+$\operatorname{Cov}\left(x_{j}, r\right)=0, \quad j=1,2, \ldots, K$.\\
+This condition requires $z$ to be closely enough related to $q$ so that once it is included in equation (4.27), the $x_{j}$ are not partially correlated with $q$.
+
+Before showing why these two proxy variable requirements do the trick, we should head off some possible confusion. The definition of proxy variable here is not universal. While a proxy variable is always assumed to satisfy the redundancy condition (4.25), it is not always assumed to have the second property. In Chapter 5 we will use the notion of an indicator of $q$, which satisfies condition (4.25) but not the second proxy variable assumption.
+
+To obtain an estimable equation, replace $q$ in equation (4.19) with equation (4.27) to get\\
+$y=\left(\beta_{0}+\gamma \theta_{0}\right)+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}+\gamma \theta_{1} z+(\gamma r+v)$.
+
+Under the assumptions made, the composite error term $u \equiv \gamma r+v$ is uncorrelated with $x_{j}$ for all $j$; redundancy of $z$ in equation (4.18) means that $z$ is uncorrelated with $v$ and, by definition, $z$ is uncorrelated with $r$. It follows immediately from Theorem 4.1 that the OLS regression $y$ on $1, x_{1}, x_{2}, \ldots, x_{K}, z$ produces consistent estimators of $\left(\beta_{0}+\gamma \theta_{0}\right), \beta_{1}, \beta_{2}, \ldots, \beta_{K}$, and $\gamma \theta_{1}$. Thus, we can estimate the partial effect of each of the $x_{j}$ in equation (4.18) under the proxy variable assumptions.
+
+When $z$ is an imperfect proxy, then $r$ in equation (4.27) is correlated with one or more of the $x_{j}$. Generally, when we do not impose condition (4.26) and write the linear projection as\\
+$q=\theta_{0}+\rho_{1} x_{1}+\cdots+\rho_{K} x_{K}+\theta_{1} z+r$,\\
+the proxy variable regression gives plim $\hat{\beta}_{j}=\beta_{j}+\gamma \rho_{j}$. Thus, OLS with an imperfect proxy is inconsistent. The hope is that the $p_{j}$ are smaller in magnitude than if $z$ were omitted from the linear projection, and this can usually be argued if $z$ is a reasonable proxy for $q$; but see the end of this subsection for further discussion.
+
+If including $z$ induces substantial collinearity, it might be better to use OLS without the proxy variable. However, in making these decisions we must recognize that including $z$ reduces the error variance if $\theta_{1} \neq 0: \operatorname{Var}(\gamma r+v)<\operatorname{Var}(\gamma q+v)$ because $\operatorname{Var}(r)<\operatorname{Var}(q)$, and $v$ is uncorrelated with both $r$ and $q$. Including a proxy variable can actually reduce asymptotic variances as well as mitigate bias.
+
+Example 4.3 (Using IQ as a Proxy for Ability): We apply the proxy variable method to the data on working men in NLS80.RAW, which was used by Blackburn and Neumark (1992), to estimate the structural model
+
+
+\begin{align*}
+\log (\text { wage })= & \beta_{0}+\beta_{1} \text { exper }+\beta_{2} \text { tenure }+\beta_{3} \text { married } \\
+& +\beta_{4} \text { south }+\beta_{5} \text { urban }+\beta_{6} \text { black }+\beta_{7} \text { educ }+\gamma \text { abil }+v, \tag{4.29}
+\end{align*}
+
+
+where exper is labor market experience, married is a dummy variable equal to unity if married, south is a dummy variable for the southern region, urban is a dummy variable for living in an SMSA, black is a race indicator, and educ is years of schooling. We assume that $I Q$ satisfies the proxy variable assumptions: in the linear projection abil $=\theta_{0}+\theta_{1} I Q+r$, where $r$ has zero mean and is uncorrelated with $I Q$, we also assume that $r$ is uncorrelated with experience, tenure, education, and other factors\\
+appearing in equation (4.29). The estimated equations without and with $I Q$ are
+
+$$
+\begin{aligned}
+\log (\widehat{\text { wage }})= & \underset{(0.11)}{5.40}+\underset{(.003)}{.014} \text { exper }+\underset{(.002)}{.012} \text { tenure }+\underset{(.039)}{.199} \text { married } \\
+& \underset{(.026)}{.091 \text { south }}+\underset{(.027)}{.184 \text { urban }-\underset{(.038)}{.188 \text { black }}+\underset{(.006)}{.065 \text { educ. }}} \\
+N=935, & R^{2}=.253 \\
+\widehat{\log (\text { wage })}= & 5.18+\underset{(0.13)}{.014} \text { exper }+\underset{(.003)}{.011 \text { tenure }+\underset{(.039)}{.200} \text { married }} \\
+& \begin{aligned}
+& \underset{(.026)}{.080 ~ s o u t h}+\underset{(.027)}{.182 \text { urban }-\underset{(.039)}{.143 \text { black }}+\underset{(.007)}{.054} \text { educ }} \\
+& +\underset{(.0036)}{.0030} \text { IQ. }
+\end{aligned} \\
+N=935, \quad & R^{2}=.263
+\end{aligned}
+$$
+
+Notice how the return to schooling has fallen from about 6.5 percent to about 5.4 percent when $I Q$ is added to the regression. This is what we expect to happen if ability and schooling are (partially) positively correlated. Of course, these are just the findings from one sample. Adding IQ explains only one percentage point more of the variation in $\log$ (wage), and the equation predicts that 15 more IQ points (one standard deviation) increases wage by about 5.4 percent. The standard error on the return to education has increased, but the 95 percent confidence interval is still fairly tight.
+
+Often the outcome of the dependent variable from an earlier time period can be a useful proxy variable.
+
+Example 4.4 (Effects of Job Training Grants on Worker Productivity): The data in JTRAIN1.RAW are for 157 Michigan manufacturing firms for the years 1987, 1988, and 1989. These data are from Holzer, Block, Cheatham, and Knott (1993). The goal is to determine the effectiveness of job training grants on firm productivity. For this exercise, we use only the 54 firms in 1988 that reported nonmissing values of the scrap rate (number of items out of 100 that must be scrapped). No firms were awarded grants in 1987; in 1988, 19 of the 54 firms were awarded grants. If the training grant has the intended effect, the average scrap rate should be lower among\\
+firms receiving a grant. The problem is that the grants were not randomly assigned: whether or not a firm received a grant could be related to other factors unobservable to the econometrician that affect productivity. In the simplest case, we can write (for the 1988 cross section)\\
+$\log ($ scrap $)=\beta_{0}+\beta_{1}$ grant $+\gamma q+v$,\\
+where $v$ is orthogonal to grant but $q$ contains unobserved productivity factors that might be correlated with grant, a binary variable equal to unity if the firm received a job training grant. Since we have the scrap rate in the previous year, we can use $\log \left(\right.$ scrap $\left._{-1}\right)$ as a proxy variable for $q$ :\\
+$q=\theta_{0}+\theta_{1} \log \left(\right.$ scrap $\left._{-1}\right)+r$,\\
+where $r$ has zero mean and, by definition, is uncorrelated with $\log \left(\right.$ scrap $\left._{-1}\right)$. We hope that $r$ has no or little correlation with grant. Plugging in for $q$ gives the estimable model\\
+$\log ($ scrap $)=\delta_{0}+\beta_{1}$ grant $+\gamma \theta_{1} \log \left(\right.$ scrap $\left._{-1}\right)+r+v$.\\
+From this equation, we see that $\beta_{1}$ measures the proportionate difference in scrap rates for two firms having the same scrap rates in the previous year, but where one firm received a grant and the other did not. This is intuitively appealing. The estimated equations are
+
+$$
+\begin{aligned}
+& \log (\widehat{\text { scrap }})=\underset{(.240)}{.409}+\underset{(.406)}{.057 \text { grant. }} \\
+& N=54, \quad R^{2}=.0004 \\
+& \widehat{\log (\widehat{\text { scrap }})=} \underset{(.089) \quad\left(.021-.254 \text { grant }+\underset{(.044)}{.831} \log \left(\text { scrap }_{-1}\right)\right.}{ } \\
+& N=54, \quad R^{2}=.873
+\end{aligned}
+$$
+
+Without the lagged scrap rate, we see that the grant appears, if anything, to reduce productivity (by increasing the scrap rate), although the coefficient is statistically insignificant. When the lagged dependent variable is included, the coefficient on grant changes signs, becomes economically large-firms awarded grants have scrap rates about 25.4 percent less than those not given grants - and the effect is significant at the 5 percent level against a one-sided alternative. (The more accurate estimate of the percentage effect is $100 \cdot[\exp (-.254)-1]=-22.4 \%$; see Problem 4.1(a).)
+
+We can always use more than one proxy for $x_{K}$. For example, it might be that $\mathrm{E}\left(q \mid \mathbf{x}, z_{1}, z_{2}\right)=\mathrm{E}\left(q \mid z_{1}, z_{2}\right)=\theta_{0}+\theta_{1} z_{1}+\theta_{2} z_{2}$, in which case including both $z_{1}$ and $z_{2}$ as regressors along with $x_{1}, \ldots, x_{K}$ solves the omitted variable problem. The weaker condition that the error $r$ in the equation $q=\theta_{0}+\theta_{1} z_{1}+\theta_{2} z_{2}+r$ is uncorrelated with $x_{1}, \ldots, x_{K}$ also suffices.
+
+The data set NLS80.RAW also contains each man's score on the knowledge of the world of work $(K W W)$ test. Problem 4.11 asks you to reestimate equation (4.29) when $K W W$ and $I Q$ are both used as proxies for ability.
+
+Before ending this subsection, it is useful to formally show how not all variables are suitable proxy variables, in the sense that adding them to a regression can actually leave us worse off than excluding them. Intuitively, variables that have low correlation with the omitted variable make poor proxies. For illustration, consider a simple regression model and the extreme case where a proposed proxy variable is uncorrelated with the error term:\\
+$y=\beta_{0}+\beta_{1} x+u$\\
+$\mathrm{E}(u)=0, \quad \operatorname{Cov}(z, u)=0$,\\
+where all quantities are scalars and $u$ includes the omitted variable. Let $\tilde{\beta}_{1}$ denote the OLS slope estimator from regressing $y$ on $1, x$ and let $\hat{\beta}_{1}$ be the slope on $x$ from the regression $y$ on $1, x, z$ (using a random sample of size $N$ in each case). From the omitted variable inconsistency formula (4.24), we know that $\operatorname{plim}\left(\tilde{\beta}_{1}\right)=\beta_{1}+ \operatorname{Cov}(x, u) / \operatorname{Var}(x)$. Further, from the two-step projection result (Property LP. 7 in Chapter 2), we can easily find the plim of $\hat{\beta}_{1}$. Let $a=x-\mathrm{L}(x \mid 1, z)=x-\pi_{0}-\pi_{1} z$ be the population residual from linearly projecting $x$ onto $z$. Then $\operatorname{plim}\left(\hat{\beta}_{1}\right)= \beta_{1}+\operatorname{Cov}(a, u) / \operatorname{Var}(a)$. Therefore, the absolute values of the inconsistencies are $|\operatorname{Cov}(x, u)| / \operatorname{Var}(x)$ and $|\operatorname{Cov}(a, u)| / \operatorname{Var}(a)$, respectively. Now, because $z$ is uncorrelated with $u, \operatorname{Cov}(a, u)=\operatorname{Cov}(x, u)$, and so the numerators in the inconsistency terms are the same. Further, by a standard property of a population residual, $\operatorname{Var}(a) \leq \operatorname{Var}(x)$, with strict inequality unless $z$ is also uncorrelated with $x$. We have shown that $\left|\operatorname{plim}\left(\hat{\beta}_{1}\right)-\beta_{1}\right|>\left|\operatorname{plim}\left(\tilde{\beta}_{1}\right)-\beta_{1}\right|$ whenever $\operatorname{Cov}(z, u)=0$ and $\operatorname{Cov}(z, x) \neq 0$. In other words, OLS without the proxy has less inconsistency than OLS with the proxy (unless $x$ is uncorrelated with $u$, too). The proxy variable estimator also has a larger asymptotic variance.
+
+As we will see in Chapter 5, variables uncorrelated with $u$ and correlated with $x$ are very useful for identifying $\beta_{1}$, but they are not used as additional regressors in an OLS regression.
+
+\subsection*{4.3.3 Models with Interactions in Unobservables: Random Coefficient Models}
+In some cases we might be concerned about interactions between unobservables and observable explanatory variables. Obtaining consistent estimators is more difficult in this case, but a good proxy variable can again solve the problem.
+
+Write the structural model with unobservable $q$ as\\
+$y=\beta_{0}+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}+\gamma_{1} q+\gamma_{2} x_{K} q+v$,\\
+where we make a zero conditional mean assumption on the structural error $v$ :\\
+$\mathrm{E}(v \mid \mathbf{x}, q)=0$.
+
+For simplicity we have interacted $q$ with only one explanatory variable, $x_{K}$.\\
+Before discussing estimation of equation (4.30), we should have an interpretation for the parameters in this equation, as the interaction $x_{K} q$ is unobservable. (We discussed this topic more generally in Section 2.2.5.) If $x_{K}$ is an essentially continuous variable, the partial effect of $x_{K}$ on $\mathrm{E}(y \mid \mathbf{x}, q)$ is\\
+$\frac{\partial \mathrm{E}(y \mid \mathbf{x}, q)}{\partial x_{K}}=\beta_{K}+\gamma_{2} q$.
+
+Thus, the partial effect of $x_{K}$ actually depends on the level of $q$. Because $q$ is not observed for anyone in the population, equation (4.32) can never be estimated, even if we could estimate $\gamma_{2}$ (which we cannot, in general). But we can average equation (4.32) across the population distribution of $q$. Assuming $\mathrm{E}(q)=0$, the average partial effect (APE) of $x_{K}$ is\\
+$\mathrm{E}\left(\beta_{K}+\gamma_{2} q\right)=\beta_{K}$.
+
+A similar interpretation holds for discrete $x_{K}$. For example, if $x_{K}$ is binary, then $\mathrm{E}\left(y \mid x_{1}, \ldots, x_{K-1}, 1, q\right)-\mathrm{E}\left(y \mid x_{1}, \ldots, x_{K-1}, 0, q\right)=\beta_{K}+\gamma_{2} q$, and $\beta_{K}$ is the average of this difference over the distribution of $q$. In this case, $\beta_{K}$ is called the average treatment effect (ATE). This name derives from the case where $x_{K}$ represents receiving some "treatment," such as participation in a job training program or participation in a school voucher program. We will consider the binary treatment case further in Chapter 19, where we introduce a counterfactual framework for estimating average treatment effects.
+
+It turns out that the assumption $\mathrm{E}(q)=0$ is without loss of generality. Using simple algebra we can show that, if $\mu_{q} \equiv \mathrm{E}(q) \neq 0$, then we can consistently estimate $\beta_{K}+\gamma_{2} \mu_{q}$, which is the average partial effect.
+
+The model in equation (4.30) is sometimes called a random coefficient model because (in this case) one of the slope coefficients is "random"-that is, it depends on invidual-specific unobserved heterogeneity. One way to write the equation for a random draw $i$ is $y_{i}=\beta_{0}+\beta_{1} x_{i 1}+\cdots+\beta_{K-1} x_{i, K-1}+b_{i K} x_{i K}+u_{i}$, where $b_{i K}=\beta_{K}+ \gamma_{2} q_{i}$ is the random coefficient. Note that all other slope coefficients are assumed to be constant. Regardless of what we label the model, we are typically interested in estimating $\beta_{K}=\mathrm{E}\left(b_{i K}\right)$.
+
+If the elements of $\mathbf{x}$ are exogenous in the sense that $\mathrm{E}(q \mid \mathbf{x})=0$, then we can consistently estimate each of the $\beta_{j}$ by an OLS regression, where $q$ and $x_{K} q$ are just part of the error term. This result follows from iterated expectations applied to equation (4.30), which shows that $\mathrm{E}(y \mid \mathbf{x})=\beta_{0}+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}$ if $\mathrm{E}(q \mid \mathbf{x})=0$. The resulting equation probably has heteroskedasticity, but this is easily dealt with. Incidentally, this is a case where only assuming that $q$ and $\mathbf{x}$ are uncorrelated would not be enough to ensure consistency of OLS: $x_{K} q$ and $\mathbf{x}$ can be correlated even if $q$ and $\mathbf{x}$ are uncorrelated.
+
+If $q$ and $\mathbf{x}$ are correlated, we can consistently estimate the $\beta_{j}$ by OLS if we have a suitable proxy variable for $q$. We still assume that the proxy variable, $z$, satisfies the redundancy condition (4.25). In the current model we must make a stronger proxy variable assumption than we did in Section 4.3.2:
+
+
+\begin{equation*}
+\mathrm{E}(q \mid \mathbf{x}, z)=\mathrm{E}(q \mid z)=\theta_{1} z, \tag{4.34}
+\end{equation*}
+
+
+where now we assume $z$ has a zero mean in the population. Under these two proxy variable assumptions, iterated expectations gives
+
+
+\begin{equation*}
+\mathrm{E}(y \mid \mathbf{x}, z)=\beta_{0}+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}+\gamma_{1} \theta_{1} z+\gamma_{2} \theta_{1} x_{K} z \tag{4.35}
+\end{equation*}
+
+
+and the parameters are consistently estimated by OLS.\\
+If we do not define our proxy to have zero mean in the population, then estimating equation (4.35) by OLS does not consistently estimate $\beta_{K}$. If $\mathrm{E}(z) \neq 0$, then we would have to write $\mathrm{E}(q \mid z)=\theta_{0}+\theta_{1} z$, in which case the coefficient on $x_{K}$ in equation (4.35) would be $\beta_{K}+\theta_{0} \gamma_{2}$. In practice, we may not know the population mean of the proxy variable, in which case the proxy variable should be demeaned in the sample before interacting it with $x_{K}$.
+
+If we maintain homoskedasticity in the structural model-that is, $\operatorname{Var}(y \mid \mathbf{x}, q, z)= \operatorname{Var}(y \mid \mathbf{x}, q)=\sigma^{2}$-then there must be heteroskedasticity in $\operatorname{Var}(y \mid \mathbf{x}, z)$. Using Property CV. 3 in Appendix 2A, it can be shown that
+
+$$
+\operatorname{Var}(y \mid \mathbf{x}, z)=\sigma^{2}+\left(\gamma_{1}+\gamma_{2} x_{K}\right)^{2} \operatorname{Var}(q \mid \mathbf{x}, z) .
+$$
+
+Even if $\operatorname{Var}(q \mid \mathbf{x}, z)$ is constant, $\operatorname{Var}(y \mid \mathbf{x}, z)$ depends on $x_{K}$. This situation is most easily dealt with by computing heteroskedasticity-robust statistics, which allows for heteroskedasticity of arbitrary form.
+
+Example 4.5 (Return to Education Depends on Ability): Consider an extension of the wage equation (4.29):
+
+
+\begin{align*}
+\log (\text { wage })= & \beta_{0}+\beta_{1} \text { exper }+\beta_{2} \text { tenure }+\beta_{3} \text { married }+\beta_{4} \text { south } \\
+& +\beta_{5} \text { urban }+\beta_{6} \text { black }+\beta_{7} \text { educ }+\gamma_{1} \text { abil }+\gamma_{2} \text { educ } \text { ⋅ } \text { abil }+v \tag{4.36}
+\end{align*}
+
+
+so that educ and abil have separate effects but also have an interactive effect. In this model the return to a year of schooling depends on abil: $\beta_{7}+\gamma_{2}$ abil. Normalizing abil to have zero population mean, we see that the average of the return to education is simply $\beta_{7}$. We estimate this equation under the assumption that $I Q$ is redundant in equation (4.36) and $\mathrm{E}($ abil $\mid \mathbf{x}, I Q)=\mathrm{E}($ abil $\mid I Q)=\theta_{1}(I Q-100) \equiv \theta_{1} I Q_{0}$, where $I Q_{0}$ is the population-demeaned $I Q$ ( $I Q$ is constructed to have mean 100 in the population). We can estimate the $\beta_{j}$ in equation (4.36) by replacing abil with $I Q_{0}$ and educ‧abil with educ•IQ0 and doing OLS.
+
+Using the sample of men in NLS80.RAW gives the following:
+
+$$
+\begin{aligned}
+& \log (\widehat{\text { wage }})=\cdots+\underset{(.007)}{.052} e d u c-\underset{(.00516)}{.00094} I Q_{0}+\underset{(.00038)}{.00034} e d u c \cdot I Q_{0} \\
+& N=935, \quad R^{2}=.263
+\end{aligned}
+$$
+
+where the usual OLS standard errors are reported (if $\gamma_{2}=0$, homoskedasticity may be reasonable). The interaction term $e d u c \cdot I Q_{0}$ is not statistically significant, and the return to education at the average IQ, 5.2 percent, is similar to the estimate when the return to education is assumed to be constant. Thus there is little evidence for an interaction between education and ability. Incidentally, the $F$ test for joint significance of $I Q_{0}$ and educ $I Q_{0}$ yields a $p$-value of about .0011 , but the interaction term is not needed.
+
+In this case, we happen to know the population mean of $I Q$, but in most cases we will not know the population mean of a proxy variable. Then, we should use the sample average to demean the proxy before interacting it with $x_{K}$; see Problem 4.8. Technically, using the sample average to estimate the population average should be reflected in the OLS standard errors. But, as you are asked to show in Problem 6.10 in Chapter 6, the adjustments generally have very small impacts on the standard errors and can safely be ignored.
+
+In his study on the effects of computer usage on the wage structure in the United States, Krueger (1993) uses computer usage at home as a proxy for unobservables that might be correlated with computer usage at work; he also includes an interaction between the two computer usage dummies. Krueger does not demean the "uses computer at home" dummy before constructing the interaction, so his estimate on "uses a computer at work" does not have an average treatment effect interpretation. However, just as in Example 4.5, Krueger found that the interaction term is insignificant.
+
+\subsection*{4.4 Properties of Ordinary Least Squares under Measurement Error}
+As we saw in Section 4.1, another way that endogenous explanatory variables can arise in economic applications occurs when one or more of the variables in our model contains measurement error. In this section, we derive the consequences of measurement error for ordinary least squares estimation.
+
+The measurement error problem has a statistical structure similar to the omitted variable-proxy variable problem discussed in the previous section. However, they are conceptually very different. In the proxy variable case, we are looking for a variable that is somehow associated with the unobserved variable. In the measurement error case, the variable that we do not observe has a well-defined, quantitative meaning (such as a marginal tax rate or annual income), but our measures of it may contain error. For example, reported annual income is a measure of actual annual income, whereas IQ score is a proxy for ability.
+
+Another important difference between the proxy variable and measurement error problems is that, in the latter case, often the mismeasured explanatory variable is the one whose effect is of primary interest. In the proxy variable case, we cannot estimate the effect of the omitted variable.
+
+Before we turn to the analysis, it is important to remember that measurement error is an issue only when the variables on which we can collect data differ from the variables that influence decisions by individuals, families, firms, and so on. For example, suppose we are estimating the effect of peer group behavior on teenage drug usage, where the behavior of one's peer group is self-reported. Self-reporting may be a mismeasure of actual peer group behavior, but so what? We are probably more interested in the effects of how a teenager perceives his or her peer group.
+
+\subsection*{4.4.1 Measurement Error in the Dependent Variable}
+We begin with the case where the dependent variable is the only variable measured with error. Let $y^{*}$ denote the variable (in the population, as always) that we would\\
+like to explain. For example, $y^{*}$ could be annual family saving. The regression model has the usual linear form
+
+
+\begin{equation*}
+y^{*}=\beta_{0}+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}+v \tag{4.37}
+\end{equation*}
+
+
+and we assume that it satisfies at least Assumptions OLS.1 and OLS.2. Typically, we are interested in $\mathrm{E}\left(y^{*} \mid x_{1}, \ldots, x_{K}\right)$. We let $y$ represent the observable measure of $y^{*}$ where $y \neq y^{*}$.
+
+The population measurement error is defined as the difference between the observed value and the actual value:\\
+$e_{0}=y-y^{*}$.
+
+For a random draw $i$ from the population, we can write $e_{i 0}=y_{i}-y_{i}^{*}$, but what is important is how the measurement error in the population is related to other factors. To obtain an estimable model, we write $y^{*}=y-e_{0}$, plug this into equation (4.37), and rearrange:\\
+$y=\beta_{0}+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}+v+e_{0}$.
+
+Since $y, x_{1}, x_{2}, \ldots, x_{K}$ are observed, we can estimate this model by OLS. In effect, we just ignore the fact that $y$ is an imperfect measure of $y^{*}$ and proceed as usual.
+
+When does OLS with $y$ in place of $y^{*}$ produce consistent estimators of the $\beta_{j}$ ? Since the original model (4.37) satisfies Assumption OLS.1, $v$ has zero mean and is uncorrelated with each $x_{j}$. It is only natural to assume that the measurement error has zero mean; if it does not, this fact only affects estimation of the intercept, $\beta_{0}$. Much more important is what we assume about the relationship between the measurement error $e_{0}$ and the explanatory variables $x_{j}$. The usual assumption is that the measurement error in $y$ is statistically independent of each explanatory variable, which implies that $e_{0}$ is uncorrelated with $\mathbf{x}$. Then, the OLS estimators from equation (4.39) are consistent (and possibly unbiased as well). Further, the usual OLS inference procedures ( $t$ statistics, $F$ statistics, $L M$ statistics) are asymptotically valid under appropriate homoskedasticity assumptions.
+
+If $e_{0}$ and $v$ are uncorrelated, as is usually assumed, then $\operatorname{Var}\left(v+e_{0}\right)=\sigma_{v}^{2}+\sigma_{0}^{2}> \sigma_{v}^{2}$. Therefore, measurement error in the dependent variable results in a larger error variance than when the dependent variable is not measured with error. This result is hardly surprising and translates into larger asymptotic variances for the OLS estimators than if we could observe $y^{*}$. But the larger error variance violates none of the assumptions needed for OLS estimation to have its desirable large-sample properties.
+
+Example 4.6 (Saving Function with Measurement Error): Consider a saving function\\
+$\mathrm{E}\left(\right.$ sav $^{*} \mid$ inc, size, educ, age $)=\beta_{0}+\beta_{1}$ inc $+\beta_{2}$ size $+\beta_{3}$ educ $+\beta_{4}$ age\\
+but where actual saving (sav*) may deviate from reported saving (sav). The question is whether the measurement error in sav is systematically related to the other variables. It may be reasonable to assume that the measurement error is not correlated with inc, size, educ, and age, but we might expect that families with higher incomes or more education report their saving more accurately. Unfortunately, without more information, we cannot know whether the measurement error is correlated with inc or educ.
+
+When the dependent variable is in logarithmic form, so that $\log \left(y^{*}\right)$ is the dependent variable, a natural measurement error equation is\\
+$\log (y)=\log \left(y^{*}\right)+e_{0}$.
+
+This follows from a multiplicative measurement error for $y$ : $y=y^{*} a_{0}$ where $a_{0}>0$ and $e_{0}=\log \left(a_{0}\right)$.
+
+Example 4.7 (Measurement Error in Firm Scrap Rates): In Example 4.4, we might think that the firm scrap rate is mismeasured, leading us to postulate the model $\log \left(\right.$ scrap $\left.^{*}\right)=\beta_{0}+\beta_{1}$ grant $+v$, where scrap* is the true scrap rate. The measurement error equation is $\log ($ scrap $)=\log \left(\right.$ scrap $\left.^{*}\right)+e_{0}$. Is the measurement error $e_{0}$ independent of whether the firm receives a grant? Not if a firm receiving a grant is more likely to underreport its scrap rate in order to make it look as if the grant had the intended effect. If underreporting occurs, then, in the estimable equation $\log ($ scrap $)= \beta_{0}+\beta_{1}$ grant $+v+e_{0}$, the error $u=v+e_{0}$ is negatively correlated with grant. This result would produce a downward bias in $\beta_{1}$, tending to make the training program look more effective than it actually was.
+
+These examples show that measurement error in the dependent variable can cause biases in OLS if the measurement error is systematically related to one or more of the explanatory variables. If the measurement error is uncorrelated with the explanatory variables, OLS is perfectly appropriate.
+
+\subsection*{4.4.2 Measurement Error in an Explanatory Variable}
+Traditionally, measurement error in an explanatory variable has been considered a much more important problem than measurement error in the response variable. This point was suggested by Example 4.2, and in this subsection we develop the general case.
+
+We consider the model with a single explanatory measured with error:
+
+
+\begin{equation*}
+y=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\cdots+\beta_{K} x_{K}^{*}+v \tag{4.41}
+\end{equation*}
+
+
+where $y, x_{1}, \ldots, x_{K-1}$ are observable but $x_{K}^{*}$ is not. We assume at a minimum that $v$ has zero mean and is uncorrelated with $x_{1}, x_{2}, \ldots, x_{K-1}, x_{K}^{*}$; in fact, we usually have in mind the structural model $\mathrm{E}\left(y \mid x_{1}, \ldots, x_{K-1}, x_{K}^{*}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\cdots+ \beta_{K} x_{K}^{*}$. If $x_{K}^{*}$ were observed, OLS estimation would produce consistent estimators. Instead, we have a measure of $x_{K}^{*}$; call it $x_{K}$. A maintained assumption is that $v$ is also uncorrelated with $x_{K}$. This follows under the redundancy assumption $\mathrm{E}\left(y \mid x_{1}, \ldots, x_{K-1}, x_{K}^{*}, x_{K}\right)=\mathrm{E}\left(y \mid x_{1}, \ldots, x_{K-1}, x_{K}^{*}\right)$, an assumption we used in the proxy variable solution to the omitted variable problem. This means that $x_{K}$ has no effect on $y$ once the other explanatory variables, including $x_{K}^{*}$, have been controlled for. Because $x_{K}^{*}$ is assumed to be the variable that affects $y$, this assumption is uncontroversial.
+
+The measurement error in the population is simply
+
+
+\begin{equation*}
+e_{K}=x_{K}-x_{K}^{*} \tag{4.42}
+\end{equation*}
+
+
+and this can be positive, negative, or zero. We assume that the average measurement error in the population is zero: $\mathrm{E}\left(e_{K}\right)=0$, which has no practical consequences because we include an intercept in equation (4.41). Since $v$ is assumed to be uncorrelated with $x_{K}^{*}$ and $x_{K}, v$ is also uncorrelated with $e_{K}$.
+
+We want to know the properties of OLS if we simply replace $x_{K}^{*}$ with $x_{K}$ and run the regression of $y$ on $1, x_{1}, x_{2}, \ldots, x_{K}$. These depend crucially on the assumptions we make about the measurement error. An assumption that is almost always maintained is that $e_{K}$ is uncorrelated with the explanatory variables not measured with error: $\mathrm{E}\left(x_{j} e_{K}\right)=0, j=1, \ldots, K-1$.
+
+The key assumptions involve the relationship between the measurement error and $x_{K}^{*}$ and $x_{K}$. Two assumptions have been the focus in the econometrics literature, and these represent polar extremes. The first assumption is that $e_{K}$ is uncorrelated with the observed measure, $x_{K}$ :\\
+$\operatorname{Cov}\left(x_{K}, e_{K}\right)=0$.
+
+From equation (4.42), if assumption (4.43) is true, then $e_{K}$ must be correlated with the unobserved variable $x_{K}^{*}$. To determine the properties of OLS in this case, we write $x_{K}^{*}=x_{K}-e_{K}$ and plug this into equation (4.41):\\
+$y=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\cdots+\beta_{K} x_{K}+\left(v-\beta_{K} e_{K}\right)$.
+
+Now, we have assumed that $v$ and $e_{K}$ both have zero mean and are uncorrelated with each $x_{j}$, including $x_{K}$; therefore, $v-\beta_{K} e_{K}$ has zero mean and is uncorrelated with the $x_{j}$. It follows that OLS estimation with $x_{K}$ in place of $x_{K}^{*}$ produces consistent estimators of all of the $\beta_{j}$ (assuming the standard rank condition Assumption OLS.2). Since $v$ is uncorrelated with $e_{K}$, the variance of the error in equation (4.44) is $\operatorname{Var}\left(v-\beta_{K} e_{K}\right)=\sigma_{v}^{2}+\beta_{K}^{2} \sigma_{e_{K}}^{2}$. Therefore, except when $\beta_{K}=0$, measurement error increases the error variance, which is not a surprising finding and violates none of the OLS assumptions.
+
+The assumption that $e_{K}$ is uncorrelated with $x_{K}$ is analogous to the proxy variable assumption we made in the Section 4.3.2. Since this assumption implies that OLS has all its nice properties, this is not usually what econometricians have in mind when referring to measurement error in an explanatory variable. The classical errors-invariables (CEV) assumption replaces assumption (4.43) with the assumption that the measurement error is uncorrelated with the unobserved explanatory variable:\\
+$\operatorname{Cov}\left(x_{K}^{*}, e_{K}\right)=0$.
+
+This assumption comes from writing the observed measure as the sum of the true explanatory variable and the measurement error, $x_{K}=x_{K}^{*}+e_{K}$, and then assuming the two components of $x_{K}$ are uncorrelated. (This has nothing to do with assumptions about $v$; we are always maintaining that $v$ is uncorrelated with $x_{K}^{*}$ and $x_{K}$, and therefore with $e_{K}$.)
+
+If assumption (4.45) holds, then $x_{K}$ and $e_{K}$ must be correlated:
+
+
+\begin{equation*}
+\operatorname{Cov}\left(x_{K}, e_{K}\right)=\mathrm{E}\left(x_{K} e_{K}\right)=\mathrm{E}\left(x_{K}^{*} e_{K}\right)+\mathrm{E}\left(e_{K}^{2}\right)=\sigma_{e_{K}}^{2} \tag{4.46}
+\end{equation*}
+
+
+Thus, under the CEV assumption, the covariance between $x_{K}$ and $e_{K}$ is equal to the variance of the measurement error.
+
+Looking at equation (4.44), we see that correlation between $x_{K}$ and $e_{K}$ causes problems for OLS. Because $v$ and $x_{K}$ are uncorrelated, the covariance between $x_{K}$ and the composite error $v-\beta_{K} e_{K}$ is $\operatorname{Cov}\left(x_{K}, v-\beta_{K} e_{K}\right)=-\beta_{K} \operatorname{Cov}\left(x_{K}, e_{K}\right)= -\beta_{K} \sigma_{e_{K}}^{2}$. It follows that, in the CEV case, the OLS regression of $y$ on $x_{1}, x_{2}, \ldots, x_{K}$ generally gives inconsistent estimators of all of the $\beta_{j}$.
+
+The plims of the $\hat{\beta}_{j}$ for $j \neq K$ are difficult to characterize except under special assumptions. If $x_{K}^{*}$ is uncorrelated with $x_{j}$, all $j \neq K$, then so is $x_{K}$, and it follows that plim $\hat{\beta}_{j}=\beta_{j}$, all $j \neq K$. The plim of $\hat{\beta}_{K}$ can be characterized in any case. Problem 4.10 asks you to show that
+
+
+\begin{equation*}
+\operatorname{plim}\left(\hat{\beta}_{K}\right)=\beta_{K}\left(\frac{\sigma_{r_{K}^{*}}^{2}}{\sigma_{r_{K}^{*}}^{2}+\sigma_{e_{K}}^{2}}\right) \tag{4.47}
+\end{equation*}
+
+
+where $r_{K}^{*}$ is the linear projection error in\\
+$x_{K}^{*}=\delta_{0}+\delta_{1} x_{1}+\delta_{2} x_{2}+\cdots+\delta_{K-1} x_{K-1}+r_{K}^{*}$.\\
+An important implication of equation (4.47) is that, because the term multiplying $\beta_{K}$ is always between zero and one, $\left|\operatorname{plim}\left(\hat{\beta}_{K}\right)\right|<\left|\beta_{K}\right|$. This is called the attenuation bias in OLS due to CEVs: on average (or in large samples), the estimated OLS effect will be attenuated as a result of the presence of CEVs. If $\beta_{K}$ is positive, $\hat{\beta}_{K}$ will tend to underestimate $\beta_{K}$; if $\beta_{K}$ is negative, $\hat{\beta}_{K}$ will tend to overestimate $\beta_{K}$.
+
+In the case of a single explanatory variable $(K=1)$ measured with error, equation (4.47) becomes
+
+
+\begin{equation*}
+\operatorname{plim} \hat{\beta}_{1}=\beta_{1}\left(\frac{\sigma_{x_{1}^{*}}^{2}}{\sigma_{x_{1}^{*}}^{2}+\sigma_{e_{1}}^{2}}\right) \tag{4.48}
+\end{equation*}
+
+
+The term multiplying $\beta_{1}$ in equation (4.48) is $\operatorname{Var}\left(x_{1}^{*}\right) / \operatorname{Var}\left(x_{1}\right)$, which is always less than unity under the CEV assumption (4.45). As $\operatorname{Var}\left(e_{1}\right)$ shrinks relative to $\operatorname{Var}\left(x_{1}^{*}\right)$, the attenuation bias disappears.
+
+In the case with multiple explanatory variables, equation (4.47) shows that it is not $\sigma_{x_{K}^{*}}^{2}$ that affects $\operatorname{plim}\left(\hat{\beta}_{K}\right)$ but the variance in $x_{K}^{*}$ after netting out the other explanatory variables. Thus, the more collinear $x_{K}^{*}$ is with the other explanatory variables, the worse is the attenuation bias.
+
+Example 4.8 (Measurement Error in Family Income): Consider the problem of estimating the causal effect of family income on college grade point average, after controlling for high school grade point average and SAT score:\\
+colGPA $=\beta_{0}+\beta_{1}$ faminc $^{*}+\beta_{2} h s G P A+\beta_{3} S A T+v$,\\
+where faminc* is actual annual family income. Precise data on colGPA, hsGPA, and $S A T$ are relatively easy to obtain from school records. But family income, especially as reported by students, could be mismeasured. If faminc $=$ faminc* $+e_{1}$, and the CEV assumptions hold, then using reported family income in place of actual family income will bias the OLS estimator of $\beta_{1}$ toward zero. One consequence is that a hypothesis test of $\mathrm{H}_{0}: \beta_{1}=0$ will have a higher probability of Type II error.
+
+If measurement error is present in more than one explanatory variable, deriving the inconsistency in the OLS estimators under extensions of the CEV assumptions is complicated and does not lead to very usable results.
+
+In some cases it is clear that the CEV assumption (4.45) cannot be true. For example, suppose that frequency of marijuana usage is to be used as an explanatory\\
+variable in a wage equation. Let smoked* be the number of days, out of the last 30 , that a worker has smoked marijuana. The variable smoked is the self-reported number of days. Suppose we postulate the standard measurement error model, smoked $=$ smoked ${ }^{*}+e_{1}$, and let us even assume that people try to report the truth. It seems very likely that people who do not smoke marijuana at all-so that smoked ${ }^{*}=0$ will also report smoked $=0$. In other words, the measurement error is zero for people who never smoke marijuana. When smoked* $>0$ it is more likely that someone miscounts how many days he or she smoked marijuana. Such miscounting almost certainly means that $e_{1}$ and smoked* are correlated, a finding that violates the CEV assumption (4.45).
+
+A general situation where assumption (4.45) is necessarily false occurs when the observed variable $x_{K}$ has a smaller population variance than the unobserved variable $x_{K}^{*}$. Of course, we can rarely know with certainty whether this is the case, but we can sometimes use introspection. For example, consider actual amount of schooling versus reported schooling. In many cases, reported schooling will be a rounded-off version of actual schooling; therefore, reported schooling is less variable than actual schooling.
+
+\section*{Problems}
+4.1. Consider a standard $\log$ (wage) equation for men under the assumption that all explanatory variables are exogenous:\\
+$\log ($ wage $)=\beta_{0}+\beta_{1}$ married $+\beta_{2}$ educ $+\mathbf{z} \boldsymbol{\gamma}+u$,\\
+$\mathrm{E}(u \mid$ married , educ, $\mathbf{z})=0$,\\
+where $\mathbf{z}$ contains factors other than marital status and education that can affect wage. When $\beta_{1}$ is small, $100 \cdot \beta_{1}$ is approximately the ceteris paribus percentage difference in wages between married and unmarried men. When $\beta_{1}$ is large, it might be preferable to use the exact percentage difference in E (wage $\mid$ married, educ, $\mathbf{z}$ ). Call this $\theta_{1}$.\\
+a. Show that, if $u$ is independent of all explanatory variables in equation (4.49), then $\theta_{1}=100 \cdot\left[\exp \left(\beta_{1}\right)-1\right]$. (Hint: Find E (wage $\mid$ married, educ, $\mathbf{z}$ ) for married $=1$ and married $=0$, and find the percentage difference.) A natural, consistent, estimator of $\theta_{1}$ is $\hat{\theta}_{1}=100 \cdot\left[\exp \left(\hat{\beta}_{1}\right)-1\right]$, where $\hat{\beta}_{1}$ is the OLS estimator from equation (4.49).\\
+b. Use the delta method (see Section 3.5.2) to show that asymptotic standard error of $\hat{\theta}_{1}$ is $\left[100 \cdot \exp \left(\hat{\beta}_{1}\right)\right] \cdot \operatorname{se}\left(\hat{\beta}_{1}\right)$.\\
+c. Repeat parts a and b by finding the exact percentage change in E (wage $\mid$ married, $e d u c, \mathbf{z})$ for any given change in educ, Δeduc. Call this $\theta_{2}$. Explain how to estimate $\theta_{2}$ and obtain its asymptotic standard error.\\
+d. Use the data in NLS80.RAW to estimate equation (4.49), where $\mathbf{z}$ contains the remaining variables in equation (4.29) (except ability, of course). Find $\hat{\theta}_{1}$ and its standard error; find $\hat{\theta}_{2}$ and its standard error when $\Delta e d u c=4$.\\
+4.2. a. Show that, under random sampling and the zero conditional mean assumption $\mathrm{E}(u \mid \mathbf{x})=0, \mathrm{E}(\hat{\boldsymbol{\beta}} \mid \mathbf{X})=\boldsymbol{\beta}$ if $\mathbf{X}^{\prime} \mathbf{X}$ is nonsingular. (Hint: Use Property CE. 5 in the appendix to Chapter 2.)\\
+b. In addition to the assumptions from part a, assume that $\operatorname{Var}(u \mid \mathbf{x})=\sigma^{2}$. Show that $\operatorname{Var}(\hat{\boldsymbol{\beta}} \mid \mathbf{X})=\sigma^{2}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}$.\\
+4.3. Suppose that in the linear model (4.5), $\mathrm{E}\left(\mathbf{x}^{\prime} u\right)=\mathbf{0}$ (where $\mathbf{x}$ contains unity), $\operatorname{Var}(u \mid \mathbf{x})=\sigma^{2}$, but $\mathrm{E}(u \mid \mathbf{x}) \neq \mathrm{E}(u)$.\\
+a. Is it true that $\mathrm{E}\left(u^{2} \mid \mathbf{x}\right)=\sigma^{2}$ ?\\
+b. What relevance does part a have for OLS estimation?\\
+4.4. Show that the estimator $\hat{\mathbf{B}} \equiv N^{-1} \sum_{i=1}^{N} \hat{u}_{i}^{2} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}$ is consistent for $\mathbf{B}=\mathrm{E}\left(u^{2} \mathbf{x}^{\prime} \mathbf{x}\right)$ by showing that $N^{-1} \sum_{i=1}^{N} \hat{u}_{i}^{2} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}=N^{-1} \sum_{i=1}^{N} u_{i}^{2} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}+\mathrm{o}_{p}(1)$. (Hint: Write $\hat{u}_{i}^{2}=u_{i}^{2}- 2 \mathbf{x}_{i} u_{i}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})+\left[\mathbf{x}_{i}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}]^{2}\right.$, and use the facts that sample averages are $\mathrm{O}_{p}(1)$ when expectations exist and that $\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}=\mathrm{o}_{p}(1)$. Assume that all necessary expectations exist and are finite.)\\
+4.5. Let $y$ and $z$ be random scalars, and let $\mathbf{x}$ be a $1 \times K$ random vector, where one element of $\mathbf{x}$ can be unity to allow for a nonzero intercept. Consider the population model\\
+$\mathrm{E}(y \mid \mathbf{x}, z)=\mathbf{x} \boldsymbol{\beta}+\gamma z$,\\
+$\operatorname{Var}(y \mid \mathbf{x}, z)=\sigma^{2}$,\\
+where interest lies in the $K \times 1$ vector $\boldsymbol{\beta}$. To rule out trivialities, assume that $\gamma \neq 0$. In addition, assume that $\mathbf{x}$ and z are orthogonal in the population: $\mathrm{E}\left(\mathbf{x}^{\prime} z\right)=\mathbf{0}$.
+
+Consider two estimators of $\boldsymbol{\beta}$ based on $N$ independent and identically distributed observations: (1) $\hat{\boldsymbol{\beta}}$ (obtained along with $\hat{\gamma}$ ) is from the regression of $y$ on $\mathbf{x}$ and $z$; (2) $\tilde{\boldsymbol{\beta}}$ is from the regression of $y$ on $\mathbf{x}$. Both estimators are consistent for $\boldsymbol{\beta}$ under equation (4.50) and $\mathrm{E}\left(\mathbf{x}^{\prime} z\right)=\mathbf{0}$ (along with the standard rank conditions).\\
+a. Show that, without any additional assumptions (except those needed to apply the law of large numbers and the central limit theorem), Avar $\sqrt{N}(\tilde{\boldsymbol{\beta}}-\boldsymbol{\beta})-$
+
+Avar $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$ is always positive semidefinite (and usually positive definite). Therefore, from the standpoint of asymptotic analysis, it is always better under equations (4.50) and (4.51) to include variables in a regression model that are uncorrelated with the variables of interest.\\
+b. Consider the special case where $z=\left(x_{K}-\mu_{K}\right)^{2}, \mu_{K} \equiv \mathrm{E}\left(x_{K}\right)$, and $x_{K}$ is symetrically distributed: $\mathrm{E}\left[\left(x_{K}-\mu_{K}\right)^{3}\right]=0$. Then $\beta_{K}$ is the partial effect of $x_{K}$ on $\mathrm{E}(y \mid \mathbf{x})$ evaluated at $x_{K}=\mu_{K}$. Is it better to estimate the average partial effect with or without $\left(x_{K}-\mu_{K}\right)^{2}$ included as a regressor?\\
+c. Under the setup in Problem 2.3, with $\operatorname{Var}(y \mid \mathbf{x})=\sigma^{2}$, is it better to estimate $\beta_{1}$ and $\beta_{2}$ with or without $x_{1} x_{2}$ in the regression?\\
+4.6. Let the variable nonwhite be a binary variable indicating race: nonwhite $=1$ if the person is a race other than white. Given that race is determined at birth and is beyond an individual's control, explain how nonwhite can be an endogenous explanatory variable in a regression model. In particular, consider the three kinds of endogeneity discussed in Section 4.1.\\
+4.7. Consider estimating the effect of personal computer ownership, as represented by a binary variable, $P C$, on college GPA, colGPA. With data on SAT scores and high school GPA you postulate the model\\
+$\operatorname{colGPA}=\beta_{0}+\beta_{1} h s G P A+\beta_{2} S A T+\beta_{3} P C+u$.\\
+a. Why might $u$ and $P C$ be positively correlated?\\
+b. If the given equation is estimated by OLS using a random sample of college students, is $\hat{\beta}_{3}$ likely to have an upward or downward asymptotic bias?\\
+c. What are some variables that might be good proxies for the unobservables in $u$ that are correlated with $P C$ ?\\
+4.8. Consider a population regression with two explanatory variables, but where they have an interactive effect and $x_{2}$ appears as a quadratic:\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} x_{1} x_{2}+\beta_{4} x_{2}^{2}$.\\
+Let $\mu_{1} \equiv \mathrm{E}\left(x_{1}\right)$ and $\mu_{2} \equiv \mathrm{E}\left(x_{2}\right)$ be the population means of the explanatory variables.\\
+a. Let $\alpha_{1}$ denote the average partial effect (across the distribution of the explanatory variables) of $x_{1}$ on $\mathrm{E}\left(y \mid x_{1}, x_{2}\right)$, and let $\alpha_{2}$ be the same for $x_{2}$. Find $\alpha_{1}$ and $\alpha_{2}$ in terms of the $\beta_{j}$ and $\mu_{j}$.\\
+b. Rewrite the regression function so that $\alpha_{1}$ and $\alpha_{2}$ appear directly. (Note that $\mu_{1}$ and $\mu_{2}$ will also appear.)\\
+c. Given a random sample, what regression would you run to estimate $\alpha_{1}$ and $\alpha_{2}$ directly? What if you do not know $\mu_{1}$ and $\mu_{2}$ ?\\
+d. Apply part c to the data in NLS80.RAW, where $y=\log ($ wage $), x_{1}=e d u c$, and $x_{2}=$ exper. (You will have to plug in the sample averages of educ and exper.) Compare coefficients and standard errors when the interaction term is educ-exper instead, and discuss.\\
+4.9. Consider a linear model where the dependent variable is in logarithmic form, and the lag of $\log (y)$ is also an explanatory variable:\\
+$\log (y)=\beta_{0}+\mathbf{x} \boldsymbol{\beta}+\alpha_{1} \log \left(y_{-1}\right)+u, \quad \mathrm{E}\left(u \mid \mathbf{x}, y_{-1}\right)=0$,\\
+where the inclusion of $\log \left(y_{-1}\right)$ might be to control for correlation between policy variables in $\mathbf{x}$ and a previous value of $y$; see Example 4.4.\\
+a. For estimating $\boldsymbol{\beta}$, why do we obtain the same estimator if the growth in $y, \log (y)- \log \left(y_{-1}\right)$, is used instead as the dependent variable?\\
+b. Suppose that there are no covariates $\mathbf{x}$ in the equation. Show that, if the distributions of $y$ and $y_{-1}$ are identical, then $\left|\alpha_{1}\right|<1$. This is the regression-to-the-mean phenomenon in a dynamic setting. (Hint: Show that $\alpha_{1}=\operatorname{Corr}\left[\log (y), \log \left(y_{-1}\right)\right]$.)\\
+4.10. Use Property LP. 7 from Chapter 2 (particularly equation (2.56)) and Problem 2.6 to derive equation (4.47). (Hint: First use Problem 2.6 to show that the population residual $r_{K}$, in the linear projection of $x_{K}$ on $1, x_{1}, \ldots, x_{K-1}$, is $r_{K}^{*}+e_{K}$. Then find the projection of $y$ on $r_{K}$ and use Property LP.7.)\\
+4.11. a. In Example 4.3, use $K W W$ and $I Q$ simultaneously as proxies for ability in equation (4.29). Compare the estimated return to education without a proxy for ability and with $I Q$ as the only proxy for ability.\\
+b. Test $K W W$ and $I Q$ for joint significance in the estimated equation from part a.\\
+c. When $K W W$ and $I Q$ are used as proxies for abil, does the wage differential between nonblacks and blacks disappear? What is the estimated differential?\\
+d. Add the interactions $e d u c(I Q-100)$ and $e d u c(K W W-\overline{K W W})$ to the regression from part a, where $\overline{K W W}$ is the average score in the sample. Are these terms jointly significant using a standard $F$ test? Does adding them affect any important conclusions?\\
+4.12. Redo Example 4.4, adding the variable union-a dummy variable indicating whether the workers at the plant are unionized - as an additional explanatory variable.\\
+4.13. Use the data in CORNWELL.RAW (from Cornwell and Trumball, 1994) to estimate a model of county-level crime rates, using the year 1987 only.\\
+a. Using logarithms of all variables, estimate a model relating the crime rate to the deterrent variables prbarr, prbconv, prbpris, and avgsen.\\
+b. Add $\log$ (crmrte) for 1986 as an additional explanatory variable, and comment on how the estimated elasticities differ from part a.\\
+c. Compute the $F$ statistic for joint significance of all of the wage variables (again in logs), using the restricted model from part b.\\
+d. Redo part c, but make the test robust to heteroskedasticity of unknown form.\\
+4.14. Use the data in ATTEND.RAW to answer this question.\\
+a. To determine the effects of attending lecture on final exam performance, estimate a model relating stndfnl (the standardized final exam score) to atndrte (the percent of lectures attended). Include the binary variables frosh and soph as explanatory variables. Interpret the coefficient on atndrte, and discuss its significance.\\
+b. How confident are you that the OLS estimates from part a are estimating the causal effect of attendence? Explain.\\
+c. As proxy variables for student ability, add to the regression priGPA (prior cumulative GPA) and $A C T$ (achievement test score). Now what is the effect of atndrte? Discuss how the effect differs from that in part a.\\
+d. What happens to the significance of the dummy variables in part c as compared with part a? Explain.\\
+e. Add the squares of priGPA and $A C T$ to the equation. What happens to the coefficient on atndrte? Are the quadratics jointly significant?\\
+f. To test for a nonlinear effect of atndrte, add its square to the equation from part e. What do you conclude?\\
+4.15. Assume that $y$ and each $x_{j}$ have finite second moments, and write the linear projection of $y$ on $\left(1, x_{1}, \ldots, x_{K}\right)$ as\\
+$y=\beta_{0}+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}+u=\beta_{0}+\mathbf{x} \boldsymbol{\beta}+u$,\\
+$\mathrm{E}(u)=0, \quad \mathrm{E}\left(x_{j} u\right)=0, \quad j=1,2, \ldots, K$.\\
+a. Show that $\sigma_{y}^{2}=\operatorname{Var}(\mathbf{x} \boldsymbol{\beta})+\sigma_{u}^{2}$.\\
+b. For a random draw $i$ from the population, write $y_{i}=\beta_{0}+\mathbf{x}_{i} \boldsymbol{\beta}+u_{i}$. Evaluate the following assumption, which has been known to appear in econometrics textbooks:\\
+"Var $\left(u_{i}\right)=\sigma^{2}=$ Var $\left(y_{i}\right)$ for all $i$."\\
+c. Define the population $R$-squared by $\rho^{2} \equiv 1-\sigma_{u}^{2} / \sigma_{y}^{2}=\operatorname{Var}(\mathbf{x} \boldsymbol{\beta}) / \sigma_{y}^{2}$. Show that the $R$-squared, $R^{2}=1-\mathrm{SSR} / \mathrm{SST}$, is a consistent estimator of $\rho^{2}$, where SSR is the OLS sum of squared residuals and $\mathrm{SST}=\sum_{i=1}^{N}\left(y_{i}-\bar{y}\right)^{2}$ is the total sum of squares.\\
+d. Evaluate the following statement: "In the presence of heteroskedasticity, the $R$ squared from an OLS regression is meaningless." (This kind of statement also tends to appear in econometrics texts.)\\
+4.16. Let $\left\{\left(\mathbf{x}_{i}, u_{i}\right): i=1,2, \ldots\right\}$ be a sequence of independent, not identically distributed (i.n.i.d) random vectors following the linear model $y_{i}=\mathbf{x}_{i} \boldsymbol{\beta}+u_{i}, i= 1,2, \ldots$ Assume that $\mathrm{E}\left(\mathbf{x}_{i}^{\prime} u_{i}\right)=\mathbf{0}$ for all $i$, that $N^{-1} \sum_{i=1}^{N} \mathrm{E}\left(\mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right) \rightarrow \mathbf{A}$, where $\mathbf{A}$ is a $K \times K$ positive definite matrix, and that $\left\{\mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right\}$ satisfies the law of large numbers: $N^{-1} \sum_{i=1}^{N}\left[\mathbf{x}_{i}^{\prime} \mathbf{x}_{i}-\mathrm{E}\left(\mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)\right] \xrightarrow{p} \mathbf{0}$.\\
+a. If $N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} u_{i}$ also satisfies the law of large numbers, prove that the OLS estimator, $\hat{\boldsymbol{\beta}}$, from the regression $y_{i}$ on $\mathbf{x}_{i}, i=1,2, \ldots, N$, is consistent for $\boldsymbol{\beta}$.\\
+b. Define $\mathbf{B}_{N}=N^{-1} \sum_{i=1}^{N} \mathrm{E}\left(u_{i}^{2} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)$ for each $N$ and assume that $\mathbf{B}_{N} \rightarrow \mathbf{B}$ as $N \rightarrow \infty$. Further, assume that $N^{-1 / 2} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} u_{i} \xrightarrow{d} \operatorname{Normal}(\mathbf{0}, \mathbf{B})$. Show that $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$ is asymptotically normal and find its asymptotic variance matrix.\\
+c. Suggest consistent estimators of $\mathbf{A}$ and $\mathbf{B}$; you need not prove consistency.\\
+d. Comment on how the estimators in part c compare with the i.i.d. case.\\
+4.17. Consider the standard linear model $y=\mathbf{x} \boldsymbol{\beta}+u$ under Assumptions OLS. 1 and OLS.2. Define $h(\mathbf{x}) \equiv \mathrm{E}\left(u^{2} \mid \mathbf{x}\right)$. Let $\hat{\boldsymbol{\beta}}$ be the OLS estimator, and show that we can always write\\
+$\operatorname{Avar} \sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})=\left[\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)\right]^{-1} \mathrm{E}\left[h(\mathbf{x}) \mathbf{x}^{\prime} \mathbf{x}\right]\left[\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)\right]^{-1}$.\\
+This expression is useful when $\mathrm{E}(u \mid \mathbf{x})=0$ for comparing the asymptotic variances of OLS and weighted least squares estimators; see, for example, Wooldridge (1994b).\\
+4.18. Describe what is wrong with each of the following two statements:\\
+a. "The central limit theorem implies that, as the sample size grows, the error distribution approaches normality."\\
+b. "The heteroskedasticity-robust standard errors are consistent because $\hat{u}_{i}^{2}$ (the squared OLS residual) is a consistent estimator of $\mathrm{E}\left(u_{i}^{2} \mid \mathbf{x}_{i}\right)$ for each $i$."
+
+\section*{5 Instrumental Variables Estimation of Single-Equation Linear Models}
+
+\end{document}

@@ -1,0 +1,623 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 5: Instrumental Variables Estimation}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+In this chapter we treat instrumental variables estimation, which is probably second only to ordinary least squares in terms of methods used in empirical economic research. The underlying population model is the same as in Chapter 4, but we explicitly allow the unobservable error to be correlated with the explanatory variables.
+
+\subsection*{5.1 Instrumental Variables and Two-Stage Least Squares}
+\subsection*{5.1.1 Motivation for Instrumental Variables Estimation}
+To motivate the need for the method of instrumental variables, consider a linear population model\\
+$y=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\cdots+\beta_{K} x_{K}+u$,\\
+$\mathrm{E}(u)=0, \quad \operatorname{Cov}\left(x_{j}, u\right)=0, \quad j=1,2, \ldots, K-1$,\\
+but where $x_{K}$ might be correlated with $u$. In other words, the explanatory variables $x_{1}, x_{2}, \ldots, x_{K-1}$ are exogenous, but $x_{K}$ is potentially endogenous in equation (5.1). The endogeneity can come from any of the sources we discussed in Chapter 4. To fix ideas, it might help to think of $u$ as containing an omitted variable that is uncorrelated with all explanatory variables except $x_{K}$. So, we may be interested in a conditional expectation as in equation (4.18), but we do not observe $q$, and $q$ is correlated with $x_{K}$.
+
+As we saw in Chapter 4, OLS estimation of equation (5.1) generally results in inconsistent estimators of all the $\beta_{j}$ if $\operatorname{Cov}\left(x_{K}, u\right) \neq 0$. Further, without more information, we cannot consistently estimate any of the parameters in equation (5.1).
+
+The method of instrumental variables (IV) provides a general solution to the problem of an endogenous explanatory variable. To use the IV approach with $x_{K}$ endogenous, we need an observable variable, $z_{1}$, not in equation (5.1) that satisfies two conditions. First, $z_{1}$ must be uncorrelated with $u$ :
+
+
+\begin{equation*}
+\operatorname{Cov}\left(z_{1}, u\right)=0 . \tag{5.3}
+\end{equation*}
+
+
+In other words, like $x_{1}, \ldots, x_{K-1}, z_{1}$ is exogenous in equation (5.1).\\
+The second requirement involves the relationship between $z_{1}$ and the endogenous variable, $x_{K}$. A precise statement requires the linear projection of $x_{K}$ onto all the exogenous variables:
+
+
+\begin{equation*}
+x_{K}=\delta_{0}+\delta_{1} x_{1}+\delta_{2} x_{2}+\cdots+\delta_{K-1} x_{K-1}+\theta_{1} z_{1}+r_{K}, \tag{5.4}
+\end{equation*}
+
+
+where, by definition of a linear projection error, $\mathrm{E}\left(r_{K}\right)=0$ and $r_{K}$ is uncorrelated with $x_{1}, x_{2}, \ldots, x_{K-1}$, and $z_{1}$. The key assumption on this linear projection is that the\\
+coefficient on $z_{1}$ is nonzero:\\
+$\theta_{1} \neq 0$.
+
+This condition is often loosely described as " $z_{1}$ is correlated with $x_{K}$," but that statement is not quite correct. The condition $\theta_{1} \neq 0$ means that $z_{1}$ is partially correlated with $x_{K}$ once the other exogenous variables $x_{1}, \ldots, x_{K-1}$ have been netted out. If $x_{K}$ is the only explanatory variable in equation (5.1), then the linear projection is $x_{K}=\delta_{0}+\theta_{1} z_{1}+r_{K}$, where $\theta_{1}=\operatorname{Cov}\left(z_{1}, x_{K}\right) / \operatorname{Var}\left(z_{1}\right)$, and so condition (5.5) and $\operatorname{Cov}\left(z_{1}, x_{K}\right) \neq 0$ are the same.
+
+At this point we should mention that we have put no restrictions on the distribution of $x_{K}$ or $z_{1}$. In many cases $x_{K}$ and $z_{1}$ will be both essentially continuous, but sometimes $x_{K}, z_{1}$, or both are discrete. In fact, one or both of $x_{K}$ and $z_{1}$ can be binary variables, or have continuous and discrete characteristics at the same time. Equation (5.4) is simply a linear projection, and this is always defined when second moments of all variables are finite.
+
+When $z_{1}$ satisfies conditions (5.3) and (5.5), then it is said to be an instrumental variable (IV) candidate for $x_{K}$. (Sometimes $z_{1}$ is simply called an instrument for $x_{K}$.) Because $x_{1}, \ldots, x_{K-1}$ are already uncorrelated with $u$, they serve as their own instrumental variables in equation (5.1). In other words, the full list of instrumental variables is the same as the list of exogenous variables, but we often just refer to the instrument for the endogenous explanatory variable.
+
+The linear projection in equation (5.4) is called a reduced-form equation for the endogenous explanatory variable $x_{K}$. In the context of single-equation linear models, a reduced form always involves writing an endogenous variable as a linear projection onto all exogenous variables. The "reduced form" terminology comes from simultaneous equations analysis, and it makes more sense in that context. We use it in all IV contexts because it is a concise way of stating that an endogenous variable has been linearly projected onto the exogenous variables. The terminology also conveys that there is nothing necessarily structural about equation (5.4).
+
+From the structural equation (5.1) and the reduced form for $x_{K}$, we obtain a reduced form for $y$ by plugging equation (5.4) into equation (5.1) and rearranging:\\
+$y=\alpha_{0}+\alpha_{1} x_{1}+\cdots+\alpha_{K-1} x_{K-1}+\lambda_{1} z_{1}+v$,\\
+where $v=u+\beta_{K} r_{K}$ is the reduced-form error, $\alpha_{j}=\beta_{j}+\beta_{K} \delta_{j}$, and $\lambda_{1}=\beta_{K} \theta_{1}$. By our assumptions, $v$ is uncorrelated with all explanatory variables in equation (5.6), and so OLS consistently estimates the reduced-form parameters, the $\alpha_{j}$ and $\lambda_{1}$.
+
+Estimates of the reduced-form parameters are sometimes of interest in their own right, but estimating the structural parameters is generally more useful. For example, at the firm level, suppose that $x_{K}$ is job training hours per worker and $y$ is a measure\\
+of average worker productivity. Suppose that job training grants were randomly assigned to firms. Then it is natural to use for $z_{1}$ either a binary variable indicating whether a firm received a job training grant or the actual amount of the grant per worker (if the amount varies by firm). The parameter $\beta_{K}$ in equation (5.1) is the effect of job training on worker productivity. If $z_{1}$ is a binary variable for receiving a job training grant, then $\lambda_{1}$ is the effect of receiving this particular job training grant on worker productivity, which is of some interest. But estimating the effect of an hour of general job training is more valuable because it can be meaningful in many situations.
+
+We can now show that the assumptions we have made on the IV $z_{1}$ solve the identification problem for the $\beta_{j}$ in equation (5.1). By identification we mean that we can write the $\beta_{j}$ in terms of population moments in observable variables. To see how, write equation (5.1) as\\
+$y=\mathbf{x} \boldsymbol{\beta}+u$,\\
+where the constant is absorbed into $\mathbf{x}$ so that $\mathbf{x}=\left(1, x_{2}, \ldots, x_{K}\right)$. Write the $1 \times K$ vector of all exogenous variables as\\
+$\mathbf{z} \equiv\left(1, x_{2}, \ldots, x_{K-1}, z_{1}\right)$.\\
+Assumptions (5.2) and (5.3) imply the $K$ population orthogonality conditions\\
+$\mathrm{E}\left(\mathbf{z}^{\prime} u\right)=\mathbf{0}$.
+
+Multiplying equation (5.7) through by $\mathbf{z}^{\prime}$, taking expectations, and using equation (5.8) gives\\
+$\left[\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)\right] \boldsymbol{\beta}=\mathrm{E}\left(\mathbf{z}^{\prime} y\right)$,\\
+where $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)$ is $K \times K$ and $\mathrm{E}\left(\mathbf{z}^{\prime} y\right)$ is $K \times 1$. Equation (5.9) represents a system of $K$ linear equations in the $K$ unknowns $\beta_{1}, \beta_{2}, \ldots, \beta_{K}$. This system has a unique solution if and only if the $K \times K$ matrix $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)$ has full rank; that is,\\
+$\operatorname{rank} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)=K$,\\
+in which case the solution is\\
+$\boldsymbol{\beta}=\left[\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)\right]^{-1} \mathrm{E}\left(\mathbf{z}^{\prime} y\right)$.
+
+The expectations $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)$ and $\mathrm{E}\left(\mathbf{z}^{\prime} y\right)$ can be consistently estimated using a random sample on $\left(\mathbf{x}, y, z_{1}\right)$, and so equation (5.11) identifies the vector $\boldsymbol{\beta}$.
+
+It is clear that condition (5.3) was used to obtain equation (5.11). But where have we used condition (5.5)? Let us maintain that there are no linear dependencies among\\
+the exogenous variables, so that $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$ has full rank $K$; this simply rules out perfect collinearity in $\mathbf{z}$ in the population. Then, it can be shown that equation (5.10) holds if and only if $\theta_{1} \neq 0$. (A more general case, which we cover in Section 5.1.2, is covered in Problem 5.12.) Therefore, along with the exogeneity condition (5.3), assumption (5.5) is the key identification condition. Assumption (5.10) is the rank condition for identification, and we return to it more generally in Section 5.2.1.
+
+Given a random sample $\left\{\left(\mathbf{x}_{i}, y_{i}, z_{i 1}\right): i=1,2, \ldots, N\right\}$ from the population, the instrumental variables estimator of $\boldsymbol{\beta}$ is\\
+$\hat{\boldsymbol{\beta}}=\left(N^{-1} \sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} \mathbf{x}_{i}\right)^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} y_{i}\right)=\left(\mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$,\\
+where $\mathbf{Z}$ and $\mathbf{X}$ are $N \times K$ data matrices and $\mathbf{Y}$ is the $N \times 1$ data vector on the $y_{i}$. The consistency of this estimator is immediate from equation (5.11) and the law of large numbers. We consider a more general case in Section 5.2.1.
+
+When searching for instruments for an endogenous explanatory variable, conditions (5.3) and (5.5) are equally important in identifying $\boldsymbol{\beta}$. There is, however, one practically important difference between them: condition (5.5) can be tested, whereas condition (5.3) must be maintained. The reason for this disparity is simple: the covariance in condition (5.3) involves the unobservable $u$, and therefore we cannot test anything about $\operatorname{Cov}\left(z_{1}, u\right)$.
+
+Testing condition (5.5) in the reduced form (5.4) is a simple matter of computing a $t$ test after OLS estimation. Nothing guarantees that $r_{K}$ satisfies the requisite homoskedasticity assumption (Assumption OLS.3), so a heteroskedasticity-robust $t$ statistic for $\hat{\theta}_{1}$ is often warranted. This statement is especially true if $x_{K}$ is a binary variable or some other variable with discrete characteristics.
+
+A word of caution is in order here. Econometricians have been known to say that "it is not possible to test for identification." In the model with one endogenous variable and one instrument, we have just seen the sense in which this statement is true: assumption (5.3) cannot be tested. Nevertheless, the fact remains that condition (5.5) can and should be tested. In fact, recent work has shown that the strength of the rejection in condition (5.5) (in a $p$-value sense) is important for determining the finite sample properties, particularly the bias, of the IV estimator. We return to this issue in Section 5.2.6.
+
+In the context of omitted variables, an instrumental variable, like a proxy variable, must be redundant in the structural model (that is, the model that explicitly contains the unobservables; see condition (4.25)). However, unlike a proxy variable, an IV for $x_{K}$ should be uncorrelated with the omitted variable. Remember, we want a proxy\\
+variable to be highly correlated with the omitted variable. A proxy variable makes a poor IV and, as we saw in Section 4.3.3, an IV makes a poor proxy variable.
+
+Example 5.1 (Instrumental Variables for Education in a Wage Equation): Consider a wage equation for the U.S. working population:\\
+$\log ($ wage $)=\beta_{0}+\beta_{1}$ exper $+\beta_{2}$ exper $^{2}+\beta_{3}$ educ $+u$,\\
+where $u$ is thought to be correlated with educ because of omitted ability, as well as other factors, such as quality of education and family background. Suppose that we can collect data on mother's education, motheduc. For this to be a valid instrument for educ we must assume that motheduc is uncorrelated with $u$ and that $\theta_{1} \neq 0$ in the reduced-form equation\\
+educ $=\delta_{0}+\delta_{1}$ exper $+\delta_{2}$ exper $^{2}+\theta_{1}$ motheduc $+r$.\\
+There is little doubt that educ and motheduc are partially correlated, and this assertion is easily tested given a random sample from the population. The potential problem with motheduc as an instrument for educ is that motheduc might be correlated with the omitted factors in $u$ : mother's education is likely to be correlated with child's ability and other family background characteristics that might be in $u$.
+
+A variable such as the last digit of one's social security number makes a poor IV candidate for the opposite reason. Because the last digit is randomly determined, it is independent of other factors that affect earnings. But it is also independent of education. Therefore, while condition (5.3) holds, condition (5.5) does not.
+
+By being clever it is often possible to come up with more convincing instrumentsat least at first glance. Angrist and Krueger (1991) propose using quarter of birth as an IV for education. In the simplest case, let frstqrt be a dummy variable equal to unity for people born in the first quarter of the year and zero otherwise. Quarter of birth is arguably independent of unobserved factors such as ability that affect wage (although there is disagreement on this point; see Bound, Jaeger, and Baker (1995)). In addition, we must have $\theta_{1} \neq 0$ in the reduced form\\
+educ $=\delta_{0}+\delta_{1}$ exper $+\delta_{2}$ exper $^{2}+\theta_{1}$ frstqrt $+r$.\\
+How can quarter of birth be (partially) correlated with educational attainment? Angrist and Krueger (1991) argue that compulsory school attendence laws induce a relationship between educ and frstqrt: at least some people are forced, by law, to attend school longer than they otherwise would, and this fact is correlated with quarter of birth. We can determine the strength of this association in a particular sample by estimating the reduced form and obtaining the $t$ statistic for $\mathrm{H}_{0}: \theta_{1}=0$.
+
+This example illustrates that it can be very difficult to find a good instrumental variable for an endogenous explanatory variable because the variable must satisfy two different, often conflicting, criteria. For motheduc, the issue in doubt is whether condition (5.3) holds. For frstqrt, the initial concern is with condition (5.5). Since condition (5.5) can be tested, frstqrt has more appeal as an instrument. However, the partial correlation between educ and frstqrt is small, and this can lead to finite sample problems (see Section 5.2.6). A more subtle issue concerns the sense in which we are estimating the return to education for the entire population of working people. As we will see in Chapter 18, if the return to education is not constant across people, the IV estimator that uses frstqrt as an IV estimates the return to education only for those people induced to obtain more schooling because they were born in the first quarter of the year. These make up a relatively small fraction of the population.
+
+Convincing instruments sometimes arise in the context of program evaluation, where individuals are randomly selected to be eligible for the program. Examples include job training programs and school voucher programs. Actual participation is almost always voluntary, and it may be endogenous because it can depend on unobserved factors that affect the response. However, it is often reasonable to assume that eligibility is exogenous. Because participation and eligibility are correlated, the latter can be used as an IV for the former.
+
+A valid instrumental variable can also come from what is called a natural experiment. A natural experiment occurs when some (often unintended) feature of the setup we are studying produces exogenous variation in an otherwise endogenous explanatory variable. The Angrist and Krueger (1991) example seems, at least initially, to be a good natural experiment. Another example is given by Angrist (1990), who studies the effect of serving in the Vietnam war on the earnings of men. Participation in the military is not necessarily exogenous to unobserved factors that affect earnings, even after controlling for education, nonmilitary experience, and so on. Angrist used the following observation to obtain an instrumental variable for the binary Vietnam war participation indicator: men with a lower draft lottery number were more likely to serve in the war. Angrist verifies that the probability of serving in Vietnam is indeed related to draft lottery number. Because the lottery number is randomly determined, it seems like an ideal IV for serving in Vietnam. There are, however, some potential problems. It might be that men who were assigned a low lottery number chose to obtain more education as a way of increasing the chance of obtaining a draft deferment. If we do not control for education in the earnings equation, lottery number could be endogenous. Further, employers may have been willing to invest in job training for men who are unlikely to be drafted. Again, unless we can include measures of job training in the earnings equation, condition (5.3) may be violated. (This\\
+reasoning assumes that we are interested in estimating the pure effect of serving in Vietnam, as opposed to including indirect effects such as reduced job training.)
+
+Hoxby (2000) uses topographical features, in particular the natural boundaries created by rivers, as IVs for the concentration of public schools within a school district. She uses these IVs to estimate the effects of competition among public schools on student performance. Cutler and Glaeser (1997) use the Hoxby instruments, as well as others, to estimate the effects of segregation on schooling and employment outcomes for blacks. Levitt (1997) provides another example of obtaining instrumental variables from a natural experiment. He uses the timing of mayoral and gubernatorial elections as instruments for size of the police force in estimating the effects of police on city crime rates. (Levitt actually uses panel data, something we will discuss in Chapter 11.)
+
+Sensible IVs need not come from natural experiments. For example, Evans and Schwab (1995) study the effect of attending a Catholic high school on various outcomes. They use a binary variable for whether a student is Catholic as an IV for attending a Catholic high school, and they spend much effort arguing that religion is exogenous in their versions of equation (5.7). (In this application, condition (5.5) is easy to verify.) Economists often use regional variation in prices or taxes as instruments for endogenous explanatory variables appearing in individual-level equations. For example, in estimating the effects of alcohol consumption on performance in college, the local price of alcohol can be used as an IV for alcohol consumption, provided other regional factors that affect college performance have been appropriately controlled for. The idea is that the price of alcohol, including any taxes, can be assumed to be exogenous to each individual.
+
+Example 5.2 (College Proximity as an IV for Education): Using wage data for 1976, Card (1995) uses a dummy variable that indicates whether a man grew up in the vicinity of a four-year college as an instrumental variable for years of schooling. He also includes several other controls. In the equation with experience and its square, a black indicator, southern and urban indicators, and regional and urban indicators for 1966, the instrumental variables estimate of the return to schooling is .132, or 13.2 percent, while the OLS estimate is 7.5 percent. Thus, for this sample of data, the IV estimate is almost twice as large as the OLS estimate. This result would be counterintuitive if we thought that an OLS analysis suffered from an upward omitted variable bias. One interpretation is that the OLS estimators suffer from the attenuation bias as a result of measurement error, as we discussed in Section 4.4.2. But the classical errors-in-variables assumption for education is questionable. Another interpretation is that the instrumental variable is not exogenous in the wage equation: location is not entirely exogenous. The full set of estimates, including standard errors\\
+and $t$ statistics, can be found in Card (1995). Or, you can replicate Card's results in Problem 5.4.
+
+\subsection*{5.1.2 Multiple Instruments: Two-Stage Least Squares}
+Consider again the model (5.1) and (5.2), where $x_{K}$ can be correlated with $u$. Now, however, assume that we have more than one instrumental variable for $x_{K}$. Let $z_{1}$, $z_{2}, \ldots, z_{M}$ be variables such that\\
+$\operatorname{Cov}\left(z_{h}, u\right)=0, \quad h=1,2, \ldots, M$,\\
+so that each $z_{h}$ is exogenous in equation (5.1). If each of these has some partial correlation with $x_{K}$, we could have $M$ different IV estimators. Actually, there are many more than this-more than we can count-since any linear combination of $x_{1}$, $x_{2}, \ldots, x_{K-1}, z_{1}, z_{2}, \ldots, z_{M}$ is uncorrelated with $u$. So which IV estimator should we use?
+
+In Section 5.2.3 we show that, under certain assumptions, the two-stage least squares (2SLS) estimator is the most efficient IV estimator. For now, we rely on intuition.
+
+To illustrate the method of 2SLS, define the vector of exogenous variables again by $\mathbf{z} \equiv\left(1, x_{1}, x_{2}, \ldots, x_{K-1}, z_{1}, \ldots, z_{M}\right)$, a $1 \times L$ vector $(L=K+M)$. Out of all possible linear combinations of $\mathbf{z}$ that can be used as an instrument for $x_{K}$, the method of 2SLS chooses that which is most highly correlated with $x_{K}$. If $x_{K}$ were exogenous, then this choice would imply that the best instrument for $x_{K}$ is simply itself. Ruling this case out, the linear combination of $\mathbf{z}$ most highly correlated with $x_{K}$ is given by the linear projection of $x_{K}$ on $\mathbf{z}$. Write the reduced form for $x_{K}$ as\\
+$x_{K}=\delta_{0}+\delta_{1} x_{1}+\cdots+\delta_{K-1} x_{K-1}+\theta_{1} z_{1}+\cdots+\theta_{M} z_{M}+r_{K}$,\\
+where, by definition, $r_{K}$ has zero mean and is uncorrelated with each right-hand-side variable. As any linear combination of $\mathbf{z}$ is uncorrelated with $u$,
+
+
+\begin{equation*}
+x_{K}^{*} \equiv \delta_{0}+\delta_{1} x_{1}+\cdots+\delta_{K-1} x_{K-1}+\theta_{1} z_{1}+\cdots+\theta_{M} z_{M} \tag{5.15}
+\end{equation*}
+
+
+is uncorrelated with $u$. In fact, $x_{K}^{*}$ is often interpreted as the part of $x_{K}$ that is uncorrelated with $u$. If $x_{K}$ is endogenous, it is because $r_{K}$ is correlated with $u$.
+
+If we could observe $x_{K}^{*}$, we would use it as an instrument for $x_{K}$ in equation (5.1) and use the IV estimator from the previous subsection. Since the $\delta_{j}$ and $\theta_{j}$ are population parameters, $x_{K}^{*}$ is not a usable instrument. However, as long as we make the standard assumption that there are no exact linear dependencies among the exogenous variables, we can consistently estimate the parameters in equation (5.14) by OLS. The sample analogues of the $x_{i K}^{*}$ for each observation $i$ are simply the OLS\\
+fitted values:\\
+$\hat{x}_{i K}=\hat{\delta}_{0}+\hat{\delta}_{1} x_{i 1}+\cdots+\hat{\delta}_{K-1} x_{i, K-1}+\hat{\theta}_{1} z_{i 1}+\cdots+\hat{\theta}_{M} z_{i M}$.
+
+Now, for each observation $i$, define the vector $\hat{\mathbf{x}}_{i} \equiv\left(1, x_{i 1}, \ldots, x_{i, K-1}, \hat{x}_{i K}\right), i= 1,2, \ldots, N$. Using $\hat{\mathbf{x}}_{i}$ as the instruments for $\mathbf{x}_{i}$ gives the IV estimator\\
+$\hat{\boldsymbol{\beta}}=\left(\sum_{i=1}^{N} \hat{\mathbf{x}}_{i}^{\prime} \mathbf{x}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \hat{\mathbf{x}}_{i}^{\prime} y_{i}\right)=\left(\hat{\mathbf{X}}^{\prime} \mathbf{X}\right)^{-1} \hat{\mathbf{X}}^{\prime} \mathbf{Y}$,\\
+where unity is also the first element of $\mathbf{x}_{i}$.\\
+The IV estimator in equation (5.17) turns out to be an OLS estimator. To see this fact, note that the $N \times(K+1)$ matrix $\hat{\mathbf{X}}$ can be expressed as $\hat{\mathbf{X}}=\mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}= \mathbf{P}_{Z} \mathbf{X}$, where the projection matrix $\mathbf{P}_{Z}=\mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime}$ is idempotent and symmetric. Therefore, $\hat{\mathbf{X}}^{\prime} \mathbf{X}=\mathbf{X}^{\prime} \mathbf{P}_{Z} \mathbf{X}=\left(\mathbf{P}_{Z} \mathbf{X}\right)^{\prime} \mathbf{P}_{Z} \mathbf{X}=\hat{\mathbf{X}}^{\prime} \hat{\mathbf{X}}$. Plugging this expression into equation (5.17) shows that the IV estimator that uses instruments $\hat{\mathbf{x}}_{i}$ can be written as $\hat{\boldsymbol{\beta}}=\left(\hat{\mathbf{X}}^{\prime} \hat{\mathbf{X}}\right)^{-1} \hat{\mathbf{X}}^{\prime} \mathbf{Y}$. The name "two-stage least squares" comes from this procedure.
+
+To summarize, $\hat{\boldsymbol{\beta}}$ can be obtained from the following steps:
+
+\begin{enumerate}
+  \item Obtain the fitted values $\hat{x}_{K}$ from the regression\\
+$x_{K}$ on $1, x_{1}, \ldots, x_{K-1}, z_{1}, \ldots, z_{M}$,\\
+where the $i$ subscript is omitted for simplicity. This is called the first-stage regression.
+  \item Run the OLS regression\\
+$y$ on $1, x_{1}, \ldots, x_{K-1}, \hat{x}_{K}$.
+\end{enumerate}
+
+This is called the second-stage regression, and it produces the $\hat{\beta}_{j}$.\\
+In practice, it is best to use a software package with a 2SLS command rather than explicitly carry out the two-step procedure. Carrying out the two-step procedure explicitly makes one susceptible to harmful mistakes. For example, the following, seemingly sensible, two-step procedure is generally inconsistent: (1) regress $x_{K}$ on $1, z_{1}, \ldots, z_{M}$ and obtain the fitted values, say $\tilde{x}_{K}$; (2) run the regression in (5.19) with $\tilde{x}_{K}$ in place of $\hat{x}_{K}$. Problem 5.11 asks you to show that omitting $x_{1}, \ldots, x_{K-1}$ in the first-stage regression and then explicitly doing the second-stage regression produces inconsistent estimators of the $\beta_{j}$.
+
+Another reason to avoid the two-step procedure is that the OLS standard errors reported with regression (5.19) will be incorrect, something that will become clear later. Sometimes for hypothesis testing we need to carry out the second-stage regression explicitly (see Section 5.2.4).
+
+The 2SLS estimator and the IV estimator from Section 5.1.1 are identical when there is only one instrument for $x_{K}$. Unless stated otherwise, we mean 2SLS whenever we talk about IV estimation of a single equation.
+
+What is the analogue of the condition (5.5) when more than one instrument is available with one endogenous explanatory variable? Problem 5.12 asks you to show that $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)$ has full column rank if and only if at least one of the $\theta_{j}$ in equation (5.14) is nonzero. The intuition behind this requirement is pretty clear: we need at least one exogenous variable that does not appear in equation (5.1) to induce variation in $x_{K}$ that cannot be explained by $x_{1}, \ldots, x_{K-1}$. Identification of $\boldsymbol{\beta}$ does not depend on the values of the $\delta_{h}$ in equation (5.14).
+
+Testing the rank condition with a single endogenous explanatory variable and multiple instruments is straightforward. In equation (5.14) we simply test the null hypothesis
+
+
+\begin{equation*}
+\mathrm{H}_{0}: \theta_{1}=0, \theta_{2}=0, \ldots, \theta_{M}=0 \tag{5.20}
+\end{equation*}
+
+
+against the alternative that at least one of the $\theta_{j}$ is different from zero. This test gives a compelling reason for explicitly running the first-stage regression. If $r_{K}$ in equation (5.14) satisfies the OLS homoskedasticity assumption OLS.3, a standard $F$ statistic or Lagrange multiplier statistic can be used to test hypothesis (5.20). Often a hetero-skedasticity-robust statistic is more appropriate, especially if $x_{K}$ has discrete characteristics. If we cannot reject hypothesis (5.20) against the alternative that at least one $\theta_{h}$ is different from zero, at a reasonably small significance level, then we should have serious reservations about the proposed 2SLS procedure: the instruments do not pass a minimal requirement.
+
+The model with a single endogenous variable is said to be overidentified when $M>$ 1 and there are $M-1$ overidentifying restrictions. This terminology comes from the fact that, if each $z_{h}$ has some partial correlation with $x_{K}$, then we have $M-1$ more exogenous variables than needed to identify the parameters in equation (5.1). For example, if $M=2$, we could discard one of the instruments and still achieve identification. In Chapter 6 we will show how to test the validity of any overidentifying restrictions.
+
+\subsection*{5.2 General Treatment of Two-Stage Least Squares}
+\subsection*{5.2.1 Consistency}
+We now summarize asymptotic results for 2SLS in a single-equation model with perhaps several endogenous variables among the explanatory variables. Write the\\
+population model as in equation (5.7), where $\mathbf{x}$ is $1 \times K$ and generally includes unity. Several elements of $\mathbf{x}$ may be correlated with $u$. As usual, we assume that a random sample is available from the population.\\
+assumption 2SLS.1: For some $1 \times L$ vector $\mathbf{z}, \mathrm{E}\left(\mathbf{z}^{\prime} u\right)=\mathbf{0}$.\\
+Here we do not specify where the elements of $\mathbf{z}$ come from, but any exogenous elements of $\mathbf{x}$, including a constant, are included in $\mathbf{z}$. Unless every element of $\mathbf{x}$ is exogenous, $\mathbf{z}$ will have to contain variables obtained from outside the model. The zero conditional mean assumption, $\mathrm{E}(u \mid \mathbf{z})=0$, implies Assumption 2SLS.1.
+
+The next assumption contains the general rank condition for single-equation analysis.
+
+ASSUMPTION 2SLS.2: (a) $\operatorname{rank} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)=L$; (b) $\operatorname{rank} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)=K$.\\
+Technically, part a of this assumption is needed, but it is not especially important, since the exogenous variables, unless chosen unwisely, will be linearly independent in the population (as well as in a typical sample). Part $b$ is the crucial rank condition for identification. In a precise sense it means that $\mathbf{z}$ is sufficiently linearly related to $\mathbf{x}$ so that rank $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)$ has full column rank. We discussed this concept in Section 5.1 for the situation in which $\mathbf{x}$ contains a single endogenous variable. When $\mathbf{x}$ is exogenous, so that $\mathbf{z}=\mathbf{x}$, Assumption 2SLS. 1 reduces to Assumption OLS. 1 and Assumption 2SLS. 2 reduces to Assumption OLS.2.
+
+Necessary for the rank condition is the order condition, $L \geq K$. In other words, we must have at least as many instruments as we have explanatory variables. If we do not have as many instruments as right-hand-side variables, then $\boldsymbol{\beta}$ is not identified. However, $L \geq K$ is no guarantee that 2SLS.2b holds: the elements of $\mathbf{z}$ might not be appropriately correlated with the elements of $\mathbf{x}$.
+
+We already know how to test Assumption 2SLS.2b with a single endogenous explanatory variable. In the general case, it is possible to test Assumption 2SLS.2b, given a random sample on $(\mathbf{x}, \mathbf{z})$, essentially by performing tests on the sample analogue of $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right), \mathbf{Z}^{\prime} \mathbf{X} / N$. The tests are somewhat complicated; see, for example Cragg and Donald (1996). Often we estimate the reduced form for each endogenous explanatory variable to make sure that at least one element of $\mathbf{z}$ not in $\mathbf{x}$ is significant. This is not sufficient for the rank condition in general, but it can help us determine if the rank condition fails.
+
+Using linear projections, there is a simple way to see how Assumptions 2SLS. 1 and 2SLS. 2 identify $\boldsymbol{\beta}$. First, assuming that $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$ is nonsingular, we can always write the linear projection of $\mathbf{x}$ onto $\mathbf{z}$ as $\mathbf{x}^{*}=\mathbf{z} \boldsymbol{\Pi}$, where $\boldsymbol{\Pi}$ is the $L \times K$ matrix $\boldsymbol{\Pi}=$\\
+$\left[\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)\right]^{-1} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)$. Since each column of $\boldsymbol{\Pi}$ can be consistently estimated by regressing the appropriate element of $\mathbf{x}$ onto $\mathbf{z}$, for the purposes of identification of $\boldsymbol{\beta}$, we can treat $\boldsymbol{\Pi}$ as known. Write $\mathbf{x}=\mathbf{x}^{*}+\mathbf{r}$, where $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{r}\right)=\mathbf{0}$ and so $\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{r}\right)=\mathbf{0}$. Now, the 2SLS estimator is effectively the IV estimator using instruments $\mathbf{x}^{*}$. Multiplying equation (5.7) by $\mathbf{x}^{* \prime}$, taking expectations, and rearranging gives\\
+$\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}\right) \boldsymbol{\beta}=\mathrm{E}\left(\mathbf{x}^{* \prime} y\right)$,\\
+since $\mathrm{E}\left(\mathbf{x}^{* \prime} u\right)=\mathbf{0}$. Thus, $\boldsymbol{\beta}$ is identified by $\boldsymbol{\beta}=\left[\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}\right)\right]^{-1} \mathrm{E}\left(\mathbf{x}^{* \prime} y\right)$ provided $\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}\right)$ is nonsingular. But\\
+$\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}\right)=\Pi^{\prime} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)=\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{z}\right)\left[\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)\right]^{-1} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)$\\
+and this matrix is nonsingular if and only if $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)$ has rank $K$; that is, if and only if Assumption 2SLS.2b holds. If 2SLS.2b fails, then $\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}\right)$ is singular and $\boldsymbol{\beta}$ is not identified. (Note that, because $\mathbf{x}=\mathbf{x}^{*}+\mathbf{r}$ with $\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{r}\right)=\mathbf{0}, \mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}\right)=\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}^{*}\right)$. So $\boldsymbol{\beta}$ is identified if and only if rank $\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}^{*}\right)=K$.)
+
+The 2SLS estimator can be written as in equation (5.17) or as
+
+
+\begin{equation*}
+\hat{\boldsymbol{\beta}}=\left[\left(\sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \mathbf{z}_{i}\right)\left(\sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} \mathbf{z}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} \mathbf{x}_{i}\right)\right]^{-1}\left(\sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \mathbf{z}_{i}\right)\left(\sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} \mathbf{z}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} y_{i}\right) \tag{5.22}
+\end{equation*}
+
+
+We have the following consistency result.\\
+theorem 5.1 (Consistency of 2SLS): Under Assumptions 2SLS. 1 and 2SLS.2, the 2SLS estimator obtained from a random sample is consistent for $\boldsymbol{\beta}$.
+
+Proof: Write
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\beta}}= & \boldsymbol{\beta}+\left[\left(N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \mathbf{z}_{i}\right)\left(N^{-1} \sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} \mathbf{z}_{i}\right)^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} \mathbf{x}_{i}\right)\right]^{-1} \\
+& \cdot\left(N^{-1} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \mathbf{z}_{i}\right)\left(N^{-1} \sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} \mathbf{z}_{i}\right)^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} u_{i}\right)
+\end{aligned}
+$$
+
+and, using Assumptions 2SLS. 1 and 2SLS.2, apply the law of large numbers to each term along with Slutsky's theorem.
+
+\subsection*{5.2.2 Asymptotic Normality of Two-Stage Least Squares}
+The asymptotic normality of $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$ follows from the asymptotic normality of $N^{-1 / 2} \sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} u_{i}$, which follows from the central limit theorem under Assumption 2SLS. 1 and mild finite second-moment assumptions. The asymptotic variance is simplest under a homoskedasticity assumption:
+
+ASSUMPTION 2SLS.3: $\quad \mathrm{E}\left(u^{2} \mathbf{z}^{\prime} \mathbf{z}\right)=\sigma^{2} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$, where $\sigma^{2}=\mathrm{E}\left(u^{2}\right)$.\\
+This assumption is the same as Assumption OLS. 3 except that the vector of instruments appears in place of $\mathbf{x}$. By the usual LIE argument, sufficient for Assumption 2SLS. 3 is the assumption\\
+$\mathrm{E}\left(u^{2} \mid \mathbf{z}\right)=\sigma^{2}$,\\
+which is the same as $\operatorname{Var}(u \mid \mathbf{z})=\sigma^{2}$ if $\mathrm{E}(u \mid \mathbf{z})=0$. (When $\mathbf{x}$ contains endogenous elements, it makes no sense to make assumptions about $\operatorname{Var}(u \mid \mathbf{x})$.)\\
+theorem 5.2 (Asymptotic Normality of 2SLS): Under Assumptions 2SLS.1-2SLS.3, $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$ is asymptotically normally distributed with mean zero and variance matrix\\
+$\left.\sigma^{2}\left(\left[\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{z}\right)\right]\left[\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)\right]^{-1} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)\right]\right)^{-1}=\sigma^{2}\left[\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}^{*}\right)\right]^{-1}$,\\
+where $\mathbf{x}^{*}=\mathbf{z} \boldsymbol{\Pi}$ is the $1 \times K$ vector of linear projections. The right-hand side of equation (5.24) is convenient because it has the same form as the expression for the OLS estimator-see equation (4.9)-but with $\mathbf{x}^{*}$ replacing $\mathbf{x}$. In particular, we can easily obtain a simple expression for the asymptotic variance for a single coefficient: $\operatorname{Avar} \sqrt{N}\left(\hat{\beta}_{K}-\beta_{K}\right)=\sigma^{2} / \operatorname{Var}\left(r_{K}^{*}\right)$, where $r_{K}^{*}$ is the population residual from regress$\operatorname{ing} x_{K}^{*}$ on $x_{1}^{*}, \ldots, x_{K-1}^{*}$ (where, typically, $x_{1}^{*}=1$ ).
+
+The proof of Theorem 5.2 is similar to Theorem 4.2 for OLS and is therefore omitted.
+
+The matrix in expression (5.24) is easily estimated using sample averages. To estimate $\sigma^{2}$ we will need appropriate estimates of the $u_{i}$. Define the $\mathbf{2 S L S}$ residuals as\\
+$\hat{u}_{i}=y_{i}-\mathbf{x}_{i} \hat{\boldsymbol{\beta}}, \quad i=1,2, \ldots, N$.
+
+Note carefully that these residuals are not the residuals from the second-stage OLS regression that can be used to obtain the 2SLS estimates. The residuals from the second-stage regression are $y_{i}-\hat{\mathbf{x}}_{i} \hat{\boldsymbol{\beta}}$. Any 2SLS software routine will compute equation (5.25) as the 2SLS residuals, and these are what we need to estimate $\sigma^{2}$.
+
+Given the 2SLS residuals, a consistent (though not unbiased) estimator of $\sigma^{2}$ under Assumptions 2SLS.1-2SLS.3 is
+
+
+\begin{equation*}
+\hat{\sigma}^{2} \equiv(N-K)^{-1} \sum_{i=1}^{N} \hat{u}_{i}^{2} . \tag{5.26}
+\end{equation*}
+
+
+Many regression packages use the degrees-of-freedom adjustment $N-K$ in place of $N$, but this usage does not affect the consistency of the estimator.
+
+The $K \times K$ matrix
+
+
+\begin{equation*}
+\hat{\sigma}^{2}\left(\sum_{i=1}^{N} \hat{\mathbf{x}}_{i}^{\prime} \hat{\mathbf{x}}_{i}\right)^{-1}=\hat{\sigma}^{2}\left(\hat{\mathbf{X}}^{\prime} \hat{\mathbf{X}}\right)^{-1} \tag{5.27}
+\end{equation*}
+
+
+is a valid estimator of the asymptotic variance of $\hat{\boldsymbol{\beta}}$ under Assumptions 2SLS.12SLS.3. The (asymptotic) standard error of $\hat{\beta}_{j}$ is just the square root of the $j$ th diagonal element of matrix (5.27). Asymptotic confidence intervals and $t$ statistics are obtained in the usual fashion.
+
+Example 5.3 (Parents' and Husband's Education as IVs): We use the data on the 428 working, married women in MROZ.RAW to estimate the wage equation (5.12). We assume that experience is exogenous, but we allow educ to be correlated with $u$. The instruments we use for educ are motheduc, fatheduc, and huseduc. The reduced form for educ is
+
+$$
+e d u c=\delta_{0}+\delta_{1} \operatorname{exper}+\delta_{2} \operatorname{exper}^{2}+\theta_{1} m o t h e d u c+\theta_{2} f a t h e d u c+\theta_{3} h u s e d u c+r .
+$$
+
+Assuming that motheduc, fatheduc, and huseduc are exogenous in the $\log ($ wage $)$ equation (a tenuous assumption), equation (5.12) is identified if at least one of $\theta_{1}, \theta_{2}$, and $\theta_{3}$ is nonzero. We can test this assumption using an $F$ test (under homoskedasticity). The $F$ statistic (with 3 and 422 degrees of freedom) turns out to be 104.29, which implies a $p$-value of zero to four decimal places. Thus, as expected, educ is fairly strongly related to motheduc, fatheduc, and huseduc. (Each of the three $t$ statistics is also very significant.)
+
+When equation (5.12) is estimated by 2SLS, we get the following:
+
+$$
+\log \widehat{(\text { wage })}=\underset{(.285)}{-.187}+\underset{(.013)}{.043} \text { exper }-\underset{(.00040)}{.00086} \text { exper }^{2}+\underset{(.022)}{.080} \text { educ, }
+$$
+
+where standard errors are in parentheses. The 2SLS estimate of the return to education is about 8 percent, and it is statistically significant. For comparison, when equation (5.12) is estimated by OLS, the estimated coefficient on educ is about . 107 with a standard error of about .014 . Thus, the 2SLS estimate is notably below the OLS estimate and has a larger standard error.
+
+\subsection*{5.2.3 Asymptotic Efficiency of Two-Stage Least Squares}
+The appeal of 2SLS comes from its efficiency in a class of IV estimators:\\
+theorem 5.3 (Relative Efficiency of 2SLS): Under Assumptions 2SLS.1-2SLS.3, the 2SLS estimator is efficient in the class of all instrumental variables estimators using instruments linear in $\mathbf{z}$.
+
+Proof: Let $\hat{\boldsymbol{\beta}}$ be the 2SLS estimator, and let $\tilde{\boldsymbol{\beta}}$ be any other IV estimator using instruments linear in $\mathbf{z}$. Let the instruments for $\tilde{\boldsymbol{\beta}}$ be $\tilde{\mathbf{x}} \equiv \mathbf{z} \boldsymbol{\Gamma}$, where $\boldsymbol{\Gamma}$ is an $L \times K$ nonstochastic matrix. (Note that $\mathbf{z}$ is the $1 \times L$ random vector in the population.) We assume that the rank condition holds for $\tilde{\mathbf{x}}$. For 2SLS, the choice of IVs is effectively $\mathbf{x}^{*}=\mathbf{z} \boldsymbol{\Pi}$, where $\boldsymbol{\Pi}=\left[\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)\right]^{-1} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right) \equiv \mathbf{D}^{-1} \mathbf{C}$. (In both cases, we can replace $\boldsymbol{\Gamma}$ and $\boldsymbol{\Pi}$ with $\sqrt{N}$-consistent estimators without changing the asymptotic variances.) Now, under Assumptions 2SLS.1-2SLS.3, we know the asymptotic variance of $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$ is $\sigma^{2}\left[\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}^{*}\right)\right]^{-1}$, where $\mathbf{x}^{*}=\mathbf{z} \boldsymbol{\Pi}$. It is straightforward to show that $\operatorname{Avar}[\sqrt{N}(\tilde{\boldsymbol{\beta}}-\boldsymbol{\beta})]=\sigma^{2}\left[\mathrm{E}\left(\tilde{\mathbf{x}}^{\prime} \mathbf{x}\right)\right]^{-1}\left[\mathrm{E}\left(\tilde{\mathbf{x}}^{\prime} \tilde{\mathbf{x}}\right)\right]\left[\mathrm{E}\left(\mathbf{x}^{\prime} \tilde{\mathbf{x}}\right)\right]^{-1}$. To show that $\operatorname{Avar}[\sqrt{N}(\tilde{\boldsymbol{\beta}}-\boldsymbol{\beta})] -\operatorname{Avar}[\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})]$ is positive semidefinite (p.s.d.), it suffices to show that $\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}^{*}\right)- \mathrm{E}\left(\mathbf{x}^{\prime} \tilde{\mathbf{x}}\right)\left[\mathrm{E}\left(\tilde{\mathbf{x}}^{\prime} \tilde{\mathbf{x}}\right)\right]^{-1} \mathrm{E}\left(\tilde{\mathbf{x}}^{\prime} \mathbf{x}\right)$ is p.s.d. But $\mathbf{x}=\mathbf{x}^{*}+\mathbf{r}$, where $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{r}\right)=\mathbf{0}$, and so $\mathrm{E}\left(\tilde{\mathbf{x}}^{\prime} \mathbf{r}\right)=\mathbf{0}$. It follows that $\mathrm{E}\left(\tilde{\mathbf{x}}^{\prime} \mathbf{x}\right)=\mathrm{E}\left(\tilde{\mathbf{x}}^{\prime} \mathbf{x}^{*}\right)$, and so
+
+$$
+\begin{aligned}
+& \mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}^{*}\right)-\mathrm{E}\left(\mathbf{x}^{\prime} \tilde{\mathbf{x}}\right)\left[\mathrm{E}\left(\tilde{\mathbf{x}}^{\prime} \tilde{\mathbf{x}}\right)\right]^{-1} \mathrm{E}\left(\tilde{\mathbf{x}}^{\prime} \mathbf{x}\right) \\
+& \quad=\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}^{*}\right)-\mathrm{E}\left(\mathbf{x}^{* \prime} \tilde{\mathbf{x}}\right)\left[\mathrm{E}\left(\tilde{\mathbf{x}}^{\prime} \tilde{\mathbf{x}}\right)\right]^{-1} \mathrm{E}\left(\tilde{\mathbf{x}}^{\prime} \mathbf{x}^{*}\right)=\mathrm{E}\left(\mathbf{s}^{* \prime} \mathbf{s}^{*}\right)
+\end{aligned}
+$$
+
+where $\mathbf{s}^{*}=\mathbf{x}^{*}-\mathrm{L}\left(\mathbf{x}^{*} \mid \tilde{\mathbf{x}}\right)$ is the population residual from the linear projection of $\mathbf{x}^{*}$ on $\tilde{\mathbf{x}}$. Because $\mathrm{E}\left(\mathbf{s}^{* \prime} \mathbf{s}^{*}\right)$ is p.s.d, the proof is complete.
+
+Theorem 5.3 is vacuous when $L=K$ because any (nonsingular) choice of $\boldsymbol{\Gamma}$ leads to the same estimator: the IV estimator derived in Section 5.1.1.
+
+When $\mathbf{x}$ is exogenous, Theorem 5.3 implies that, under Assumptions 2SLS.12SLS.3, the OLS estimator is efficient in the class of all estimators using instruments linear in all exogenous variables $\mathbf{z}$. Why? Because $\mathbf{x}$ is a subset of $\mathbf{z}$ and so $\mathrm{L}(\mathbf{x} \mid \mathbf{z})=\mathbf{x}$.
+
+Another important implication of Theorem 5.3 is that, asymptotically, we always do better by using as many instruments as are available, at least under homoskedasticity. This conclusion follows because using a subset of $\mathbf{z}$ as instruments corresponds to using a particular linear combination of $\mathbf{z}$. For certain subsets we might achieve the same efficiency as 2SLS using all of $\mathbf{z}$, but we can do no better. This observation makes it tempting to add many instruments so that $L$ is much larger than $K$. Unfortunately, 2SLS estimators based on many overidentifying restrictions can cause finite sample problems; see Section 5.2.6.
+
+Because Assumption 2SLS. 3 is assumed for Theorem 5.3, it is not surprising that more efficient estimators are available if Assumption 2SLS. 3 fails. If $L>K$, a more efficient estimator than 2SLS exists, as shown by Hansen (1982) and White (1982b, 1984). In fact, even if $\mathbf{x}$ is exogenous and Assumption OLS. 3 holds, OLS is not generally asymptotically efficient if, for $\mathbf{x} \subset \mathbf{z}$, Assumptions 2SLS. 1 and 2SLS. 2 hold but Assumption 2SLS. 3 does not. Obtaining the efficient estimator falls under the rubric of generalized method of moments estimation, something we cover in Chapter 8.
+
+\subsection*{5.2.4 Hypothesis Testing with Two-Stage Least Squares}
+We have already seen that testing hypotheses about a single $\beta_{j}$ is straightforward using an asymptotic $t$ statistic, which has an asymptotic normal distribution under the null; some prefer to use the $t$ distribution when $N$ is small. Generally, one should be aware that the normal and $t$ approximations can be poor if $N$ is small. Hypotheses about single linear combinations involving the $\beta_{j}$ are also easily carried out using a $t$ statistic. The easiest procedure is to define the linear combination of interest, say $\theta \equiv a_{1} \beta_{1}+a_{2} \beta_{2}+\cdots+a_{K} \beta_{K}$, and then to write one of the $\beta_{j}$ in terms of $\theta$ and the other elements of $\boldsymbol{\beta}$. Then, substitute into the equation of interest so that $\theta$ appears directly, and estimate the resulting equation by 2SLS to get the standard error of $\hat{\theta}$. See Problem 5.9 for an example.
+
+To test multiple linear restrictions of the form $\mathrm{H}_{0}: \mathbf{R} \boldsymbol{\beta}=\mathbf{r}$, the Wald statistic is just as in equation (4.13), but with $\hat{\mathbf{V}}$ given by equation (5.27). The Wald statistic, as usual, is a limiting null $\chi_{Q}^{2}$ distribution. Some econometrics packages, such as Stata, compute the Wald statistic (actually, its $F$ statistic counterpart, obtained by dividing the Wald statistic by $Q$ ) after 2SLS estimation using a simple test command.
+
+A valid test of multiple restrictions can be computed using a residual-based method, analogous to the usual $F$ statistic from OLS analysis. Any kind of linear restriction can be recast as exclusion restrictions, and so we explicitly cover exclusion restrictions. Write the model as\\
+$y=\mathbf{x}_{1} \boldsymbol{\beta}_{1}+\mathbf{x}_{2} \boldsymbol{\beta}_{2}+u$,\\
+where $\mathbf{x}_{1}$ is $1 \times K_{1}$ and $\mathbf{x}_{2}$ is $1 \times K_{2}$, and interest lies in testing the $K_{2}$ restrictions\\
+$\mathrm{H}_{0}: \boldsymbol{\beta}_{2}=\mathbf{0} \quad$ against $\quad \mathrm{H}_{1}: \boldsymbol{\beta}_{2} \neq \mathbf{0}$.
+
+Both $\mathbf{x}_{1}$ and $\mathbf{x}_{2}$ can contain endogenous and exogenous variables.\\
+Let $\mathbf{z}$ denote the $L \geq K_{1}+K_{2}$ vector of instruments, and we assume that the rank condition for identification holds. Justification for the following statistic can be found in Wooldridge (1995b).
+
+Let $\hat{u}_{i}$ be the 2SLS residuals from estimating the unrestricted model using $\mathbf{z}_{i}$ as instruments. Using these residuals, define the 2SLS unrestricted sum of squared residuals by\\
+$\operatorname{SSR}_{u r} \equiv \sum_{i=1}^{N} \hat{u}_{i}^{2}$.
+
+In order to define the $F$ statistic for 2SLS, we need the sum of squared residuals from the second-stage regressions. Thus, let $\hat{\mathbf{x}}_{i 1}$ be the $1 \times K_{1}$ fitted values from the firststage regression $\mathbf{x}_{i 1}$ on $\mathbf{z}_{i}$. Similarly, $\hat{\mathbf{x}}_{i 2}$ are the fitted values from the first-stage regression $\mathbf{x}_{i 2}$ on $\mathbf{z}_{i}$. Define $\mathrm{SSR}_{u r}$ as the usual sum of squared residuals from the unrestricted second-stage regression $y$ on $\hat{\mathbf{x}}_{1}, \hat{\mathbf{x}}_{2}$. Similarly, $\mathrm{SSR}_{r}$ is the sum of squared residuals from the restricted second-stage regression, $y$ on $\hat{\mathbf{x}}_{1}$. It can be shown that, under $\mathrm{H}_{0}: \boldsymbol{\beta}_{2}=\mathbf{0}$ (and Assumptions 2SLS.1-2SLS.3), $N \cdot\left(\widehat{\mathrm{SSR}}_{r}-\widehat{\mathrm{SSR}}_{u r}\right) / \mathrm{SSR}_{u r} \stackrel{a}{\sim} \chi_{K_{2}}^{2}$. It is just as legitimate to use an $F$-type statistic:
+
+
+\begin{equation*}
+F \equiv \frac{\left(\widehat{\operatorname{SSR}}_{r}-\widehat{\operatorname{SSR}}_{u r}\right)}{\operatorname{SSR}_{u r}} \cdot \frac{(N-K)}{K_{2}} \tag{5.31}
+\end{equation*}
+
+
+is distributed approximately as $\mathscr{F}_{K_{2}, N-K}$.\\
+Note carefully that $\widehat{\mathrm{SSR}}_{r}$ and $\widehat{\mathrm{SSR}}_{u r}$ appear in the numerator of (5.31). These quantities typically need to be computed directly from the second-stage regression. In the denominator of $F$ is $\mathrm{SSR}_{u r}$, which is the 2SLS sum of squared residuals. This is what is reported by the 2SLS commands available in popular regression packages.
+
+For 2SLS, it is important not to use a form of the statistic that would work for OLS, namely,\\
+$\frac{\left(\mathrm{SSR}_{r}-\mathrm{SSR}_{u r}\right)}{\mathrm{SSR}_{u r}} \cdot \frac{(N-K)}{K_{2}}$,\\
+where $\mathrm{SSR}_{r}$ is the 2SLS restricted sum of squared residuals. Not only does expression (5.32) not have a known limiting distribution, but it can also be negative with positive probability even as the sample size tends to infinity; clearly, such a statistic cannot have an approximate $F$ distribution, or any other distribution typically associated with multiple hypothesis testing.
+
+Example 5.4 (Parents' and Husband's Education as IVs, continued): We add the number of young children (kidslt6) and older children (kidsge6) to equation (5.12) and test for their joint significance using the Mroz (1987) data. The statistic in equation (5.31) is $F=.31$; with 2 and 422 degrees of freedom, the asymptotic $p$-value is\\
+about .737 . There is no evidence that number of children affects the wage for working women.
+
+Rather than equation (5.31), we can compute an LM-type statistic for testing hypothesis (5.29). Let $\tilde{u}_{i}$ be the 2 SLS residuals from the restricted model. That is, obtain $\tilde{\boldsymbol{\beta}}_{1}$ from the model $y=\mathbf{x}_{1} \beta_{1}+u$ using instruments $\mathbf{z}$, and let $\tilde{u}_{i} \equiv y_{i}-\mathbf{x}_{i 1} \tilde{\boldsymbol{\beta}}_{1}$. Letting $\hat{\mathbf{x}}_{i 1}$ and $\hat{\mathbf{x}}_{i 2}$ be defined as before, the $L M$ statistic is obtained as $N R_{u}^{2}$ from the regression\\
+$\tilde{u}_{i}$ on $\hat{\mathbf{x}}_{i 1}, \hat{\mathbf{x}}_{i 2}, \quad i=1,2, \ldots, N$\\
+where $R_{u}^{2}$ is generally the uncentered $R$-squared. (That is, the total sum of squares in the denominator of $R$-squared is not demeaned.) When $\left\{\tilde{u}_{i}\right\}$ has a zero sample average, the uncentered $R$-squared and the usual $R$-squared are the same. This is the case when the null explanatory variables $\mathbf{x}_{1}$ and the instruments $\mathbf{z}$ both contain unity, the typical case. Under $\mathrm{H}_{0}$ and Assumptions 2SLS.1-2SLS.3, LM $\stackrel{a}{\sim} \chi_{K_{2}}^{2}$. Whether one uses this statistic or the $F$ statistic in equation (5.31) is primarily a matter of taste; asymptotically, there is nothing that distinguishes the two.
+
+\subsection*{5.2.5 Heteroskedasticity-Robust Inference for Two-Stage Least Squares}
+Assumption 2SLS. 3 can be restrictive, so we should have a variance matrix estimator that is robust in the presence of heteroskedasticity of unknown form. As usual, we need to estimate $\mathbf{B}$ along with $\mathbf{A}$. Under Assumptions 2SLS. 1 and 2SLS. 2 only, $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$ can be estimated as
+
+
+\begin{equation*}
+\left(\hat{\mathbf{X}}^{\prime} \hat{\mathbf{X}}\right)^{-1}\left(\sum_{i=1}^{N} \hat{u}_{i}^{2} \hat{\mathbf{x}}_{i}^{\prime} \hat{\mathbf{x}}_{i}\right)\left(\hat{\mathbf{X}}^{\prime} \hat{\mathbf{X}}\right)^{-1} \tag{5.34}
+\end{equation*}
+
+
+Sometimes this matrix is multiplied by $N /(N-K)$ as a degrees-of-freedom adjustment. This heteroskedasticity-robust estimator can be used anywhere the estimator $\hat{\sigma}^{2}\left(\hat{\mathbf{X}}^{\prime} \hat{\mathbf{X}}\right)^{-1}$ is. In particular, the square roots of the diagonal elements of the matrix (5.34) are the heteroskedasticity-robust standard errors for 2SLS. These can be used to construct (asymptotic) $t$ statistics in the usual way. Some packages compute these standard errors using a simple command. For example, using Stata, rounded to three decimal places the heteroskedasticity-robust standard error for educ in Example 5.3 is .022 , which is the same as the usual standard error rounded to three decimal places. The robust standard error for exper is .015 , somewhat higher than the nonrobust one (.013).
+
+Sometimes it is useful to compute a robust standard error that can be computed with any regression package. Wooldridge (1995b) shows how this procedure can be\\
+carried out using an auxiliary linear regression for each parameter. Consider computing the robust standard error for $\hat{\beta}_{j}$. Let "se $\left(\hat{\beta}_{j}\right)$ " denote the standard error computed using the usual variance matrix (5.27); we put this in quotes because it is no longer appropriate if Assumption 2SLS. 3 fails. The $\hat{\sigma}$ is obtained from equation (5.26), and $\hat{u}_{i}$ are the 2 SLS residuals from equation (5.25). Let $\hat{r}_{i j}$ be the residuals from the regression\\
+$\hat{x}_{i j}$ on $\hat{x}_{i 1}, \hat{x}_{i 2}, \ldots, \hat{x}_{i, j-1}, \hat{x}_{i, j+1}, \ldots, \hat{x}_{i K}, \quad i=1,2, \ldots, N$\\
+and define $\hat{m}_{j} \equiv \sum_{i=1}^{N} \hat{r}_{i j} \hat{u}_{i}$. Then, a heteroskedasticity-robust standard error of $\hat{\beta}_{j}$ can be calculated as\\
+$\operatorname{se}\left(\hat{\beta}_{j}\right)=[N /(N-K)]^{1 / 2}\left[\text { "se }\left(\hat{\beta}_{j}\right) " / \hat{\sigma}\right]^{2} /\left(\hat{m}_{j}\right)^{1 / 2}$.
+
+Many econometrics packages compute equation (5.35) for you, but it is also easy to compute directly.
+
+To test multiple linear restrictions using the Wald approach, we can use the usual statistic but with the matrix (5.34) as the estimated variance. For example, the heteroskedasticity-robust version of the test in Example 5.4 gives $F=.25$; asymptotically, $F$ can be treated as an $\mathscr{F}_{2,422}$ variate. The asymptotic $p$-value is .781 .
+
+The Lagrange multiplier test for omitted variables is easily made heteroskedasticityrobust. Again, consider the model (5.28) with the null (5.29), but this time without the homoskedasticity assumptions. Using the notation from before, let $\hat{\mathbf{r}}_{i} \equiv \left(\hat{r}_{i 1}, \hat{r}_{i 2}, \ldots, \hat{r}_{i K_{2}}\right)$ be the $1 \times K_{2}$ vectors of residuals from the multivariate regression $\hat{\mathbf{x}}_{i 2}$ on $\hat{\mathbf{x}}_{i 1}, i=1,2, \ldots, N$. (Again, this procedure can be carried out by regressing each element of $\hat{\mathbf{x}}_{i 2}$ on all of $\hat{\mathbf{x}}_{i 1}$.) Then, for each observation, form the $1 \times K_{2}$ vector $\tilde{u}_{i} \cdot \hat{\mathbf{r}}_{i} \equiv\left(\tilde{u}_{i} \cdot \hat{r}_{i 1}, \ldots, \tilde{u}_{i} \cdot \hat{r}_{i K_{2}}\right)$. Then, the robust $L M$ test is $N-\mathrm{SSR}_{0}$ from the regression 1 on $\tilde{u}_{i} \cdot \hat{r}_{i 1}, \ldots, \tilde{u}_{i} \cdot \hat{r}_{i K_{2}}, i=1,2, \ldots, N$. Under $\mathrm{H}_{0}, N-\mathrm{SSR}_{0} \stackrel{a}{\sim} \chi_{K_{2}}^{2}$. This procedure can be justified in a manner similar to the tests in the context of OLS. You are referred to Wooldridge (1995b) for details.
+
+\subsection*{5.2.6 Potential Pitfalls with Two-Stage Least Squares}
+When properly applied, the method of instrumental variables can be a powerful tool for estimating structural equations using nonexperimental data. Nevertheless, there are some problems that one can encounter when applying IV in practice.
+
+One thing to remember is that, unlike OLS under a zero conditional mean assumption, IV methods are never unbiased when at least one explanatory variable is endogenous in the model. In fact, under standard distributional assumptions, the expected value of the 2SLS estimator does not even exist. As shown by Kinal (1980), in the case when all endogenous variables have homoskedastic normal distributions\\
+with expectations linear in the exogenous variables, the number of moments of the 2SLS estimator that exist is one fewer than the number of overidentifying restrictions. This finding implies that when the number of instruments equals the number of explanatory variables, the IV estimator does not have an expected value. This is one reason we rely on large-sample analysis to justify 2SLS.
+
+Even in large samples, IV methods can be ill-behaved if we have weak instruments. Consider the simple model $y=\beta_{0}+\beta_{1} x_{1}+u$, where we use $z_{1}$ as an instrument for $x_{1}$. Assuming that $\operatorname{Cov}\left(z_{1}, x_{1}\right) \neq 0$, the plim of the IV estimator is easily shown to be $\operatorname{plim} \hat{\beta}_{1}=\beta_{1}+\operatorname{Cov}\left(z_{1}, u\right) / \operatorname{Cov}\left(z_{1}, x_{1}\right)$,\\
+which can be written as
+
+
+\begin{equation*}
+\operatorname{plim} \hat{\beta}_{1}=\beta_{1}+\left(\sigma_{u} / \sigma_{x_{1}}\right)\left[\operatorname{Corr}\left(z_{1}, u\right) / \operatorname{Corr}\left(z_{1}, x_{1}\right)\right], \tag{5.36}
+\end{equation*}
+
+
+where $\operatorname{Corr}(\cdot, \cdot)$ denotes correlation. From this equation we see that if $z_{1}$ and $u$ are correlated, the inconsistency in the IV estimator gets arbitrarily large as $\operatorname{Corr}\left(z_{1}, x_{1}\right)$ gets close to zero. Thus, seemingly small correlations between $z_{1}$ and $u$ can cause severe inconsistency-and therefore severe finite sample bias-if $z_{1}$ is only weakly correlated with $x_{1}$. In fact, it may be better to just use OLS, even if we look only at the inconsistencies in the estimators. To see why, let $\tilde{\beta}_{1}$ denote the OLS estimator and write its plim as
+
+
+\begin{equation*}
+\operatorname{plim}\left(\tilde{\beta}_{1}\right)=\beta_{1}+\left(\sigma_{u} / \sigma_{x_{1}}\right) \operatorname{Corr}\left(x_{1}, u\right) \tag{5.37}
+\end{equation*}
+
+
+Comparing equations (5.37) and (5.36), the signs of the inconsistency of OLS and IV can be different. Further, the magnitude of the inconsistency in OLS is smaller than that of the IV estimator if $\left|\operatorname{Corr}\left(x_{1}, u\right)\right| \cdot\left|\operatorname{Corr}\left(z_{1}, x_{1}\right)\right|<\left|\operatorname{Corr}\left(z_{1}, u\right)\right|$. This simple inequality makes it apparent that a weak instrument-captured here by small $\left|\operatorname{Corr}\left(z_{1}, x_{1}\right)\right|$-can easily make IV have more asymptotic bias than OLS. Unfortunately, we never observe $u$, so we cannot know how large $\left|\operatorname{Corr}\left(z_{1}, u\right)\right|$ is relative to $\left|\operatorname{Corr}\left(x_{1}, u\right)\right|$. But what is certain is that a small correlation between $z_{1}$ and $x_{1}$-which we can estimate-should raise concerns, even if we think $z_{1}$ is "almost" exogenous.
+
+Another potential problem with applying 2SLS and other IV procedures is that the 2SLS standard errors have a tendency to be "large." What is typically meant by this statement is either that 2SLS coefficients are statistically insignificant or that the 2SLS standard errors are much larger than the OLS standard errors. Not suprisingly, the magnitudes of the 2SLS standard errors depend, among other things, on the quality of the instrument(s) used in estimation.
+
+For the following discussion we maintain the standard 2SLS Assumptions 2SLS.12SLS. 3 in the model\\
+$y=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\cdots+\beta_{K} x_{K}+u$.
+
+Let $\hat{\boldsymbol{\beta}}$ be the vector of 2SLS estimators using instruments $\mathbf{z}$. For concreteness, we focus on the asymptotic variance of $\hat{\beta}_{K}$. Technically, we should study Avar $\sqrt{N}\left(\hat{\beta}_{K}-\beta_{K}\right)$, but it is easier to work with an expression that contains the same information. In particular, we use the fact that\\
+$\operatorname{Avar}\left(\hat{\beta}_{K}\right) \approx \frac{\sigma^{2}}{\widehat{\mathrm{SSR}}_{K}}$,\\
+where $\widehat{\mathrm{SSR}}_{K}$ is the sum of squared residuals from the regression\\
+$\hat{x}_{K}$ on $1, \hat{x}_{1}, \ldots, \hat{x}_{K-1}$.\\
+(Remember, if $x_{j}$ is exogenous for any $j$, then $\hat{x}_{j}=x_{j}$.) If we replace $\sigma^{2}$ in regression (5.39) with $\hat{\sigma}^{2}$, then expression (5.39) is the usual 2SLS variance estimator. For the current discussion we are interested in the behavior of $\widehat{\mathrm{SSR}}_{K}$.
+
+From the definition of an $R$-squared, we can write\\
+$\widehat{\operatorname{SSR}}_{K}=\widehat{\operatorname{SST}}_{K}\left(1-\hat{R}_{K}^{2}\right)$,\\
+where $\widehat{\operatorname{SST}}_{K}$ is the total sum of squares of $\hat{x}_{K}$ in the sample, $\widehat{\operatorname{SST}}_{K}= \sum_{i=1}^{N}\left(\hat{x}_{i K}-\overline{\hat{x}}_{K}\right)^{2}$, and $\hat{R}_{K}^{2}$ is the $R$-squared from regression (5.40). In the context of OLS, the term ( $1-\hat{R}_{K}^{2}$ ) in equation (5.41) is viewed as a measure of multicollinearity, whereas $\widehat{\mathrm{SST}}_{K}$ measures the total variation in $\hat{x}_{K}$. We see that, in addition to traditional multicollinearity, 2SLS can have an additional source of large variance: the total variation in $\hat{x}_{K}$ can be small.
+
+When is $\widehat{\mathrm{SST}}_{K}$ small? Remember, $\hat{x}_{K}$ denotes the fitted values from the regression\\
+$x_{K}$ on $\mathbf{z}$
+
+Therefore, $\widehat{\mathrm{SST}}_{K}$ is the same as the explained sum of squares from the regression (5.42). If $x_{K}$ is only weakly related to the IVs, then the explained sum of squares from regression (5.42) can be quite small, causing a large asymptotic variance for $\hat{\beta}_{K}$. If $x_{K}$ is highly correlated with $\mathbf{z}$, then $\widehat{\mathrm{SST}}_{K}$ can be almost as large as the total sum of squares of $x_{K}$ and $\mathrm{SST}_{K}$, and this fact reduces the 2SLS variance estimate.
+
+When $x_{K}$ is exogenous-whether or not the other elements of $\mathbf{x}$ are- $\widehat{\mathrm{SST}}_{K}= \mathrm{SST}_{K}$. While this total variation can be small, it is determined only by the sample variation in $\left\{x_{i K}: i=1,2, \ldots, N\right\}$. Therefore, for exogenous elements appearing\\
+among $\mathbf{x}$, the quality of instruments has no bearing on the size of the total sum of squares term in equation (5.41). This fact helps explain why the 2SLS estimates on exogenous explanatory variables are often much more precise than the coefficients on endogenous explanatory variables.
+
+In addition to making the term $\widehat{\mathrm{SST}}_{K}$ small, poor quality of instruments can lead to $\hat{R}_{K}^{2}$ close to one. As an illustration, consider a model in which $x_{K}$ is the only endogenous variable and there is one instrument $z_{1}$ in addition to the exogenous variables $\left(1, x_{1}, \ldots, x_{K-1}\right)$. Therefore, $\mathbf{z} \equiv\left(1, x_{1}, \ldots, x_{K-1}, z_{1}\right)$. (The same argument works for multiple instruments.) The fitted values $\hat{x}_{K}$ come from the regression\\
+$x_{K}$ on $1, x_{1}, \ldots, x_{K-1}, z_{1}$.
+
+Because all other regressors are exogenous (that is, they are included in $\mathbf{z}$ ), $\hat{R}_{K}^{2}$ comes from the regression\\
+$\hat{x}_{K}$ on $1, x_{1}, \ldots, x_{K-1}$.
+
+Now, from basic least squares mechanics, if the coefficient on $z_{1}$ in regression (5.43) is exactly zero, then the $R$-squared from regression (5.44) is exactly unity, in which case the 2SLS estimator does not even exist. This outcome virtually never happens, but $z_{1}$ could have little explanatory value for $x_{K}$ once $x_{1}, \ldots, x_{K-1}$ have been controlled for, in which case $\hat{R}_{K}^{2}$ can be close to one. Identification, which only has to do with whether we can consistently estimate $\boldsymbol{\beta}$, requires only that $z_{1}$ appear with nonzero coefficient in the population analogue of regression (5.43). But if the explanatory power of $z_{1}$ is weak, the asymptotic variance of the 2SLS estimator can be quite large. This is another way to illustrate why nonzero correlation between $x_{K}$ and $z_{1}$ is not enough for 2SLS to be effective: the partial correlation is what matters for the asymptotic variance.
+
+Shea (1997) uses equation (5.39) and the analogous formula for OLS to define a measure of "instrument relevance" for $x_{K}$ (when it is treated as endogenous). The measure is simply $\widehat{\mathrm{SSR}}_{K} / \mathrm{SSR}_{K}$, where $\mathrm{SSR}_{K}$ is the sum of squared residiuals from the regression $x_{K}$ on $x_{1}, \ldots, x_{K-1}$. In other words, the measure is essentially the ratio of the asymptotic variance estimator of OLS (when it is consistent) to the asymptotic variance estimator of the 2SLS estimator. Shea (1997) notes that the measure also can be computed as the squared correlation between two sets of residuals, the first obtained from regressing $\hat{x}_{K}$ on $\hat{x}_{1}, \ldots, \hat{x}_{K-1}$ and the second obtained from regressing $x_{K}$ on $x_{1}, \ldots, x_{K-1}$. Further, the probability limit of $\widehat{\mathrm{SSR}}_{K} / \mathrm{SSR}_{K}$ appears in the inconsistency of the 2SLS estimator (relative to the OLS estimator), but with some other terms that cannot be estimated.
+
+Shea's measure is useful for summarizing the strength of the instruments in a single number. Nevertheless, like measures of multicollinearity, Shea's measure of instrument relevance has its shortcomings. In effect, it uses OLS as a benchmark and records how much larger the 2SLS standard errors are than the OLS standard errors. It says nothing directly about whether the 2SLS estimator is precise enough for inference purposes or whether the asymptotic normal approximation to the actual distribution of the 2SLS is acceptable. And, of course, it is silent on whether the instruments are actually exogenous.
+
+We are in a difficult situation when the 2SLS standard errors are so large that nothing is significant. Often we must choose between a possibly inconsistent estimator that has relatively small standard errors (OLS) and a consistent estimator that is so imprecise that nothing interesting can be concluded (2SLS). One approach is to use OLS unless we can reject exogeneity of the explanatory variables. We show how to test for endogeneity of one or more explanatory variables in Section 6.2.1.
+
+There has been some important recent work on the finite sample properties of 2SLS that emphasizes the potentially large biases of 2SLS, even when sample sizes seem to be quite large. Remember that the 2SLS estimator is never unbiased (provided one has at least one truly endogenous variable in $\mathbf{x}$ ). But we hope that, with a very large sample size, we need only weak instruments to get an estimator with small bias. Unfortunately, this hope is not fulfilled. For example, Bound, Jaeger, and Baker (1995) show that in the setting of Angrist and Krueger (1991), the 2SLS estimator can be expected to behave quite poorly, an alarming finding because Angrist and Krueger use 300,000 to 500,000 observations! The problem is that the instrumentsrepresenting quarters of birth and various interactions of these with year of birth and state of birth—are very weak, and they are too numerous relative to their contribution in explaining years of education. One lesson is that, even with a very large sample size and zero correlation between the instruments and error, we should not use too many overidentifying restrictions.
+
+Staiger and Stock (1997) provide a theoretical analysis of the 2SLS estimator (and related estimators) with weak instruments. Formally, they model the weak instrument problem as one where the coefficients on the instruments in the reduced form of the exogenous variables converge to zero as the sample increases at the rate $1 / \sqrt{N}$; in the limit, the model is not identified. (This device is not intended to capture the way data are actually generated; its usefulness is in the resulting approximations to the exact distribution of the IV estimators.) For example, in the simple regression model with a single instrument, the reduced form is assumed to be $x_{i 1}=\pi_{0}+\left(\rho_{1} / \sqrt{N}\right) z_{i 1}+ v_{i 1}, i=1,2, \ldots, N$, where $\rho_{1} \neq 0$. Because $\rho_{1} / \sqrt{N} \rightarrow 0$, the resulting asymptotic analysis is much different from the first-order asymptotic theory we have covered in\\
+this chapter; in fact, the 2SLS estimator is inconsistent and has a nonnormal limiting distribution not centered at the population parameter value.
+
+One lesson that comes out of the Staiger-Stock work is that we should always compute the $F$ statistics from first-stage regressions (or the $t$ statistic with a single instrumental variable). Staiger and Stock (1997) provide some guidelines about how large the first-stage $F$ statistic should be (equivalently, how small the associated $p$-value should be) for 2SLS to have acceptable statistical properties. These guidelines should be generally helpful, but they are derived assuming the endogenous explanatory variables have linear conditional expectations and constant variance conditional on the exogenous variables.
+
+\subsection*{5.3 IV Solutions to the Omitted Variables and Measurement Error Problems}
+In this section, we briefly survey the different approaches that have been suggested for using IV methods to solve the omitted variables problem. Section 5.3.2 covers an approach that applies to measurement error as well.
+
+\subsection*{5.3.1 Leaving the Omitted Factors in the Error Term}
+Consider again the omitted variable model\\
+$y=\beta_{0}+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}+\gamma q+v$,\\
+where $q$ represents the omitted variable and $\mathrm{E}(v \mid \mathbf{x}, q)=0$. The solution that would follow from Section 5.1.1 is to put $q$ in the error term, and then to find instruments for any element of $\mathbf{x}$ that is correlated with $q$. It is useful to think of the instruments satisfying the following requirements: (1) they are redundant in the structural model $\mathrm{E}(y \mid \mathbf{x}, q)$; (2) they are uncorrelated with the omitted variable, $q$; and (3) they are sufficiently correlated with the endogenous elements of $\mathbf{x}$ (that is, those elements that are correlated with $q$ ). Then 2SLS applied to equation (5.45) with $u \equiv \gamma q+v$ produces consistent and asymptotically normal estimators.
+
+\subsection*{5.3.2 Solutions Using Indicators of the Unobservables}
+An alternative solution to the omitted variable problem is similar to the OLS proxy variable solution but requires IV rather than OLS estimation. In the OLS proxy variable solution we assume that we have $z_{1}$ such that $q=\theta_{0}+\theta_{1} z_{1}+r_{1}$, where $r_{1}$ is uncorrelated with $z_{1}$ (by definition) and is uncorrelated with $x_{1}, \ldots, x_{K}$ (the key proxy variable assumption). Suppose instead that we have two indicators of $q$. Like a proxy variable, an indicator of $q$ must be redundant in equation (5.45). The key difference is\\
+that an indicator can be written as\\
+$q_{1}=\delta_{0}+\delta_{1} q+a_{1}$,\\
+where\\
+$\operatorname{Cov}\left(q, a_{1}\right)=0, \quad \operatorname{Cov}\left(\mathbf{x}, a_{1}\right)=\mathbf{0}$.
+
+This assumption contains the classical errors-in-variables model as a special case, where $q$ is the unobservable, $q_{1}$ is the observed measurement, $\delta_{0}=0$, and $\delta_{1}=1$, in which case $\gamma$ in equation (5.45) can be identified.
+
+Assumption (5.47) is very different from the proxy variable assumption. Assuming that $\delta_{1} \neq 0$-otherwise, $q_{1}$ is not correlated with $q$-we can rearrange equation (5.46) as\\
+$q=-\left(\delta_{0} / \delta_{1}\right)+\left(1 / \delta_{1}\right) q_{1}-\left(1 / \delta_{1}\right) a_{1}$,\\
+where the error in this equation, $-\left(1 / \delta_{1}\right) a_{1}$, is necessarily correlated with $q_{1}$; the OLS-proxy variable solution would be inconsistent.
+
+To use the indicator assumption (5.47), we need some additional information. One possibility is to have a second indicator of $q$ :\\
+$q_{2}=\rho_{0}+\rho_{1} q+a_{2}$,\\
+where $a_{2}$ satisfies the same assumptions as $a_{1}$ and $\rho_{1} \neq 0$. We still need one more assumption:\\
+$\operatorname{Cov}\left(a_{1}, a_{2}\right)=0$.
+
+This implies that any correlation between $q_{1}$ and $q_{2}$ arises through their common dependence on $q$.
+
+Plugging $q_{1}$ in for $q$ and rearranging gives\\
+$y=\alpha_{0}+\mathbf{x} \boldsymbol{\beta}+\gamma_{1} q_{1}+\left(v-\gamma_{1} a_{1}\right)$,\\
+where $\gamma_{1}=\gamma / \delta_{1}$. Now, $q_{2}$ is uncorrelated with $v$ because it is redundant in equation (5.45). Further, by assumption, $q_{2}$ is uncorrelated with $a_{1}$ ( $a_{1}$ is uncorrelated with $q$ and $a_{2}$ ). Since $q_{1}$ and $q_{2}$ are correlated, $q_{2}$ can be used as an IV for $q_{1}$ in equation (5.51). Of course, the roles of $q_{2}$ and $q_{1}$ can be reversed. This solution to the omitted variables problem is sometimes called the multiple indicator solution.
+
+It is important to see that the multiple indicator IV solution is very different from the IV solution that leaves $q$ in the error term. When we leave $q$ as part of the error, we must decide which elements of $\mathbf{x}$ are correlated with $q$, and then find IVs for those elements of $\mathbf{x}$. With multiple indicators for $q$, we need not know which elements of $\mathbf{x}$\\
+are correlated with $q$; they all might be. In equation (5.51) the elements of $\mathbf{x}$ serve as their own instruments. Under the assumptions we have made, we only need an instrument for $q_{1}$, and $q_{2}$ serves that purpose.
+
+Example 5.5 (IQ and KWW as Indicators of Ability): We apply the indicator method to the model of Example 4.3, using the 935 observations in NLS80.RAW. In addition to $I Q$, we have a knowledge of the working world $(K W W)$ test score. If we write $I Q=\delta_{0}+\delta_{1} a b i l+a_{1}, K W W=\rho_{0}+\rho_{1} a b i l+a_{2}$, and the previous assumptions are satisfied in equation (4.29), then we can add $I Q$ to the wage equation and use $K W W$ as an instrument for IQ. We get
+
+$$
+\begin{aligned}
+\widehat{\log (\widehat{\text { wage }})=} & \underset{(0.33)}{4.59}+\underset{(.003)}{.014} \text { exper }+\underset{(.003)}{.010} \text { tenure }+\underset{(.041)}{.201} \text { married } \\
+& -\underset{(.031)}{.051 \text { south }}+\underset{(.028)}{.177 \text { urban }}-\underset{(.074)}{.023 \text { black }}+\underset{(.017)}{.025 \text { educ }}+\underset{(.005)}{.013} \text { IQ. }
+\end{aligned}
+$$
+
+The estimated return to education is about 2.5 percent, and it is not statistically significant at the 5 percent level even with a one-sided alternative. If we reverse the roles of $K W W$ and $I Q$, we get an even smaller return to education: about 1.7 percent, with a $t$ statistic of about 1.07 . The statistical insignificance is perhaps not too surprising given that we are using IV, but the magnitudes of the estimates are surprisingly small. Perhaps $a_{1}$ and $a_{2}$ are correlated with each other, or with some elements of $\mathbf{x}$.
+
+In the case of the CEV measurement error model, $q_{1}$ and $q_{2}$ are measures of $q$ assumed to have uncorrelated measurement errors. Since $\delta_{0}=\rho_{0}=0$ and $\delta_{1}= \rho_{1}=1, \gamma_{1}=\gamma$. Therefore, having two measures, where we plug one into the equation and use the other as its instrument, provides consistent estimators of all parameters in the CEV setup.
+
+There are other ways to use indicators of an omitted variable (or a single measurement in the context of measurement error) in an IV approach. Suppose that only one indicator of $q$ is available. Without further information, the parameters in the structural model are not identified. However, suppose we have additional variables that are redundant in the structural equation (uncorrelated with $v$ ), are uncorrelated with the error $a_{1}$ in the indicator equation, and are correlated with $q$. Then, as you are asked to show in Problem 5.7, estimating equation (5.51) using this additional set of variables as instruments for $q_{1}$ produces consistent estimators. This is almost the method proposed by Griliches and Mason (1972). As discussed by Cardell and Hopkins (1977), Griliches and Mason incorrectly restrict the reduced form for $q_{1}$; see Problem 5.1.1. Blackburn and Neumark (1992) correctly implement the IV method.
+
+\section*{Problems}
+5.1. In this problem you are to establish the algebraic equivalence between 2SLS and OLS estimation of an equation containing an additional regressor. Although the result is completely general, for simplicity consider a model with a single (suspected) endogenous variable:\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+u_{1}$,\\
+$y_{2}=\mathbf{z} \boldsymbol{\pi}_{2}+v_{2}$.\\
+For notational clarity, we use $y_{2}$ as the suspected endogenous variable and $\mathbf{z}$ as the vector of all exogenous variables. The second equation is the reduced form for $y_{2}$. Assume that $\mathbf{z}$ has at least one more element than $\mathbf{z}_{1}$.
+
+We know that one estimator of $\left(\boldsymbol{\delta}_{1}, \alpha_{1}\right)$ is the 2SLS estimator using instruments $\mathbf{x}$. Consider an alternative estimator of $\left(\boldsymbol{\delta}_{1}, \alpha_{1}\right)$ : (a) estimate the reduced form by OLS, and save the residuals $\hat{v}_{2}$; (b) estimate the following equation by OLS:\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\rho_{1} \hat{v}_{2}+$ error.
+
+Show that the OLS estimates of $\boldsymbol{\delta}_{1}$ and $\alpha_{1}$ from this regression are identical to the 2SLS estimators. (Hint: Use the partitioned regression algebra of OLS. In particular, if $\hat{y}=\mathbf{x}_{1} \hat{\boldsymbol{\beta}}_{1}+\mathbf{x}_{2} \hat{\boldsymbol{\beta}}_{2}$ is an OLS regression, $\hat{\boldsymbol{\beta}}_{1}$ can be obtained by first regressing $\mathbf{x}_{1}$ on $\mathbf{x}_{2}$, getting the residuals, say $\ddot{\mathbf{x}}_{1}$, and then regressing $y$ on $\ddot{\mathbf{x}}_{1}$; see, for example, Davidson and MacKinnon (1993, Section 1.4). You must also use the fact that $\mathbf{z}_{1}$ and $\hat{v}_{2}$ are orthogonal in the sample.)\\
+5.2 Consider a model for the health of an individual:
+
+
+\begin{align*}
+\text { health }= & \beta_{0}+\beta_{1} \text { age }+\beta_{2} \text { weight }+\beta_{3} \text { height } \\
+& +\beta_{4} \text { male }+\beta_{5} \text { work }+\beta_{6} \text { exercise }+u_{1}, \tag{5.53}
+\end{align*}
+
+
+where health is some quantitative measure of the person's health; age, weight, height, and male are self-explanatory; work is weekly hours worked; and exercise is the hours of exercise per week.\\
+a. Why might you be concerned about exercise being correlated with the error term $u_{1}$ ?\\
+b. Suppose you can collect data on two additional variables, disthome and distwork, the distances from home and from work to the nearest health club or gym. Discuss whether these are likely to be uncorrelated with $u_{1}$.\\
+c. Now assume that disthome and distwork are in fact uncorrelated with $u_{1}$, as are all variables in equation (5.53) with the exception of exercise. Write down the reduced form for exercise, and state the conditions under which the parameters of equation (5.53) are identified.\\
+d. How can the identification assumption in part c be tested?\\
+5.3. Consider the following model to estimate the effects of several variables, including cigarette smoking, on the weight of newborns:\\
+$\log ($ bwght $)=\beta_{0}+\beta_{1}$ male $+\beta_{2}$ parity $+\beta_{3} \log ($ faminc $)+\beta_{4}$ packs $+u$,\\
+where male is a binary indicator equal to one if the child is male, parity is the birth order of this child, faminc is family income, and packs is the average number of packs of cigarettes smoked per day during pregnancy.\\
+a. Why might you expect packs to be correlated with $u$ ?\\
+b. Suppose that you have data on average cigarette price in each woman's state of residence. Discuss whether this information is likely to satisfy the properties of a good instrumental variable for packs.\\
+c. Use the data in BWGHT.RAW to estimate equation (5.54). First, use OLS. Then, use 2SLS, where cigprice is an instrument for packs. Discuss any important differences in the OLS and 2SLS estimates.\\
+d. Estimate the reduced form for packs. What do you conclude about identification of equation (5.54) using cigprice as an instrument for packs? What bearing does this conclusion have on your answer from part c?\\
+5.4. Use the data in CARD.RAW for this problem.\\
+a. Estimate a $\log$ (wage) equation by OLS with educ, exper, exper ${ }^{2}$, black, south, smsa, reg661 through reg668, and smsa66 as explanatory variables. Compare your results with Table 2, Column (2) in Card (1995).\\
+b. Estimate a reduced form equation for educ containing all explanatory variables from part a and the dummy variable nearc4. Do educ and nearc4 have a practically and statistically significant partial correlation? (See also Table 3, Column (1) in Card (1995).)\\
+c. Estimate the $\log$ (wage) equation by IV, using nearc4 as an instrument for educ. Compare the 95 percent confidence interval for the return to education with that obtained from part a. (See also Table 3, Column (5) in Card (1995).)\\
+d. Now use nearc2 along with nearc4 as instruments for educ. First estimate the reduced form for educ, and comment on whether nearc2 or nearc4 is more strongly related to educ. How do the 2SLS estimates compare with the earlier estimates?\\
+e. For a subset of the men in the sample, IQ score is available. Regress iq on nearc4. Is IQ score uncorrelated with nearc4?\\
+f. Now regress iq on nearc4 along with smsa66, reg661, reg662, and reg669. Are iq and nearc4 partially correlated? What do you conclude about the importance of controlling for the 1966 location and regional dummies in the $\log$ (wage) equation when using nearc4 as an IV for educ?\\
+5.5. One occasionally sees the following reasoning used in applied work for choosing instrumental variables in the context of omitted variables. The model is\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\gamma q+a_{1}$,\\
+where $q$ is the omitted factor. We assume that $a_{1}$ satisfies the structural error assumption $\mathrm{E}\left(a_{1} \mid \mathbf{z}_{1}, y_{2}, q\right)=0$, that $\mathbf{z}_{1}$ is exogenous in the sense that $\mathrm{E}\left(q \mid \mathbf{z}_{1}\right)=0$, but that $y_{2}$ and $q$ may be correlated. Let $\mathbf{z}_{2}$ be a vector of instrumental variable candidates for $y_{2}$. Suppose it is known that $\mathbf{z}_{2}$ appears in the linear projection of $y_{2}$ onto $\left(\mathbf{z}_{1}, \mathbf{z}_{2}\right)$, and so the requirement that $\mathbf{z}_{2}$ be partially correlated with $y_{2}$ is satisfied. Also, we are willing to assume that $\mathbf{z}_{2}$ is redundant in the structural equation, so that $a_{1}$ is uncorrelated with $\mathbf{z}_{2}$. What we are unsure of is whether $\mathbf{z}_{2}$ is correlated with the omitted variable $q$, in which case $\mathbf{z}_{2}$ would not contain valid IVs.
+
+To "test" whether $\mathbf{z}_{2}$ is in fact uncorrelated with $q$, it has been suggested to use OLS on the equation\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\mathbf{z}_{2} \boldsymbol{\psi}_{1}+u_{1}$,\\
+where $u_{1}=\gamma q+a_{1}$, and test $\mathrm{H}_{0}: \boldsymbol{\psi}_{1}=\mathbf{0}$. Why does this method not work?\\
+5.6. Refer to the multiple indicator model in Section 5.3.2.\\
+a. Show that if $q_{2}$ is uncorrelated with $x_{j}, j=1,2, \ldots, K$, then the reduced form of $q_{1}$ depends only on $q_{2}$. (Hint: Use the fact that the reduced form of $q_{1}$ is the linear projection of $q_{1}$ onto $\left(1, x_{1}, x_{2}, \ldots, x_{K}, q_{2}\right)$ and find the coefficient vector on $\mathbf{x}$ using Property LP. 7 from Chapter 2.)\\
+b. What happens if $q_{2}$ and $\mathbf{x}$ are correlated? In this setting, is it realistic to assume that $q_{2}$ and $\mathbf{x}$ are uncorrelated? Explain.\\
+5.7. Consider model (5.45) where $v$ has zero mean and is uncorrelated with $x_{1}, \ldots, x_{K}$ and $q$. The unobservable $q$ is thought to be correlated with at least some of the $x_{j}$. Assume without loss of generality that $\mathrm{E}(q)=0$.
+
+You have a single indicator of $q$, written as $q_{1}=\delta_{1} q+a_{1}, \delta_{1} \neq 0$, where $a_{1}$ has zero mean and is uncorrelated with each of $x_{j}, q$, and $v$. In addition, $z_{1}, z_{2}, \ldots, z_{M}$ is a\\
+set of variables that are (1) redundant in the structural equation (5.45) and (2) uncorrelated with $a_{1}$.\\
+a. Suggest an IV method for consistently estimating the $\beta_{j}$. Be sure to discuss what is needed for identification.\\
+b. If equation (5.45) is a $\log$ (wage) equation, $q$ is ability, $q_{1}$ is $I Q$ or some other test score, and $z_{1}, \ldots, z_{M}$ are family background variables, such as parents' education and number of siblings, describe the economic assumptions needed for consistency of the the IV procedure in part a.\\
+c. Carry out this procedure using the data in NLS80.RAW. Include among the explanatory variables exper, tenure, educ, married, south, urban, and black. First use IQ as $q_{1}$ and then $K W W$. Include in the $z_{h}$ the variables meduc, feduc, and sibs. Discuss the results.\\
+5.8. Consider a model with unobserved heterogeneity ( $q$ ) and measurement error in an explanatory variable:\\
+$y=\beta_{0}+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}^{*}+q+v$,\\
+where $e_{K}=x_{K}-x_{K}^{*}$ is the measurement error and we set the coefficient on $q$ equal to one without loss of generality. The variable $q$ might be correlated with any of the explanatory variables, but an indicator, $q_{1}=\delta_{0}+\delta_{1} q+a_{1}$, is available. The measurement error $e_{K}$ might be correlated with the observed measure, $x_{K}$. In addition to $q_{1}$, you also have variables $z_{1}, z_{2}, \ldots, z_{M}, M \geq 2$, that are uncorrelated with $v, a_{1}$, and $e_{K}$.\\
+a. Suggest an IV procedure for consistently estimating the $\beta_{j}$. Why is $M \geq 2$ required? (Hint: Plug in $q_{1}$ for $q$ and $x_{K}$ for $x_{K}^{*}$, and go from there.)\\
+b. Apply this method to the model estimated in Example 5.5, where actual education, say educ*, plays the role of $x_{K}^{*}$. Use $I Q$ as the indicator of $q=a b i l i t y$, and $K W W$, meduc, feduc, and sibs as the elements of $\mathbf{z}$.\\
+5.9. Suppose that the following wage equation is for working high school graduates:\\
+$\log ($ wage $)=\beta_{0}+\beta_{1}$ exper $+\beta_{2}$ exper $^{2}+\beta_{3}$ twoyr $+\beta_{4}$ fouryr $+u$,\\
+where twoyr is years of junior college attended and fouryr is years completed at a four-year college. You have distances from each person's home at the time of high school graduation to the nearest two-year and four-year colleges as instruments for twoyr and fouryr. Show how to rewrite this equation to test $\mathrm{H}_{0}: \beta_{3}=\beta_{4}$ against $\mathrm{H}_{0}: \beta_{4}>\beta_{3}$, and explain how to estimate the equation. See Kane and Rouse (1995) and Rouse (1995), who implement a very similar procedure.\\
+5.10. Consider IV estimation of the simple linear model with a single, possibly endogenous, explanatory variable, and a single instrument:\\
+$y=\beta_{0}+\beta_{1} x+u$,\\
+$\mathrm{E}(u)=0, \quad \operatorname{Cov}(z, u)=0, \quad \operatorname{Cov}(z, x) \neq 0, \quad \mathrm{E}\left(u^{2} \mid z\right)=\sigma^{2}$.\\
+a. Under the preceding (standard) assumptions, show that $\mathrm{Avar} \sqrt{N}\left(\hat{\beta}_{1}-\beta_{1}\right)$ can be expressed as $\sigma^{2} /\left(\rho_{z x}^{2} \sigma_{x}^{2}\right)$, where $\sigma_{x}^{2}=\operatorname{Var}(x)$ and $\rho_{z x}=\operatorname{Corr}(z, x)$. Compare this result with the asymptotic variance of the OLS estimator under Assumptions OLS.1-OLS.3.\\
+b. Comment on how each factor affects the asymptotic variance of the IV estimator. What happens as $\rho_{z x} \rightarrow 0$ ?\\
+5.11. A model with a single endogenous explanatory variable can be written as\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+u_{1}, \quad \mathrm{E}\left(\mathbf{z}^{\prime} u_{1}\right)=\mathbf{0}$,\\
+where $\mathbf{z}=\left(\mathbf{z}_{1}, \mathbf{z}_{2}\right)$. Consider the following two-step method, intended to mimic 2SLS:\\
+a. Regress $y_{2}$ on $\mathbf{z}_{2}$, and obtain fitted values, $\tilde{y}_{2}$. (That is, $\mathbf{z}_{1}$ is omitted from the firststage regression.)\\
+b. Regress $y_{1}$ on $\mathbf{z}_{1}, \tilde{y}_{2}$ to obtain $\tilde{\boldsymbol{\delta}}_{1}$ and $\tilde{\alpha}_{1}$. Show that $\tilde{\boldsymbol{\delta}}_{1}$ and $\tilde{\alpha}_{1}$ are generally inconsistent. When would $\tilde{\boldsymbol{\delta}}_{1}$ and $\tilde{\alpha}_{1}$ be consistent? (Hint: Let $y_{2}^{0}$ be the population linear projection of $y_{2}$ on $\mathbf{z}_{2}$, and let $a_{2}$ be the projection error: $y_{2}^{0}=\mathbf{z}_{2} \boldsymbol{\lambda}_{2}+a_{2}$, $\mathrm{E}\left(\mathbf{z}_{2}^{\prime} a_{2}\right)=\mathbf{0}$. For simplicity, pretend that $\lambda_{2}$ is known rather than estimated; that is, assume that $\tilde{y}_{2}$ is actually $y_{2}^{0}$. Then, write\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}^{0}+\alpha_{1} a_{2}+u_{1}$\\
+and check whether the composite error $\alpha_{1} a_{2}+u_{1}$ is uncorrelated with the explanatory variables.)\\
+5.12. In the setup of Section 5.1.2 with $\mathbf{x}=\left(x_{1}, \ldots, x_{K}\right)$ and $\mathbf{z} \equiv\left(x_{1}, x_{2}, \ldots, x_{K-1}\right.$, $z_{1}, \ldots, z_{M}$ ) (let $x_{1}=1$ to allow an intercept), assume that $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$ is nonsingular. Prove that rank $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)=K$ if and only if at least one $\theta_{j}$ in equation (5.15) is different from zero. (Hint: Write $\mathbf{x}^{*}=\left(x_{1}, \ldots, x_{K-1}, x_{K}^{*}\right)$ as the linear projection of each element of $\mathbf{x}$ on $\mathbf{z}$, where $x_{K}^{*}=\delta_{1} x_{1}+\cdots+\delta_{K-1} x_{K-1}+\theta_{1} z_{1}+\cdots+\theta_{M} z_{M}$. Then $\mathbf{x}= \mathbf{x}^{*}+\mathbf{r}$, where $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{r}\right)=\mathbf{0}$, so that $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)=\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}^{*}\right)$. Now $\mathbf{x}^{*}=\mathbf{z} \boldsymbol{\Pi}$, where $\boldsymbol{\Pi}$ is the $L \times K$ matrix whose first $K-1$ columns are the first $K-1$ unit vectors in $\mathbb{R}^{L}$ $(1,0,0, \ldots, 0)^{\prime},(0,1,0, \ldots, 0)^{\prime}, \ldots,(0,0, \ldots, 1,0, \ldots, 0)^{\prime}$-and whose last column is $\left(\delta_{1}, \delta_{2}, \ldots, \delta_{K-1}, \theta_{1}, \ldots, \theta_{M}\right)$. Write $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}^{*}\right)=\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right) \boldsymbol{\Pi}$, so that, because $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$ is nonsingular, $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}^{*}\right)$ has rank $K$ if and only if $\boldsymbol{\Pi}$ has rank $K$.)\\
+5.13. Consider the simple regression model\\
+$y=\beta_{0}+\beta_{1} x+u$\\
+and let $z$ be a binary instrumental variable for $x$.\\
+a. Show that the IV estimator $\hat{\beta}_{1}$ can be written as\\
+$\hat{\beta}_{1}=\left(\bar{y}_{1}-\bar{y}_{0}\right) /\left(\bar{x}_{1}-\bar{x}_{0}\right)$,\\
+where $\bar{y}_{0}$ and $\bar{x}_{0}$ are the sample averages of $y_{i}$ and $x_{i}$ over the part of the sample with $z_{i}=0$, and $\bar{y}_{1}$ and $\bar{x}_{1}$ are the sample averages of $y_{i}$ and $x_{i}$ over the part of the sample with $z_{i}=1$. This estimator, known as a grouping estimator, was first suggested by Wald (1940).\\
+b. What is the intepretation of $\hat{\beta}_{1}$ if $x$ is also binary, for example, representing participation in a social program?\\
+5.14. Consider the model in (5.1) and (5.2), where we have additional exogenous variables $z_{1}, \ldots, z_{M}$. Let $\mathbf{z}=\left(1, x_{1}, \ldots, x_{K-1}, z_{1}, \ldots, z_{M}\right)$ be the vector of all exogenous variables. This problem essentially asks you to obtain the 2SLS estimator using linear projections. Assume that $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$ is nonsingular.\\
+a. Find $\mathrm{L}(y \mid \mathbf{z})$ in terms of the $\beta_{j}, x_{1}, \ldots, x_{K-1}$, and $x_{K}^{*}=\mathrm{L}\left(x_{K} \mid \mathbf{z}\right)$.\\
+b. Argue that, provided $x_{1}, \ldots, x_{K-1}, x_{K}^{*}$ are not perfectly collinear, an OLS regression of $y$ on $1, x_{1}, \ldots, x_{K-1}, x_{K}^{*}$ - using a random sample-consistently estimates all $\beta_{j}$.\\
+c. State a necessary and sufficient condition for $x_{K}^{*}$ not to be a perfect linear combination of $x_{1}, \ldots, x_{K-1}$. What 2SLS assumption is this identical to?\\
+5.15. Consider the model $y=\mathbf{x} \boldsymbol{\beta}+u$, where $x_{1}, x_{2}, \ldots, x_{K_{1}}, K_{1} \leq K$, are the (potentially) endogenous explanatory variables. (We assume a zero intercept just to simplify the notation; the following results carry over to models with an unknown intercept.) Let $z_{1}, \ldots, z_{L_{1}}$ be the instrumental variables available from outside the model. Let $\mathbf{z}=\left(z_{1}, \ldots, z_{L_{1}}, x_{K_{1}+1}, \ldots, x_{K}\right)$ and assume that $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$ is nonsingular, so that Assumption 2SLS.2a holds.\\
+a. Show that a necessary condition for the rank condition, Assumption 2SLS.2b, is that for each $j=1, \ldots, K_{1}$, at least one $z_{h}$ must appear in the reduced form of $x_{j}$.\\
+b. With $K_{1}=2$, give a simple example showing that the condition from part a is not sufficient for the rank condition.\\
+c. If $L_{1}=K_{1}$, show that a sufficient condition for the rank condition is that only $z_{j}$ appears in the reduced form for $x_{j}, j=1, \ldots, K_{1}$. (As in Problem 5.12, it suffices to study the rank of the $L \times K$ matrix $\boldsymbol{\Pi}$ in $\mathrm{L}(\mathbf{x} \mid \mathbf{z})=\mathbf{z} \boldsymbol{\Pi}$.)\\
+5.16. Consider the population model\\
+$y=\alpha+\beta w+u$,\\
+where all quantities are scalars. Let $\mathbf{g}$ be a $1 \times L$ vector, $L \geq 2$, with $E\left(\mathbf{g}^{\prime} u\right)=0$; assume the first element of $\mathbf{g}$ is unity. The following is easily extended to the case of a vector $\mathbf{w}$ of endogenous variables.\\
+a. Let $\tilde{\beta}$ denote the 2SLS estimator of $\beta$ using instruments $\mathbf{g}$. (Of course, the intercept $\alpha$ is estimated along with $\beta$.) Argue that, under the rank condition 2SLS. 2 and the homoskedasticity Assumption 2SLS. 3 (with $\mathbf{z = g}$ ),
+
+Avar $\sqrt{N}(\tilde{\beta}-\beta)=\sigma_{u}^{2} / \operatorname{Var}\left(w^{*}\right)$,\\
+where $\sigma_{u}^{2}=\operatorname{Var}(u)$ and $w^{*}=L(w \mid \mathbf{g})$. (Hint: See the discussion following equation (5.24).)\\
+b. Let $\mathbf{h}$ be a $1 \times J$ vector (with zero mean, to slightly simplify the argument) uncorrelated with $\mathbf{g}$ but generally correlated with $u$. Write the linear projection of $u$ on $\mathbf{h}$ as $u=\mathbf{h} \gamma+v, E\left(\mathbf{h}^{\prime} v\right)=\mathbf{0}$. Explain why $E\left(\mathbf{g}^{\prime} v\right)=\mathbf{0}$.\\
+c. Write the equation\\
+$y=\alpha+\beta w+\mathbf{h} \gamma+v$\\
+and let $\hat{\beta}$ be the 2SLS estimator of $\beta$ using instruments $\mathbf{z}=(\mathbf{g}, \mathbf{h})$. Assuming Assumptions 2SLS. 2 and 2SLS. 3 for this choice of instruments, show that
+
+Avar $\sqrt{N}(\hat{\beta}-\beta)=\sigma_{v}^{2} / \operatorname{Var}\left(w^{*}\right)$,\\
+where $\sigma_{v}^{2}=\operatorname{Var}(v)$. (Hint: Again use the discussion following equation (5.24), but now with $\mathbf{x}^{*}=(1, \breve{w}, \mathbf{h})$, where $\breve{w}=L(w \mid \mathbf{g}, \mathbf{h})$. Now, the asymptotic variance can be written $\sigma_{v}^{2} / \operatorname{Var}(\breve{r})$, where $\breve{r}$ is the population residual from the regression $\breve{w}$ on $1, \mathbf{h}$. Show that $\breve{r}=w^{*}$ when $E\left(\mathbf{g}^{\prime} \mathbf{h}\right)=\mathbf{0}$.)\\
+d. Argue that for estimating the coefficient on an endogenous explanatory variable, it is always better to include exogenous variables that are orthogonal to the available instruments. For more general results, see Qian and Schmidt (1999). Problem 4.5 covers the OLS case.
+
+\section*{6 Additional Single-Equation Topics}
+
+\end{document}

@@ -1,0 +1,2418 @@
+% This LaTeX document needs to be compiled with XeLaTeX.
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{caption}
+\usepackage{bbold}
+\usepackage{multirow}
+\usepackage{fvextra, csquotes}
+% \usepackage[fallback]{xeCJK}
+\usepackage{polyglossia}
+\usepackage{fontspec}
+\usepackage{newunicodechar}
+\IfFontExistsTF{Noto Serif CJK TC}
+{\setCJKmainfont{Noto Serif CJK TC}}
+{\IfFontExistsTF{STSong}
+  {\setCJKmainfont{STSong}}
+  {\IfFontExistsTF{Droid Sans Fallback}
+    {\setCJKmainfont{Droid Sans Fallback}}
+    {\setCJKmainfont{SimSun}}
+}}
+
+\setmainlanguage{english}
+\IfFontExistsTF{CMU Serif}
+{\setmainfont{CMU Serif}}
+{\IfFontExistsTF{DejaVu Sans}
+  {\setmainfont{DejaVu Sans}}
+  {\setmainfont{Georgia}}
+}
+
+ Finite-Sample Properties of OLS }
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\newunicodechar{×}{\ifmmode\times\else{$\times$}\fi}
+\newunicodechar{⋮}{\ifmmode\vdots\else{$\vdots$}\fi}
+\newunicodechar{⇔}{\ifmmode\Leftrightarrow\else{$\Leftrightarrow$}\fi}
+\newunicodechar{¥}{\ifmmode\text{\yen}\else\yen\fi}
+\title{Chapter 4: Multiple-Equation GMM}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{CHAPTER 4}
+\section*{Multiple-Equation GMM}
+\begin{abstract}
+This chapter is concerned about estimating more than one equation jointly by GMM. Having learned how to do the single-equation GMM, it is only a small step to get to a system of multiple equations, despite the seemingly complicated notation designed to keep tabs on individual equations. This is because the multiple-equation GMM estimator can be expressed as a single-equation GMM estimator by suitably specifying the matrices and vectors comprising the single-equation GMM formula. This being the case, we can develop large-sample theory of multiple-equation GMM almost off the shelf.\\
+The payoff from mastering multiple-equation GMM is considerable. Under conditional homoskedasticity, it reduces to the full-information instrumental variable efficient (FIVE) estimator, which in turn reduces to three-stage least squares (3SLS) if the set of instrumental variables is common to all equations. If we further assume that all the regressors are predetermined, then 3SLS reduces to seemingly unrelated regressions (SUR), which in turn reduces to the multivariate regression when all the equations have the same regressors.\\
+We will also show that the multiple-equation system can be written as an equation system with its coefficients constrained to be the same across equations. The GMM estimator for this system is again a special case of single-equation GMM. The GMM estimator when all the regressors are predetermined and errors are conditionally homoskedastic is called the random-effects (RE) estimator. Therefore, SUR and RE are equivalent estimators.\\
+The application of this chapter is estimation of interrelated factor demands by SUR/RE. A system of factor demand functions is derived from a cost function called the translog cost function, which is a generalization of the linear logarithmic cost function considered in Chapter 1.\\
+This chapter does not consider the maximum likelihood (ML) estimation of multiple-equation models. The ML counterpart of 3SLS is full-information maximum likelihood (FIML). For a full treatment of FIML, see Section 8.5.\\
+If the complexity of this chapter's notation stands in your way, just set $M$ (the number of equations) to two. Doing so does not impair the generality of any of the results of this chapter.
+\end{abstract}
+
+\subsection*{4.1 The Multiple-Equation Model}
+To be able to deal with more than one equation, we need to complicate the notation by introducing an additional subscript designating the equation. For example, the dependent variable of the $m$-th equation for observation $i$ will be denoted $y_{i m}$.
+
+\section*{Linearity}
+There are $M$ linear equations, each of which is a linear equation like the one in Assumption 3.1:
+
+Assumption 4.1 (linearity): There are $M$ linear equations
+
+
+\begin{equation*}
+y_{i m}=\mathbf{z}_{i m}^{\prime} \delta_{m}+\varepsilon_{i m} \quad(m=1,2, \ldots, M ; i=1,2, \ldots, n), \tag{4.1.1}
+\end{equation*}
+
+
+where $n$ is the sample size, $\mathbf{z}_{i m}$ is the $L_{m}$-dimensional vector of regressors, $\delta_{m}$ is the conformable coefficient vector, and $\varepsilon_{i m}$ is an unobservable error term in the $m$-th equation.
+
+The model will make no assumptions about the interequation (or contemporaneous) correlation between the errors ( $\varepsilon_{i 1}, \ldots, \varepsilon_{i M}$ ). Also, no a priori restrictions are placed on the coefficients from different equations. That is, the model assumes no cross-equation restrictions on the coefficients. These points can be illustrated in
+
+Example 4.1 (wage equation): In the Griliches exercise of Chapter 3, we estimated the wage equation. In one specification, Griliches adds to it the equation for $K W W$ (score on the "Knowledge of the World of Work" test):
+
+$$
+\begin{gathered}
+L W_{i}=\phi_{1}+\beta_{1} S_{i}+\gamma_{1} I Q_{i}+\pi E X P R_{i}+\varepsilon_{i 1}, \\
+K W W_{i}=\phi_{2}+\beta_{2} S_{i}+\gamma_{2} I Q_{i}+\varepsilon_{i 2},
+\end{gathered}
+$$
+
+where (to refresh your memory) $L W_{i}$ is the log wage of the $i$-th individual in the first year of the survey, $S_{i}$ is schooling in years, $I Q_{i}$ is IQ, and $E X P R_{i}$ is experience in years. In this example, $M=2, L_{1}=4, L_{2}=3, y_{i 1}=L W_{i}$, $y_{i 2}=K W W_{i}$, and
+
+\[
+\mathbf{z}_{i 1}=\left[\begin{array}{c}
+1  \tag{4.1.2}\\
+S_{i} \\
+I Q_{i} \\
+E X P R_{i}
+\end{array}\right], \quad \mathbf{z}_{i 2}=\left[\begin{array}{c}
+1 \\
+S_{i} \\
+I Q_{i}
+\end{array}\right], \quad \boldsymbol{\delta}_{1}=\left[\begin{array}{l}
+\phi_{1} \\
+\beta_{1} \\
+\gamma_{1} \\
+\pi
+\end{array}\right], \quad \boldsymbol{\delta}_{2}=\left[\begin{array}{l}
+\phi_{2} \\
+\beta_{2} \\
+\gamma_{2}
+\end{array}\right] .
+\]
+
+The errors $\varepsilon_{i 1}$ and $\varepsilon_{i 2}$ can be correlated. The correlation arises if, for example, there is an unobservable individual characteristic that affects both the wage rate and the test score. There are no cross-equation restrictions such as $\beta_{1}=\beta_{2}$.
+
+Cross-equation restrictions naturally arise in panel data models where the same relationship can be estimated for different points in time.
+
+Example 4.2 (wage equation for two years): The NLS-Y data we used for the Griliches exercise actually has information for 1980, so we can estimate two wage equations, one for the first point in time (say, 1969) and the other for 1980:
+
+$$
+\begin{aligned}
+& L W 69_{i}=\phi_{1}+\beta_{1} S 69_{i}+\gamma_{1} I Q_{i}+\pi_{1} E X P R 69_{i}+\varepsilon_{i 1}, \\
+& L W 80_{i}=\phi_{2}+\beta_{2} S 80_{i}+\gamma_{2} I Q_{i}+\pi_{2} E X P R 80_{i}+\varepsilon_{i 2} .
+\end{aligned}
+$$
+
+In the language of multiple equations, $S 69_{i}$ (education in 1969) and $S 80_{i}$ (education in 1980) are two different variables. It would be natural to entertain the case where the coefficients remained unchanged over time, with $\phi_{1}=\phi_{2}, \beta_{1}=\beta_{2}, \gamma_{1}=\gamma_{2}, \pi_{1}=\pi_{2}$. This is a set of linear cross-equation restrictions.
+
+As will be shown in Section 4.3 below, testing (linear or nonlinear) cross-equation restrictions is straightforward. Estimation while imposing the restriction that the coefficients are the same across equations will be considered in Section 4.6.
+
+\section*{Stationarity and Ergodicity}
+Let $\mathbf{x}_{i m}$ be the vector of $K_{m}$ instruments for the $m$-th equation. Although not frequently the case in practice, the set of instruments can differ across equations, and so the number of instruments, $K_{m}$, can depend on the equation.
+
+Example 4.1 (continued): Suppose that $I Q_{i}$ is endogenous in both equations and that there is a variable, $M E D_{i}$ (mother's education), that is predetermined in the first equation (so $\mathrm{E}\left(M E D_{i} \varepsilon_{i 1}\right)=0$ ). So the instruments for the $L W$\\
+equation are ( $1, S_{i}, E X P R_{i}, M E D_{i}$ ). If these instruments are also orthogonal to $\varepsilon_{i 2}$, then the $K W W$ equation can be estimated with the same set of instruments as the $L W$ equation. In this example, $K_{1}=K_{2}=4$, and
+
+\[
+\mathbf{x}_{i 1}=\mathbf{x}_{i 2}=\left[\begin{array}{c}
+1  \tag{4.1.3}\\
+S_{i} \\
+E X P R_{i} \\
+M E D_{i}
+\end{array}\right]
+\]
+
+The multiple-equation version of Assumption 3.2 is
+
+Assumption 4.2 (ergodic stationarity): Let $\mathbf{w}_{i}$ be unique and nonconstant elements of $\left(y_{i 1}, \ldots, y_{i M}, \mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}, \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i M}\right)$. $\left\{\mathbf{w}_{i}\right\}$ is jointly stationary and ergodic.
+
+This assumption is stronger than just assuming that ergodic stationarity is satisfied for each equation of the system. Even if $\left\{y_{i m}, \mathbf{z}_{i m}, \mathbf{x}_{i m}\right\}$ is stationary and ergodic for each individual equation $m$, it does not necessarily follow, strictly speaking, that the larger process $\left\{\mathbf{w}_{i}\right\}$, which is the union of individual processes, is (jointly) stationary and ergodic (see Example 2.3 of Chapter 2 for an example of a vector nonstationary process whose components are univariate stationary processes). In practice, the distinction is somewhat blurred because the equations often share common variables.
+
+Example 4.1 (continued): Because $\mathbf{z}_{i 1}, \mathbf{z}_{i 2}, \mathbf{x}_{i 1}$, and $\mathbf{x}_{i 2}$ for the example have some common elements, $\mathbf{w}_{i}$ has only six elements: ( $L W_{i}, K W W_{i}, S_{i}, I Q_{i}$, $\left.E X P R_{i}, M E D_{i}\right)$. The ergodic stationarity assumption for the first equation of this example is that $\left\{L W_{i}, S_{i}, I Q_{i}, E X P R_{i}, M E D_{i}\right\}$ is jointly stationary and ergodic. Assumption 4.2 requires that the joint process include $K W W_{i}$.
+
+\section*{Orthogonality Conditions}
+The orthogonality conditions for the $M$-equation system are just a collection of the orthogonality conditions for individual equations.
+
+Assumption 4.3 (orthogonality conditions): For each equation $m$, the $K_{m}$ variables in $\mathbf{x}_{i m}$ are predetermined. That is, the following orthogonality conditions are satisfied:
+
+$$
+\mathrm{E}\left(\mathbf{x}_{i m} \cdot \varepsilon_{i m}\right)=\mathbf{0} \quad(m=1,2, \ldots, M)
+$$
+
+So there are $\sum_{m} K_{m}$ orthogonality conditions in total. If we define
+
+\[
+\underset{\left(\sum_{m=1}^{M} K_{m} \times 1\right)}{\mathbf{g}_{i}} \equiv\left[\begin{array}{c}
+\mathbf{x}_{i 1} \cdot \varepsilon_{i 1}  \tag{4.1.4}\\
+\vdots \\
+\mathbf{x}_{i M} \cdot \varepsilon_{i M}
+\end{array}\right],
+\]
+
+then all those orthogonality conditions can be written compactly as $\mathrm{E}\left(\mathbf{g}_{i}\right)=\mathbf{0}$. Note that we are not assuming "cross" orthogonalities; for example, $\mathbf{x}_{i 1}$ does not have to be orthogonal to $\varepsilon_{i 2}$, although it is required to be orthogonal to $\varepsilon_{i 1}$. However, if a variable is included in both $\mathbf{x}_{i 1}$ and $\mathbf{x}_{i 2}$, then the assumption does imply that the variable is orthogonal to both $\varepsilon_{i 1}$ and $\varepsilon_{i 2}$.
+
+Example 4.1 (continued): $\sum_{m} K_{m}$ in the current example is $8(=4+4)$ and $\mathbf{g}_{i}$ is
+
+$$
+\mathbf{g}_{i}=\left[\begin{array}{c}
+\varepsilon_{i 1} \\
+S_{i} \varepsilon_{i 1} \\
+E X P R_{i} \varepsilon_{i 1} \\
+M E D_{i} \varepsilon_{i 1} \\
+\varepsilon_{i 2} \\
+S_{i} \varepsilon_{i 2} \\
+E X P R_{i} \varepsilon_{i 2} \\
+M E D_{i} \varepsilon_{i 2}
+\end{array}\right] .
+$$
+
+Because $\mathbf{x}_{i 1}$ and $\mathbf{x}_{i 2}$ have the same set of instruments, each instrument is orthogonal to both $\varepsilon_{i 1}$ and $\varepsilon_{i 2}$.
+
+\section*{Identification}
+Having set up the orthogonality conditions for multiple equations, we can derive the identification condition in much the same way as in the single-equation case. The multiple-equation version of (3.3.1) is
+
+\[
+\mathbf{g}\left(\mathbf{w}_{i} ; \boldsymbol{\delta}\right) \equiv\left[\begin{array}{c}
+\mathbf{x}_{i 1} \cdot\left(y_{i 1}-\mathbf{z}_{i 1}^{\prime} \boldsymbol{\delta}_{1}\right)  \tag{4.1.5}\\
+\vdots \\
+\mathbf{x}_{i M} \cdot\left(y_{i M}-\mathbf{z}_{i M}^{\prime} \boldsymbol{\delta}_{M}\right)
+\end{array}\right],
+\]
+
+where $\mathbf{w}_{i}$ is as in Assumption 4.2, and $\boldsymbol{\delta}$ without the subscript is a stacked vector of coefficients:
+
+\[
+\underset{\left(\sum_{m=1}^{M} L_{m} \times 1\right)}{\delta}=\left[\begin{array}{c}
+\delta_{1}  \tag{4.1.6}\\
+\vdots \\
+\delta_{M}
+\end{array}\right]
+\]
+
+So the orthogonality conditions can be written as $\mathrm{E}\left[\mathbf{g}\left(\mathbf{w}_{i} ; \delta\right)\right]=\mathbf{0}$. The coefficient vector is identified if $\tilde{\delta}=\delta$ is the only solution to the system of equations
+
+
+\begin{equation*}
+\mathrm{E}\left[\mathbf{g}\left(\mathbf{w}_{i} ; \tilde{\delta}\right)\right]=\mathbf{0} \tag{4.1.7}
+\end{equation*}
+
+
+Using the definition (4.1.5), we can rewrite the left-hand side of this equation, $\mathrm{E}\left[\mathrm{g}\left(\mathrm{w}_{i} ; \tilde{\boldsymbol{\delta}}\right)\right]$, as
+
+
+\begin{align*}
+\mathrm{E}\left[\mathbf{g}\left(\mathbf{w}_{i} ; \tilde{\boldsymbol{\delta}}\right)\right] & \equiv\left[\begin{array}{c}
+\mathrm{E}\left[\mathbf{x}_{i 1} \cdot\left(y_{i 1}-\mathbf{z}_{i 1}^{\prime} \tilde{\boldsymbol{\delta}}_{1}\right)\right] \\
+\vdots \\
+\mathrm{E}\left[\mathbf{x}_{i M} \cdot\left(y_{i M}-\mathbf{z}_{i M}^{\prime} \tilde{\boldsymbol{\delta}}_{M}\right)\right]
+\end{array}\right] \\
+& =\left[\begin{array}{c}
+\mathrm{E}\left(\mathbf{x}_{i 1} \cdot y_{i 1}\right) \\
+\vdots \\
+\mathrm{E}\left(\mathbf{x}_{i M} \cdot y_{i M}\right)
+\end{array}\right]-\left[\begin{array}{c}
+\mathrm{E}\left(\mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime}\right) \tilde{\boldsymbol{\delta}}_{1} \\
+\vdots \\
+\mathrm{E}\left(\mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime}\right) \tilde{\boldsymbol{\delta}}_{M}
+\end{array}\right] \\
+& =\left[\begin{array}{c}
+\mathrm{E}\left(\mathbf{x}_{i 1} \cdot y_{i 1}\right) \\
+\vdots \\
+\mathrm{E}\left(\mathbf{x}_{i M} \cdot y_{i M}\right)
+\end{array}\right]-\left[\begin{array}{ccc}
+\mathrm{E}\left(\mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime}\right) & & \\
+& \ddots & \\
+& & \mathrm{E}\left(\mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime}\right)
+\end{array}\right]\left[\begin{array}{c}
+\tilde{\boldsymbol{\delta}}_{1} \\
+\vdots \\
+\tilde{\boldsymbol{\delta}}_{M}
+\end{array}\right] \\
+& \equiv \boldsymbol{\sigma}_{\mathbf{x y}}-\mathbf{\Sigma}_{\mathbf{x z}} \tilde{\boldsymbol{\delta}}, \tag{4.1.8}
+\end{align*}
+
+
+where
+
+\[
+\boldsymbol{\sigma}_{\mathbf{x y}} \equiv\left[\begin{array}{c}
+\mathrm{E}\left(\mathbf{x}_{i 1} \cdot y_{i 1}\right)  \tag{4.1.9}\\
+\vdots \\
+\mathrm{E}\left(\mathbf{x}_{i M} \cdot y_{i M}\right)
+\end{array}\right], \boldsymbol{\Sigma}_{\mathbf{x z}} \equiv\left[\begin{array}{ccc}
+\mathrm{E}\left(\mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime}\right) & & \\
+& \ddots & \\
+& & \mathrm{E}\left(\mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime}\right)
+\end{array}\right]
+\]
+
+(The third equality in (4.1.8) is obtained by formula (A.4) of Appendix A for multiplication of partitioned matrices.) Therefore, the system of equations determining $\tilde{\delta}$ can be written as
+
+
+\begin{equation*}
+\Sigma_{\mathbf{x z}} \tilde{\delta}=\sigma_{\mathbf{x y}} \tag{4.1.10}
+\end{equation*}
+
+
+which is the same in form as (3.3.4), the system of equations determining $\tilde{\delta}$ in the single-equation case!
+
+It then follows from the discussion of identification for the single-equation case that a necessary and sufficient condition for identification is that $\boldsymbol{\Sigma}_{\mathbf{x z}}$ be of full column rank. But, since $\boldsymbol{\Sigma}_{\mathbf{x z}}$ is block diagonal, this condition is equivalent to
+
+Assumption 4.4 (rank condition for identification): For each $m(=1,2, \ldots, M)$, $\mathrm{E}\left(\mathbf{x}_{i m} \mathbf{z}_{i m}^{\prime}\right)\left(K_{m} \times L_{m}\right)$ is of full column rank.
+
+It should be clear why the identification condition becomes thus. We can uniquely determine all coefficient vectors $\left(\delta_{1}, \ldots \delta_{M}\right)$ if and only if each coefficient vector $\delta_{m}$ is uniquely determined, which occurs if and only if Assumption 3.4 holds for each equation. The rank condition is this simple because there are no a priori cross-equation restrictions. Identification when the coefficients are assumed to be the same across equations will be covered in Section 4.6.
+
+\section*{The Assumption for Asymptotic Normality}
+As in the single-equation estimation, the orthogonality conditions need to be strengthened for asymptotic normality:
+
+Assumption 4.5 ( $\mathbf{g}_{i}$ is a martingale difference sequence with finite second moments): $\left\{\mathbf{g}_{i}\right\}$ is a joint martingale difference sequence. $\mathrm{E}\left(\mathbf{g}_{i} \mathbf{g}_{i}^{\prime}\right)$ is nonsingular.
+
+The same comment that we made above about joint ergodic stationarity applies here: the assumption is stronger than requiring the same for each equation. As in the previous chapters, we use the symbol $\mathbf{S}$ for $\operatorname{Avar}(\overline{\mathbf{g}})$, the asymptotic variance of $\overline{\mathbf{g}}$ (i.e., the variance of the limiting distribution of $\sqrt{n} \overline{\mathbf{g}}$ ). By the CLT for stationary and ergodic martingale difference sequences (see Section 2.2), it equals $\mathrm{E}\left(\mathbf{g}_{i} \mathbf{g}_{i}^{\prime}\right)$. It has the following partitioned structure:
+
+
+\begin{align*}
+\mathbf{S} & =\underset{\left(\sum_{m=1}^{M} K_{m} \times \sum_{m=1}^{M} K_{m}\right)}{\mathrm{E}\left(\mathbf{g}_{i} \mathbf{g}_{i}^{\prime}\right)} \\
+& =\left[\begin{array}{ccc}
+\mathrm{E}\left(\varepsilon_{i 1} \varepsilon_{i 1} \mathbf{x}_{i 1} \mathbf{x}_{i 1}^{\prime}\right) & \cdots & \mathrm{E}\left(\varepsilon_{i 1} \varepsilon_{i M} \mathbf{x}_{i 1} \mathbf{x}_{i M}^{\prime}\right) \\
+\vdots & & \vdots \\
+\mathrm{E}\left(\varepsilon_{i M} \varepsilon_{i 1} \mathbf{x}_{i M} \mathbf{x}_{i 1}^{\prime}\right) & \cdots & \mathrm{E}\left(\varepsilon_{i M} \varepsilon_{i M} \mathbf{x}_{i M} \mathbf{x}_{i M}^{\prime}\right)
+\end{array}\right] . \tag{4.1.11}
+\end{align*}
+
+
+That is, the ( $m, h$ ) block of $\mathbf{S}$ is $\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h} \mathbf{x}_{i m} \mathbf{x}_{i h}^{\prime}\right)(m, h=1,2, \ldots, M)$.\\
+In sum, the multiple-equation model is a system of equations where the assumptions we made for the single-equation model apply to each equation, with the added requirement of jointness (such as joint stationarity) where applicable.
+
+\section*{Connection to the "Complete" System of Simultaneous Equations}
+The multiple-equation model presented in most other textbooks, called the "complete" system of simultaneous equations, adds more assumptions to our model. Those additional assumptions are not needed for the development of multipleequation GMM, but if you are curious about them, you can at this junction make a detour to the first two subsections of Section 8.5.
+
+\subsection*{4.2 Multiple-Equation GMM Defined}
+Derivation of the GMM estimator for multiple equations, too, can be carried out in much the same way as in the single-equation case. Let $\tilde{\delta}$ be a hypothetical value of the true parameter vector $\delta$ and define $\mathbf{g}_{n}(\tilde{\boldsymbol{\delta}})$ by (3.4.1). The definition of the GMM estimator is the same as in (3.4.5), provided that the weighting matrix $\widehat{\mathbf{W}}$ is now $\sum_{m} K_{m} \times \sum_{m} K_{m}$. In the previous section, we were able to rewrite $\mathrm{E}\left[\mathbf{g}\left(\mathbf{w}_{i} ; \tilde{\delta}\right)\right]$ for multiple equations as a linear function of $\tilde{\delta}$ (see (4.1.8)). We can do the same for the sample analogue $\mathbf{g}_{n}(\tilde{\delta})$ :
+
+
+\begin{align*}
+\underset{\left(\sum_{m=1}^{M} K_{m} \times 1\right)}{\mathbf{g}_{n}(\tilde{\boldsymbol{\delta}})} & =\left[\begin{array}{c}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \cdot\left(y_{i 1}-\mathbf{z}_{i 1}^{\prime} \tilde{\boldsymbol{\delta}}_{1}\right) \\
+\vdots \\
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \cdot\left(y_{i M}-\mathbf{z}_{i M}^{\prime} \tilde{\delta}_{M}\right)
+\end{array}\right] \\
+& =\left[\begin{array}{c}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \cdot y_{i 1} \\
+\vdots \\
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \cdot y_{i M}
+\end{array}\right]-\left[\begin{array}{ccc}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime} \tilde{\delta}_{1} & \\
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime} \tilde{\delta}_{M}
+\end{array}\right] \\
+& =\left[\begin{array}{c}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \cdot y_{i 1} \\
+\vdots \\
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \cdot y_{i M}
+\end{array}\right]-\left[\begin{array}{ccc}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime} & & \\
+& \ddots & \frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime}
+\end{array}\right]\left[\begin{array}{c}
+\tilde{\delta}_{1} \\
+\vdots \\
+\tilde{\delta}_{M}
+\end{array}\right] \\
+& \equiv \mathbf{s}_{\mathbf{x y}}-\mathbf{S}_{\mathbf{x z}} \tilde{\delta}, \tag{4.2.1}
+\end{align*}
+
+
+where
+
+\[
+\mathbf{s}_{\mathbf{x y}} \equiv\left[\begin{array}{c}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \cdot y_{i 1}  \tag{4.2.2}\\
+\vdots \\
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \cdot y_{i M}
+\end{array}\right], \mathbf{S}_{\mathbf{x z}} \equiv\left[\begin{array}{ccc}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime} & & \\
+& \ddots & \\
+& & \frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime}
+\end{array}\right]
+\]
+
+Again, this is the same in form as the expression for $\mathbf{g}_{n}(\tilde{\boldsymbol{\delta}})$ for the single-equation case.
+
+It follows that the results of Section 3.4 about the derivation of the GMM estimator are applicable to the multiple-equation case. In particular, just reproducing (3.4.8) and (3.4.11),
+
+
+\begin{align*}
+& \text { multiple-equation GMM estimator: } \hat{\delta}(\widehat{\mathbf{W}})=\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}\right)^{-1} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{s}_{\mathbf{x y}}  \tag{4.2.3}\\
+& \text { its sampling error: } \hat{\delta}(\widehat{\mathbf{W}})-\delta=\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}\right)^{-1} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \overline{\mathbf{g}} \tag{4.2.4}
+\end{align*}
+
+
+The features specific to the multiple-equation GMM formula are the following: (i) $\mathbf{s}_{\mathbf{x y}}$ is a stacked vector as in (4.2.2), (ii) $\mathbf{S}_{\mathbf{x z}}$ is a block diagonal matrix as in (4.2.2), (iii) accordingly, the size of the weighting matrix $\widehat{\mathbf{W}}$ is $\sum_{m} K_{m} \times \sum_{m} K_{m}$, and (iv) $\overline{\mathbf{g}}$ in (4.2.4), the sample mean of $\mathbf{g}_{i}$, is the stacked vector
+
+\[
+\overline{\mathbf{g}} \equiv \frac{1}{n} \sum_{i=1}^{n} \mathbf{g}_{i}=\left[\begin{array}{c}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \cdot \varepsilon_{i 1}  \tag{4.2.5}\\
+\vdots \\
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \cdot \varepsilon_{i M}
+\end{array}\right]=\mathbf{g}_{n}(\boldsymbol{\delta})
+\]
+
+It will be necessary to rewrite the multiple-equation GMM formula (4.2.3) while explicitly taking account of those special features. If $\widehat{\mathbf{W}}_{m h}\left(K_{m} \times K_{h}\right)$ is the $(m, h)$ block of $\widehat{\mathbf{W}}(m, h=1,2, \ldots, M)$, then (4.2.3) can be written out in full as
+
+
+\begin{align*}
+& \hat{\delta}(\widehat{\mathbf{W}})=\left[\begin{array}{c}
+\hat{\delta}_{1}(\widehat{\mathbf{W}}) \\
+\vdots \\
+\hat{\delta}_{M}(\widehat{\mathbf{W}})
+\end{array}\right]=\left(\left[\begin{array}{llll}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i 1} \mathbf{x}_{i 1}^{\prime} & & & \\
+& \ddots & & \\
+& & \frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i M} \mathbf{x}_{i M}^{\prime}
+\end{array}\right]\left[\begin{array}{c}
+\widehat{\mathbf{W}}_{11} \ldots \widehat{\mathbf{W}}_{1 M} \\
+\vdots \\
+\widehat{\mathbf{W}}_{M 1} \ldots \widehat{\mathbf{W}}_{M M}
+\end{array}\right]\right. \\
+& \left.\left[\begin{array}{llll}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime} & & & \\
+& \ddots & & \\
+& & \frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime}
+\end{array}\right]\right)^{-1} \\
+& {\left[\begin{array}{ccc}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i 1} \mathbf{x}_{i 1}^{\prime} & & \\
+& \ddots & \\
+& & \frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i M} \mathbf{x}_{i M}^{\prime}
+\end{array}\right]\left[\begin{array}{cc}
+\widehat{\mathbf{W}}_{11} \cdots \widehat{\mathbf{W}}_{1 M} \\
+\vdots & \\
+\vdots \\
+\widehat{\mathbf{W}}_{M 1} \cdots \widehat{\mathbf{W}}_{M M}
+\end{array}\right]\left[\begin{array}{c}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \cdot y_{i 1} \\
+\vdots \\
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \cdot y_{i M}
+\end{array}\right]} \\
+& =\left[\begin{array}{c}
+\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i 1} \mathbf{x}_{i 1}^{\prime}\right) \widehat{\mathbf{W}}_{11}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime}\right) \cdots\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i 1} \mathbf{x}_{i 1}^{\prime}\right) \widehat{\mathbf{W}}_{1 M}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime}\right) \\
+\vdots \\
+\vdots \\
+\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i M} \mathbf{x}_{i M}^{\prime}\right) \widehat{\mathbf{W}}_{M 1}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime}\right) \cdots\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i M} \mathbf{x}_{i M}^{\prime}\right) \widehat{\mathbf{W}}_{M M}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime}\right)
+\end{array}\right]^{-1} \\
+& {\left[\begin{array}{c}
+\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i 1} \mathbf{x}_{i 1}^{\prime}\right) \widehat{\mathbf{W}}_{11}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} y_{i 1}^{\prime}\right)+\cdots+\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i 1} \mathbf{x}_{i 1}^{\prime}\right) \widehat{\mathbf{W}}_{1 M}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} y_{i M}^{\prime}\right) \\
+\vdots \\
+\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i M} \mathbf{x}_{i M}^{\prime}\right) \widehat{\mathbf{W}}_{M 1}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} y_{i 1}\right)+\cdots+\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i M} \mathbf{x}_{i M}^{\prime}\right) \widehat{\mathbf{W}}_{M M}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} y_{i M}\right)
+\end{array}\right]} \tag{4.2.6}
+\end{align*}
+
+
+To go from the second-to-last to the last line, use formulas (A.6) and (A.7) of the appendix on partitioned matrices. If you find the operation too much, just set $M=2$.
+
+\subsection*{4.3 Large-Sample Theory}
+Large-sample theory for the single-equation GMM was stated in Propositions 3.13.8. It is just a matter of mechanical substitution to translate it to the multipleequation model. Provided that $\boldsymbol{\delta}, \boldsymbol{\Sigma}_{\mathbf{x z}}, \mathbf{S}, \mathbf{g}_{i}, \mathbf{S}_{\mathbf{x y}}$, and $\mathbf{S}_{\mathbf{x z}}$ are as defined in the previous sections and that "Assumption 3.x" is replaced by "Assumption 4.x," Propositions 3.1, 3.3, and 3.5-3.8 are valid as stated for the multiple-equation model. Only a few comments about their interpretation are needed.
+
+\begin{itemize}
+  \item (Hypothesis testing) In the present case of multiple equations, $\delta$ is a stacked vector composed of coefficients from different equations. The import of Propositions 3.3 and 3.8 about hypothesis testing for multiple equations is that we can test cross-equation restrictions.
+\end{itemize}
+
+Example 4.2 (continued): For the two-equation system of wage equations for two years, the stacked coefficient vector $\boldsymbol{\delta}$ is
+
+$$
+\delta=\left(\phi_{1}, \beta_{1}, \gamma_{1}, \pi_{1}, \phi_{2}, \beta_{2}, \gamma_{2}, \pi_{2}\right)^{\prime}
+$$
+
+It would be interesting to test $\mathrm{H}_{0}: \beta_{1}=\beta_{2}$ and $\pi_{1}=\pi_{2}$, namely, that the schooling and experience premia remained stable over time. The hypothesis can be written as $\mathbf{R} \boldsymbol{\delta}=\mathbf{r}$, where
+
+$$
+\mathbf{R}=\left[\begin{array}{cccccccc}
+0 & 1 & 0 & 0 & 0 & -1 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & -1
+\end{array}\right], \quad \mathbf{r}=\left[\begin{array}{l}
+0 \\
+0
+\end{array}\right] .
+$$
+
+Nonlinear cross equation restrictions, too, can be tested; just use part (c) of Proposition 3.3 or Proposition 3.8.
+
+\begin{itemize}
+  \item (Test of overidentifying restrictions) The number of orthogonality conditions is $\sum_{m} K_{m}$ and the number of coefficients is $\sum_{m} L_{m}$. Accordingly, the degrees of freedom for the $J$ statistic in Proposition 3.6 are $\sum_{m} K_{m}-\sum_{m} L_{m}$, and that for the $C$ statistic in Proposition 3.7 is the total number of suspect instruments from different equations.
+\end{itemize}
+
+Proposition 3.2 does not apply to multiple equations as is, but it is obvious how it can be adapted.
+
+Proposition 4.1 (consistent estimation of contemporaneous error cross-equation moments): Let $\hat{\boldsymbol{\delta}}_{m}$ be a consistent estimator of $\boldsymbol{\delta}_{m}$, and let $\hat{\varepsilon}_{i m} \equiv y_{i m}-\mathbf{z}_{i m}^{\prime} \hat{\boldsymbol{\delta}}_{m}$ be\\
+the implied residual for $m=1,2, \ldots, M$. Under Assumptions 4.1 and 4.2, plus the assumption that $\mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)$ exists and is finite for all $m, h(=1,2, \ldots, M)$,
+
+
+\begin{equation*}
+\hat{\sigma}_{m h} \underset{\mathrm{p}}{\rightarrow} \sigma_{m h} \tag{4.3.1}
+\end{equation*}
+
+
+where
+
+$$
+\hat{\sigma}_{m h} \equiv \frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_{i m} \hat{\varepsilon}_{i h} \quad \text { and } \quad \sigma_{m h} \equiv \mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h}\right)
+$$
+
+provided that $\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h}\right)$ exists and is finite.
+
+The proof, very similar to the proof of Proposition 3.2 and tedious, is left as an analytical exercise.
+
+This leaves Proposition 3.4 about consistently estimating S. The assumption corresponding to Assumption 3.6 (the finite fourth-moment assumption) is
+
+Assumption 4.6 (finite fourth moments): $\mathrm{E}\left[\left(x_{i m k} \cdot z_{i h j}\right)^{2}\right]$ exists and is finite for all $k\left(=1,2, \ldots, K_{m}\right), j\left(=1,2, \ldots, L_{h}\right), m, h(=1,2, \ldots, M)$, where $x_{i m k}$ is the $k$-th element of $\mathbf{x}_{i m}$ and $z_{i h j}$ is the $j$-th element of $\mathbf{z}_{i h}$.
+
+The multiple-equation version of the formula (3.5.10) for consistently estimating $\mathbf{S}$ is
+
+\[
+\widehat{\mathbf{S}}=\left[\begin{array}{ccc}
+\frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_{i 1} \hat{\varepsilon}_{i 1} \mathbf{x}_{i 1} \mathbf{x}_{i 1}^{\prime} & \cdots & \frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_{i 1} \hat{\varepsilon}_{i M} \mathbf{x}_{i 1} \mathbf{x}_{i M}^{\prime}  \tag{4.3.2}\\
+\vdots & & \vdots \\
+\frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_{i M} \hat{\varepsilon}_{i 1} \mathbf{x}_{i M} \mathbf{x}_{i 1}^{\prime} & \cdots & \frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_{i M} \hat{\varepsilon}_{i M} \mathbf{x}_{i M} \mathbf{x}_{i M}^{\prime}
+\end{array}\right],
+\]
+
+for some consistent estimate $\hat{\varepsilon}_{i m}$ of $\varepsilon_{i m}$.\\
+Proposition 4.2 (consistent estimation of $\mathbf{S}$, the asymptotic variance of $\overline{\mathbf{g}}$ ): Let $\hat{\boldsymbol{\delta}}_{m}$ be a consistent estimator of $\boldsymbol{\delta}_{m}$, and let $\hat{\varepsilon}_{i m} \equiv y_{i m}-\mathbf{z}_{i m}^{\prime} \hat{\boldsymbol{\delta}}_{m}$ be the implied residual for $m=1,2, \ldots, M$. Under Assumptions 4.1, 4.2, and 4.6, $\widehat{\mathbf{S}}$ given in (4.3.2) is consistent for $\mathbf{S}$.
+
+We will not give a proof; the technique is very similar to the one used in the proof of Proposition 2.4.
+
+Sample Analogue of Orthogonality Conditions: $\quad \mathbf{g}_{n}(\tilde{\boldsymbol{\delta}})=\mathbf{S}_{\mathbf{x y}}-\mathbf{S}_{\mathbf{x z}} \tilde{\boldsymbol{\delta}}=\mathbf{0}$
+
+GMM Estimator: $\quad \hat{\delta}(\widehat{\mathbf{W}})=\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}\right)^{-1} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x y}}$\\
+Its Sampling Error: $\quad \hat{\delta}(\widehat{\mathbf{W}})-\delta=\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}\right)^{-1} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \overline{\mathbf{g}}$\\
+Asymptotic Variance of\\
+Optimal GMM: $\quad \operatorname{Avar}\left(\hat{\boldsymbol{\delta}}\left(\widehat{\mathbf{S}}^{-1}\right)\right)=\left(\boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime} \mathbf{S}^{-1} \boldsymbol{\Sigma}_{\mathbf{x z}}\right)^{-1}$\\
+Its Estimator: $\quad \widehat{\operatorname{Avar}\left(\hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right)\right)}=\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{S}_{\mathbf{x z}}\right)^{-1}$\\
+$J$ Statistic: $J\left(\hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right), \widehat{\mathbf{S}}^{-1}\right) \equiv n \cdot \mathbf{g}_{n}\left(\hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right)\right)^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{g}_{n}\left(\hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right)\right)$
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 4.1: Multiple-Equation GMM in the Single-Equation Format}
+\begin{tabular}{|l|l|l|}
+\hline
+ & Single-Equation GMM applied to the equation in question & Multiple-Equation GMM \\
+\hline
+$\mathbf{g}_{i}$ & $\mathbf{x}_{i} \cdot \varepsilon_{i}$ & (4.1.4) \\
+\hline
+$\boldsymbol{\delta}$ & $\delta$ & (4.1.6) \\
+\hline
+$\mathrm{S}_{\mathrm{xy}}$ & $\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \cdot y_{i}$ & (4.2.2) \\
+\hline
+$\mathbf{S}_{\mathbf{x z}}$ & $\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{z}_{i}^{\prime}$ & (4.2.2) \\
+\hline
+Size of W & $K \times K$ & $\sum_{m} K_{m} \times \sum_{m} K_{m}$ \\
+\hline
+$\boldsymbol{\Sigma}_{\mathbf{x z}}$ & $\mathrm{E}\left(\mathbf{x}_{i} \boldsymbol{z}_{i}^{\prime}\right)$ & (4.1.9) \\
+\hline
+S ( $\equiv \operatorname{Avar}(\overline{\mathbf{g}})$ ) & $\mathrm{E}\left(\varepsilon_{i}^{2} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ & (4.1.11) \\
+\hline
+$\widehat{\mathbf{S}}$ & $\frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_{i}^{2} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}$ & (4.3.2) \\
+\hline
+Estimator consistent under which assumptions? & 3.1-3.4 & 4.1-4.4 \\
+\hline
+Estimator asymptotic normal under which assumptions? & 3.1-3.5 & 4.1-4.5 \\
+\hline
+$\widehat{\mathbf{S}} \rightarrow_{\mathrm{p}} \mathbf{S}$ under which assumptions? & 3.1, 3.2, 3.6, $\mathrm{E}\left(\mathbf{g}_{i} \mathbf{g}_{i}^{\prime}\right)$ finite & 4.1, 4.2, 4.6, E( $\mathbf{g}_{i} \mathbf{g}_{i}^{\prime}$ ) finite \\
+\hline
+d.f. of $J$ & $K-L$ & $\sum_{m}\left(K_{m}-L_{m}\right)$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Since this $\widehat{\mathbf{S}}$ is consistent for $\mathbf{S}$, the multiple-equation GMM estimator, using $\widehat{\mathbf{S}}^{-1}$ as the weighting matrix, $\hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right)$, is an efficient multiple-equation GMM estimator with minimum asymptotic variance. The formulas for the asymptotic variance and its consistent estimator are (3.5.13) and (3.5.14), which are reproduced here for convenience:
+
+
+\begin{align*}
+& \operatorname{Avar}\left(\hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right)\right)=\left(\boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime} \mathbf{S}^{-1} \boldsymbol{\Sigma}_{\mathbf{x z}}\right)^{-1},  \tag{4.3.3}\\
+& \widehat{\operatorname{Avar}\left(\hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right)\right)}=\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{S}_{\mathbf{x z}}\right)^{-1} . \tag{4.3.4}
+\end{align*}
+
+
+To recapitulate, the features specific to the multiple-equation GMM are: $\boldsymbol{\Sigma}_{\mathbf{x z}}$ is a block diagonal matrix given by (4.1.9), $\mathbf{S}$ is given by (4.1.11), $\mathbf{s}_{\mathbf{x y}}$ and $\mathbf{S}_{\mathbf{x z}}$ by (4.2.2), and $\widehat{\mathbf{S}}$ by (4.3.2). For the initial estimator $\hat{\boldsymbol{\delta}}_{m}$ needed to calculate $\hat{\varepsilon}_{i m}$ and $\widehat{\mathbf{S}}$, we can use the FIVE estimator (to be presented below) or the efficient single-equation GMM applied to each equation separately. Of course, as long as it is consistent, the choice of the initial estimator does not affect the asymptotic distribution of the efficient GMM estimator.
+
+Table 4.1 summarizes the results of this chapter so far.
+
+\subsection*{4.4 Single-Equation versus Multiple-Equation Estimation}
+An obvious alternative to multiple-equation GMM, which estimates the stacked coefficient vector $\delta$ ( $\sum_{m} L_{m} \times 1$ ) jointly, is to apply the single-equation GMM separately to each equation and then stack the estimated coefficients. If the weighting matrix in the single-equation GMM for the $m$-th equation is $\widehat{\mathbf{W}}_{m m}\left(K_{m} \times K_{m}\right)$, the resulting equation-by-equation GMM estimator of the stacked coefficient vector $\boldsymbol{\delta}$ can be written as the multiple-equation GMM estimator $\hat{\boldsymbol{\delta}}(\widehat{\mathbf{W}})$ given in (4.2.3), where the $\sum_{m} K_{m} \times \sum_{m} K_{m}$ weighting matrix $\widehat{\mathbf{W}}$ is a block diagonal matrix whose $m$-th block is $\widehat{\mathbf{W}}_{m m}$ :
+
+\[
+\widehat{\mathbf{W}}=\left[\begin{array}{lll}
+\widehat{\mathbf{W}}_{11} & &  \tag{4.4.1}\\
+& \ddots & \\
+& & \widehat{\mathbf{W}}_{M M}
+\end{array}\right]
+\]
+
+This is because both $\mathbf{S}_{\mathbf{x z}}\left(\sum_{m} K_{m} \times \sum_{m} L_{m}\right)$ and $\widehat{\mathbf{W}}$ are block diagonal. (The reader should actually substitute the expressions (4.2.2) for $\mathbf{S}_{\mathbf{x z}}$ and (4.4.1) for $\widehat{\mathbf{W}}$ into (4.2.3) to verify that $\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}$ and hence $\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}\right)^{-1} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}}$ are block diagonal, using formulas (A.5) and (A.9) of Appendix A. Set $M=2$ if it makes it easier.)
+
+Therefore, the difference between the multiple-equation GMM and the equation-by-equation GMM estimation of the stacked coefficient vector $\boldsymbol{\delta}$ lies in the choice of the $\sum_{m} K_{m} \times \sum_{m} K_{m}$ weighting matrix $\widehat{\mathbf{W}}$. Put differently, the equation-byequation GMM is a particular multiple-equation GMM.
+
+\section*{When Are They "Equivalent"?}
+As seen in Chapter 3, if the equation is just identified, the choice of the weighting matrix $\widehat{\mathbf{W}}$ does not matter because the GMM estimator, regardless of the choice of $\widehat{\mathbf{W}}$, numerically equals the IV estimator. The same is true for multiple-equation GMM: if each equation of the system is exactly identified so that $L_{m}=K_{m}$ for all $m$, then $\mathbf{S}_{\mathbf{x z}}$ in the GMM formula (4.2.3) is a square matrix and the GMM estimator for any choice of $\widehat{\mathbf{W}}$ becomes the multiple-equation IV estimator $\mathbf{S}_{\mathbf{x z}}^{-1} \mathbf{s}_{\mathbf{x y}}$ (and, since $\mathbf{S}_{\mathbf{x z}}$ is block diagonal, the estimator is just a collection of single-equation IV estimators).
+
+On the other hand, if at least one of the $M$ equations is overidentified, the choice of $\widehat{\mathbf{W}}\left(\sum_{m} K_{m} \times \sum_{m} K_{m}\right)$ does affect the numerical value of the GMM estimator. Consider the efficient equation-by-equation GMM estimator of $\boldsymbol{\delta}\left(\sum_{m} L_{m} \times 1\right)$, where each equation is estimated by the efficient single-equation GMM with an optimal choice of $\widehat{\mathbf{W}}_{m m}(m=1,2, \ldots, M)$. Is it as efficient as the efficient multiple-equation GMM? The equation-by-equation estimator can be written as $\hat{\boldsymbol{\delta}}(\widehat{\mathbf{W}})$, where the $\sum_{m} K_{m} \times \sum_{m} K_{m}$ block diagonal weighting matrix $\widehat{\mathbf{W}}$ satisfies
+
+\[
+\operatorname{plim}_{n \rightarrow \infty} \widehat{\mathbf{W}}=\left[\begin{array}{ccc}
+\left(\mathrm{E}\left(\varepsilon_{i 1}^{2} \mathbf{x}_{i 1} \mathbf{x}_{i 1}^{\prime}\right)\right)^{-1} & &  \tag{4.4.2}\\
+& \ddots & \\
+& & \left(\mathrm{E}\left(\varepsilon_{i M}^{2} \mathbf{x}_{i M} \mathbf{x}_{i M}^{\prime}\right)\right)^{-1}
+\end{array}\right]
+\]
+
+Because this plim is not necessarily equal to $\mathbf{S}^{-1}$ (unless (4.4.3) below holds), the estimator is generally less efficient than the efficient multiple-equation GMM estimator $\hat{\boldsymbol{\delta}}\left(\widehat{\mathbf{S}}^{-1}\right)$, where $\widehat{\mathbf{S}}$ is a consistent estimator of $\mathbf{S}$. But if the equations are "unrelated" ${ }^{1}$ in the sense that
+
+
+\begin{equation*}
+\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h} \mathbf{x}_{i m} \mathbf{x}_{i h}^{\prime}\right)=\mathbf{0} \quad \text { for all } m \neq h(=1,2, \ldots, M) \tag{4.4.3}
+\end{equation*}
+
+
+then $\mathbf{S}$ becomes block diagonal and for the weighting matrix $\widehat{\mathbf{W}}$ defined above plim $\widehat{\mathbf{W}}=\mathbf{S}^{-1}$. Since in this case $\widehat{\mathbf{W}}-\widehat{\mathbf{S}}^{-1} \rightarrow_{\mathrm{p}} \mathbf{0}$, we have (as we proved in Review Question 3 of Section 3.5)
+
+\footnotetext{${ }^{1}$ Under conditional homoskedasticity, this condition becomes the more familiar condition that $\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h}\right)=0$. See the next section.
+}
+$$
+\sqrt{n} \hat{\boldsymbol{\delta}}(\widehat{\mathbf{W}})-\sqrt{n} \hat{\boldsymbol{\delta}}\left(\widehat{\mathbf{S}}^{-1}\right) \underset{\mathrm{p}}{\rightarrow} \mathbf{0} .
+$$
+
+It then follows from Lemma 2.4(a) that the asymptotic distribution of $\hat{\delta}(\widehat{\mathbf{W}})$ is the same as that of $\hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right)$, so the efficient equation-by-equation GMM estimator is an efficient multiple-equation GMM estimator.
+
+We summarize the discussion so far as
+
+\section*{Proposition 4.3 (equivalence between single-equation and multiple-equation GMM):}
+(a) If all equations are just identified, then the equation-by-equation GMM and the multiple-equation GMM are numerically the same and equal to the IV estimator.\\
+(b) If at least one equation is overidentified but the equations are "unrelated" in the sense of (4.4.3), then the efficient equation-by-equation GMM and the efficient multiple-equation GMM are asymptotically equivalent in that $\sqrt{n}$ times the difference converges to zero in probability.
+
+For those two cases, there is no efficiency gain from joint estimation. Furthermore, if it is known a priori that the equations are "unrelated," then the equation-byequation estimation should be preferred, because exploiting the a priori knowledge by requiring the off-diagonal blocks of $\widehat{\mathbf{W}}$ to be zeros (which is what the equation-by-equation estimation entails) will most likely improve the finite-sample properties of the estimator.
+
+\section*{Joint Estimation Can Be Hazardous}
+Except for cases (a) and (b), joint estimation is asymptotically more efficient. Even if you are interested in estimating one particular equation (say, the $L W$ equation in Example 4.1), you can generally gain asymptotic efficiency by combining it with some other equations (see, however, Analytical Exercise 10 for an example where joint estimation entails no efficiency gain even if the added equations are not unrelated).
+
+There are caveats, however. First of all, the small-sample properties of the coefficient estimates of the equation in question might be better without joint estimation. Second, the asymptotic result presumes that the model is correctly specified, that is, all the model assumptions are satisfied. If the model is misspecified, neither the single-equation GMM nor the multiple-equation GMM is guaranteed even to be consistent. And chances of misspecification increase as you add equations to the system.
+
+To illustrate this second point, suppose Assumption 4.3 does not hold because, only for the $M$-th equation, the orthogonality conditions do not hold: $\mathrm{E}\left(\mathbf{x}_{i M} \cdot\right. \left.\varepsilon_{i M}\right) \neq \mathbf{0}$. This may come about if, for example, the equation omits a variable that should have been included as a regressor. To see that this leads to possible inconsistency for all equations, examine the formula (4.2.4) for the sampling error where $\overline{\mathbf{g}}$ is given by (4.2.5). The $M$-th block of plim $_{n \rightarrow \infty} \overline{\mathbf{g}}$ is not zero. Since plim $\mathbf{S}_{\mathbf{x z}}=\mathbf{\Sigma}_{\mathbf{x z}}$ under ergodic stationarity and plim $\widehat{\mathbf{W}}=\mathbf{W}$ by assumption, the asymptotic bias is
+
+\[
+\operatorname{plim}_{n \rightarrow \infty} \hat{\delta}(\widehat{\mathbf{W}})-\delta=\left(\boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime} \mathbf{W} \boldsymbol{\Sigma}_{\mathbf{x z}}\right)^{-1} \boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime} \mathbf{W}\left[\begin{array}{c}
+0  \tag{4.4.4}\\
+\vdots \\
+0 \\
+\mathrm{E}\left(\mathbf{x}_{i M} \cdot \varepsilon_{i M}\right)
+\end{array}\right] .
+\]
+
+In efficient multiple-equation GMM, W-hence $\left(\boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime} \mathbf{W} \boldsymbol{\Sigma}_{\mathbf{x z}}\right)^{-1} \boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime} \mathbf{W}$ - are not generally block diagonal, so any element of $\operatorname{plim}_{n \rightarrow \infty} \delta \hat{\delta}(\widehat{\mathbf{W}})-\delta$ can be different from zero. Even for the coefficients of the equations of interest involving no misspecification the asymptotic bias may not be zero. That is, in joint estimation, biases due to a local misspecification contaminate the rest of the system. This problem does not arise for the equation-by-equation GMM which constrains $\widehat{\mathbf{W}}$ to be block diagonal.
+
+\section*{QUESTION FOR REVIEW}
+\begin{enumerate}
+  \item Express the equation-by-equation 2SLS estimator in the form (4.2.3) by suitably specifying $\widehat{\mathbf{W}}_{m m}$ 's in (4.4.1). [Answer: $\widehat{\mathbf{W}}_{m m}=\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i m} \mathbf{x}_{i m}^{\prime}\right)^{-1}$.]
+\end{enumerate}
+
+\subsection*{4.5 Special Cases of Multiple-Equation GMM: FIVE, 3SLS, and SUR}
+\section*{Conditional Homoskedasticity}
+Under conditional homoskedasticity, we can easily derive a number of prominent estimators as special cases of multiple-equation GMM. The multiple-equation version of conditional homoskedasticity is
+
+Assumption 4.7 (conditional homoskedasticity):
+
+$$
+\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h} \mid \mathbf{x}_{i m}, \mathbf{x}_{i h}\right)=\sigma_{m h}
+$$
+
+for all $m, h=1,2, \ldots, M$.
+
+Then the unconditional cross moment $\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h}\right)$ equals $\sigma_{m h}$ by the Law of Total Expectations. You should have no trouble showing that
+
+
+\begin{align*}
+(m, h) & \text { block of } \mathrm{E}\left(\mathbf{g}_{i} \mathbf{g}_{i}^{\prime}\right) \text { given in (4.1.11) } \\
+& =\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h} \mathbf{x}_{i m} \mathbf{x}_{i h}^{\prime}\right) \\
+& =\mathrm{E}\left[\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h} \mathbf{x}_{i m} \mathbf{x}_{i h}^{\prime} \mid \mathbf{x}_{i m}, \mathbf{x}_{i h}\right)\right] \quad \text { (by the Law of Total Expectations) } \\
+& =\mathrm{E}\left[\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h} \mid \mathbf{x}_{i m}, \mathbf{x}_{i h}\right) \mathbf{x}_{i m} \mathbf{x}_{i h}^{\prime}\right] \quad \text { (by linearity of conditional expectations) } \\
+& =\mathrm{E}\left[\sigma_{m h} \mathbf{x}_{i m} \mathbf{x}_{i h}^{\prime}\right] \quad \text { (by conditional homoskedasticity) } \\
+& =\sigma_{m h} \mathrm{E}\left(\mathbf{x}_{i m} \mathbf{x}_{i h}^{\prime}\right) \quad \text { (by linearity of expectations) } \tag{4.5.1}
+\end{align*}
+
+
+Thus, the $\mathbf{S}$ in (4.1.11) can be written as
+
+\[
+\mathbf{S}=\left[\begin{array}{ccc}
+\sigma_{11} \mathrm{E}\left(\mathbf{x}_{i 1} \mathbf{x}_{i 1}^{\prime}\right) & \cdots & \sigma_{1 M} \mathrm{E}\left(\mathbf{x}_{i 1} \mathbf{x}_{i M}^{\prime}\right)  \tag{4.5.2}\\
+\vdots & & \vdots \\
+\sigma_{M 1} \mathrm{E}\left(\mathbf{x}_{i M} \mathbf{x}_{i 1}^{\prime}\right) & \cdots & \sigma_{M M} \mathrm{E}\left(\mathbf{x}_{i M} \mathbf{x}_{i M}^{\prime}\right)
+\end{array}\right] .
+\]
+
+Since by Assumption 4.5 $\mathbf{S}$ is finite, this decomposition implies that $\mathbf{E}\left(\mathbf{x}_{i m} \mathbf{x}_{i h}^{\prime}\right)$ exists and is finite for all $m, h(=1,2, \ldots, M)$.
+
+\section*{Full-Information Instrumental Variables Efficient (FIVE)}
+An estimator of $\mathbf{S}$ exploiting the structure of fourth moments shown in (4.5.2) is
+
+\[
+\widehat{\mathbf{S}}=\left[\begin{array}{ccc}
+\hat{\sigma}_{11} \cdot\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \mathbf{x}_{i 1}^{\prime}\right) & \cdots & \hat{\sigma}_{1 M} \cdot\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \mathbf{x}_{i M}^{\prime}\right)  \tag{4.5.3}\\
+\vdots & & \vdots \\
+\hat{\sigma}_{M 1} \cdot\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \mathbf{x}_{i 1}^{\prime}\right) & \cdots & \hat{\sigma}_{M M} \cdot\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \mathbf{x}_{i M}^{\prime}\right)
+\end{array}\right],
+\]
+
+where, for some consistent estimator $\hat{\boldsymbol{\delta}}_{m}$ of $\boldsymbol{\delta}$,
+
+
+\begin{equation*}
+\hat{\sigma}_{m h} \equiv \frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_{i m} \hat{\varepsilon}_{i h}^{\prime}, \hat{\varepsilon}_{i m} \equiv y_{i m}-\mathbf{z}_{i m}^{\prime} \hat{\boldsymbol{\delta}}_{m} \quad(m, h=1,2, \ldots, M) \tag{4.5.4}
+\end{equation*}
+
+
+By Proposition 4.1, $\hat{\sigma}_{m h} \rightarrow_{\mathrm{p}} \sigma_{m h}$ provided (in addition to Assumptions 4.1 and 4.2) that $\mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)$ is finite. By ergodic stationarity, $\frac{1}{n} \sum_{i} \mathbf{x}_{i m} \mathbf{x}_{i h}^{\prime}$ converges in probability to $\mathrm{E}\left(\mathbf{x}_{i m} \mathbf{x}_{i h}^{\prime}\right)$, which, as just noted, exists and is finite. Therefore, (4.5.3) is consistent for $\mathbf{S}$, without the fourth-moment assumption (Assumption 4.6).
+
+The FIVE estimator of $\boldsymbol{\delta}$, denoted $\hat{\boldsymbol{\delta}}_{\text {FIVE }}$, is
+
+$$
+\hat{\delta}_{\mathrm{FIVE}} \equiv \hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right)
+$$
+
+with $\widehat{\mathbf{S}}$ given by (4.5.3) to exploit conditional homoskedasticity. ${ }^{2}$ Being a multipleequation GMM for some choice of $\widehat{\mathbf{W}}$, it is consistent and asymptotically normal by (the multiple-equation adaptation of) Proposition 3.1. Because $\widehat{\mathbf{S}}$ is consistent for $\mathbf{S}$, the estimator is efficient by Proposition 3.5. Thus, we have proved
+
+Proposition 4.4 (large-sample properties of FIVE): Suppose Assumption 4.14.5 and 4.7 hold. Suppose, furthermore, that $\mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)$ exists and is finite for all $m, h(=1,2, \ldots, M) .^{3}$ Let $\mathbf{S}$ and $\widehat{\mathbf{S}}$ be as in (4.5.2) and (4.5.3), respectively. Then\\
+(a) $\widehat{\mathbf{S}} \rightarrow_{\mathrm{p}} \mathbf{S}$;\\
+(b) $\hat{\delta}_{\text {FIVE }}$, defined as $\hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right)$, is consistent, asymptotically normal, and efficient, with $\operatorname{Avar}\left(\hat{\delta}_{\text {FIVE }}\right)$ given by (4.3.3);\\
+(c) The estimated asymptotic variance given in (4.3.4) is consistent for $\operatorname{Avar}\left(\hat{\delta}_{\mathrm{FIVE}}\right)$;\\
+(d) (Sargan's statistic)
+
+$$
+J\left(\hat{\delta}_{\mathrm{FIVE}}, \widehat{\mathbf{S}}^{-1}\right) \equiv n \cdot \mathbf{g}_{n}\left(\hat{\delta}_{\mathrm{FIVE}}\right)^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{g}_{n}\left(\hat{\delta}_{\mathrm{FIVE}}\right) \underset{\mathrm{d}}{\rightarrow} \chi^{2}\left(\sum_{m}\left(K_{m}-L_{m}\right)\right),
+$$
+
+where $\mathbf{g}_{n}(\cdot)$ is given in (4.2.1).\\
+Usually, the initial estimator $\hat{\boldsymbol{\delta}}_{m}$ needed to calculate $\widehat{\mathbf{S}}$ is the 2SLS estimator.
+
+\section*{Three-Stage Least Squares (3SLS)}
+When the set of instruments is the same across equations, the FIVE formula can be simplified somewhat. The simplified formula is the 3SLS estimator, denoted $\hat{\boldsymbol{\delta}}_{\text {3SLS. }}{ }^{4}$ To this end, let
+
+\[
+\underset{(M \times 1)}{\boldsymbol{e}_{i}} \equiv\left[\begin{array}{c}
+\varepsilon_{i 1}  \tag{4.5.5}\\
+\vdots \\
+\varepsilon_{i M}
+\end{array}\right] .
+\]
+
+\footnotetext{${ }^{2}$ The estimator is due to Brundy and Jorgenson (1971).\\
+${ }^{3}$ This assumption is needed for $\hat{\sigma}_{m h}$ to be consistent. See Proposition 4.1.\\
+${ }^{4}$ The estimator is due to Zellner and Theil (1962).
+}Then the $M \times M$ matrix of cross moments of $\varepsilon_{i}$, denoted $\boldsymbol{\Sigma}$, can be written as
+
+\[
+\underset{(M \times M)}{\Sigma} \equiv\left[\begin{array}{ccc}
+\sigma_{11} & \cdots & \sigma_{1 M}  \tag{4.5.6}\\
+\vdots & & \vdots \\
+\sigma_{M 1} & \cdots & \sigma_{M M}
+\end{array}\right]=\mathrm{E}\left(\varepsilon_{i} \varepsilon_{i}^{\prime}\right)
+\]
+
+To estimate $\boldsymbol{\Sigma}$ consistently, we need an initial consistent estimator of $\delta_{m}$ for the purpose of calculating the residual $\hat{\varepsilon}_{i m}$. The term 3SLS comes from the fact that the 2SLS estimator of $\boldsymbol{\delta}_{m}$ is used as the initial estimator. Given the residuals thus calculated, a natural estimator of $\boldsymbol{\Sigma}$ is
+
+\[
+\widehat{\mathbf{\Sigma}} \equiv\left[\begin{array}{ccc}
+\hat{\sigma}_{11} & \cdots & \hat{\sigma}_{1 M}  \tag{4.5.7}\\
+\vdots & & \vdots \\
+\hat{\sigma}_{M 1} & \cdots & \hat{\sigma}_{M M}
+\end{array}\right]=\frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_{i} \hat{\varepsilon}_{i}^{\prime},
+\]
+
+which is a matrix whose ( $m, h$ ) element is the estimated cross moment given in (4.5.4).
+
+If $\mathbf{x}_{i}\left(=\mathbf{x}_{i 1}=\mathbf{x}_{i 2}=\cdots=\mathbf{x}_{i M}\right)$ is the common set of instruments with dimension $K$, then $\mathbf{g}_{i}$ in (4.1.4), $\mathbf{S}$ in (4.5.2), and $\widehat{\mathbf{S}}$ in (4.5.3) can be written compactly using the Kronecker product ${ }^{5}$ as
+
+
+\begin{gather*}
+\underset{(M K \times 1)}{\mathbf{g}_{i}}=\boldsymbol{\varepsilon}_{i} \otimes \mathbf{x}_{i},  \tag{4.5.8}\\
+\underset{(M K \times M K)}{\mathbf{S}}=\underset{(M \times M)}{\boldsymbol{\Sigma}} \otimes \underset{\substack{(K \times K) \\
+\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)}}{ } \tag{4.5.9}
+\end{gather*}
+
+
+
+\begin{align*}
+\text { so } \mathbf{S}^{-1}=\mathbf{\Sigma}^{-1} \otimes\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1} & \\
+& \widehat{\mathbf{S}}=\widehat{\mathbf{\Sigma}} \otimes\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right) \tag{4.5.10}
+\end{align*}
+
+
+so $\widehat{\mathbf{S}}^{-1}=\widehat{\mathbf{\Sigma}}^{-1} \otimes\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)^{-1}$. The Kronecker product decomposition (4.5.9) of $\mathbf{S}$ and the nonsingularity of $\mathbf{S}$ (by Assumption 4.5) imply that both $\mathbf{\Sigma}$ and $\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ are nonsingular.
+
+To achieve further rewriting of the 3SLS formulas, we need to go back to (4.2.6), which, with $\widehat{\mathbf{W}}=\widehat{\mathbf{S}}^{-1}$, writes out in full the efficient multiple-equation GMM estimator. The formula (4.5.10) implies that the $\widehat{\mathbf{W}}$ in (4.2.6) is such that
+
+\footnotetext{${ }^{5}$ See formulas (A.11) and (A.15) of the Appendix if you are not familiar with the Kronecker product notation.
+}
+
+\begin{equation*}
+\widehat{\mathbf{W}}_{m h}(\equiv(m, h) \text { block of } \widehat{\mathbf{W}})=\hat{\sigma}^{m h} \cdot\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)^{-1} \tag{4.5.11}
+\end{equation*}
+
+where $\hat{\sigma}^{m h}$ is the ( $m, h$ ) element of $\widehat{\mathbf{\Sigma}}^{-1}$. Substitute this into (4.2.6) to obtain
+\[
+\hat{\delta}_{3 S L S}=\left[\begin{array}{ccc}
+\hat{\sigma}^{11} \widehat{\mathbf{A}}_{11} & \cdots & \hat{\sigma}^{1 M} \widehat{\mathbf{A}}_{1 M}  \tag{4.5.12}\\
+\vdots & & \vdots \\
+\hat{\sigma}^{M 1} \widehat{\mathbf{A}}_{M 1} & \cdots & \hat{\sigma}^{M M} \widehat{\mathbf{A}}_{M M}
+\end{array}\right]^{-1}\left[\begin{array}{ccc}
+\hat{\sigma}^{11} \hat{\mathbf{c}}_{11} & +\cdots+ & \hat{\sigma}^{1 M} \hat{\mathbf{c}}_{1 M} \\
+\vdots & & \vdots \\
+\hat{\sigma}^{M 1} \hat{\mathbf{c}}_{M 1} & +\cdots+\hat{\sigma}^{M M} \hat{\mathbf{c}}_{M M}
+\end{array}\right]
+\]
+where
+
+\begin{align*}
+\widehat{\mathbf{A}}_{m h} & \equiv\left(\frac{1}{n} \sum_{\substack{i=1 \\
+\left(L_{m} \times K\right)}}^{n} \mathbf{z}_{i m} \mathbf{x}_{i}^{\prime}\right)\left(\frac{1}{n} \sum_{\substack{i=1 \\
+(K \times K)}}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)^{-1}\left(\frac{1}{n} \sum_{\substack{i=1 \\
+\left(K \times L_{h}\right)}}^{n} \mathbf{x}_{i} \mathbf{z}_{i h}^{\prime}\right)  \tag{4.5.13}\\
+\hat{\mathbf{c}}_{m h} & \equiv\left(\frac{1}{n} \sum_{\substack{i=1 \\
+\left(L_{m} \times K\right)}}^{n} \mathbf{z}_{i m} \mathbf{x}_{i}^{\prime}\right)\left(\frac{1}{n} \sum_{\substack{i=1 \\
+(K \times K)}}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)^{-1}\left(\frac{1}{n} \sum_{\substack{i=1 \\
+(K \times 1)}}^{n} \mathbf{x}_{i} \cdot y_{i h}\right) \tag{4.5.14}
+\end{align*}
+
+
+Similarly, substituting into (4.3.3) the expression for $\boldsymbol{\Sigma}_{\mathbf{x z}}$ in (4.1.9) and the expression for $\mathbf{S}$ in (4.5.9) and using formula (A.6) of the Appendix, we obtain the expressions for $\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{3 \text { SLS }}\right)$ :
+
+\[
+\operatorname{Avar}\left(\hat{\delta}_{3 \mathrm{SLS}}\right)=\left[\begin{array}{ccc}
+\sigma^{11} \mathbf{A}_{11} & \cdots & \sigma^{1 M} \mathbf{A}_{1 M}  \tag{4.5.15}\\
+\vdots & & \vdots \\
+\sigma^{M 1} \mathbf{A}_{M 1} & \cdots & \sigma^{M M} \mathbf{A}_{M M}
+\end{array}\right]^{-1}
+\]
+
+where
+
+
+\begin{equation*}
+\mathbf{A}_{m h} \equiv \mathrm{E}\left(\mathbf{z}_{i m} \mathbf{x}_{i}^{\prime}\right)\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1} \mathrm{E}\left(\mathbf{x}_{i} \mathbf{z}_{i h}^{\prime}\right) \tag{4.5.16}
+\end{equation*}
+
+
+and $\sigma^{m h}$ is the ( $m, h$ ) element of $\boldsymbol{\Sigma}^{-1}$. This is consistently estimated by
+
+\[
+\widehat{\operatorname{Avar}\left(\hat{\delta}_{3 S L S}\right)}=\left[\begin{array}{ccc}
+\hat{\sigma}^{11} \widehat{\mathbf{A}}_{11} & \cdots & \hat{\sigma}^{1 M} \widehat{\mathbf{A}}_{1 M}  \tag{4.5.17}\\
+\vdots & & \vdots \\
+\hat{\sigma}^{M 1} \widehat{\mathbf{A}}_{M 1} & \cdots & \hat{\sigma}^{M M} \widehat{\mathbf{A}}_{M M}
+\end{array}\right]^{-1} .
+\]
+
+(This sample version can also be obtained directly by substituting (4.2.2) and (4.5.10) into (4.3.4).)
+
+Most textbooks give expressions even prettier than these by using data matrices (such as the $n \times K$ matrix $\mathbf{X}$ ). Deriving such expressions is an analytical exercise to this chapter. The preceding discussion can be summarized as
+
+Proposition 4.5 (large-sample properties of 3SLS): Suppose Assumptions 4.14.5 and 4.7 hold, and suppose $\mathbf{x}_{i m}=\mathbf{x}_{i}$ (common set of instruments). Suppose, furthermore, that $\mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)$ exists and is finite for all $m, h(=1,2, \ldots, M)$. Let $\widehat{\mathbf{\Sigma}}$ be the $M \times M$ matrix of estimated error cross moments calculated by (4.5.7) using the $2 S L S$ residuals. Then\\
+(a) $\hat{\boldsymbol{\delta}}_{3 \text { SLS }}$ given by (4.5.12) is consistent, asymptotically normal, and efficient, with $\mathrm{Avar}\left(\hat{\boldsymbol{\delta}}_{3 \mathrm{SLS}}\right)$ given by (4.5.15).\\
+(b) The estimated asymptotic variance (4.5.17) is consistent for $\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{3 \text { SLS }}\right)$.\\
+(c) (Sargan's statistic)
+
+$$
+J\left(\hat{\boldsymbol{\delta}}_{3 \mathrm{SLS}}, \widehat{\mathbf{S}}^{-1}\right) \equiv n \cdot \mathbf{g}_{n}\left(\hat{\boldsymbol{\delta}}_{3 \mathrm{SLS}}\right)^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{g}_{n}\left(\hat{\boldsymbol{\delta}}_{3 \mathrm{SLS}}\right) \underset{\mathrm{d}}{\rightarrow} \chi^{2}\left(M K-\sum_{m} L_{m}\right),
+$$
+
+where $\widehat{\mathbf{S}}=\widehat{\mathbf{\Sigma}} \otimes\left(\frac{1}{n} \sum_{i} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right), K$ is the number of common instruments, and $\mathbf{g}_{n}(\cdot)$ is given in (4.2.1).
+
+\section*{Seemingly Unrelated Regressions (SUR)}
+The 3SLS formula can further be simplified if
+
+
+\begin{equation*}
+\mathbf{x}_{i}=\text { union of }\left(\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right) . \tag{4.5.18}
+\end{equation*}
+
+
+This is equivalent to the condition that
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{z}_{i m} \cdot \varepsilon_{i h}\right)=\mathbf{0} \quad(m, h=1,2, \ldots, M) \tag{4.5.18'}
+\end{equation*}
+
+
+That is, the predetermined regressors satisfy "cross" orthogonalities: not only are they predetermined in each equation (i.e., $\mathrm{E}\left(\mathbf{z}_{i m} \cdot \varepsilon_{i m}\right)=\mathbf{0}$ ), but also they are predetermined in the other equations (i.e., $\mathrm{E}\left(\mathbf{z}_{i m} \cdot \varepsilon_{i h}\right)=\mathbf{0}$ for $m \neq h$ ). The simplified formula is called the SUR estimator, to be denoted $\hat{\delta}_{\text {SUR }}$. ${ }^{6}$
+
+\footnotetext{${ }^{6}$ The estimator is due to Zellner (1962).
+}Example 4.3 (Example 4.1 with different specification for instruments): If (4.5.18) holds for the two-equation system of Example 4.1, $\mathbf{x}_{i}$ is the union of $\mathbf{z}_{i 1}$ and $\mathbf{z}_{i 2}$, so
+
+\[
+\mathbf{x}_{i}=\left[\begin{array}{c}
+1  \tag{4.5.19}\\
+S_{i} \\
+I Q_{i} \\
+E X P R_{i}
+\end{array}\right]
+\]
+
+The orthogonality conditions that $\mathrm{E}\left(\mathbf{x}_{i} \cdot \varepsilon_{i 1}\right)=\mathbf{0}$ and $\mathrm{E}\left(\mathbf{x}_{i} \cdot \varepsilon_{i 2}\right)=\mathbf{0}$ become
+
+\[
+\mathrm{E}\left[\begin{array}{c}
+\varepsilon_{i 1}  \tag{4.5.20}\\
+S_{i} \varepsilon_{i 1} \\
+I Q_{i} \varepsilon_{i 1} \\
+E X P R_{i} \varepsilon_{i 1}
+\end{array}\right]=\mathbf{0} \quad \text { and } \quad \mathrm{E}\left[\begin{array}{c}
+\varepsilon_{i 2} \\
+S_{i} \varepsilon_{i 2} \\
+I Q_{i} \varepsilon_{i 2} \\
+E X P R_{i} \varepsilon_{i 2}
+\end{array}\right]=\mathbf{0}
+\]
+
+which should be contrasted with the statement that the regressors are predetermined in each equation:
+
+\[
+\mathrm{E}\left[\begin{array}{c}
+\varepsilon_{i 1}  \tag{4.5.21}\\
+S_{i} \varepsilon_{i 1} \\
+I Q_{i} \varepsilon_{i 1} \\
+E X P R_{i} \varepsilon_{i 1}
+\end{array}\right]=\mathbf{0} \quad \text { and } \quad \mathrm{E}\left[\begin{array}{c}
+\varepsilon_{i 2} \\
+S_{i} \varepsilon_{i 2} \\
+I Q_{i} \varepsilon_{i 2}
+\end{array}\right]=\mathbf{0}
+\]
+
+The difference between (4.5.20) and (4.5.21) is that the $K W W$ equation is overidentified with $E X P R$ as the additional instrument.
+
+Because SUR is a special case of 3SLS, formulas (4.5.12), (4.5.15), and (4.5.17) for $\hat{\boldsymbol{\delta}}_{\text {3SLS }}$ apply to $\hat{\boldsymbol{\delta}}_{\text {SUR }}$. The implication of the SUR assumption (4.5.18) is that, in the above expressions for $\widehat{\mathbf{A}}_{m h}, \hat{\mathbf{c}}_{m h}$, and $\mathbf{A}_{m h}, \mathbf{x}_{i}$ "disappears":
+
+
+\begin{align*}
+\widehat{\mathbf{A}}_{m h} & =\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}  \tag{$\prime$}\\
+\hat{\mathbf{c}}_{m h} & =\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \cdot y_{i h}  \tag{$\prime$}\\
+\mathbf{A}_{m h} & =\mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right) \tag{4.5.16'}
+\end{align*}
+
+
+Here we give a proof of (4.5.16'). Without loss of generality, suppose $\mathbf{z}_{i m}$ is the first $L_{m}$ elements of the $K$ elements of $\mathbf{x}_{i}$. Let $\mathbf{D}\left(K \times L_{m}\right)$ be the first $L_{m}$ columns\\
+of $\mathbf{I}_{K}$. Then we have
+
+$$
+\mathbf{z}_{i m}=\mathbf{D}^{\prime} \mathbf{x}_{i}, \mathrm{E}\left(\mathbf{z}_{i m} \mathbf{x}_{i}^{\prime}\right)=\mathbf{D}^{\prime} \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right), \mathbf{D} \mathrm{E}\left(\mathbf{x}_{i} \mathbf{z}_{i h}^{\prime}\right)=\mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right) .
+$$
+
+Substituting these into (4.5.16) yields (4.5.16'). The proof of (4.5.13') and (4.5.14'), which are about the sample moments, proceeds similarly, with $\mathbf{z}_{i m}=\mathbf{D}^{\prime} \mathbf{x}_{i}$. (You will be asked to provide an alternative proof by the use of the projection matrix in the problem set.)
+
+In 3SLS, the initial consistent estimator for calculating $\widehat{\mathbf{\Sigma}}$ was 2SLS. But, 2SLS when the regressors are a subset of the instrument set is OLS (as you showed for Review Question 7 of Section 3.8). So, for SUR, the initial estimator is the OLS estimator. The preceding discussion can be summarized as
+
+Proposition 4.6 (large-sample properties of SUR): Suppose Assumptions 4.14.5 and 4.7 hold with $\mathbf{x}_{i}=$ union of $\left(\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)$. Let $\widehat{\mathbf{\Sigma}}$ be the $M \times M$ matrix of estimated error cross moments calculated by (4.5.7) using the OLS residuals. Then\\
+(a) $\hat{\boldsymbol{\delta}}_{\text {SUR }}$ given by (4.5.12) with $\widehat{\mathbf{A}}_{m h}$ and $\hat{\mathbf{c}}_{m h}$ given by (4.5.13') and (4.5.14') for $m, h=1, \ldots, M$ is consistent, asymptotically normal, and efficient, with Avar $\left(\hat{\delta}_{\text {SUR }}\right)$ given by (4.5.15) where $\mathbf{A}_{m h}$ is given by (4.5.16').\\
+(b) The estimated asymptotic variance (4.5.17) where $\widehat{\mathbf{A}}_{m h}$ is given by (4.5.13') is consistent for $\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{\text {SUR }}\right)$.\\
+(c) (Sargan's statistic)
+
+$$
+J\left(\hat{\boldsymbol{\delta}}_{\mathrm{SUR}}, \widehat{\mathbf{S}}^{-1}\right) \equiv n \cdot \mathbf{g}_{n}\left(\hat{\boldsymbol{\delta}}_{\mathrm{SUR}}\right)^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{g}_{n}\left(\hat{\delta}_{\mathrm{SUR}}\right) \underset{\mathrm{d}}{\rightarrow} \chi^{2}\left(M K-\sum_{m} L_{m}\right)
+$$
+
+where $\widehat{\mathbf{S}}=\widehat{\mathbf{\Sigma}} \otimes\left(\frac{1}{n} \sum_{i} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right), K$ is the number of common instruments, and $\mathbf{g}_{n}(\cdot)$ is given in (4.2.1).\\
+(Unlike in Proposition 4.5, the condition that $\mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)$ be finite is not needed because, thanks to (4.5.18), it is implied by the condition that $\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ be nonsingular, which in turn is implied by the nonsingularity of $\mathbf{S}$ [from Assumption 4.5] and the fact that $\mathbf{S}$ can be written as $\boldsymbol{\Sigma} \otimes \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$.) Sargan's statistic for SUR is rarely reported in practice.
+
+\section*{SUR versus OLS}
+Since the regressors are predetermined, the system can also be estimated by the equation-by-equation OLS. Then why SUR over OLS? As just seen, under condi-\\
+tional homoskedasticity, the efficient multiple-equation GMM is FIVE, which in turn is numerically equal to SUR under (4.5.18). As shown in Chapter 3, under conditional homoskedasticity, the efficient single-equation GMM is 2SLS, which in turn is numerically equal to OLS because the regressors are predetermined under (4.5.18). This interrelationship is shown in Figure 4.1. Therefore, the relation between SUR and equation-by-equation OLS is strictly analogous to the relation between the multiple-equation GMM and the equation-by-equation GMM. As discussed in Section 4.4, there are two cases to consider.\\
+(a) Each equation is just identified. Because the common instrument set is the union of all the regressors, this is possible only if the regressors are the same for all equations, i.e., if $\mathbf{z}_{i m}=\mathbf{x}_{i}$ for all $m$. The SUR for this case is called the multivariate regression. We observed in Section 4.4 that both the efficient multiple-equation GMM and the efficient single-equation GMM are numerically the same as the IV estimator for the just identified system. Because the regressors are predetermined, we conclude that the GMM estimator of the multivariate regression model is simply equation-by-equation OLS. ${ }^{7}$ This can be verified directly by substituting (4.5.13') and (4.5.14') on page 280 (with $\mathbf{z}_{i m}=\mathbf{x}_{i}$ ) into the expression for the point estimate (4.5.12). Also substituting (4.5.16') and (4.5.13') (again with $\mathbf{z}_{i m}=\mathbf{x}_{i}$ ) into (4.5.15) and (4.5.17), we obtain, for multivariate regression,
+
+
+\begin{align*}
+\operatorname{Avar}(\hat{\boldsymbol{\delta}}) & =\mathbf{\Sigma} \otimes\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1}  \tag{4.5.22}\\
+\widehat{\operatorname{Avar}(\hat{\boldsymbol{\delta}})} & =\widehat{\mathbf{\Sigma}} \otimes\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)^{-1} \tag{4.5.23}
+\end{align*}
+
+
+(b) At least one equation is overidentified. Then SUR is more efficient than equation-by-equation OLS, unless equations are "unrelated" to each other in the sense of (4.4.3). In the present case of conditional homoskedasticity and the common set of instruments, (4.4.3) becomes
+
+$$
+\sigma_{m h} \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)=\mathbf{0} \quad \text { for all } m \neq h .
+$$
+
+Since $\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ cannot be a zero matrix (it is assumed to be nonsingular), equations are "unrelated" to each other if and only if $\sigma_{m h}=0$. Therefore, SUR is more efficient than OLS if $\sigma_{m h} \neq 0$ for some pair ( $m, h$ ). If $\sigma_{m h}=0$ for all $(m, h)$, the two estimators are asymptotically equivalent (i.e., $\sqrt{n}$ times the difference vanishes).
+
+\footnotetext{${ }^{7}$ It will be shown in Chapter 8 that the estimator is also the maximum likelihood estimator.
+}\begin{figure}[h]
+\begin{center}
+  \includegraphics[alt={},max width=\textwidth]{14fb0795-6d81-4e76-9788-792298f1ddae-300_537_1211_268_242}
+\captionsetup{labelformat=empty}
+\caption{Figure 4.1: OLS and GMM}
+\end{center}
+\end{figure}
+
+Another way to see the efficiency of SUR is to view the SUR model as a multivariate regression model with a priori exclusion restrictions. As an example, expand the two-equation system of Example 4.3 as
+
+$$
+\begin{aligned}
+L W_{i} & =\phi_{1}+\beta_{1} S_{i}+\gamma_{1} I Q_{i}+\pi_{1} E X P R_{i}+\varepsilon_{i 1}, \\
+K W W_{i} & =\phi_{2}+\beta_{2} S_{i}+\gamma_{2} I Q_{i}+\pi_{2} E X P R_{i}+\varepsilon_{i 2} .
+\end{aligned}
+$$
+
+The common instrument set is $\left(1, S_{i}, I Q_{i}, E X P R_{i}\right)$. Then this two-equation system is a multivariate regression model with the same regressors in both equations. But if $\pi_{2}$ is a priori restricted to be 0 and thus $E X P R_{i}$ is excluded from the second equation, then the model becomes the SUR model. The SUR estimator is more efficient than the multivariate regression because it exploits exclusion restrictions.
+
+The relationship among the estimators considered in this section is summarized in Table 4.2.
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item (FIVE without conditional homoskedasticity) Without conditional homoskedasticity, is the $\widehat{\mathbf{S}}$ in (4.5.3) consistent for $\mathbf{S}$ in (4.1.11)? [Answer: No. Why?] Under conditional homoskedasticity, is (4.3.2) consistent for (4.5.2)? [Answer: Yes. Why?]
+  \item (FIVE without conditional homoskedasticity) Without conditional homoskedasticity, is FIVE consistent and asymptotically normal? Efficient? Hint: The FIVE estimator is a multiple-equation GMM estimator (4.2.3) for some $\widehat{\mathbf{W}}$. Does the $\widehat{\mathbf{W}}$ satisfy the efficiency condition that $\operatorname{plim} \widehat{\mathbf{W}}=\mathbf{S}^{-1}$ ?
+\end{enumerate}
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 4.2: Relationship between Multiple-Equation Estimators}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+ & Multipleequation GMM & FIVE & 3SLS & SUR & Multivariate regression \\
+\hline
+The model & Assumptions 4.1-4.6 & Assumptions 4.1-4.5, Assumption 4.7 $\mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)$ finite & Assumptions 4.1-4.5, Assumption 4.7 $\mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)$ finite $\mathbf{x}_{i m}=\mathbf{x}_{i}$ for all $m$ & Assumptions 4.1-4.5, Assumption 4.7 $\mathbf{x}_{i m}=\mathbf{x}_{i}$ for all $m \mathbf{x}_{i}=$ union of $\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}$ & Assumptions 4.1-4.5, Assumption 4.7 $\mathbf{x}_{i m}=\mathbf{x}_{i}$ for all $m \mathbf{z}_{i m}=\mathbf{x}_{i}$ for all $m$ \\
+\hline
+S ( $\equiv \operatorname{Avar}(\overline{\mathbf{g}})$ ) & (4.1.11) & (4.5.2) & $\boldsymbol{\Sigma} \otimes \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ & $\boldsymbol{\Sigma} \otimes \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ & irrelevant \\
+\hline
+$\widehat{\mathbf{S}}$ & (4.3.2) & (4.5.3) & \begin{tabular}{l}
+\( \widehat{\mathbf{\Sigma}} \otimes\left(n^{-1} \mathbf{\Sigma}_{i} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right) \) \\
+$\widehat{\mathbf{\Sigma}}$ from 2SLS residuals \\
+\end{tabular} & \begin{tabular}{l}
+\( \widehat{\Sigma} \otimes\left(n^{-1} \Sigma_{i} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right) \) \\
+$\widehat{\boldsymbol{\Sigma}}$ from OLS residuals \\
+\end{tabular} & irrelevant \\
+\hline
+$\hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right)$ & no simplification & no simplification & (4.5.12) with (4.5.13), (4.5.14) & (4.5.12) with (4.5.13'), (4.5.14') & equation-by-equation OLS \\
+\hline
+$\operatorname{Avar}\left(\hat{\delta}\left(\widehat{\mathbf{S}}^{-1}\right)\right)$ & (4.3.3) & (4.3.3) & (4.5.15) with (4.5.16) & (4.5.15) with (4.5.16') & OLS formula \\
+\hline
+\includegraphics[max width=\textwidth, alt={}]{14fb0795-6d81-4e76-9788-792298f1ddae-301_63_194_1238_259}
+ & (4.3.4) & (4.3.4) & (4.5.17) with (4.5.13) & (4.5.17) with (4.5.13') & OLS formula \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item (When FIVE and eq-by-eq 2SLS are numerically the same) Suppose each equation is just identified. Are the equation-by-equation 2SLS and FIVE estimators asymptotically equivalent (in that $\sqrt{n}$ times the difference vanishes)? Numerically the same? Hint: Both FIVE and 2SLS reduce to IV.
+  \item (When are FIVE and eq-by-eq 2SLS asymptotically equivalent) When the errors are orthogonal to each other (so $\sigma_{m h}=0$ for $m \neq h$ ), the FIVE and equation-by-equation 2SLS estimators are asymptotically equivalent (in that $\sqrt{n}$ times the difference vanishes). Prove this. Hint: Superimpose conditional homoskedasticity on Proposition 4.3(b). Under conditional homoskedasticity, the efficient multiple-equation GMM reduces to the FIVE and the efficient singleequation GMM reduces to the equation-by-equation 2SLS. Also under conditional homoskedasticity, the equations are "unrelated" in the sense of (4.4.3) if $\sigma_{m h}=0$.
+  \item (Conditional homoskedasticity under SUR assumptions) Verify that, under the SUR assumption (4.5.18), Assumption 4.7 becomes
+\end{enumerate}
+
+$$
+\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h} \mid \mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)=\sigma_{m h} \quad \text { for all } m, h=1,2, \ldots, M .
+$$
+
+\begin{enumerate}
+  \setcounter{enumi}{5}
+  \item In Example 4.3, what happens to the SUR estimator when $\mathbf{x}_{i}$ includes $M E D_{i}$ also? Hint: $\mathbf{x}_{i}$ still "disappears" from (4.5.13), (4.5.14), and (4.5.16). To Sargan's statistic?
+  \item (Identification in SUR) In Proposition 4.6, the identification condition (Assumption 4.4) is actually not needed because it is implied by the other assumptions. Verify that Assumptions 4.5 and 4.7 imply Assumption 4.4. Hint: By Assumption 4.5 and the Kronecker decomposition (4.5.9) of $\mathbf{S}, \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ is nonsingular. $\mathbf{z}_{i m}$ is a subset of $\mathbf{x}_{i}$.
+  \item (SUR without conditional homoskedasticity)\\
+(a) Without conditional homoskedasticity, is SUR consistent and asymptotically normal? Efficient? Hint: The SUR estimator is still a multipleequation GMM estimator, so Proposition 3.1 applies.\\
+(b) Without conditional homoskedasticity, does SUR still reduce to the multivariate regression when the system is just identified in that each equation is just identified (so $\mathbf{z}_{i m}=\mathbf{x}_{i}$ )? [Answer: Yes.]
+\end{enumerate}
+
+9 . (Role of "cross" orthogonalities) Suppose, instead of (4.5.18') on page 279, the orthogonality conditions are that $\mathrm{E}\left(\mathbf{z}_{i m} \cdot \varepsilon_{i m}\right)=\mathbf{0}$ for $m=1,2, \ldots, M$. Is
+
+SUR consistent? [Answer: Not necessarily.] Derive the efficient multipleequation GMM estimator under conditional homoskedasticity. [Answer: It is OLS.]\\
+10. Verify that Sargan's statistic for the multivariate regression model is zero.
+
+\subsection*{4.6 Common Coefficients}
+In many applications, particularly in panel data contexts, you deal with a special case of the multiple-equation model where the number of regressors is the same across equations with the same coefficients. Such a model is a special case of the multiple-equation model of Section 4.1. This section shows how to apply GMM to multiple equations while imposing the common coefficient restriction. It will be shown at the end that the seemingly restrictive model actually includes as a special case the multiple-equation model without the common coefficient restriction.
+
+\section*{The Model with Common Coefficients}
+With common coefficients, the multiple-equation system becomes
+
+Assumption 4.1' (linearity): There are $M$ linear equations to be estimated:
+
+
+\begin{equation*}
+y_{i m}=\mathbf{z}_{i m}^{\prime} \boldsymbol{\delta}+\varepsilon_{i m} \quad(m=1,2, \ldots, M ; i=1,2, \ldots, n), \tag{4.6.1}
+\end{equation*}
+
+
+where $n$ is the sample size, $\mathbf{z}_{i m}$ is an $L$-dimensional vector of regressors, $\delta$ is an $L$-dimensional coefficient vector common to all equations, and $\varepsilon_{i m}$ is an unobservable error term of the $m$-th equation.
+
+Of the other assumptions of the multiple-equation model, Assumptions 4.2-4.6, only Assumption 4.4 (identification) needs to be modified to reflect the common coefficient restriction. The multiple-equation version of $\mathbf{g}\left(\mathbf{w}_{i} ; \tilde{\delta}\right)$ is now
+
+\[
+\mathbf{g}\left(\mathbf{w}_{i} ; \tilde{\boldsymbol{\delta}}\right) \equiv\left[\begin{array}{c}
+\mathbf{x}_{i 1} \cdot\left(y_{i 1}-\mathbf{z}_{i 1}^{\prime} \tilde{\boldsymbol{\delta}}\right)  \tag{4.6.2}\\
+\vdots \\
+\mathbf{x}_{i M} \cdot\left(y_{i M}-\mathbf{z}_{i M}^{\prime} \tilde{\boldsymbol{\delta}}\right)
+\end{array}\right],
+\]
+
+so that $\mathrm{E}\left[\mathbf{g}\left(\mathbf{w}_{i} ; \tilde{\boldsymbol{\delta}}\right)\right]$ becomes
+
+
+\begin{align*}
+\mathrm{E}\left[\mathbf{g}\left(\mathbf{w}_{i} ; \tilde{\boldsymbol{\delta}}\right)\right] & =\left[\begin{array}{c}
+\mathrm{E}\left(\mathbf{x}_{i 1} \cdot y_{i 1}\right) \\
+\vdots \\
+\mathrm{E}\left(\mathbf{x}_{i M} \cdot y_{i M}\right)
+\end{array}\right]-\left[\begin{array}{c}
+\mathrm{E}\left(\mathbf{x}_{i 1} \cdot \mathbf{z}_{i 1}^{\prime}\right) \tilde{\boldsymbol{\delta}} \\
+\vdots \\
+\mathrm{E}\left(\mathbf{x}_{i M} \cdot \mathbf{z}_{i M}^{\prime}\right) \tilde{\boldsymbol{\delta}}
+\end{array}\right] \\
+& =\underset{\left(\sum_{m=1}^{M} K_{m} \times 1\right)}{\sigma_{\mathbf{x y}}}-\underset{\left(\sum_{m=1}^{M} K_{m} \times L\right)}{\boldsymbol{\Sigma}_{\mathbf{x z}} \underset{(L \times 1)}{\tilde{\delta}}} \tag{4.6.3}
+\end{align*}
+
+
+where
+
+\[
+\boldsymbol{\sigma}_{\mathbf{x y}} \equiv\left[\begin{array}{c}
+\mathrm{E}\left(\mathbf{x}_{i 1} \cdot y_{i 1}\right)  \tag{4.6.4}\\
+\vdots \\
+\mathrm{E}\left(\mathbf{x}_{i M} \cdot y_{i M}\right)
+\end{array}\right], \boldsymbol{\Sigma}_{\mathbf{x z}} \equiv\left[\begin{array}{c}
+\mathrm{E}\left(\mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime}\right) \\
+\vdots \\
+\mathrm{E}\left(\mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime}\right)
+\end{array}\right] .
+\]
+
+So the implication of common coefficients is that $\boldsymbol{\Sigma}_{\mathbf{x z}}$ is now a stacked, not a block diagonal, matrix. With this change, the system of equations determining $\tilde{\delta}$ is again (4.1.10), so the identification condition is
+
+Assumption 4.4' (identification with common coefficients): The $\sum_{m=1}^{M} K_{m} \times L$ matrix $\boldsymbol{\Sigma}_{\mathbf{x z}}$ defined in (4.6.4) is of full column rank.
+
+This condition is weaker than Assumption 4.4, which requires that each equation of the system be identified. Indeed, a sufficient condition for identification is that $\mathrm{E}\left(\mathbf{x}_{i m} \mathbf{z}_{i m}^{\prime}\right)$ be of full column rank for some m. ${ }^{8}$ This is thanks to the a priori restriction that the coefficients are the same across equations. It is possible that the system is identified even if none of the equations are identified individually.
+
+\section*{The GMM Estimator}
+It is left to you to verify that $\mathbf{g}_{n}(\tilde{\boldsymbol{\delta}})$ can be written as $\mathbf{S}_{\mathbf{x y}}-\mathbf{S}_{\mathbf{x z}} \tilde{\boldsymbol{\delta}}$ with
+
+\[
+\mathbf{S}_{\mathbf{x y}} \equiv\left[\begin{array}{c}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \cdot y_{i 1}  \tag{4.6.5}\\
+\vdots \\
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \cdot y_{i M}
+\end{array}\right], \mathbf{S}_{\mathbf{x z}} \equiv\left[\begin{array}{c}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime} \\
+\vdots \\
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime}
+\end{array}\right]
+\]
+
+\footnotetext{${ }^{8}$ Proof: If $\mathrm{E}\left(\mathbf{x}_{i m} \mathbf{z}_{i m}^{\prime}\right)$ is of full column rank, its rank is $L$. Since the rank of a matrix is also equal to the number of linearly independent rows, $\mathrm{E}\left(\mathbf{x}_{i m} \mathbf{z}_{i m}^{\prime}\right)$ has $L$ linearly independent rows. Thus, $\boldsymbol{\Sigma}_{\mathbf{k z}}$ has at least $L$ linearly independent rows.
+}
+so that the GMM estimator with a $\sum_{m} K_{m} \times \sum_{m} K_{m}$ weighting matrix $\widehat{\mathbf{W}}$ is (4.2.3) with the sampling error given by (4.2.4). Provided that $\mathbf{\Sigma}_{\mathbf{x z}}$ and $\mathbf{S}_{\mathbf{x z}}$ are as just redefined and $\boldsymbol{\delta}$ is interpreted as the common coefficient, large-sample theory for the multiple-equation model with common coefficients is the same as that with separate coefficients developed in Section 4.3, with Assumption 4.1' replacing Assumption 4.1, Assumption 4.4' replacing Assumption 4.4, and the residual $\hat{\varepsilon}_{i}$ redefined to be $y_{i m}-\mathbf{z}_{i m}^{\prime} \hat{\delta}$ (not $y_{i m}-\mathbf{z}_{i m}^{\prime} \hat{\boldsymbol{\delta}}_{m}$ ) for some consistent estimate of the $L$-dimensional common coefficient vector $\boldsymbol{\delta}$.
+
+In order to relate this GMM estimator to popular estimators in the literature, it is necessary to write out the GMM formula in full. Substituting (4.6.5) into (4.2.3), we obtain
+
+
+\begin{align*}
+\hat{\boldsymbol{\delta}}(\widehat{\mathbf{W}})= & {\left.\left[\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i 1} \mathbf{x}_{i 1}^{\prime} \cdots \frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i M} \mathbf{x}_{i M}^{\prime}\right]\left[\begin{array}{c}
+\widehat{\mathbf{W}}_{11} \cdots \widehat{\mathbf{W}}_{1 M} \\
+\vdots \\
+\vdots \\
+\widehat{\mathbf{W}}_{M 1} \cdots \widehat{\mathbf{W}}_{M M}
+\end{array}\right]\left[\begin{array}{c}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \mathbf{z}_{i 1}^{\prime} \\
+\vdots \\
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \mathbf{z}_{i M}^{\prime}
+\end{array}\right]\right)^{-1} } \\
+& {\left[\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i 1} \mathbf{x}_{i 1}^{\prime} \cdots \frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i M} \mathbf{x}_{i M}^{\prime}\right]\left[\begin{array}{cc}
+\widehat{\mathbf{W}}_{11} \cdots \widehat{\mathbf{W}}_{1 M} \\
+\vdots & \vdots \\
+\widehat{\mathbf{W}}_{M 1} \cdots \widehat{\mathbf{W}}_{M M}
+\end{array}\right]\left[\begin{array}{c}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i 1} \cdot y_{i 1} \\
+\vdots \\
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i M} \cdot y_{i M}
+\end{array}\right] } \\
+= & {\left.\left[\sum_{m=1}^{M} \sum_{h=1}^{M}\left\{\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{x}_{i m}^{\prime}\right) \widehat{\mathbf{W}}_{m h}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i h} \mathbf{z}_{i h}^{\prime}\right)\right\}\right]\right]^{-1} } \\
+& {\left[\sum_{m=1}^{M} \sum_{h=1}^{M}\left\{\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{x}_{i m}^{\prime}\right) \widehat{\mathbf{W}}_{m h}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i h} \cdot y_{i h}\right)\right\}\right] } \tag{4.6.6}
+\end{align*}
+
+
+where $\widehat{\mathbf{W}}_{m h}$ is the ( $m, h$ ) block of $\widehat{\mathbf{W}}$. (For the second equality, use formula (A.8) of Appendix A.) The efficient GMM estimator obtains if the $\widehat{\mathbf{W}}$ in this expression is replaced by the inverse of $\widehat{\mathbf{S}}$ defined in (4.3.2).
+
+\section*{Imposing Conditional Homoskedasticity}
+The efficient GMM estimator obtains when we set in (4.6.6) $\widehat{\mathbf{W}}=\widehat{\mathbf{S}}^{-1}$ where $\widehat{\mathbf{S}}$ is a consistent estimator of $\mathbf{S}$. As before, we can impose conditional homoskedasticity\\
+to reduce the efficient GMM estimator to popular estimators. The FIVE estimator obtains if $\widehat{\mathbf{S}}$ is given by (4.5.3).
+
+If we further assume that the set of instruments is the same across equations, then, as before, this $\widehat{\mathbf{S}}$ has the Kronecker product structure
+
+$$
+\widehat{\mathbf{S}}=\widehat{\mathbf{\Sigma}} \otimes\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)
+$$
+
+so that $\widehat{\mathbf{W}}_{m h}$ in (4.6.6) is given by (4.5.11), resulting in what should be called the 3SLS estimator with common coefficients:
+
+
+\begin{align*}
+& {\left[\sum_{m=1}^{M} \sum_{h=1}^{M}\left\{\hat{\sigma}^{m h} \cdot\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{x}_{i}^{\prime}\right)\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)^{-1}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{z}_{i h}^{\prime}\right)\right\}\right]^{-1}} \\
+& {\left[\sum_{m=1}^{M} \sum_{h=1}^{M}\left\{\hat{\sigma}^{m h} \cdot\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{x}_{i}^{\prime}\right)\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)^{-1}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \cdot y_{i h}\right)\right\}\right],} \tag{4.6.7}
+\end{align*}
+
+
+where $\hat{\sigma}^{m h}$ is the ( $m, h$ ) element of $\widehat{\mathbf{\Sigma}}^{-1}$. If, in addition, the SUR condition (4.5.18) is assumed, then the "disappearance of $\mathbf{x}$ " occurs in (4.6.7) and the efficient GMM estimator becomes what is called (for historical reasons) the random-effects estimator:
+
+
+\begin{equation*}
+\hat{\delta}_{\mathrm{RE}}=\left[\sum_{m=1}^{M} \sum_{h=1}^{M} \hat{\sigma}^{m h}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)\right]^{-1} \sum_{m=1}^{M} \sum_{h=1}^{M} \hat{\sigma}^{m h}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \cdot y_{i h}\right) . \tag{4.6.8}
+\end{equation*}
+
+
+Its asymptotic variance is
+
+
+\begin{equation*}
+\operatorname{Avar}\left(\hat{\delta}_{\mathrm{RE}}\right)=\left[\sum_{m=1}^{M} \sum_{h=1}^{M} \sigma^{m h} \mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)\right]^{-1} \tag{4.6.9}
+\end{equation*}
+
+
+(To derive this, go back to the general formula (4.3.3) for the Avar of efficient GMM. Set $\boldsymbol{\Sigma}_{\mathbf{x z}}$ as in (4.6.4), $\mathbf{S}=\boldsymbol{\Sigma} \otimes \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$, use formula (A.8) of Appendix A to calculate the matrix product, and observe the "disappearance of $\mathbf{x}$ " that (4.5.16) becomes (4.5.16') on page 280 under the SUR assumption (4.5.18).) It is consistently estimated by
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}\left(\hat{\delta}_{\mathrm{RE}}\right)}=\left[\sum_{m=1}^{M} \sum_{h=1}^{M} \hat{\sigma}^{m h}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)\right]^{-1} . \tag{4.6.10}
+\end{equation*}
+
+
+We summarize the result about the random-effects estimator as
+
+\section*{Proposition 4.7 (large-sample properties of the random-effects estimator):}
+Suppose Assumptions 4.1', 4.2, 4.3, 4.4', 4.5, and 4.7 hold with $\mathbf{x}_{i}=$ union of $\left(\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)$. Let $\mathbf{\Sigma}$ be the $M \times M$ matrix whose $(m, h)$ element is $\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h}\right)$, and let $\widehat{\mathbf{\Sigma}}$ be a consistent estimate of $\mathbf{\Sigma}$. Then\\
+(a) $\hat{\delta}_{\text {RE }}$, given by (4.6.8) is consistent, asymptotically normal, and efficient, with $\mathrm{Avar}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right)$ given by (4.6.9).\\
+(b) The estimated asymptotic variance (4.6.10) is consistent for $\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right)$.\\
+(c) Sargan's statistic)
+
+$$
+J\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}, \widehat{\mathbf{S}}^{-1}\right) \equiv n \cdot \mathbf{g}_{n}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right)^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{g}_{n}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right) \underset{\mathrm{d}}{\rightarrow} \chi^{2}(M K-L),
+$$
+
+where $\widehat{\mathbf{S}}=\widehat{\mathbf{\Sigma}} \otimes\left(\frac{1}{n} \sum \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right), K$ is the number of common instruments, and $\mathbf{g}_{n}(\tilde{\boldsymbol{\delta}})=\mathbf{s}_{\mathbf{x y}}-\mathbf{S}_{\mathbf{x z}} \tilde{\boldsymbol{\delta}}$ with $\mathbf{s}_{\mathbf{x y}}$ and $\mathbf{S}_{\mathbf{x z}}$ given by (4.6.5).
+
+Below we will rewrite the formulas (4.6.8)-(4.6.10) in more elegant forms.
+
+\section*{Pooled OLS}
+For the SUR of the previous section, we obtained $\widehat{\boldsymbol{\Sigma}}$ from the residuals from the equation-by-equation OLS. The consistency is all that is required for $\widehat{\mathbf{\Sigma}}$, so the same procedure for $\widehat{\boldsymbol{\Sigma}}$ works here just as well, but the finite sample distribution of $\hat{\boldsymbol{\delta}}_{\mathrm{RE}}$ might be improved if we exploit the a priori restriction that the coefficients be the same across equations in the estimation of $\widehat{\mathbf{\Sigma}}$. So consider setting $\widehat{\mathbf{W}}$ to
+
+$$
+\mathbf{I}_{M} \otimes\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)^{-1}
+$$
+
+rather than
+
+$$
+\widehat{\mathbf{\Sigma}}^{-1} \otimes\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)^{-1},
+$$
+
+in the first-step GMM estimation for the purpose of obtaining an initial consistent estimate of $\boldsymbol{\delta}$. The estimator is (4.6.8) with $\hat{\sigma}^{m h}=1$ for $m=h$ and 0 for $m \neq h$, which can be written as
+
+
+\begin{align*}
+\hat{\delta}_{\text {pooled OLS }} & =\left[\sum_{m=1}^{M}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{z}_{i m}^{\prime}\right)\right]^{-1} \sum_{m=1}^{M}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \cdot y_{i m}\right) \\
+& =\left(\sum_{i=1}^{n} \sum_{m=1}^{M} \mathbf{z}_{i m} \mathbf{z}_{i m}^{\prime}\right)^{-1} \sum_{i=1}^{n} \sum_{m=1}^{M} \mathbf{z}_{i m} \cdot y_{i m} \tag{4.6.11}
+\end{align*}
+
+
+which is simply the OLS estimator on the sample of size $M n$ where observations are pooled across equations. For this reason, the estimator is called the pooled OLS estimator. The expression suggests that the orthogonality conditions that are being exploited are
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{z}_{i 1} \cdot \varepsilon_{i 1}+\cdots+\mathbf{z}_{i M} \cdot \varepsilon_{i M}\right)=\mathbf{0} \tag{4.6.12}
+\end{equation*}
+
+
+which does not involve the "cross" orthogonalities $\mathrm{E}\left(\mathbf{z}_{i m} \cdot \varepsilon_{i h}\right)=\mathbf{0}(m \neq h)$. It is left as an analytical exercise to show that the pooled OLS is the GMM estimator exploiting (4.6.12).
+
+Because it is so easy to calculate, pooled OLS is a popular option for those researchers who do not want to program estimators. The estimator is also robust to the failure of the "cross" orthogonalities. But it is important to keep in mind that the standard errors printed out by the OLS package, which do not take into account the interequation cross moments ( $\sigma_{m h}$ ), are biased. For the pooled OLS estimator, which is a GMM estimator with a nonoptimal choice of $\widehat{\mathbf{W}}$, the correct formula for the asymptotic variance is (3.5.1) of Proposition 3.1. Setting $\mathbf{W}= \mathbf{I}_{M} \otimes\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1}, \mathbf{S}=\boldsymbol{\Sigma} \otimes \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right), \boldsymbol{\Sigma}_{\mathbf{x z}}$ as in (4.6.4), and again observing the disappearance of $\mathbf{x}$, we obtain\\
+$\operatorname{Avar}\left(\hat{\delta}_{\text {pooled OLS }}\right)=\left[\sum_{m=1}^{M} \mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i m}^{\prime}\right)\right]^{-1} \sum_{m=1}^{M} \sum_{h=1}^{M} \sigma_{m h} \mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)\left[\sum_{m=1}^{M} \mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i m}^{\prime}\right)\right]^{-1}$,\\
+which is consistently estimated by
+
+
+\begin{equation*}
+\left(\sum_{m=1}^{M} \frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{z}_{i m}^{\prime}\right)^{-1} \sum_{m=1}^{M} \sum_{h=1}^{M} \hat{\sigma}_{m h} \frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\left(\sum_{m=1}^{M} \frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{z}_{i m}^{\prime}\right)^{-1} \tag{4.6.14}
+\end{equation*}
+
+
+Since the pooled OLS estimator is consistent, the associated residual can be used to calculate $\hat{\sigma}_{m h}(m, h=1, \ldots, M)$ in this expression. The correct standard errors of pooled OLS are the square roots of ( $1 / n$ times) the diagonal element of this matrix.
+
+\section*{Beautifying the Formulas}
+These formulas for the random-effects and pooled OLS estimators are quite straightforward to derive but look complicated, with double and triple summations. They can, however, be beautified - and at the same time more useful for program-ming-if we introduce some new matrix notation. Let
+
+\[
+\underset{(M \times 1)}{\mathbf{y}_{i}}=\left[\begin{array}{c}
+y_{i 1}  \tag{4.6.15}\\
+\vdots \\
+y_{i M}
+\end{array}\right], \quad \underset{(M \times L)}{\mathbf{Z}_{i}}=\left[\begin{array}{c}
+\mathbf{z}_{i 1}^{\prime} \\
+\vdots \\
+\mathbf{z}_{i M}^{\prime}
+\end{array}\right], \quad \underset{(M \times 1)}{\boldsymbol{\varepsilon}_{i}}=\left[\begin{array}{c}
+\varepsilon_{i 1} \\
+\vdots \\
+\varepsilon_{i M}
+\end{array}\right],
+\]
+
+so that the $M$-equation system with common coefficients in Assumption 4.1' can be written compactly as
+
+
+\begin{equation*}
+\mathbf{y}_{i}=\mathbf{Z}_{i} \boldsymbol{\delta}+\boldsymbol{\varepsilon}_{i} \quad(i=1,2, \ldots, n) . \tag{$\prime$}
+\end{equation*}
+
+
+The beautification of the complicated formulas utilizes the following algebraic results:
+
+
+\begin{gather*}
+\sum_{m=1}^{M} \mathbf{z}_{i m} \mathbf{z}_{i m}^{\prime}=\mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}, \sum_{m=1}^{M} \mathbf{z}_{i m} \cdot y_{i m}=\mathbf{Z}_{i}^{\prime} \mathbf{y}_{i}  \tag{4.6.16a}\\
+\sum_{m=1}^{M} \sum_{h=1}^{M} c_{m h} \cdot \mathbf{z}_{i m} \cdot y_{i h}=\mathbf{Z}_{i}^{\prime} \mathbf{C} \mathbf{y}_{i}, \sum_{m=1}^{M} \sum_{h=1}^{M} c_{m h} \cdot \mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}=\mathbf{Z}_{i}^{\prime} \mathbf{C} \mathbf{Z}_{i} \tag{4.6.16b}
+\end{gather*}
+
+
+for any $M \times M$ matrix $\mathbf{C}=\left(c_{m h}\right)$. Now take the triple summation in (4.6.8)
+
+
+\begin{align*}
+& \sum_{m=1}^{M} \sum_{h=1}^{M} \hat{\sigma}^{m h} \cdot\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \cdot y_{i h}\right) \\
+& \quad=\frac{1}{n} \sum_{i=1}^{n}\left(\sum_{m=1}^{M} \sum_{h=1}^{M} \hat{\sigma}^{m h} \cdot \mathbf{z}_{i m} \cdot y_{i h}\right) \quad \text { (by changing order of summations) } \\
+& \left.\quad=\frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i}^{\prime} \widehat{\Sigma}^{-1} \mathbf{y}_{i} \quad \text { (by (4.6.16b) with } \mathbf{C}=\widehat{\Sigma}^{-1}\right) \tag{4.6.17}
+\end{align*}
+
+
+Similarly, by (4.6.16b) with $\mathbf{C}=\widehat{\mathbf{\Sigma}}^{-1}$, the other triple summation in (4.6.8) becomes
+
+
+\begin{equation*}
+\sum_{m=1}^{M} \sum_{h=1}^{M} \hat{\sigma}^{m h} \frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}=\frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i}^{\prime} \hat{\Sigma}^{-1} \mathbf{Z}_{i} \tag{4.6.18}
+\end{equation*}
+
+
+The double and triple summations in (4.6.9) and (4.6.10) can be written similarly. We have thus rewritten the random-effects formulas as
+
+
+\begin{gather*}
+\hat{\boldsymbol{\delta}}_{\mathrm{RE}}=\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i}^{\prime} \widehat{\mathbf{\Sigma}}^{-1} \mathbf{Z}_{i}\right)^{-1} \frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i}^{\prime} \widehat{\mathbf{\Sigma}}^{-1} \mathbf{y}_{i},  \tag{$\prime$}\\
+\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right)=\left(\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{\Sigma}^{-1} \mathbf{Z}_{i}\right)\right)^{-1},  \tag{$\prime$}\\
+\widehat{\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right)}=\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i}^{\prime} \widehat{\mathbf{\Sigma}}^{-1} \mathbf{Z}_{i}\right)^{-1} . \tag{4.6.10'}
+\end{gather*}
+
+
+Using (4.6.16a), the pooled OLS formulas can be written as
+
+
+\begin{gather*}
+\hat{\boldsymbol{\delta}}_{\text {pooled OLS }}=\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)^{-1} \frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i}^{\prime} \mathbf{y}_{i},  \tag{$\prime$}\\
+\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{\text {pooled OLS }}\right)=\left[\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)\right]^{-1} \mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Sigma} \mathbf{Z}_{i}\right)\left[\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)\right]^{-1},  \tag{$\prime$}\\
+\widehat{\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{\text {pooled OLS }}\right)=\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)^{-1}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i}^{\prime} \widehat{\mathbf{\Sigma}} \mathbf{Z}_{i}\right)\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)^{-1} .} \tag{4.6.14'}
+\end{gather*}
+
+
+These formulas are not just pretty; as will be seen in the next section, they will be useful for handling certain classes of panel data (called unbalanced panel data).
+
+\section*{The Restriction That Isn't}
+Although it appears that the model of this section, with the common coefficient assumption, is a special case of the model of Section 4.1, the latter can be cast in the format of the model of this section with a proper redefinition of regressors. For example, consider Example 4.1. Instead of defining $\mathbf{z}_{i 1}$ and $\mathbf{z}_{i 2}$ as in (4.1.2), define them as
+
+$$
+\mathbf{z}_{i 1}=\left[\begin{array}{c}
+1 \\
+S_{i} \\
+I Q_{i} \\
+E X P R_{i} \\
+0 \\
+0 \\
+0
+\end{array}\right], \quad \mathbf{z}_{i 2}=\left[\begin{array}{c}
+0 \\
+0 \\
+0 \\
+0 \\
+1 \\
+S_{i} \\
+I Q_{i}
+\end{array}\right] \quad \text { with } \quad \boldsymbol{\delta}=\left[\begin{array}{c}
+\phi_{1} \\
+\beta_{1} \\
+\gamma_{1} \\
+\pi \\
+\phi_{2} \\
+\beta_{2} \\
+\gamma_{2}
+\end{array}\right] .
+$$
+
+Then the two-equation system fits the format of Assumption 4.1'. (See Review Question 5 below for a demonstration of the same point more generally.)
+
+Furthermore, a system in which only a subset of variables have common coefficients can be written in the form of Assumption 4.1'. Consider Example 4.2. Suppose we wish to assume a priori that the coefficients of schooling, $I Q$, and experience remain constant over time (so $\beta_{1}=\beta_{2}=\beta, \gamma_{1}=\gamma_{2}=\gamma, \pi_{1}=\pi_{2}= \pi)$ but the intercept does not. The translation is accomplished by setting
+
+\[
+\mathbf{z}_{i 1}=\left[\begin{array}{c}
+1  \tag{4.6.19}\\
+0 \\
+S 69_{i} \\
+I Q_{i} \\
+E X P R 69_{i}
+\end{array}\right], \quad \mathbf{z}_{i 2}=\left[\begin{array}{c}
+0 \\
+1 \\
+S 80_{i} \\
+I Q_{i} \\
+E X P R 80_{i}
+\end{array}\right], \quad \boldsymbol{\delta}=\left[\begin{array}{c}
+\phi_{1} \\
+\phi_{2} \\
+\beta \\
+\gamma \\
+\pi
+\end{array}\right] .
+\]
+
+Therefore, the common coefficient restriction is not restrictive. We could have derived the GMM estimator for the model of Section 4.1 as a special case of the GMM estimator with the common coefficient restriction. But the model without the restriction is perhaps an easier introduction to multiple equations.
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item (Identification with common coefficients) Let $z_{i m j}$ be the $j$-th element of $\mathbf{z}_{i m}$. That is, $z_{i m j}$ is the $j$-th regressor in the $m$-th equation. Assume that $z_{i m 1}=1$ for all $i, m$. Which of the assumptions made for the model is violated if $z_{i m 2}=1$ for all $i, m$ ? Hint: Look at the rank condition. Would your answer change if $z_{i m 2}=m$ for all $i, m$ ? Hint: It should.
+  \item (Importance of "cross" orthogonalities) Suppose $\mathrm{E}\left(\mathbf{z}_{i m} \cdot \varepsilon_{i h}\right)=\mathbf{0}$ for $m=h$ but not necessarily for $m \neq h$. Would the random-effects estimator be consistent? Hint: The sampling error of the random-effects estimator is
+\end{enumerate}
+
+$$
+\hat{\delta}_{\mathrm{RE}}-\delta=\left[\sum_{m=1}^{M} \sum_{h=1}^{M} \hat{\sigma}^{m h}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)\right]^{-1} \sum_{m=1}^{M} \sum_{h=1}^{M} \hat{\sigma}^{m h}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \cdot \varepsilon_{i h}\right) .
+$$
+
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item (Inefficiency of pooled OLS) Derive the efficient GMM estimator of $\delta$ that exploits $\mathrm{E}\left(\mathbf{z}_{i m} \cdot \varepsilon_{i m}\right)=\mathbf{0}$ for all $m$. Is it the same as the pooled OLS? [Answer: No.] Is it the same as the random-effects estimator? [Answer: No.]
+  \item ( $\boldsymbol{\Sigma}_{\mathbf{x z}}, \mathbf{s}_{\mathbf{x y}}, \mathbf{S}_{\mathbf{x z}}$ with common instruments in Kronecker products) Suppose the instruments are the same across equations: $\mathbf{x}_{i m}=\mathbf{x}_{i}$. Show that $\boldsymbol{\Sigma}_{\mathbf{x z}}$ in (4.6.4)\\
+can be written as $\mathrm{E}\left(\mathbf{Z}_{i} \otimes \mathbf{x}_{i}\right)$, where $\mathbf{Z}_{i}$ is the $M \times L$ matrix defined in (4.6.15). Also, $\mathbf{s}_{\mathbf{x y}}=\frac{1}{n} \sum_{i=1}^{n} \mathbf{y}_{i} \otimes \mathbf{x}_{i}, \mathbf{S}_{\mathbf{x z}}=\frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i} \otimes \mathbf{x}_{i}$. Hint: $\mathbf{x}_{i} \mathbf{z}_{i m}^{\prime}=\mathbf{z}_{i m}^{\prime} \otimes \mathbf{x}_{i}$.
+  \item (The restriction that isn't) To avoid possible confusion arising from the fact that the $\mathbf{z}_{i m}$ in Section 4.1 and the $\mathbf{z}_{i m}$ in this section are different, write the $M$-equation system in (4.1.1) as
+\end{enumerate}
+
+
+\begin{equation*}
+y_{i m}=\mathbf{z}_{i m}^{* \prime} \delta_{m}^{*}+\varepsilon_{i m} \quad(m=1,2, \ldots, M ; i=1,2, \ldots, n), \tag{1}
+\end{equation*}
+
+
+where $\mathbf{z}_{i m}^{*}$ and $\boldsymbol{\delta}_{m}^{*}$ are $L_{m}$-dimensional.\\
+(a) (Assumption 4.1 as a special case of Assumption 4.1') Verify that (1) can be written as (4.6.1) if we define
+
+\[
+\underset{\left(\sum_{m=1}^{M} L_{m} \times 1\right)}{\mathbf{z}_{i m}}=\left[\begin{array}{c}
+\mathbf{0}  \tag{2}\\
+\vdots \\
+\mathbf{0} \\
+\mathbf{z}_{i m}^{*} \\
+\mathbf{0} \\
+\vdots \\
+\mathbf{0}
+\end{array}\right] \begin{array}{ll}
+\} & L_{1} \text { rows } \\
+\vdots & L_{m-1} \text { rows } \\
+\} & L_{m} \text { rows } \\
+\} & L_{m+1} \text { rows } \\
+\vdots & L_{M} \text { rows }
+\end{array} \text { and }{\underset{\left(\sum_{m=1}^{M} L_{m} \times 1\right)}{\boldsymbol{\delta}}}^{\vdots}=\left[\begin{array}{c}
+\boldsymbol{\delta}_{1}^{*} \\
+\vdots \\
+\boldsymbol{\delta}_{M}^{*}
+\end{array}\right] .
+\]
+
+(b) (Assumption 4.4 as a special case of Assumption 4.4') Verify that, when $\mathbf{z}_{i m}$ is defined as in (2) with $\mathbf{z}_{i m}^{*}$ interpreted as the $\mathbf{z}_{i m}$ of Section 4.1, Assumption 4.4' becomes Assumption 4.4.\\
+(c) (GMM formula) Under the same interpretation, verify that $\mathbf{S}_{\mathbf{x z}}$ of (4.6.5) becomes a block diagonal matrix whose $m$-th block is $\frac{1}{n} \sum_{i} \mathbf{x}_{i m} \mathbf{z}_{i m}^{* \prime}$, so that (4.6.6) becomes (4.2.6) if the $\mathbf{z}_{i m}$ in (4.2.6) is understood to mean $\mathbf{z}_{i m}^{*}$.\\
+6. (Identification in the RE model) Assumption $4.4^{\prime}$ in Proposition 4.7 is actually unnecessary. Verify that Assumptions 4.5 and 4.7 imply Assumption 4.4'. Hint: If $\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ is nonsingular, then Assumption 4.4 holds, as shown in Review Question 7 to Section 4.5. Assumption 4.4' is weaker than Assumption 4.4.\\
+7. (Only for those who have become familiar with Kronecker products)\\
+(a) Show that $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Sigma}^{-1} \mathbf{Z}_{i}\right)$ in (4.6.9') on page 293 for the random-effects estimator is nonsingular if the assumptions of Proposition 4.7 hold. Hint:
+
+$$
+\begin{aligned}
+\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Sigma}^{-1} \mathbf{Z}_{i}\right)= & \sum_{m=1}^{M} \sum_{h=1}^{M} \sigma^{m h} \mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right) \\
+= & \sum_{m=1}^{M} \sum_{h=1}^{M} \sigma^{m h} \mathrm{E}\left(\mathbf{z}_{i m} \mathbf{x}_{i}^{\prime}\right)\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1} \mathrm{E}\left(\mathbf{x}_{i} \mathbf{z}_{i h}^{\prime}\right) \\
+& \quad\left(\mathbf{x}_{i} \text { can reappear, since } \mathbf{x}_{i} \text { includes } \mathbf{z}_{i m} \text { and } \mathbf{z}_{i h}\right) \\
+= & \boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1}\right) \boldsymbol{\Sigma}_{\mathbf{x z}}
+\end{aligned}
+$$
+
+$\boldsymbol{\Sigma}_{\mathbf{x z}}$ is of full column rank by Assumption 4.4'.\\
+(b) Show that $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)$ in (4.6.13') on page 293 for pooled OLS is invertible.
+
+Hint: Replace $\boldsymbol{\Sigma}^{-1}$ by $\mathbf{I}$.
+
+\subsection*{4.7 Application: Interrelated Factor Demands}
+The translog cost function is a generalization of the Cobb-Douglas (log-linear) cost function introduced in Section 1.7. An attractive feature of the translog specification is that the cost-minimizing input demand equations, if transformed into cost share equations, are linear in the logs of output and factor prices, with the coefficients inheriting (a subset of) the cost function parameters characterizing the technology. Those technology parameters can be estimated from a system of equations for cost shares. Early applications of this idea include Berndt and Wood (1975) and Christensen and Greene (1976). This section reviews their basic methodology. The methodology is also applicable in the analysis of consumer demand.
+
+To better focus on the issue at hand and to follow the practice of those original studies, we will proceed under the assumption of conditional homoskedasticity. Also, we will assume that the regressors in the system of share equations, which are log factor prices and log output, are predetermined. As we argued in Section 1.7, this assumption is not unreasonable for the U.S. electric power industry before the recent deregulation. Consequently, the appropriate multiple-equation estimation technique is the multivariate regression.
+
+\section*{The Translog Cost Function}
+We have already made a partial transition from the log-linear to translog cost function: in the empirical exercise of Chapter 1, we entertained the idea of adding the square of log output to the log-linear cost function (see Model 4). If this idea is\\
+extended to the quadratic and cross terms in the logs of all the arguments, the loglinear cost function with three inputs (1.7.4) becomes the translog cost function:
+
+
+\begin{align*}
+\log (C)= & \alpha_{0}+\sum_{j=1}^{3} \alpha_{j} \log \left(p_{j}\right)+\frac{1}{2} \sum_{j=1}^{3} \sum_{k=1}^{3} \gamma_{j k} \log \left(p_{j}\right) \log \left(p_{k}\right) \\
+& +\alpha_{Q} \log (Q)+\frac{1}{2} \gamma_{Q Q}(\log (Q))^{2}+\sum_{j=1}^{3} \gamma_{j Q} \log \left(p_{j}\right) \log (Q)+\varepsilon \tag{4.7.1}
+\end{align*}
+
+
+Here, and as in the rest of this section, the observation subscript " $i$ " is dropped. In this expression, the term
+
+$$
+\frac{1}{2} \sum_{j=1}^{3} \sum_{k=1}^{3} \gamma_{j k} \log \left(p_{j}\right) \log \left(p_{k}\right)
+$$
+
+is a quadratic form representing the second-order effect of factor prices. We can assume, without loss of generality, that the $3 \times 3$ matrix of quadratic form coefficients, $\left(\gamma_{j k}\right)$, is symmetric: ${ }^{9}$
+
+
+\begin{equation*}
+\gamma_{j k}=\gamma_{k j} \quad(j, k=1,2,3) . \tag{4.7.2}
+\end{equation*}
+
+
+In the case of log-linear cost function examined in Section 1.7, the degree of returns to scale can be calculated as the reciprocal of the elasticity of costs with respect to output. If this definition is applied to the translog cost function, we have
+
+
+\begin{align*}
+\text { returns to scale } & =\frac{1}{\partial \log (C) / \partial \log (Q)} \\
+& =\frac{1}{\alpha_{Q}+\gamma_{Q Q} \log (Q)+\sum_{j=1}^{3} \gamma_{j Q} \log \left(p_{j}\right)} . \tag{4.7.3}
+\end{align*}
+
+
+\section*{Factor Shares}
+The link between the cost function parameters and factor demands is given by Shephard's Lemma from microeconomics. Let $x_{j}$ be the cost-minimizing demand for factor input $j$ given factor prices ( $p_{1}, p_{2}, p_{3}$ ) and output $Q$. So $\sum_{j=1}^{3} p_{j} x_{j}=C$. The lemma states that
+
+\footnotetext{${ }^{9}$ Let $\mathbf{x}$ be an $n$-dimensional vector. The associated quadratic form is $\mathbf{x}^{\prime} \mathbf{A} \mathbf{x}$. Since $\mathbf{x}^{\prime} \mathbf{A} \mathbf{x}=\mathbf{x}^{\prime} \mathbf{A}^{\prime} \mathbf{x}$, we have $\mathbf{x}^{\prime} \mathbf{A} \mathbf{x}=\mathbf{x}^{\prime}\left[\left(\mathbf{A}+\mathbf{A}^{\prime}\right) / 2\right] \mathbf{x}$. So if $\mathbf{A}$ is not symmetric, it can be replaced by the symmetric matrix $\left(\mathbf{A}+\mathbf{A}^{\prime}\right) / 2$ without changing the value of the quadratic form.
+}
+
+\begin{equation*}
+\frac{\partial C}{\partial p_{j}}=x_{j} . \tag{4.7.4}
+\end{equation*}
+
+
+Noting that
+
+$$
+\frac{\partial \log (C)}{\partial \log \left(p_{j}\right)}=\frac{p_{j}}{C} \cdot \frac{\partial C}{\partial p_{j}},
+$$
+
+the lemma can also be written as stating that the logarithmic partial derivative of the cost function equals the factor share, namely,
+
+
+\begin{equation*}
+\frac{\partial \log (C)}{\partial \log \left(p_{j}\right)}=\frac{p_{j} x_{j}}{C} \tag{4.7.5}
+\end{equation*}
+
+
+For the case of translog cost function given in (4.7.1), the log partial derivative is easy to calculate:
+
+
+\begin{equation*}
+\frac{\partial \log (C)}{\partial \log \left(p_{j}\right)}=\alpha_{j}+\sum_{k=1}^{3} \gamma_{j k} \log \left(p_{k}\right)+\gamma_{j Q} \log (Q) \quad(j=1,2,3) . \tag{4.7.6}
+\end{equation*}
+
+
+Combining this with (4.7.5) and defining the cost shares $s_{j} \equiv p_{j} x_{j} / C$, we obtain the following system of cost share equations associated with the translog cost function:
+
+
+\begin{equation*}
+s_{j}=\alpha_{j}+\sum_{k=1}^{3} \gamma_{j k} \log \left(p_{k}\right)+\gamma_{j Q} \log (Q) \quad(j=1,2,3) . \tag{4.7.7}
+\end{equation*}
+
+
+This system of share equations is subject to the cross-equation restrictions that the coefficient of $\log \left(p_{k}\right)$ in the $s_{j}$ equation equals the coefficient of $\log \left(p_{j}\right)$ in the $s_{k}$ equation for $j \neq k$. In the rest of this section, these cross-equation restrictions will be called the symmetry restrictions, although they are not a consequence of the symmetry assumption (4.7.2). Those cross-equation restrictions are a consequence of calculus: you should verify that, if you did not assume symmetry, the coefficient of $\log \left(p_{2}\right)$ in the $s_{1}$ equation, for example, would be $\left(\gamma_{12}+\gamma_{21}\right) / 2$, which would equal the $\log \left(p_{1}\right)$ coefficient in the $s_{2}$ equation.
+
+\section*{Substitution Elasticities}
+In the production function literature, a great deal of attention has been paid to estimating the elasticities of substitution (more precisely, the Hicks-Allen partial elasticities of substitution) between various inputs. ${ }^{10}$ As shown in Uzawa (1962),
+
+\footnotetext{${ }^{10}$ See Section 9.2 of Berndt (1991) for a historical overview.
+}
+the substitution elasticity between inputs $j$ and $k$, denoted $\eta_{j k}$, is related to the cost function $C$ by the formula
+
+\begin{equation*}
+\eta_{j k}=\frac{C \cdot \frac{\partial^{2} C}{\partial p_{j} \partial p_{k}}}{\frac{\partial C}{\partial p_{j}} \cdot \frac{\partial C}{\partial p_{k}}} \tag{4.7.8}
+\end{equation*}
+
+
+For the translog cost function, some routine calculus and Shephard's lemma show that
+
+\[
+\eta_{j k}= \begin{cases}\frac{\gamma_{j k}+s_{j} s_{k}}{s_{j} s_{k}} & \text { for } j \neq k  \tag{4.7.9}\\ \frac{\gamma_{j j}+s_{j}^{2}-s_{j}}{s_{j}^{2}} & \text { for } j=k\end{cases}
+\]
+
+where $s_{j}$ is the cost share of input $j$. In the special case of the log-linear cost function where $\gamma_{j k}=0$ for all $j, k$, we have $\eta_{j k}=1$ for $j \neq k$, verifying that the substitution elasticities are unity between any two factor inputs for the CobbDouglas technology.
+
+\section*{Properties of Cost Functions}
+As is well known in microeconomics (see, e.g., Varian, 1992, Chapter 5), cost functions have the following properties.
+
+\begin{enumerate}
+  \item (Homogeneity) Homogeneous of degree one in factor prices.
+  \item (Monotonicity) Nondecreasing in factor prices, which requires that $\partial C / \partial p_{j} \geq$ 0 for all $j$.
+  \item (Concavity) Concave in factor prices, which requires that the Hessian (the matrix of second-order derivatives) of a cost function $C$, say
+\end{enumerate}
+
+$$
+\mathbf{H} \equiv\left(\partial^{2} C / \partial p_{j} \partial p_{k}\right)
+$$
+
+be negative semidefinite. By (4.7.8), concavity is satisfied if and only if the matrix of substitution elasticities, $\left(\eta_{j k}\right)$, is negative semidefinite. ${ }^{11}$
+
+For the case of translog cost function, these properties take the following form.
+
+\footnotetext{${ }^{11}$ Let $\mathbf{H}$ be the Hessian of the cost function $C$ and $\mathbf{V}$ be a diagonal matrix whose $j$-th diagonal is $\partial C / \partial p_{j}$. Then the matrix of substitution elasticities, $\left(\eta_{j k}\right)$, given in (4.7.8) can be written compactly as: $\left(\eta_{j k}\right)=C \cdot \mathbf{V}^{-1} \mathbf{H V}^{-1}$. Since $\mathbf{V}$ is a diagonal matrix, $\mathbf{V}^{-1} \mathbf{H} \mathbf{V}^{-1}$ is negative semidefinite if and only if $\mathbf{H}$ is.
+}\begin{enumerate}
+  \item Homogeneity: It is easy to verify (see a review question) that, with the symmetry restrictions imposed on $\left(\gamma_{j k}\right)$, the homogeneity condition can be expressed as
+\end{enumerate}
+
+\[
+\left\{\begin{array}{l}
+\alpha_{1}+\alpha_{2}+\alpha_{3}=1,  \tag{4.7.10}\\
+\gamma_{11}+\gamma_{12}+\gamma_{13}=0, \\
+\gamma_{12}+\gamma_{22}+\gamma_{23}=0, \\
+\gamma_{13}+\gamma_{23}+\gamma_{33}=0, \\
+\gamma_{1 Q}+\gamma_{2 Q}+\gamma_{3 Q}=0 .
+\end{array}\right.
+\]
+
+Homogeneity will be imposed in our estimation of the share equations.\\
+2. Monotonicity: Given Shephard's lemma, monotonicity is equivalent to requiring that the right-hand sides of the share equations (4.7.7) be nonnegative for any combinations of factor prices and output. For any values of coefficients, we can always choose factor prices and output so that this condition is violated. Accordingly, we cannot impose monotonicity on the share equations. It is possible, however, to check whether monotonicity is satisfied for the "relevant range," that is, if it is satisfied for all the combinations of factor prices and output found in the data at hand; we will do this for the estimated parameters below.\\
+3. Concavity: Concavity requires that the matrix of substitution elasticities given by (4.7.9) be negative semidefinite for any combinations of cost shares. It is possible to show that a necessary and sufficient condition for concavity is that the $3 \times 3$ matrix ( $\gamma_{j k}$ ) be negative semidefinite. ${ }^{12}$ In particular, the diagonal elements, $\left(\gamma_{11}, \gamma_{22}, \gamma_{33}\right)$, have to be nonpositive. The condition that the matrix $\left(\gamma_{j k}\right)$ be negative semidefinite is a set of inequality conditions on its elements. Estimation while imposing inequality conditions is feasible (see Jorgenson, 1986, Section 2.4.5, for the required technique), but it will not be pursued here.
+
+\section*{Stochastic Specifications}
+The translog cost function given in (4.7.1) has an (additive) error term, $\varepsilon$, while the share equations derived from it have none. On our data, the share equations do
+
+\footnotetext{${ }^{12}$ Proof: Let $s$ here be a $3 \times 1$ vector whose $j$-th element is $s_{j}$ and $\mathbf{S}$ here be a diagonal matrix whose $j$-th element is $s_{j}$. Then the matrix of substitution elasticities given in (4.7.9) can be written as $\left(\eta_{j k}\right)=\mathbf{S}^{-1}\left[\left(\gamma_{j k}\right)+\right. \mathbf{s s}^{\prime}-\mathbf{S ] S} \mathbf{S}^{-1}$. For some combination of cost shares, $\mathbf{s s}^{\prime}-\mathbf{S}$ is zero (for example, set $\mathbf{s}=(1,0,0)^{\prime}$ ). So a necessary condition for the matrix ( $\eta_{j k}$ ) to be negative semidefinite is that the matrix ( $\gamma_{j k}$ ) is negative semidefinite. This condition is also sufficient, because the matrix $s s^{\prime}-\mathbf{S}$ is negative semidefinite and the sum of two negative semidefinite matrices is negative semidefinite.
+}
+not hold exactly for each firm, so we need to allow for errors. The usual practice is to add a random disturbance term to each share equation. There are two ways to justify such a stochastic specification. One is optimization errors: firms make random errors in choosing their cost-minimizing input combinations. But then actual total costs will not be as low as what is indicated in the cost function, because there is no room for optimization errors in the derivation of the cost function. The other justification for errors is to allow $\alpha_{j}$ in the share equations to be stochastic and differ across firms. The intercept in the share equation for $j$ would then be the mean of $\alpha_{j}$, and the error term would be the deviation of $\alpha_{j}$ from its mean. But this also means that the $\alpha_{j}$ in the cost function has to be treated as random.
+
+In either case, therefore, internal consistency would prevent us from adding the cost function to the share equations with additive errors to form a system of estimation equations. In the rest of this section, we will focus on a system that consists entirely of share equations. This, however, means that we can estimate only a subset of the cost function parameters. Two parameters, $\alpha_{Q}$ and $\gamma_{Q Q}$, which are absent in factor demands, cannot be estimated. Since the degree of returns to scale depends on them (see (4.7.3)), it cannot be estimated either.
+
+\section*{The Nature of Restrictions}
+With the additive errors appended, the system of share equations (4.7.7) is written out in full as
+
+\[
+\left\{\begin{array}{l}
+s_{1}=\alpha_{1}+\gamma_{11} \log \left(p_{1}\right)+\gamma_{12} \log \left(p_{2}\right)+\gamma_{13} \log \left(p_{3}\right)+\gamma_{1 Q} \log (Q)+\varepsilon_{1},  \tag{4.7.11}\\
+s_{2}=\alpha_{2}+\gamma_{21} \log \left(p_{1}\right)+\gamma_{22} \log \left(p_{2}\right)+\gamma_{23} \log \left(p_{3}\right)+\gamma_{2 Q} \log (Q)+\varepsilon_{2}, \\
+s_{3}=\alpha_{3}+\gamma_{31} \log \left(p_{1}\right)+\gamma_{32} \log \left(p_{2}\right)+\gamma_{33} \log \left(p_{3}\right)+\gamma_{3 Q} \log (Q)+\varepsilon_{3} .
+\end{array}\right.
+\]
+
+This system has fifteen coefficients or parameters. The cross-equation restrictions (that the $3 \times 3$ matrix of $\log$ price coefficients, ( $\gamma_{j k}$ ), be symmetric) and the homogeneity restrictions (4.7.10) form a set of eight restrictions, so that the fifteen parameters can be described by seven free parameters. To understand this, it is useful to decompose the restrictions into the following three groups.
+
+\[
+\text { adding-up restrictions: }\left\{\begin{array}{l}
+\alpha_{1}+\alpha_{2}+\alpha_{3}=1,  \tag{4.7.12}\\
+\gamma_{11}+\gamma_{21}+\gamma_{31}=0, \\
+\gamma_{12}+\gamma_{22}+\gamma_{32}=0, \\
+\gamma_{13}+\gamma_{23}+\gamma_{33}=0, \\
+\gamma_{1 Q}+\gamma_{2 Q}+\gamma_{3 Q}=0 .
+\end{array}\right.
+\]
+
+
+\begin{align*}
+\text { homogeneity: } & \left\{\begin{array}{l}
+\gamma_{11}+\gamma_{12}+\gamma_{13}=0, \\
+\gamma_{21}+\gamma_{22}+\gamma_{23}=0, \\
+\gamma_{31}+\gamma_{32}+\gamma_{33}=0,
+\end{array}\right.  \tag{4.7.13}\\
+\text { symmetry: } & \left\{\begin{array}{l}
+\gamma_{12}=\gamma_{21}, \\
+\gamma_{13}=\gamma_{31}, \\
+\gamma_{23}=\gamma_{32} .
+\end{array}\right. \tag{4.7.14}
+\end{align*}
+
+
+These are eleven equations, but only eight of them are restrictive: given the addingup restrictions, one of the three homogeneity restrictions is implied by the two others, and given the adding-up and homogeneity restrictions, two of the three symmetry restrictions are implied by the other (you should verify this).
+
+\section*{Multivariate Regression Subject to Cross-Equation Restrictions}
+It is straightforward to impose the homogeneity restrictions, (4.7.13), because they are not cross-equation restrictions. We can eliminate three parameters, say ( $\gamma_{13}$, $\gamma_{23}, \gamma_{33}$ ), from the system to obtain
+
+\[
+\left\{\begin{array}{l}
+s_{1}=\alpha_{1}+\gamma_{11} \log \left(p_{1} / p_{3}\right)+\gamma_{12} \log \left(p_{2} / p_{3}\right)+\gamma_{1 Q} \log (Q)+\varepsilon_{1}  \tag{4.7.15}\\
+s_{2}=\alpha_{2}+\gamma_{21} \log \left(p_{1} / p_{3}\right)+\gamma_{22} \log \left(p_{2} / p_{3}\right)+\gamma_{2 Q} \log (Q)+\varepsilon_{2} \\
+s_{3}=\alpha_{3}+\gamma_{31} \log \left(p_{1} / p_{3}\right)+\gamma_{32} \log \left(p_{2} / p_{3}\right)+\gamma_{3 Q} \log (Q)+\varepsilon_{3}
+\end{array}\right.
+\]
+
+The system (with or without the imposition of homogeneity) has the special feature that the sum of the dependent variables, ( $s_{1}, s_{2}, s_{3}$ ), adds up to unity for all observations. This feature and the adding-up restrictions imply that the sum of the error terms, $\left(\varepsilon_{1}, \varepsilon_{2}, \varepsilon_{3}\right)$, is zero for all observations, so the $3 \times 3$ error covariance matrix, $\boldsymbol{\Sigma} \equiv \operatorname{Var}\left(\varepsilon_{1}, \varepsilon_{2}, \varepsilon_{3}\right)$, is singular. Recall that, in the multivariate regression model (which is the special case of the SUR model described in Proposition 4.6), the $\mathbf{S}$ matrix defined in (4.1.11) can be written as a Kronecker product: $\mathbf{S}=\boldsymbol{\Sigma} \otimes \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$. Thus $\mathbf{S}$ becomes singular, in violation of Assumption 4.5. The common practice to deal with this singularity problem is to drop one equation from the system and estimate the system composed of the remaining equations (see below for more on this issue). The coefficients in the equation that was dropped can be calculated from the coefficient estimates for the included two equations by using the adding-up restrictions. The adding-up restrictions as well as homogeneity are thus incorporated.
+
+As mentioned above, given the adding-up restrictions and homogeneity, there is effectively only one symmetry restriction. For example, if $\left(\gamma_{13}, \gamma_{23}, \gamma_{33}\right)$ are\\
+eliminated from the system to incorporate homogeneity, as in (4.7.15), and if the third equation is dropped to incorporate the adding-up restrictions, then the unique symmetry restriction can be stated as $\gamma_{12}=\gamma_{21}$. If this cross-equation restriction is imposed, the system becomes
+
+\[
+\left\{\begin{array}{l}
+s_{1}=\alpha_{1}+\gamma_{11} \log \left(p_{1} / p_{3}\right)+\gamma_{12} \log \left(p_{2} / p_{3}\right)+\gamma_{1 Q} \log (Q)+\varepsilon_{1},  \tag{4.7.16}\\
+s_{2}=\alpha_{2}+\gamma_{12} \log \left(p_{1} / p_{3}\right)+\gamma_{22} \log \left(p_{2} / p_{3}\right)+\gamma_{2 Q} \log (Q)+\varepsilon_{2} .
+\end{array}\right.
+\]
+
+Since the regressors are predetermined and since the equations have common regressors, the system can be estimated by the multivariate regression subject to the cross-equation restriction of symmetry. This constrained estimation, if it is cast in the "common coefficient" format explored in Section 4.6, can be transformed into an unconstrained estimation. That is, the system (4.7.16) can be written in the "common coefficient" format of $\mathbf{y}_{i}=\mathbf{Z}_{i} \boldsymbol{\delta}+\boldsymbol{\varepsilon}_{i}$ (see (4.6.1') on page 292), if we set (while still dropping the " $i$ " subscript from $s_{1}, s_{2}, \log \left(p_{1} / p_{3}\right), \log \left(p_{2} / p_{3}\right)$, and $\log (Q)$ )
+
+
+\begin{gather*}
+\mathbf{y}_{i}=\left[\begin{array}{l}
+s_{1} \\
+s_{2}
+\end{array}\right], \\
+\mathbf{Z}_{i}=\left[\begin{array}{ccccccc}
+1 & 0 & \log \left(p_{1} / p_{3}\right) & \log \left(p_{2} / p_{3}\right) & 0 & \log (Q) & 0 \\
+0 & 1 & 0 & \log \left(p_{1} / p_{3}\right) & \log \left(p_{2} / p_{3}\right) & 0 & \log (Q)
+\end{array}\right], \\
+\boldsymbol{\delta}^{\prime}=\left[\begin{array}{lllllll}
+\alpha_{1} & \alpha_{2} & \gamma_{11} & \gamma_{12} & \gamma_{22} & \gamma_{1 Q} & \gamma_{2 Q}
+\end{array}\right] . \tag{4.7.17}
+\end{gather*}
+
+
+So the multivariate regression subject to symmetry is equivalent to the (unconstrained) random-effects estimation.
+
+This random-effects estimation of the two-equation system produces consistent estimates of the following seven parameters:
+
+$$
+\alpha_{1}, \alpha_{2}, \gamma_{11}, \gamma_{12}, \gamma_{22}, \gamma_{1 Q}, \gamma_{2 Q} .
+$$
+
+The rest of the fifteen share equation parameters,
+
+$$
+\alpha_{3}, \gamma_{13}, \gamma_{21}, \gamma_{23}, \gamma_{31}, \gamma_{32}, \gamma_{33}, \gamma_{3 Q},
+$$
+
+can be calculated using the adding-up restrictions (4.7.12), homogeneity (4.7.13), and symmetry (4.7.14). For example, $\gamma_{33}$ can be calculated as
+
+$$
+\gamma_{33}=-\gamma_{31}-\gamma_{32}=-\gamma_{13}-\gamma_{23}=\left(\gamma_{11}+\gamma_{12}\right)+\left(\gamma_{12}+\gamma_{22}\right)=\gamma_{11}+2 \gamma_{12}+\gamma_{22} .
+$$
+
+So the point estimate of $\gamma_{33}$ is given by
+
+$$
+\hat{\gamma}_{33}=\hat{\gamma}_{11}+2 \hat{\gamma}_{12}+\hat{\gamma}_{22},
+$$
+
+where ( $\hat{\gamma}_{11}, \hat{\gamma}_{12}, \hat{\gamma}_{22}$ ) are the random-effects estimates. The standard error of $\hat{\gamma}_{33}$ can be calculated by applying the "delta method" (see Lemma 2.5) to the consistent estimate of $\operatorname{Avar}\left(\hat{\gamma}_{11}, \hat{\gamma}_{12}, \hat{\gamma}_{22}\right)$ obtained from the random-effects estimation.
+
+\section*{Which Equation to Delete?}
+Does it matter which equation is to be dropped from the system? It clearly would not if there were no cross-equation restrictions, because the multivariate regression is numerically equivalent to the equation-by-equation OLS. To see if the numerical invariance holds under the cross-equation restriction, let $\Sigma^{*}$ be the $2 \times 2$ matrix of error covariances for the two-equation system obtained from dropping one equation from the three-equation system (4.7.15). It is the appropriate submatrix of the $3 \times 3$ error covariance matrix $\mathbf{\Sigma}$. (For example, if the third equation is dropped, then $\boldsymbol{\Sigma}^{*}$ is the leading $2 \times 2$ submatrix of the $3 \times 3$ matrix $\boldsymbol{\Sigma}$.) To implement the random-effects estimation, we need a consistent estimate, $\widehat{\boldsymbol{\Sigma}}^{*}$, of $\boldsymbol{\Sigma}^{*}$. Two ways for obtaining $\widehat{\mathbf{\Sigma}}^{*}$ are:
+
+\begin{itemize}
+  \item (equation-by-equation OLS) Estimate the two equations separately, thus ignoring the cross-equation restriction, and then use the residuals to calculate $\widehat{\boldsymbol{\Sigma}}^{*}$. Equivalently, estimate the three equations separately by OLS, use the threeequation residuals to calculate $\widehat{\mathbf{\Sigma}}$ (an estimate of the $3 \times 3$ error covariance matrix $\boldsymbol{\Sigma}$ ), and then extract the appropriate submatrix from $\widehat{\boldsymbol{\Sigma}}$. If $\widehat{\boldsymbol{\Sigma}}^{*}$ is thus obtained, then (as you will verify in the empirical exercise) the numerical invariance is guaranteed; it does not matter which equation to drop.
+  \item Obtain $\widehat{\mathbf{\Sigma}}^{*}$ from some technique that exploits the cross-equation restriction (such as the pooled OLS applied to the common coefficient format). The numerical invariance in this case is not guaranteed.
+\end{itemize}
+
+The numerical invariance holds under equation-by-equation OLS, because the $3 \times 3$ matrix $\widehat{\boldsymbol{\Sigma}}$, from which $\widehat{\boldsymbol{\Sigma}}^{*}$ is derived, is singular in finite samples. In large samples, as long as $\widehat{\boldsymbol{\Sigma}}^{*}$ is consistent, and even if $\widehat{\boldsymbol{\Sigma}}^{*}$ is not from equation-by-equation OLS, this relationship between $\widehat{\boldsymbol{\Sigma}}^{*}$ and $\widehat{\boldsymbol{\Sigma}}$ holds asymptotically because $\boldsymbol{\Sigma}$ is singular. So the invariance holds asymptotically if $\widehat{\mathbf{\Sigma}}^{*}$ is consistent. In particular, the asymptotic variance of parameter estimates does not depend on the choice of equation to drop.
+
+\section*{Results}
+Nerlove's study examined in Chapter 1 was based on 1955 cross-section data for U.S. electric utility companies. Christensen and Greene (1976) updated Nerlove's data to 1970 for 99 firms, using data sources that allowed them to construct better measures of the wage rate and fuel prices (see their Section V for more details). Their data set includes information on factor shares, so the share equations can be estimated. The means and standard deviations for some of the variables in the data are reported in Table 4.3, which shows that fuel accounts for a very large share of the cost of electricity generation.
+
+We use the equation-by-equation OLS residuals to calculate $\widehat{\mathbf{\Sigma}}^{*}$, so that the random-effects estimates are numerically invariant to the choice of equation to drop. The estimates are reported in Table 4.4, along with $\widehat{\Sigma}$ derived from the equation-by-equation OLS. The factor input index $j$ is 1 for labor, 2 for capital, and 3 for fuel. Some (actually all) of the diagonal elements of the matrix of estimated price coefficients, $\left(\hat{\gamma}_{j k}\right)$, are positive. So the matrix is not negative semidefinite, in violation of concavity. ${ }^{13}$
+
+Even if ( $\widehat{\gamma}_{j k}$ ) is not negative semidefinite, the associated substitution elasticities given in the formula (4.7.9) may be negative semidefinite. Since the formula is derived assuming no optimization errors, fitted cost shares, rather than actual cost shares, should be used for the $s_{j}$ and $s_{k}$ in the formula. The elasticities averaged over firms are shown in Table 4.5. (They are the off-diagonal elements of the symmetric $3 \times 3$ substitution elasticity matrix thus calculated.) The three factor inputs are substitutes because the substitution elasticities are positive, but the degree of substitutability is far less than what is assumed in the log-linear technology. Concavity is violated even in the "relevant range": for 20 firms out of the 99 in the sample, the matrix of substitution elasticities is not negative semidefinite. Monotonicity, in contrast, is satisfied in the relevant range: fitted cost shares are nonnegative for all inputs for all firms in the sample.
+
+\footnotetext{${ }^{13}$ This "test" of concavity can be formalized. Using the delta method, we can calculate the asymptotic distribution of the characteristic roots of ( $\hat{\gamma}_{j k}$ ). The null hypothesis of concavity is that those characteristic roots are all nonpositive.
+}\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 4.3: Simple Statistics (Sample Size $=99$ )}
+\begin{tabular}{ccccc}
+\hline
+ & \begin{tabular}{c}
+Output in \\
+kilowatt hours \\
+\end{tabular} & \begin{tabular}{c}
+Labor \\
+share \\
+\end{tabular} & \begin{tabular}{c}
+Capital \\
+share \\
+\end{tabular} & \begin{tabular}{c}
+Fuel \\
+share \\
+\end{tabular} \\
+\hline
+Mean & 9.0 & 0.141 & 0.227 & 0.631 \\
+Std. deviation & 10.3 & 0.059 & 0.062 & 0.095 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 4.4: Random-Effects Estimates}
+\begin{tabular}{|l|l|l|l|}
+\hline
+Parameter & Point estimate & Standard error & $t$-value \\
+\hline
+$\alpha_{1}$ & -0.132 & 0.106 & -1.25 \\
+\hline
+$\alpha_{2}$ & 0.318 & 0.085 & 3.75 \\
+\hline
+$\alpha_{3}$ & 0.813 & 0.094 & 8.69 \\
+\hline
+$\gamma_{11}$ & 0.084 & 0.020 & 4.19 \\
+\hline
+$\gamma_{12}$ & -0.023 & 0.016 & -1.46 \\
+\hline
+$\gamma_{13}$ & -0.060 & 0.015 & -3.92 \\
+\hline
+$\gamma_{22}$ & 0.122 & 0.020 & 6.19 \\
+\hline
+$\gamma_{23}$ & -0.099 & 0.017 & -5.75 \\
+\hline
+$\gamma_{33}$ & 0.159 & 0.023 & 6.90 \\
+\hline
+$\gamma_{1 Q}$ & -0.0211 & 0.0025 & -8.55 \\
+\hline
+$\gamma_{2 Q}$ & -0.0086 & 0.0030 & -2.87 \\
+\hline
+$\gamma_{3 Q}$ & 0.0297 & 0.0037 & 7.98 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+$\widehat{\mathbf{\Sigma}}$ by pooled OLS $=\left[\begin{array}{ccc}0.00173 & -0.000171 & -0.00156 \\ -0.000171 & 0.00253 & -0.00236 \\ -0.00156 & -0.00236 & 0.00391\end{array}\right]$
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 4.5: Substitution Elasticities}
+\begin{tabular}{ccc}
+\hline\hline
+Labor-Capital & Capital-Fuel & Labor-Fuel \\
+\hline
+0.17 & 0.27 & 0.29 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item Derive (4.7.6). Verify that the symmetry of $\left(\gamma_{j k}\right)$ is used in the derivation.
+  \item Derive the homogeneity restrictions (4.7.10). Hint: For the translog cost function (4.7.1) to be homogeneous of degree one in factor prices, it is necessary and sufficient that, for any scalar $\lambda \neq 0$,
+\end{enumerate}
+
+$$
+\begin{aligned}
+& \sum_{j=1}^{3} \alpha_{j} \log \left(\lambda \cdot p_{j}\right)+\frac{1}{2} \sum_{j=1}^{3} \sum_{k=1}^{3} \gamma_{j k} \log \left(\lambda \cdot p_{j}\right) \log \left(\lambda \cdot p_{k}\right) \\
+& \quad+\alpha_{Q} \log (Q)+\frac{1}{2} \gamma_{Q Q}(\log (Q))^{2}+\sum_{j=1}^{3} \gamma_{j Q} \log \left(\lambda \cdot p_{j}\right) \log (Q) \\
+& =\log (\lambda)+\sum_{j=1}^{3} \alpha_{j} \log \left(p_{j}\right)+\frac{1}{2} \sum_{j=1}^{3} \sum_{k=1}^{3} \gamma_{j k} \log \left(p_{j}\right) \log \left(p_{k}\right) \\
+& \quad+\alpha_{Q} \log (Q)+\frac{1}{2} \gamma_{Q Q}(\log (Q))^{2}+\sum_{j=1}^{3} \gamma_{j Q} \log \left(p_{j}\right) \log (Q)
+\end{aligned}
+$$
+
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item (Counting restrictions) Using the adding-up restrictions (4.7.12), two of the three equations in (4.7.13), and one of the three equations in (4.7.14), derive the other two equations in (4.7.14).
+  \item (OLS respects singularity) Consider applying the equation-by-equation OLS to each of the three equations in (4.7.15). Show that the equation-by-equation OLS estimates of the coefficients satisfy the adding-up restrictions. Show that the $3 \times 3$ error covariance matrix calculated from the equation-by-equation OLS residuals is singular. Hint: Let $\mathbf{y}_{1}, \mathbf{y}_{2}, \mathbf{y}_{3}$ be $n$-dimensional vectors of the three dependent variables (where $n$ is the sample size), and let $\mathbf{X}$ be the $n \times K$ data matrix of the common $K$ regressors ( $K=4$ in (4.7.15)). Note that $\mathbf{y}_{1}+\mathbf{y}_{2}+\mathbf{y}_{3}=\mathbf{0}$. The equation-by-equation OLS coefficient estimates are $\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{y}_{j}, j=1,2,3$. The three $n \times 1$ residual vectors are $\mathbf{M} \mathbf{y}_{j}, j=1,2,3$, where $\mathbf{M} \equiv \mathbf{I}_{n}-\mathbf{X}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime}$.
+\end{enumerate}
+
+\section*{PROBLEM SET FOR CHAPTER 4}
+\section*{ANALYTICAL EXERCISES}
+\begin{enumerate}
+  \item (Data matrix representation of 3SLS) In the 3SLS model, the set of instruments is the same across equations. Let $K$ be the number of common instruments. Define:
+\end{enumerate}
+
+$$
+\begin{gathered}
+\underset{(n \times K)}{\mathbf{X}}=\left[\begin{array}{c}
+\mathbf{x}_{1}^{\prime} \\
+\vdots \\
+\mathbf{x}_{n}^{\prime}
+\end{array}\right]=\left[\begin{array}{ccc}
+x_{11} & \cdots & x_{1 K} \\
+\vdots & & \vdots \\
+x_{n 1} & \cdots & x_{n K}
+\end{array}\right], \\
+\underset{\left(n \times L_{m}\right)}{\mathbf{Z}_{m}}=\left[\begin{array}{c}
+\mathbf{z}_{1 m}^{\prime} \\
+\vdots \\
+\mathbf{z}_{n m}^{\prime}
+\end{array}\right],{ }_{\left(M n \times \sum_{m=1}^{M} L_{m}\right)}^{\mathbf{Z}}=\left[\begin{array}{lll}
+\mathbf{Z}_{1} & & \\
+& \ddots & \\
+& & \mathbf{Z}_{M}
+\end{array}\right], \\
+\underset{\left(\sum_{m=1}^{M} L_{m} \times 1\right)}{\boldsymbol{\delta}}=\left[\begin{array}{c}
+\boldsymbol{\delta}_{1} \\
+\vdots \\
+\boldsymbol{\delta}_{M}
+\end{array}\right], \\
+\underset{(M n \times 1)}{\mathbf{y}}=\left[\begin{array}{c}
+\mathbf{y}_{1} \\
+\vdots \\
+\mathbf{y}_{M}
+\end{array}\right], \quad \underset{(n \times 1)}{\mathbf{y}_{m}}=\left[\begin{array}{c}
+y_{1 m} \\
+\vdots \\
+y_{n m}
+\end{array}\right], \\
+\underset{(M n \times 1)}{\boldsymbol{\varepsilon}}=\left[\begin{array}{c}
+\varepsilon_{1} \\
+\vdots \\
+\varepsilon_{M}
+\end{array}\right], \quad \underset{(n \times 1)}{\boldsymbol{\varepsilon}_{m}}=\left[\begin{array}{c}
+\boldsymbol{\varepsilon}_{1 m} \\
+\vdots \\
+\boldsymbol{\varepsilon}_{n m}
+\end{array}\right] .
+\end{gathered}
+$$
+
+Show the following:
+
+\begin{itemize}
+  \item Assumption 4.1 becomes $\mathbf{y}=\mathbf{Z} \boldsymbol{\delta}+\boldsymbol{\varepsilon}$,
+  \item $\widehat{\mathbf{S}}$ in (4.5.10) becomes $\widehat{\mathbf{S}}=\widehat{\mathbf{\Sigma}} \otimes \frac{1}{n} \mathbf{X}^{\prime} \mathbf{X}$,
+  \item $\hat{\boldsymbol{\delta}}_{3 \text { SLS }}=\left[\mathbf{Z}^{\prime}\left(\widehat{\boldsymbol{\Sigma}}^{-1} \otimes \mathbf{P}\right) \mathbf{Z}\right]^{-1} \mathbf{Z}^{\prime}\left(\widehat{\boldsymbol{\Sigma}}^{-1} \otimes \mathbf{P}\right) \mathbf{y}$, where $\mathbf{P} \equiv \mathbf{X}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime}$,
+  \item $\widehat{\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{3 \text { SLS }}\right)}=n \cdot\left[\mathbf{Z}^{\prime}\left(\hat{\boldsymbol{\Sigma}}^{-1} \otimes \mathbf{P}\right) \mathbf{Z}\right]^{-1}$,
+  \item $\widehat{\mathbf{A}}_{m h}$ in (4.5.13) becomes $\widehat{\mathbf{A}}_{m h}=\frac{1}{n} \mathbf{Z}_{m}^{\prime} \mathbf{P} \mathbf{Z}_{h}$,
+  \item $\hat{\mathbf{c}}_{m h}$ in (4.5.14) becomes $\hat{\mathbf{c}}_{m h}=\frac{1}{n} \mathbf{Z}_{m}^{\prime} \mathbf{P} \mathbf{y}_{h}$.
+  \item $J\left(\hat{\boldsymbol{\delta}}_{3 \text { SLS }}, \widehat{\mathbf{S}}^{-1}\right)=\left(\mathbf{y}-\mathbf{Z} \hat{\boldsymbol{\delta}}_{3 \text { SLS }}\right)^{\prime}\left(\widehat{\mathbf{\Sigma}}^{-1} \otimes \mathbf{P}\right)\left(\mathbf{y}-\mathbf{Z} \hat{\boldsymbol{\delta}}_{3 \text { SLS }}\right)$.
+\end{itemize}
+
+Hint:
+
+$$
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}=\frac{1}{n} \mathbf{X}^{\prime} \mathbf{X}, \quad \mathbf{s}_{\mathbf{x y}}=\frac{1}{n}\left(\mathbf{I}_{M} \otimes \mathbf{X}\right)^{\prime} \mathbf{y}, \quad \mathbf{S}_{\mathbf{x z}}=\frac{1}{n}\left(\mathbf{I}_{M} \otimes \mathbf{X}\right)^{\prime} \mathbf{Z}
+$$
+
+Use formulas (A.11) and (A.13)-(A.15) of Appendix A.\\
+2. (Data matrix representation of SUR, RE, and Pooled OLS)\\
+(a) Prove that (4.5.13) reduces to $\left(4.5 .13^{\prime}\right)$ (on page 280) and (4.5.14) to (4.5.14'), under the SUR assumption (4.5.18). Hint: If $\mathbf{P} \equiv \mathbf{X}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime}$, then $\widehat{\mathbf{A}}_{m h}=\frac{1}{n} \mathbf{Z}_{m}^{\prime} \mathbf{P} \mathbf{Z}_{h}, \hat{\mathbf{c}}_{m h}=\frac{1}{n} \mathbf{Z}_{m}^{\prime} \mathbf{P} \mathbf{y}_{h} . \mathbf{P} \mathbf{Z}_{m}=\mathbf{Z}_{m}$ if the columns of $\mathbf{Z}_{m}$ are taken from the columns of $\mathbf{X}$.\\
+(b) Show that, for SUR,
+
+$$
+\begin{aligned}
+& \text { the estimator }=\left[\mathbf{Z}^{\prime}\left(\widehat{\mathbf{\Sigma}}^{-1} \otimes \mathbf{I}_{n}\right) \mathbf{Z}\right]^{-1} \mathbf{Z}^{\prime}\left(\widehat{\mathbf{\Sigma}}^{-1} \otimes \mathbf{I}_{n}\right) \mathbf{y}, \\
+& \text { its Avar }=n \cdot\left[\mathbf{Z}^{\prime}\left(\widehat{\mathbf{\Sigma}}^{-1} \otimes \mathbf{I}_{n}\right) \mathbf{Z}\right]^{-1} .
+\end{aligned}
+$$
+
+(c) Suppose, just for this part of the question, that $\mathbf{z}_{i m}=\mathbf{x}_{i}$ for all $m$. So $\mathbf{Z}=\mathbf{I}_{M} \otimes \mathbf{X}$. Show that SUR reduces to the multivariate regression estimator
+
+$$
+\left[\mathbf{I}_{M} \otimes\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime}\right] \mathbf{y} .
+$$
+
+Verify that the $m$-th $K$-dimensional block of this $M K$-dimensional vector is $\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{y}_{m}$.
+
+Now redefine $\mathbf{Z}$ as
+
+\[
+\underset{(M n \times L)}{\mathbf{Z}} \equiv\left[\begin{array}{c}
+\mathbf{Z}_{1}  \tag{*}\\
+\vdots \\
+\mathbf{Z}_{M}
+\end{array}\right]
+\]
+
+So Assumption $4.1^{\prime}$ (linear equations with common coefficients) can be written as $\mathbf{y}=\mathbf{Z} \boldsymbol{\delta}+\boldsymbol{\varepsilon}$, where $\mathbf{y}$ and $\boldsymbol{\varepsilon}$ are as in Analytical Exercise 1 and $\boldsymbol{\delta}$ is the $L$-dimensional vector of common coefficients.\\
+(d) Show that, for the random-effects estimator, the same formulas you derived in (b) for SUR hold with $\mathbf{Z}$ as just redefined as in (*). Hint: The estimator is given in (4.6.8) and its $\widehat{\text { Avar }}$ is in (4.6.10). Use formula (A.8) of the Appendix.\\
+(e) Show that
+
+$$
+\begin{gathered}
+\hat{\boldsymbol{\delta}}_{\text {pooled OLS }} \text { in }(4.6 .11)=\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{y}, \\
+\operatorname{Avar}\left(\hat{\delta}_{\text {pooled OLS }}\right) \text { in }(4.6 .14)=n \cdot\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1}\left[\mathbf{Z}^{\prime}\left(\widehat{\mathbf{\Sigma}} \otimes \mathbf{I}_{n}\right) \mathbf{Z}\right]\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} .
+\end{gathered}
+$$
+
+(f) In the $M n \times L$ matrix $\mathbf{Z}$ defined in (*), its rows are ordered first by the equation ( $m$ ) and then by observation ( $i$ ). Now order the rows first by observation (i), which amounts to redefining $\mathbf{Z}$ as
+
+$$
+\underset{(M n \times L)}{\mathbf{Z}} \equiv\left[\begin{array}{c}
+\mathbf{Z}_{1} \\
+\vdots \\
+\mathbf{Z}_{n}
+\end{array}\right],
+$$
+
+where $\mathbf{Z}_{i}(i=1,2, \ldots, n)$ is the $M \times L$ matrix defined in (4.6.15). Reorder rows of $\mathbf{y}$ and $\boldsymbol{\varepsilon}$ similarly:
+
+$$
+\underset{(M n \times 1)}{\mathbf{y}}=\left[\begin{array}{c}
+\mathbf{y}_{1} \\
+\vdots \\
+\mathbf{y}_{n}
+\end{array}\right], \quad \underset{(M n \times 1)}{\boldsymbol{\varepsilon}}=\left[\begin{array}{c}
+\boldsymbol{\varepsilon}_{1} \\
+\vdots \\
+\boldsymbol{\varepsilon}_{n}
+\end{array}\right] \text {. }
+$$
+
+How would the formulas for RE and pooled OLS you derived in (d) and (e) change? Hint: Just replace " $\widehat{\boldsymbol{\Sigma}} \otimes \mathbf{I}_{n}$ " by " $\mathbf{I}_{n} \otimes \widehat{\boldsymbol{\Sigma}}$ ". Set $M=2$ if you find the translation too hard.\\
+3. (GLS interpretation of SUR and RE) The SUR model consists of Assumptions 4.1-4.5, 4.7, and (4.5.18) (that $\mathbf{x}_{i}=$ union of $\left(\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)$ ). Specialize the model by strengthening Assumption 4.3 (orthogonality conditions) as
+
+$$
+\mathrm{E}\left(\varepsilon_{i m} \mid \mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)=0 \quad(m=1, \ldots, M),
+$$
+
+and Assumption 4.2 (ergodic stationarity) as stating that
+
+$$
+\left\{y_{i 1}, \ldots, y_{i M}, \mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right\}
+$$
+
+is i.i.d.\\
+(a) (Easy) Explain why these are stronger assumptions.\\
+(b) Let $\varepsilon(M n \times 1)$ and $\mathbf{Z}\left(M n \times \sum_{m} L_{m}\right)$ be as in Analytical Exercise 1 above.
+
+Show that the specialized model implies
+
+$$
+\mathrm{E}(\boldsymbol{\varepsilon} \mid \mathbf{Z})=\mathbf{0} \quad \text { and } \quad \mathrm{E}\left(\boldsymbol{\varepsilon} \boldsymbol{\varepsilon}^{\prime} \mid \mathbf{Z}\right)=\mathbf{\Sigma} \otimes \mathbf{I}_{n}
+$$
+
+Hint: For the first, what needs to be shown is $\mathrm{E}\left(\varepsilon_{i m} \mid \mathbf{Z}\right)=0$. For the latter, the ( $m, h$ ) block of $\mathrm{E}\left(\boldsymbol{\varepsilon} \boldsymbol{\varepsilon}^{\prime} \mid \mathbf{Z}\right)$ is $\mathrm{E}\left(\boldsymbol{\varepsilon}_{m} \boldsymbol{\varepsilon}_{h}^{\prime} \mid \mathbf{Z}\right)$, an $n \times n$ matrix. What needs to be shown is that this matrix is $\sigma_{m h} \mathbf{I}_{n}$.\\
+(c) (Finite-sample properties of SUR) Suppose $\boldsymbol{\Sigma}$ is known so that the consistent estimates $\hat{\sigma}_{m h}$ in the SUR formulas in Proposition 4.6 can be equated with the true value $\sigma_{m h}$.\\
+(i) Verify that the model satisfies the GLS assumptions of Section 1.6 (which are Assumptions 1.1-1.3 and (1.6.1)) with a sample size of Mn.\\
+(ii) Verify that the SUR estimator is the GLS estimator. Hint: The $\mathbf{X}$ in Section 1.6 is $\mathbf{Z}$ here. Show that $\sigma^{2} \mathbf{V}$ there is $\mathbf{\Sigma} \otimes \mathbf{I}_{n}$. Use your answer to 2(b).\\
+(iii) Verify that SUR is unbiased in finite samples in that $\mathrm{E}\left(\hat{\boldsymbol{\delta}}_{\text {SUR }}-\boldsymbol{\delta} \mid \mathbf{Z}\right)=$ 0.\\
+(iv) The expression for $\operatorname{Var}\left(\hat{\boldsymbol{\delta}}_{\text {SUR }} \mid \mathbf{Z}\right)$ is given in Proposition 1.7 of Section 1.6. Show that
+
+$$
+\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{\mathrm{SUR}}\right)=\operatorname{plim}_{n \rightarrow \infty} n \cdot \operatorname{Var}\left(\hat{\boldsymbol{\delta}}_{\mathrm{SUR}} \mid \mathbf{Z}\right)
+$$
+
+Hint: With $\mathrm{E}\left(\boldsymbol{\varepsilon \varepsilon ^ { \prime }} \mid \mathbf{Z}\right)=\boldsymbol{\Sigma} \otimes \mathbf{I}_{n}$, the matrix $\operatorname{Var}\left(\hat{\boldsymbol{\delta}}_{\text {SUR }} \mid \mathbf{Z}\right)$ is the inverse of a matrix whose ( $m, h$ ) block is $\sigma^{m h} \mathbf{Z}_{m}^{\prime} \mathbf{Z}_{h} . \mathbf{Z}_{m}^{\prime} \mathbf{Z}_{h}=\sum_{i} \mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}$.\\
+(d) (Finite-sample properties of RE) Now impose on the model the condition that the coefficient vector is the same across equations so that $\mathbf{Z}$ is as in (*) of Analytical Exercise 2. As in (c), suppose $\boldsymbol{\Sigma}$ is known so that the consistent estimates $\hat{\sigma}_{m h}$ in the RE formulas in Proposition 4.7 can be equated with the true value $\sigma_{m h}$.\\
+(i) Verify that this model with common coefficients satisfies the GLS assumptions of Section 1.6. In particular, Assumption 1.1 can be written as $\mathbf{y}=\mathbf{Z} \boldsymbol{\delta}+\boldsymbol{\varepsilon}$, where $\mathbf{y}$ and $\boldsymbol{\varepsilon}$ are as in Analytical Exercise 2.\\
+(ii) Verify that the random-effects estimator is the GLS estimator.\\
+(iii) Verify that the random-effects estimator is unbiased in finite samples.\\
+(iv) Show that
+
+$$
+\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right)=\operatorname{plim}_{n \rightarrow \infty} n \cdot \operatorname{Var}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}} \mid \mathbf{Z}\right)
+$$
+
+Hint: $\operatorname{Var}\left(\hat{\delta}_{\mathrm{RE}} \mid \mathbf{Z}\right)$ is the inverse of $\sum_{m} \sum_{h} \sigma^{m h} \mathbf{Z}_{m}^{\prime} \mathbf{Z}_{h}$.\\
+4. (Standard errors from equation-by-equation vs. multiple-equation GMM) We have shown in Section 4.4 that the Avar of the efficient equation-by-equation GMM estimator is no less (in matrix sense) than the Avar of the efficient multiple-equation GMM estimators. In this exercise we show that the same holds for $\widehat{\text { Avar. Let }} \widehat{\mathbf{S}}$ and $\mathbf{S}_{\mathbf{x z}}$ be as in (4.3.2) and (4.2.2), respectively.\\
+(a) (Trivial) Verify that, under appropriate assumptions, $\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{S}_{\mathbf{x z}}\right)^{-1}$ is consistent for the asymptotic variance of the efficient multiple-equation GMM estimator. What are those appropriate assumptions?\\
+(b) Let $\tilde{\delta}_{m}$ be the efficient single-equation GMM estimator of $\delta_{m}$ and $\tilde{\delta}$ be the stacked vector formed from $\left(\tilde{\boldsymbol{\delta}}_{1}, \ldots, \tilde{\boldsymbol{\delta}}_{M}\right)$. $\tilde{\boldsymbol{\delta}}$ is the efficient equation-byequation GMM estimator of $\boldsymbol{\delta}$. Show that $\operatorname{Avar}\left(\tilde{\boldsymbol{\delta}}_{m}\right)$ is consistently estimated by
+
+
+\begin{equation*}
+\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{x}_{i m}^{\prime} \widehat{\mathbf{W}}_{m m} \frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i m} \mathbf{z}_{i m}^{\prime}\right)^{-1}, \tag{*}
+\end{equation*}
+
+
+where
+
+$$
+\widehat{\mathbf{W}}_{m m}=\left(\frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_{i m}^{2} \mathbf{x}_{i m} \mathbf{x}_{i m}^{\prime}\right)^{-1}
+$$
+
+(c) Verify that (*) is the ( $m, m$ ) block of
+
+
+\begin{equation*}
+\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}\right)^{-1} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \widehat{\mathbf{S}} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}\right)^{-1}, \tag{**}
+\end{equation*}
+
+
+where $\widehat{\mathbf{W}}$ is the block diagonal matrix whose $m$-th diagonal block is $\widehat{\mathbf{W}}_{m m}$.\\
+(d) Proposition 3.5 is an algebraic result applicable not just to population moments, so it implies that
+
+$$
+(* *) \geq\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{S}_{\mathbf{x z}}\right)^{-1}
+$$
+
+Taking this for granted, show the following: If the same residuals are used to calculate $\widehat{\mathbf{W}}$ for the equation-by-equation GMM and $\widehat{\mathbf{S}}$ for the multipleequation GMM, then, for each coefficient, the standard error from the\\
+efficient multiple-equation GMM is no larger than that from the efficient equation-by-equation GMM. Hint: The standard errors are the square roots of the diagonal elements of the estimated asymptotic variance divided by the sample size.\\
+(e) Does the result you proved in (d) hold true if the model is misspecified in any way? Hint: What you have proved is an algebraic result.\\
+(f) Go through steps (a)-(d) for the FIVE and equation-by-equation 2SLS. Hint: It's just a matter of redefining $\widehat{\mathbf{S}}$ and the $m$-th diagonal block, $\widehat{\mathbf{W}}_{m m}$, of $\widehat{\mathbf{W}}$. The $\widehat{\mathbf{W}}_{m m}$ for 2SLS is the inverse of
+
+$$
+\frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_{i m}^{2} \cdot \frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i m} \mathbf{x}_{i m}^{\prime}
+$$
+
+and the $\widehat{\mathbf{S}}$ for FIVE is (4.5.3).\\
+5. (Identification and cross-equation restrictions) Consider the wage equation for 1969 and 1980:
+
+$$
+\begin{aligned}
+& L W 69_{i}=\beta_{0}+\beta_{1} \cdot S 69_{i}+\beta_{2} \cdot I Q_{i}+\varepsilon_{i 1}, \\
+& L W 80_{i}=\beta_{0}+\beta_{1} \cdot S 80_{i}+\beta_{2} \cdot I Q_{i}+\varepsilon_{i 2} .
+\end{aligned}
+$$
+
+The orthogonality conditions are $\mathrm{E}\left(\varepsilon_{i 1}\right)=0, \mathrm{E}\left(\varepsilon_{i 2}\right)=0, \mathrm{E}\left(M E D_{i} \varepsilon_{i 1}\right)=0$, $\mathrm{E}\left(M E D_{i} \varepsilon_{i 2}\right)=0$. Assume we have a random sample on (LW69, LW80, S69, S80, IQ, MED).\\
+(a) Is the LW69 equation identified in isolation? Hint: Check the order condition for identification for the LW69 equation.\\
+(b) Write the four orthogonality conditions in terms of ( $\beta_{0}, \beta_{1}, \beta_{2}$ ) as a system of equations linear in $\beta$ 's. How many equations are there? State the rank condition for identification in terms of relevant cross moments. (This example shows that even if each equation of the system is not identified in isolation, the system can be identified thanks to the cross-equation restriction that $\beta$ 's are the same across equations.)\\
+(c) Show that the system cannot be identified if IQ and MED are uncorrelated.\\
+6. (Optional) Prove Proposition 4.1. Hint: Generalize the proof of Proposition 3.2.\\
+7. (Numerical equivalence of 2SLS and 3SLS) In the system of equations $y_{i m}= \mathbf{z}_{i m}^{\prime} \delta_{m}+\varepsilon_{i m}(i=1, \ldots, n ; m=1, \ldots, M)$, suppose all equations share the same set of instruments (so $\mathbf{x}_{i m}=\mathbf{x}_{i}$ ). (In what follows, assume all the conditions for the 3SLS estimator are satisfied.)\\
+(a) When each equation has the same RHS variables (so $\mathbf{z}_{i m}=\mathbf{z}_{i}$ ), the 2SLS and 3SLS estimators are numerically the same. Prove this. Hint: Let $\mathbf{B} \equiv \frac{1}{n} \sum_{i} \mathbf{x}_{i} \mathbf{z}_{i}^{\prime}$. The 3SLS estimator is (4.2.3) with $\mathbf{S}_{\mathbf{x z}}=\mathbf{I}_{M} \otimes \mathbf{B}, \widehat{\mathbf{W}}=\widehat{\mathbf{\Sigma}}^{-1} \otimes \mathbf{S}_{\mathbf{x x}}^{-1}$ where $\mathbf{S}_{\mathbf{x x}} \equiv \frac{1}{n} \sum_{i} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}$.\\
+(b) If the errors are not conditionally homoskedastic, does (a) remain true for the single-equation and multiple-equation GMM estimators? Hint: The answer is no. Why? Can you write $\widehat{\mathbf{S}}^{-1}$ as a Kronecker product without conditional homoskedasticy?\\
+8. (SUR is more than assuming predetermined regressors in each equation) Consider estimating a system of $M$ equations: $y_{i m}=\mathbf{z}_{i m}^{\prime} \boldsymbol{\delta}_{m}+\varepsilon_{i m}(i=1, \ldots, n$; $m=1, \ldots, M)$. The orthogonality conditions are $\mathrm{E}\left(\mathbf{z}_{i m} \cdot \varepsilon_{i m}\right)=\mathbf{0}(m= 1,2, \ldots, M$ ).\\
+(a) Does the efficient multiple-equation GMM estimator $\hat{\boldsymbol{\delta}}\left(\widehat{\mathbf{S}}^{-1}\right)$ reduce to the equation-by-equation OLS? Does your conclusion change if the errors are conditionally homoskedastic? Hint: What's the size of $\mathbf{S}_{\mathbf{x z}}$ ? $\widehat{\mathbf{S}}$ ?\\
+(b) Explain why the efficient GMM you derived in (a) under conditional homoskedasticity differs from SUR. Hint: The difference is in the orthogonality conditions.\\
+9. (Optional, peril of joint estimation) Taken from Greene (1997, p. 706). Consider the two-equation SUR model:
+
+$$
+\begin{gathered}
+y_{i 1}=\beta_{1} x_{i 1}+\varepsilon_{i 1} \\
+y_{i 2}=\beta_{2} x_{i 2}+\beta_{3} x_{i 3}+\varepsilon_{i 2}
+\end{gathered}
+$$
+
+For simplicity, assume that $\mathrm{E}\left(\varepsilon_{i 1}^{2}\right), \mathrm{E}\left(\varepsilon_{i 1} \varepsilon_{i 2}\right)$, and $\mathrm{E}\left(\varepsilon_{i 2}^{2}\right)$ are known. Now suppose you apply SUR, but erroneously omit $x_{i 3}$ from the second equation. What effect does this have on the consistency of the estimator of $\beta_{1}$ ? Hint: Let $\mathbf{x}_{1}$, $\mathbf{x}_{2}, \mathbf{x}_{3}, \mathbf{y}_{1}, \mathbf{y}_{2}, \boldsymbol{\varepsilon}_{1}$, and $\boldsymbol{\varepsilon}_{2}$ be $n$-dimensional vectors of respective variables and
+
+$$
+\mathbf{y}=\left[\begin{array}{l}
+\mathbf{y}_{1} \\
+\mathbf{y}_{2}
+\end{array}\right], \quad \boldsymbol{\varepsilon}=\left[\begin{array}{l}
+\boldsymbol{\varepsilon}_{1} \\
+\boldsymbol{\varepsilon}_{2}
+\end{array}\right], \quad \overline{\mathbf{X}}=\left[\begin{array}{cc}
+\mathbf{x}_{1} & \mathbf{0} \\
+\mathbf{0} & \mathbf{x}_{2}
+\end{array}\right],
+$$
+
+$$
+\mathbf{d}=\left[\begin{array}{c}
+\mathbf{0} \\
+\mathbf{x}_{3}
+\end{array}\right], \quad \boldsymbol{\beta}=\left[\begin{array}{c}
+\beta_{1} \\
+\beta_{2}
+\end{array}\right], \quad \boldsymbol{\Sigma}=\left[\begin{array}{cc}
+\mathrm{E}\left(\varepsilon_{i 1}^{2}\right) & \mathrm{E}\left(\varepsilon_{i 1} \varepsilon_{i 2}\right) \\
+\mathrm{E}\left(\varepsilon_{i 2} \varepsilon_{i 1}\right) & \mathrm{E}\left(\varepsilon_{i 2}^{2}\right)
+\end{array}\right] .
+$$
+
+(So, for example, $\overline{\mathbf{X}}$ is $2 n \times 2$ and $\beta$ is $2 \times 1$.) Show that:\\
+(a) The two-equation system can be written as $\mathbf{y}=\overline{\mathbf{X}} \boldsymbol{\beta}+\beta_{3} \cdot \mathbf{d}+\boldsymbol{\varepsilon}$.\\
+(b) The SUR estimator of $\boldsymbol{\beta}$ when $x_{i 3}$ is inadvertently left out is
+
+$$
+\widehat{\boldsymbol{\beta}}_{\mathrm{SUR}}=\left[\overline{\mathbf{X}}^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{n}\right) \overline{\mathbf{X}}\right]^{-1} \overline{\mathbf{X}}^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{n}\right) \mathbf{y}
+$$
+
+(c) Use formulas (A.6) and (A.7) of the Appendix to show
+
+$$
+\widehat{\boldsymbol{\beta}}_{\mathrm{SUR}}=\boldsymbol{\beta}+\beta_{3} \cdot \mathbf{a}+\mathbf{b}
+$$
+
+where
+
+$$
+\begin{array}{r}
+\mathbf{a}=\left[\begin{array}{cc}
+\sigma^{11} \frac{1}{n} \sum_{i=1}^{n} x_{i 1}^{2} & \sigma^{12} \frac{1}{n} \sum_{i=1}^{n} x_{i 1} x_{i 2} \\
+\sigma^{21} \frac{1}{n} \sum_{i=1}^{n} x_{i 2} x_{i 1} & \sigma^{22} \frac{1}{n} \sum_{i=1}^{n} x_{i 2}^{2}
+\end{array}\right]^{-1}\left[\begin{array}{r}
+\sigma^{12} \frac{1}{n} \sum_{i=1}^{n} x_{i 1} x_{i 3} \\
+\sigma^{22} \frac{1}{n} \sum_{i=1}^{n} x_{i 2} x_{i 3}
+\end{array}\right], \\
+\mathbf{b}=\left[\begin{array}{cc}
+\sigma^{11} \frac{1}{n} \sum_{i=1}^{n} x_{i 1}^{2} & \sigma^{12} \frac{1}{n} \sum_{i=1}^{n} x_{i 1} x_{i 2} \\
+\sigma^{21} \frac{1}{n} \sum_{i=1}^{n} x_{i 2} x_{i 1} & \sigma^{22} \frac{1}{n} \sum_{i=1}^{n} x_{i 2}^{2}
+\end{array}\right] \\
+{\left[\begin{array}{c}
+\sigma^{11} \frac{1}{n} \sum_{i=1}^{n} x_{i 1} \varepsilon_{i 1}+\sigma^{12} \frac{1}{n} \sum_{i=1}^{n} x_{i 1} \varepsilon_{i 2} \\
+\sigma^{21} \frac{1}{n} \sum_{i=1}^{n} x_{i 2} \varepsilon_{i 1}+\sigma^{22} \frac{1}{n} \sum_{i=1}^{n} x_{i 2} \varepsilon_{i 2}
+\end{array}\right] .}
+\end{array}
+$$
+
+(d) Argue that plim $\mathbf{b}=\mathbf{0}$. Is plim $\mathbf{a}=\mathbf{0}$ ?\\
+10. (Optional, adding just-identified equations does not increase efficiency) Consider the 3SLS two-equation model where the second equation is just identified (so $L_{2}=K$ ). Let $\hat{\delta}_{1.3 \text { SLS }}$ be the 3SLS estimator of the coefficients of the first equation and $\hat{\delta}_{1,2 \text { SLS }}$ be the 2SLS estimator of the same coefficients.\\
+(a) Write down $\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{1.2 \text { SLS }}\right)$ in terms of $\sigma_{11}$ and $\mathbf{A}_{11}$, which is defined in (4.5.16).\\
+(b) Show that $\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{1,3 \text { SLS }}\right)=\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{1,2 \text { SLS }}\right)$. Hint: Use the partitioned inverse formula (see formula (A.10) of the Appendix) to write the upper-left ( $L_{1} \times L_{1}$ ) block of $\mathrm{Avar}\left(\hat{\boldsymbol{\delta}}_{1,3 \mathrm{SLS}}\right)$ as $\mathbf{G}^{-1}$ where
+
+$$
+\mathbf{G}=\sigma^{11} \mathbf{A}_{11}-\left(\frac{\sigma^{12} \cdot \sigma^{21}}{\sigma^{22}}\right) \mathbf{A}_{12} \mathbf{A}_{22}^{-1} \mathbf{A}_{21}
+$$
+
+But by (4.5.16),
+
+$$
+\begin{aligned}
+& \mathbf{A}_{12} \mathbf{A}_{22}^{-1} \mathbf{A}_{21} \\
+& =\mathrm{E}\left(\mathbf{z}_{i 1} \mathbf{x}_{i}^{\prime}\right)\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1} \mathrm{E}\left(\mathbf{x}_{i} \mathbf{z}_{i 2}^{\prime}\right) \\
+& \quad\left[\mathrm{E}\left(\mathbf{z}_{i 2} \mathbf{x}_{i}^{\prime}\right)\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1} \mathrm{E}\left(\mathbf{x}_{i} \mathbf{z}_{i 2}^{\prime}\right)\right]^{-1} \mathrm{E}\left(\mathbf{z}_{i 2} \mathbf{x}_{i}^{\prime}\right)\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1} \mathrm{E}\left(\mathbf{x}_{i} \mathbf{z}_{i 1}^{\prime}\right) \\
+& =\mathrm{E}\left(\mathbf{z}_{i 1} \mathbf{x}_{i}^{\prime}\right)\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1} \mathrm{E}\left(\mathbf{x}_{i} \mathbf{z}_{i 1}^{\prime}\right) \quad\left(\text { since } \# \mathbf{z}_{i 2}\left(=L_{2}\right)=\# \mathbf{x}_{i}(=K)\right) \\
+& =\mathbf{A}_{11}
+\end{aligned}
+$$
+
+So
+
+$$
+\begin{aligned}
+& \mathbf{G}=\left[\sigma^{11}-\left(\frac{\sigma^{12} \cdot \sigma^{21}}{\sigma^{22}}\right)\right] \mathbf{A}_{11}=\frac{\mathbf{A}_{11}}{\sigma_{11}} \\
+&\left(\text { since } \sigma^{11}-\left(\frac{\sigma^{12} \cdot \sigma^{21}}{\sigma^{22}}\right)=1 / \sigma_{11}\right)
+\end{aligned}
+$$
+
+\begin{enumerate}
+  \setcounter{enumi}{10}
+  \item (Linear combinations of orthogonality conditions) For the multiple-equation model of Proposition 4.7, derive the efficient GMM estimator that exploits the following orthogonality conditions:
+\end{enumerate}
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{z}_{i 1} \cdot \varepsilon_{i 1}+\cdots+\mathbf{z}_{i M} \cdot \varepsilon_{i M}\right)=\mathbf{0} \tag{1}
+\end{equation*}
+
+
+Hint: The sample analogue of the left-hand side the orthogonality conditions is
+
+$$
+\begin{aligned}
+& \mathbf{g}_{n}(\tilde{\boldsymbol{\delta}}) \equiv \frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i 1} \cdot y_{i 1}+\cdots+\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i M} \cdot y_{i M} \\
+&-\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i 1} \mathbf{z}_{i 1}^{\prime}+\cdots+\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i M} \mathbf{z}_{i M}^{\prime}\right) \tilde{\boldsymbol{\delta}}
+\end{aligned}
+$$
+
+There are as many orthogonality conditions as there are coefficients. The efficient GMM estimator is the IV estimator that solves $\mathbf{g}_{n}(\tilde{\boldsymbol{\delta}})=\mathbf{0}$.
+
+\section*{EMPIRICAL EXERCISES}
+In data file GREENE.ASC, data are provided on the following variables.\\
+Column 1: firm ID in Nerlove's 1955 sample\\
+Column 2: costs in 1970 in millions of dollars\\
+Column 3: output in millions of kilowatt hours\\
+Column 4: price of labor\\
+Column 5: price of capital\\
+Column 6: price of fuel\\
+Column 7: labor's cost share\\
+Column 8: capital's cost share\\
+The sample has 99 observations. Fuel's cost share can be calculated as one minus the sum of labor and capital cost shares. These data were used in Christensen and Greene (1976).
+
+In the text, the third equation (for fuel share) of the system was dropped in the random-effects estimation. To verify the numerical invariance, drop the second equation (for capital share) and eliminate ( $\gamma_{12}, \gamma_{22}, \gamma_{32}$ ) when imposing homogeneity. This produces the two-equation system:
+
+$$
+\begin{cases}s_{1}=\alpha_{1}+\gamma_{11} \log \left(p_{1} / p_{2}\right)+\gamma_{13} \log \left(p_{3} / p_{2}\right)+\gamma_{1 Q} \log (Q)+\varepsilon_{1} & \text { (labor share), } \\ s_{3}=\alpha_{3}+\gamma_{31} \log \left(p_{1} / p_{2}\right)+\gamma_{33} \log \left(p_{3} / p_{2}\right)+\gamma_{3 Q} \log (Q)+\varepsilon_{3} & \text { (fuel share). }\end{cases}
+$$
+
+Call this the unconstrained system. The constrained system imposes symmetry $\gamma_{13}=\gamma_{31}$ on the unconstrained system.\\
+(a) Verify that the simple statistics of the sample shown in the text can be duplicated.\\
+(b) (Numerical invariance) Apply the random-effects estimation (i.e., the multivariate regression subject to the cross-equation restriction) to the constrained system. Can you duplicate the coefficient estimates in the text? You should first apply equation-by-equation OLS to the unconstrained system to calculate $\widehat{\mathbf{\Sigma}}^{*}$. (Note on computation: Programming joint estimation is much easier with canned programs such as TSP and RATS. However, those canned programs will not print out Sargan's statistic for the SUR.)
+
+Gauss Tip: The random-effects estimator could be calculated by operating on data matrices, but we recommend the use of do loops. Use (4.6.8') on page 293.
+
+RATS Tip: Use the NLSYS proc, which is designed for handling nonlinear equations but which can be used for linear equations. It can also be used for calculating $\widehat{\mathbf{\Sigma}}^{*}$, as done in the following codes:
+
+\begin{verbatim}
+* Estimation with capital share equation dropped
+* Define parameters
+nonlin al af gll glf gfl gff gly gfy
+* Define two eq. system
+frml labor sl = al+gll* log(pl/pk)+glf* log(pf/pk)
+    +gly*log(kwh)
+frml fuel sf = af+gfl* log(pl/pk)+gff* log(pf/pk)
+    +gfy* log(kwh)
+* Set starting values for the parameters
+compute al=af=gll=glf=gfl=gff=gly=gfy=0
+* Now do multivariate regression w/o cross-eq.
+* restriction
+nlsystem(outsigma=sigmahat) / labor fuel
+\end{verbatim}
+
+Here, sigmahat is the $2 \times 2$ matrix $\widehat{\boldsymbol{\Sigma}}^{*}$. The random-effects estimation using this $\widehat{\boldsymbol{\Sigma}}^{*}$ is done by the following codes.
+
+\begin{verbatim}
+* Now impose cross-eq. restriction on fuel share
+* eq. (set gfl=glf)
+* Define parameters.
+nonlin al af gll glf gff gly gfy
+* Impose symmetry.
+frml fuelb sf = af+glf* log(pl/pk)+gff* log(pf/pk)
+    +gfy*log(kwh)
+* Multivariate regression with covariance matrix
+* calculated from equation-by-equation OLS
+* residuals
+nlsystem(isigma=sigmahat) / labor fuelb
+\end{verbatim}
+
+TSP Tip: An example of TSP codes that accomplish the same thing as the RATS codes above is:
+
+\begin{verbatim}
+? Estimate the system with capital equation
+? dropped.
+frml labor sl=al+gll* log(pl/pk)+glf* log(pf/pk)
+    +gly*log(kwh);
+\end{verbatim}
+
+\begin{verbatim}
+frml fuel sf=af+gfl* log(pl/pk)+gff* log(pf/pk)
+    +gfy* log(kwh);
+? Set parameter values to zero.
+param al af gll glf gfl gff gly gfy;
+? Multivariate regression without symmetry
+sur labor fuel;
+? Estimate error covariance matrix from residuals
+mform sigmahat=@covu;
+?
+? Do multivariate regression with cross-equation
+? restriction.
+? Impose symmetry.
+frml fuel sf=af+glf* log(pl/pk)+gff* log(pf/pk)
+    +gfy*log(kwh);
+? Multivariate regression subject to symmetry
+lsq(maxitw=0,wname=sigmahat) labor fuel;
+\end{verbatim}
+
+This gives the random-effects estimate of the seven free parameters,
+
+$$
+\alpha_{1}, \alpha_{3}, \gamma_{11}, \gamma_{13}, \gamma_{33}, \gamma_{1 Q}, \gamma_{3 Q} .
+$$
+
+As explained in the text, use the adding-up, homogeneity, and symmetry restrictions to calculate the point estimates and their standard errors of the remaining eight parameters. The TSP command ANALYZ should be useful here.\\
+(c) (Optional, for Gauss users) Calculate Sargan's statistic. Hint: Use the formula in Proposition 4.7. The $\mathbf{x}_{i}$ vector should be: a constant, $\log \left(p_{1} / p_{2}\right)$, $\log \left(p_{3} / p_{2}\right), \log (Q)$. For $\widehat{\mathbf{\Sigma}}^{*}$, use the one obtained from the unconstrained system. $\mathbf{s}_{\mathbf{x y}}=\frac{1}{n} \sum_{i=1}^{n} \mathbf{y}_{i} \otimes \mathbf{x}_{i}$ and $\mathbf{S}_{\mathbf{x z}}=\frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i} \otimes \mathbf{x}_{i}$. The statistic should be 0.63313 with a $p$-value of 0.42621 .\\
+(d) (Testing symmetry) Given that Sargan's statistic is 0.63313 , perform the following hypothesis testing. Take the maintained hypothesis to be the unconstrained system. The null hypothesis is the symmetry restriction that $\gamma_{13}=\gamma_{31}$. Hint: By Proposition 3.8, the difference in the Sargan statistics with and without symmetry is asymptotically chi-squared. What is Sargan's statistic for the unconstrained system?\\
+(e) (Wald test of symmetry) Test the same null hypothesis by the Wald principle. So you test the symmetry restriction in the unconstrained system. Verify that\\
+the test statistic is numerically equal to Sargan's statistic for the constrained system you estimated in (b).
+
+TSP Tip: Just insert the line
+
+\begin{verbatim}
+analyz wald wald=glf-gfl;
+\end{verbatim}
+
+right after the codes for the unconstrained estimation.\\
+(f) Using the parameter estimates you obtained in (b), calculate the elasticity of substitution between labor and capital averaged over the 99 firms. Can you duplicate the result in the text?
+
+\section*{ANSWERS TO SELECTED QUESTIONS}
+\section*{ANALYTICAL EXERCISES}
+3b. $\mathrm{E}\left(\varepsilon_{i m} \mid \mathbf{Z}\right)$\\
+$=\mathrm{E}\left(\varepsilon_{i m} \mid \mathbf{z}_{11}, \ldots, \mathbf{z}_{1 M}, \mathbf{z}_{21}, \ldots \mathbf{z}_{2 M}, \ldots, \mathbf{z}_{n 1}, \ldots, \mathbf{z}_{n M}\right) \quad$ (by definition of $\left.\mathbf{Z}\right)$\\
+$=\mathrm{E}\left(\varepsilon_{i m} \mid \mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)$ (by the i.i.d. assumption)\\
+$=0$ (by the strengthened orthogonality conditions).\\
+The ( $i, j$ ) element of the $n \times n$ matrix $\mathrm{E}\left(\boldsymbol{\varepsilon}_{m} \boldsymbol{\varepsilon}_{h}^{\prime} \mid \mathbf{Z}\right)$ is $\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{j h} \mid \mathbf{Z}\right)$. By the i.i.d. assumption, this is zero for $j \neq i$. For $j=i$,
+
+$$
+\begin{aligned}
+& \mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h} \mid \mathbf{Z}\right) \\
+& =\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h} \mid \mathbf{z}_{11}, \ldots, \mathbf{z}_{1 M}, \mathbf{z}_{21}, \ldots \mathbf{z}_{2 M}, \ldots, \mathbf{z}_{n 1}, \ldots, \mathbf{z}_{n M}\right) \\
+& =\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h} \mid \mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right) \quad \text { (by the i.i.d. assumption) }
+\end{aligned}
+$$
+
+Since $\mathbf{x}_{i m}=\mathbf{x}_{i}$ and $\mathbf{x}_{i}$ is the union of $\left(\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)$ in the SUR model, the conditional homoskedasticity assumption, Assumption 4.7, states that $\mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h} \mid\right. \left.\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)=\sigma_{m h}$.
+
+5b.
+
+$$
+\left[\begin{array}{ccc}
+1 & \mathrm{E}(S 69) & \mathrm{E}(I Q) \\
+1 & \mathrm{E}(S 80) & \mathrm{E}(I Q) \\
+\mathrm{E}(M E D) & \mathrm{E}(S 69 \cdot M E D) & \mathrm{E}(I Q \cdot M E D) \\
+\mathrm{E}(M E D) & \mathrm{E}(S 80 \cdot M E D) & \mathrm{E}(I Q \cdot M E D)
+\end{array}\right]\left[\begin{array}{c}
+\beta_{0} \\
+\beta_{1} \\
+\beta_{2}
+\end{array}\right]=\left[\begin{array}{c}
+\mathrm{E}(L W 69) \\
+\mathrm{E}(L W 80) \\
+\mathrm{E}(L W 69 \cdot M E D) \\
+\mathrm{E}(L W 80 \cdot M E D)
+\end{array}\right] .
+$$
+
+The condition for the system to be identified is that the $4 \times 3$ coefficient matrix is of full column rank.
+
+5c. If $I Q$ and $M E D$ are uncorrelated, then $\mathrm{E}(I Q \cdot M E D)=\mathrm{E}(I Q) \cdot \mathrm{E}(M E D)$ and the third column of the coefficient matrix is $\mathrm{E}(I Q)$ times the first column. So the matrix cannot be of full column rank.\\
+6. $\hat{\varepsilon}_{i m}=y_{i m}-\mathbf{z}_{i m}^{\prime} \hat{\boldsymbol{\delta}}_{m}=\varepsilon_{i m}-\mathbf{z}_{i m}^{\prime}\left(\hat{\boldsymbol{\delta}}_{m}-\delta_{m}\right)$. So
+
+$$
+\frac{1}{n} \sum_{i=1}^{n}\left[\varepsilon_{i m}-\mathbf{z}_{i m}^{\prime}\left(\hat{\boldsymbol{\delta}}_{m}-\boldsymbol{\delta}_{m}\right)\right]\left[\varepsilon_{i h}-\mathbf{z}_{i h}^{\prime}\left(\hat{\boldsymbol{\delta}}_{h}-\boldsymbol{\delta}_{h}\right)\right]=(1)+(2)+(3)+(4),
+$$
+
+where
+
+$$
+\begin{gathered}
+(1)=\frac{1}{n} \sum_{i=1}^{n} \varepsilon_{i m} \varepsilon_{i h}, \\
+(2)=-\left(\hat{\boldsymbol{\delta}}_{m}-\boldsymbol{\delta}_{m}\right)^{\prime} \frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \cdot \varepsilon_{i h}, \\
+(3)=-\left(\hat{\boldsymbol{\delta}}_{h}-\boldsymbol{\delta}_{h}\right)^{\prime} \frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i h} \cdot \varepsilon_{i m}, \\
+(4)=\left(\hat{\boldsymbol{\delta}}_{m}-\boldsymbol{\delta}_{m}\right)^{\prime}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)\left(\hat{\boldsymbol{\delta}}_{h}-\boldsymbol{\delta}_{h}\right) .
+\end{gathered}
+$$
+
+As usual, under Assumption 4.1 and 4.2, (1) $\rightarrow_{\mathrm{p}} \sigma_{m h}\left(\equiv \mathrm{E}\left(\varepsilon_{i m} \varepsilon_{i h}\right)\right)$.\\
+For (4), by Assumption 4.2 and the assumption that $\mathrm{E}\left(\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}\right)$ is finite, $\frac{1}{n} \sum_{i}$. $\mathbf{z}_{i m} \mathbf{z}_{i h}^{\prime}$ converges in probability to a (finite) matrix. So (4) $\rightarrow_{p} 0$.
+
+Regarding (2), by Cauchy-Schwartz,
+
+$$
+\mathrm{E}\left(\left|z_{i m j} \cdot \varepsilon_{i h}\right|\right) \leq \sqrt{\mathrm{E}\left(z_{i m j}^{2}\right) \cdot \mathrm{E}\left(\varepsilon_{i h}^{2}\right)}
+$$
+
+where $z_{i m j}$ is the $j$-th element of $\mathbf{z}_{i m}$. So $\mathrm{E}\left(\mathbf{z}_{i m} \cdot \varepsilon_{i h}\right)$ is finite and ( 2$) \rightarrow_{\mathrm{p}} 0$ because $\hat{\boldsymbol{\delta}}_{m}-\boldsymbol{\delta}_{m} \rightarrow_{\mathrm{p}} \mathbf{0}$. Similarly, (3) $\rightarrow_{\mathrm{p}} 0$.
+
+\section*{References}
+Berndt, E., 1991, The Practice of Econometrics, New York: Addison-Wesley.\\
+Berndt, E., and D. Wood, 1975, "Technology, Prices, and the Derived Demand for Energy," Review of Economics and Statistics, 57, 259-268.\\
+Brundy, J., and D. Jorgenson, 1971, "Efficient Estimation of Simultaneous Systems by Instrumental Variables," Review of Economics and Statistics, 53, 207-224.
+
+Christensen, L., and W. Greene, 1976, "Economies of Scale in U.S. Electric Power Generation," Journal of Political Economy, 84, 655-676.\\
+Greene, W., 1997, Econometric Analysis (3d ed.), New Jersey: Prentice Hall.\\
+Jorgenson, D., 1986, "Econometric Methods for Modeling Producer Behavior," in Z. Griliches and M. Intriligator (eds.), Handbook of Econometrics, Volume III, Amsterdam: Elsevier Science Publishers, 1841-1915.\\
+Uzawa, H., 1962, "Production Function with Constant Elasticities of Substitution," Review of Economic Studies, 29, 291-299.\\
+Varian, H., 1992, Microeconomic Analysis (3d ed.), New York: Norton.\\
+Zellner, A., 1962, "An Efficient Method of Estimating Seemingly Unrelated Regressions and Tests for Aggregation Bias," Journal of the American Statistical Association, 63, 502-511.\\
+Zellner, A., and H. Theil, 1962, "Three-Stage Least Squares: Simultaneous Estimation of Simultaneous Equations," Econometrica, 30, 54-78.
+
+
+\end{document}

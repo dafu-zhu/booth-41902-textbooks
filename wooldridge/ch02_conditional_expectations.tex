@@ -1,0 +1,664 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 2: Conditional Expectations and Related Concepts}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsection*{2.1 Role of Conditional Expectations in Econometrics}
+As we suggested in Section 1.1, the conditional expectation plays a crucial role in modern econometric analysis. Although it is not always explicitly stated, the goal of most applied econometric studies is to estimate or test hypotheses about the expectation of one variable-called the explained variable, the dependent variable, the regressand, or the response variable, and usually denoted y-conditional on a set of explanatory variables, independent variables, regressors, control variables, or covariates, usually denoted $\mathbf{x}=\left(x_{1}, x_{2}, \ldots, x_{K}\right)$.
+
+A substantial portion of research in econometric methodology can be interpreted as finding ways to estimate conditional expectations in the numerous settings that arise in economic applications. As we briefly discussed in Section 1.1, most of the time we are interested in conditional expectations that allow us to infer causality from one or more explanatory variables to the response variable. In the setup from Section 1.1, we are interested in the effect of a variable $w$ on the expected value of $y$, holding fixed a vector of controls, $\mathbf{c}$. The conditional expectation of interest is $\mathrm{E}(y \mid w, \mathbf{c})$, which we will call a structural conditional expectation. If we can collect data on $y, w$, and $\mathbf{c}$ in a random sample from the underlying population of interest, then it is fairly straightforward to estimate $\mathrm{E}(y \mid w, \mathbf{c})$-especially if we are willing to make an assumption about its functional form-in which case the effect of $w$ on $\mathrm{E}(y \mid w, \mathbf{c})$, holding $\mathbf{c}$ fixed, is easily estimated.
+
+Unfortunately, complications often arise in the collection and analysis of economic data because of the nonexperimental nature of economics. Observations on economic variables can contain measurement error, or they are sometimes properly viewed as the outcome of a simultaneous process. Sometimes we cannot obtain a random sample from the population, which may not allow us to estimate $\mathrm{E}(y \mid w, \mathbf{c})$. Perhaps the most prevalent problem is that some variables we would like to control for (elements of c) cannot be observed. In each of these cases there is a conditional expectation (CE) of interest, but it generally involves variables for which the econometrician cannot collect data or requires an experiment that cannot be carried out.
+
+Under additional assumptions-generally called identification assumptions-we can sometimes recover the structural conditional expectation originally of interest, even if we cannot observe all of the desired controls, or if we only observe equilibrium outcomes of variables. As we will see throughout this text, the details differ depending on the context, but the notion of conditional expectation is fundamental.
+
+In addition to providing a unified setting for interpreting economic models, the CE operator is useful as a tool for manipulating structural equations into estimable equations. In the next section we give an overview of the important features of the\\
+conditional expectations operator. The appendix to this chapter contains a more extensive list of properties.
+
+\subsection*{2.2 Features of Conditional Expectations}
+\subsection*{2.2.1 Definition and Examples}
+Let $y$ be a random variable, which we refer to in this section as the explained variable, and let $\mathbf{x} \equiv\left(x_{1}, x_{2}, \ldots, x_{K}\right)$ be a $1 \times K$ random vector of explanatory variables. If $\mathrm{E}(|y|)<\infty$, then there is a function, say $\mu: \mathbb{R}^{K} \rightarrow \mathbb{R}$, such that\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}, \ldots, x_{K}\right)=\mu\left(x_{1}, x_{2}, \ldots, x_{K}\right)$,\\
+or $\mathrm{E}(y \mid \mathbf{x})=\mu(\mathbf{x})$. The function $\mu(\mathbf{x})$ determines how the average value of $y$ changes as elements of $\mathbf{x}$ change. For example, if $y$ is wage and $\mathbf{x}$ contains various individual characteristics, such as education, experience, and IQ, then E (wage $\mid$ educ, exper, $I Q$ ) is the average value of wage for the given values of educ, exper, and IQ. Technically, we should distinguish $\mathrm{E}(y \mid \mathbf{x})$-which is a random variable because $\mathbf{x}$ is a random vector defined in the population-from the conditional expectation when $\mathbf{x}$ takes on a particular value, such as $\mathbf{x}_{0}$ : $\mathrm{E}\left(y \mid \mathbf{x}=\mathbf{x}_{0}\right)$. Making this distinction soon becomes cumbersome and, in most cases, is not overly important; for the most part we avoid it. When discussing probabilistic features of $\mathrm{E}(y \mid \mathbf{x}), \mathbf{x}$ is necessarily viewed as a random variable.
+
+Because $\mathrm{E}(y \mid \mathbf{x})$ is an expectation, it can be obtained from the conditional density of $y$ given $\mathbf{x}$ by integration, summation, or a combination of the two (depending on the nature of $y$ ). It follows that the conditional expectation operator has the same linearity properties as the unconditional expectation operator, and several additional properties that are consequences of the randomness of $\mu(\mathbf{x})$. Some of the statements we make are proven in the appendix, but general proofs of other assertions require measure-theoretic probabability. You are referred to Billingsley (1979) for a detailed treatment.
+
+Most often in econometrics a model for a conditional expectation is specified to depend on a finite set of parameters, which gives a parametric model of $\mathrm{E}(y \mid \mathbf{x})$. This considerably narrows the list of possible candidates for $\mu(\mathbf{x})$.
+
+Example 2.1: For $K=2$ explanatory variables, consider the following examples of conditional expectations:\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}$,\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} x_{2}^{2}$,\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} x_{1} x_{2}$,\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}\right)=\exp \left[\beta_{0}+\beta_{1} \log \left(x_{1}\right)+\beta_{2} x_{2}\right], \quad y \geq 0, x_{1}>0$.
+
+The model in equation (2.2) is linear in the explanatory variables $x_{1}$ and $x_{2}$. Equation (2.3) is an example of a conditional expectation nonlinear in $x_{2}$, although it is linear in $x_{1}$. As we will review shortly, from a statistical perspective, equations (2.2) and (2.3) can be treated in the same framework because they are linear in the parameters $\beta_{j}$. The fact that equation (2.3) is nonlinear in $\mathbf{x}$ has important implications for interpreting the $\beta_{j}$, but not for estimating them. Equation (2.4) falls into this same class: it is nonlinear in $\mathbf{x}=\left(x_{1}, x_{2}\right)$ but linear in the $\beta_{j}$.
+
+Equation (2.5) differs fundamentally from the first three examples in that it is a nonlinear function of the parameters $\beta_{j}$, as well as of the $x_{j}$. Nonlinearity in the parameters has implications for estimating the $\beta_{j}$; we will see how to estimate such models when we cover nonlinear methods in Part III. For now, you should note that equation (2.5) is reasonable only if $y \geq 0$.
+
+\subsection*{2.2.2 Partial Effects, Elasticities, and Semielasticities}
+If $y$ and $\mathbf{x}$ are related in a deterministic fashion, say $y=f(\mathbf{x})$, then we are often interested in how $y$ changes when elements of $\mathbf{x}$ change. In a stochastic setting we cannot assume that $y=f(\mathbf{x})$ for some known function and observable vector $\mathbf{x}$ because there are always unobserved factors affecting $y$. Nevertheless, we can define the partial effects of the $x_{j}$ on the conditional expectation $\mathrm{E}(y \mid \mathbf{x})$. Assuming that $\mu(\cdot)$ is appropriately differentiable and $x_{j}$ is a continuous variable, the partial derivative $\partial \mu(\mathbf{x}) / \partial x_{j}$ allows us to approximate the marginal change in $\mathrm{E}(y \mid \mathbf{x})$ when $x_{j}$ is increased by a small amount, holding $x_{1}, \ldots, x_{j-1}, x_{j+1}, \ldots x_{K}$ constant:\\
+$\Delta \mathrm{E}(y \mid \mathbf{x}) \approx \frac{\partial \mu(\mathbf{x})}{\partial x_{j}} \cdot \Delta x_{j}, \quad$ holding $x_{1}, \ldots, x_{j-1}, x_{j+1}, \ldots x_{K}$ fixed.
+
+The partial derivative of $\mathrm{E}(y \mid \mathbf{x})$ with respect to $x_{j}$ is usually called the partial effect of $x_{j}$ on $\mathrm{E}(y \mid \mathbf{x})$ (or, to be somewhat imprecise, the partial effect of $x_{j}$ on $y$ ). Interpreting the magnitudes of coefficients in parametric models usually comes from the approximation in equation (2.6).
+
+If $x_{j}$ is a discrete variable (such as a binary variable), partial effects are computed by comparing $\mathrm{E}(y \mid \mathbf{x})$ at different settings of $x_{j}$ (for example, zero and one when $x_{j}$ is binary), holding other variables fixed.
+
+Example 2.1 (continued): In equation (2.2) we have\\
+$\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{1}}=\beta_{1}, \quad \frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{2}}=\beta_{2}$.\\
+As expected, the partial effects in this model are constant. In equation (2.3),\\
+$\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{1}}=\beta_{1}, \quad \frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{2}}=\beta_{2}+2 \beta_{3} x_{2}$,\\
+so that the partial effect of $x_{1}$ is constant but the partial effect of $x_{2}$ depends on the level of $x_{2}$. In equation (2.4),\\
+$\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{1}}=\beta_{1}+\beta_{3} x_{2}, \quad \frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{2}}=\beta_{2}+\beta_{3} x_{1}$,\\
+so that the partial effect of $x_{1}$ depends on $x_{2}$, and vice versa. In equation (2.5),
+
+
+\begin{equation*}
+\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{1}}=\exp (\cdot)\left(\beta_{1} / x_{1}\right), \quad \frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{2}}=\exp (\cdot) \beta_{2}, \tag{2.7}
+\end{equation*}
+
+
+where $\exp (\cdot)$ denotes the function $\mathrm{E}(y \mid \mathbf{x})$ in equation (2.5). In this case, the partial effects of $x_{1}$ and $x_{2}$ both depend on $\mathbf{x}=\left(x_{1}, x_{2}\right)$.
+
+Sometimes we are interested in a particular function of a partial effect, such as an elasticity. In the determinstic case $y=f(\mathbf{x})$, we define the elasticity of $y$ with respect to $x_{j}$ as
+
+
+\begin{equation*}
+\frac{\partial y}{\partial x_{j}} \cdot \frac{x_{j}}{y}=\frac{\partial f(\mathbf{x})}{\partial x_{j}} \cdot \frac{x_{j}}{f(\mathbf{x})} \tag{2.8}
+\end{equation*}
+
+
+again assuming that $x_{j}$ is continuous. The right-hand side of equation (2.8) shows that the elasticity is a function of $\mathbf{x}$. When $y$ and $\mathbf{x}$ are random, it makes sense to use the right-hand side of equation (2.8), but where $f(\mathbf{x})$ is the conditional mean, $\mu(\mathbf{x})$. Therefore, the (partial) elasticity of $\mathrm{E}(y \mid \mathbf{x})$ with respect to $x_{j}$, holding $x_{1}, \ldots, x_{j-1}$, $x_{j+1}, \ldots, x_{K}$ constant, is
+
+
+\begin{equation*}
+\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{j}} \cdot \frac{x_{j}}{\mathrm{E}(y \mid \mathbf{x})}=\frac{\partial \mu(\mathbf{x})}{\partial x_{j}} \cdot \frac{x_{j}}{\mu(\mathbf{x})} \tag{2.9}
+\end{equation*}
+
+
+If $\mathrm{E}(y \mid \mathbf{x})>0$ and $x_{j}>0$ (as is often the case), equation (2.9) is the same as
+
+
+\begin{equation*}
+\frac{\partial \log [\mathrm{E}(y \mid \mathbf{x})]}{\partial \log \left(x_{j}\right)} \tag{2.10}
+\end{equation*}
+
+
+This latter expression gives the elasticity its interpretation as the approximate percentage change in $\mathrm{E}(y \mid \mathbf{x})$ when $x_{j}$ increases by 1 percent.
+
+Example 2.1 (continued): In equations (2.2) to (2.5), most elasticities are not constant. For example, in equation (2.2), the elasticity of $\mathrm{E}(y \mid \mathbf{x})$ with respect to $x_{1}$ is $\left(\beta_{1} x_{1}\right) /\left(\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}\right)$, which clearly depends on $x_{1}$ and $x_{2}$. However, in equation (2.5) the elasticity with respect to $x_{1}$ is constant and equal to $\beta_{1}$.
+
+How does equation (2.10) compare with the definition of elasticity based on the expected value of $\log (y)$ ? If $y>0$ and $x_{j}>0$, we could define the elasticity as\\
+$\frac{\partial \mathrm{E}[\log (y) \mid \mathbf{x}]}{\partial \log \left(x_{j}\right)}$.
+
+This seems to be a natural definition in a model such as $\log (y)=g(\mathbf{x})+u$, where $g(\mathbf{x})$ is some function of $\mathbf{x}$ and $u$ is an unobserved disturbance with zero mean conditional on $\mathbf{x}$. How do equations (2.10) and (2.11) compare? Generally, they are different (since the expected value of the $\log$ and the $\log$ of the expected value can be very different). If $u$ is independent of $\mathbf{x}$, then equations (2.10) and (2.11) are the same, because then\\
+$\mathrm{E}(y \mid \mathbf{x})=\delta \cdot \exp [g(\mathbf{x})]$,\\
+where $\delta \equiv \mathrm{E}[\exp (u)]$. (If $u$ and $\mathbf{x}$ are independent, so are $\exp (u)$ and $\exp [g(\mathbf{x})]$.) As a specific example, if\\
+$\log (y)=\beta_{0}+\beta_{1} \log \left(x_{1}\right)+\beta_{2} x_{2}+u$,\\
+where $u$ has zero mean and is independent of $\left(x_{1}, x_{2}\right)$, then the elasticity of $y$ with respect to $x_{1}$ is $\beta_{1}$ using either definition of elasticity. If $\mathrm{E}(u \mid \mathbf{x})=0$ but $u$ and $\mathbf{x}$ are not independent, the definitions are generally different.
+
+In many applications with $y>0$, little is lost by viewing equations (2.10) and (2.11) as the same, and in some later applications we will not make a distinction. Nevertheless, if the error $u$ in a model such as (2.12) is heteroskedastic-that is, $\operatorname{Var}(u \mid \mathbf{x})$ depends on $\mathbf{x}$-then equation (2.10) and equation (2.11) can deviate in nontrivial ways; see Problem 2.8. Although it is partly a matter of taste, equation (2.10) [or, even better, equation (2.9)] is attractive because it applies to any model of $\mathrm{E}(y \mid \mathbf{x})$, and so equation (2.10) allows comparison across many different functional forms. Plus, equation (2.10) applies even when $\log (y)$ is not defined, something that is important in Chapters 17 and 18. Definition (2.10) is more general because sometimes it applies even when $\log (y)$ is not defined. (We will need the general definition of an elasticity in Chapters 17 and 18.)
+
+The percentage change in $\mathrm{E}(y \mid \mathbf{x})$ when $x_{j}$ is increased by one unit is approximated as
+
+
+\begin{equation*}
+100 \cdot \frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{j}} \cdot \frac{1}{\mathrm{E}(y \mid \mathbf{x})}, \tag{2.13}
+\end{equation*}
+
+
+which equals
+
+
+\begin{equation*}
+100 \cdot \frac{\partial \log [\mathrm{E}(y \mid \mathbf{x})]}{\partial x_{j}} \tag{2.14}
+\end{equation*}
+
+
+if $\mathrm{E}(y \mid \mathbf{x})>0$. This is sometimes called the semielasticity of $\mathrm{E}(y \mid \mathbf{x})$ with respect to $x_{j}$.\\
+Example 2.1 (continued): In equation (2.5), the semielasticity with respect to $x_{2}$ is constant and equal to $100 \cdot \beta_{2}$. No other semielasticities are constant in these equations.
+
+\subsection*{2.2.3 Error Form of Models of Conditional Expectations}
+When $y$ is a random variable we would like to explain in terms of observable variables $\mathbf{x}$, it is useful to decompose $y$ as
+
+
+\begin{align*}
+& y=\mathrm{E}(y \mid \mathbf{x})+u  \tag{2.15}\\
+& \mathrm{E}(u \mid \mathbf{x})=0 \tag{2.16}
+\end{align*}
+
+
+In other words, equations (2.15) and (2.16) are definitional: we can always write $y$ as its conditional expectation, $\mathrm{E}(y \mid \mathbf{x})$, plus an error term or disturbance term that has conditional mean zero.
+
+The fact that $\mathrm{E}(u \mid \mathbf{x})=0$ has the following important implications: (1) $\mathrm{E}(u)=0$; (2) $u$ is uncorrelated with any function of $x_{1}, x_{2}, \ldots, x_{K}$, and, in particular, $u$ is uncorrelated with each of $x_{1}, x_{2}, \ldots, x_{K}$. That $u$ has zero unconditional expectation follows as a special case of the law of iterated expectations (LIE), which we cover more generally in the next subsection. Intuitively, it is quite reasonable that $\mathrm{E}(u \mid \mathbf{x})=$ 0 implies $\mathrm{E}(u)=0$. The second implication is less obvious but very important. The fact that $u$ is uncorrelated with any function of $\mathbf{x}$ is much stronger than merely saying that $u$ is uncorrelated with $x_{1}, \ldots, x_{K}$.
+
+As an example, if equation (2.2) holds, then we can write
+
+
+\begin{equation*}
+y=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+u, \quad \mathrm{E}\left(u \mid x_{1}, x_{2}\right)=0 \tag{2.17}
+\end{equation*}
+
+
+and so
+
+
+\begin{equation*}
+\mathrm{E}(u)=0, \quad \operatorname{Cov}\left(x_{1}, u\right)=0, \quad \operatorname{Cov}\left(x_{2}, u\right)=0 \tag{2.18}
+\end{equation*}
+
+
+But we can say much more: under equation (2.17), $u$ is also uncorrelated with any other function we might think of, such as $x_{1}^{2}, x_{2}^{2}, x_{1} x_{2}, \exp \left(x_{1}\right)$, and $\log \left(x_{2}^{2}+1\right)$. This fact ensures that we have fully accounted for the effects of $x_{1}$ and $x_{2}$ on the expected value of $y$; another way of stating this point is that we have the functional form of $\mathrm{E}(y \mid \mathbf{x})$ properly specified.
+
+If we only assume equation (2.18), then $u$ can be correlated with nonlinear functions of $x_{1}$ and $x_{2}$, such as quadratics, interactions, and so on. If we hope to estimate the partial effect of each $x_{j}$ on $\mathrm{E}(y \mid \mathbf{x})$ over a broad range of values for $\mathbf{x}$, we want $\mathrm{E}(u \mid \mathbf{x})=0$. (In Section 2.3 we discuss the weaker assumption (2.18) and its uses.)
+
+Example 2.2: Suppose that housing prices are determined by the simple model\\
+hprice $=\beta_{0}+\beta_{1}$ sqrft $+\beta_{2}$ distance $+u$,\\
+where sqrft is the square footage of the house and distance is the distance of the house from a city incinerator. For $\beta_{2}$ to represent $\partial \mathrm{E}$ (hprice $\mid$ sqrft, distance) $/ \partial$ distance, we must assume that $\mathrm{E}(u \mid$ sqrft, distance $)=0$.
+
+\subsection*{2.2.4 Some Properties of Conditional Expectations}
+One of the most useful tools for manipulating conditional expectations is the law of iterated expectations, which we mentioned previously. Here we cover the most general statement needed in this book. Suppose that $\mathbf{w}$ is a random vector and $y$ is a random variable. Let $\mathbf{x}$ be a random vector that is some function of $\mathbf{w}$, say $\mathbf{x}=\mathbf{f}(\mathbf{w})$. (The vector $\mathbf{x}$ could simply be a subset of $\mathbf{w}$.) This statement implies that if we know the outcome of $\mathbf{w}$, then we know the outcome of $\mathbf{x}$. The most general statement of the LIE that we will need is\\
+$\mathrm{E}(y \mid \mathbf{x})=\mathrm{E}[\mathrm{E}(y \mid \mathbf{w}) \mid \mathbf{x}]$.
+
+In other words, if we write $\mu_{1}(\mathbf{w}) \equiv \mathrm{E}(y \mid \mathbf{w})$ and $\mu_{2}(\mathbf{x}) \equiv \mathrm{E}(y \mid \mathbf{x})$, we can obtain $\mu_{2}(\mathbf{x})$ by computing the expected value of $\mu_{2}(\mathbf{w})$ given $\mathbf{x}: \mu_{1}(\mathbf{x})=\mathrm{E}\left[\mu_{1}(\mathbf{w}) \mid \mathbf{x}\right]$.
+
+There is another result that looks similar to equation (2.19) but is much simpler to verify. Namely,\\
+$\mathrm{E}(y \mid \mathbf{x})=\mathrm{E}[\mathrm{E}(y \mid \mathbf{x}) \mid \mathbf{w}]$.
+
+Note how the positions of $\mathbf{x}$ and $\mathbf{w}$ have been switched on the right-hand side of equation (2.20) compared with equation (2.19). The result in equation (2.20) follows easily from the conditional aspect of the expection: since $\mathbf{x}$ is a function of $\mathbf{w}$, knowing $\mathbf{w}$ implies knowing $\mathbf{x}$; given that $\mu_{2}(\mathbf{x})=\mathrm{E}(y \mid \mathbf{x})$ is a function of $\mathbf{x}$, the expected value of $\mu_{2}(\mathbf{x})$ given $\mathbf{w}$ is just $\mu_{2}(\mathbf{x})$.
+
+Some find a phrase useful for remembering both equations (2.19) and (2.20): "The smaller information set always dominates." Here, $\mathbf{x}$ represents less information than $\mathbf{w}$, since knowing $\mathbf{w}$ implies knowing $\mathbf{x}$, but not vice versa. We will use equations (2.19) and (2.20) almost routinely throughout the book.
+
+For many purposes we need the following special case of the general LIE (2.19). If $\mathbf{x}$ and $\mathbf{z}$ are any random vectors, then\\
+$\mathrm{E}(y \mid \mathbf{x})=\mathrm{E}[\mathrm{E}(y \mid \mathbf{x}, \mathbf{z}) \mid \mathbf{x}]$,\\
+or, defining $\mu_{1}(\mathbf{x}, \mathbf{z}) \equiv \mathrm{E}(y \mid \mathbf{x}, \mathbf{z})$ and $\mu_{2}(\mathbf{x}) \equiv \mathrm{E}(y \mid \mathbf{x})$,\\
+$\mu_{2}(\mathbf{x})=\mathrm{E}\left[\mu_{1}(\mathbf{x}, \mathbf{z}) \mid \mathbf{x}\right]$.
+
+For many econometric applications, it is useful to think of $\mu_{1}(\mathbf{x}, \mathbf{z})=\mathrm{E}(y \mid \mathbf{x}, \mathbf{z})$ as a structural conditional expectation, but where $\mathbf{z}$ is unobserved. If interest lies in $\mathrm{E}(y \mid \mathbf{x}, \mathbf{z})$, then we want the effects of the $x_{j}$ holding the other elements of $\mathbf{x}$ and $\mathbf{z}$ fixed. If $\mathbf{z}$ is not observed, we cannot estimate $\mathrm{E}(y \mid \mathbf{x}, \mathbf{z})$ directly. Nevertheless, since $y$ and $\mathbf{x}$ are observed, we can generally estimate $\mathrm{E}(y \mid \mathbf{x})$. The question, then, is whether we can relate $\mathrm{E}(y \mid \mathbf{x})$ to the original expectation of interest. (This is a version of the identification problem in econometrics.) The LIE provides a convenient way for relating the two expectations.
+
+Obtaining $\mathrm{E}\left[\mu_{1}(\mathbf{x}, \mathbf{z}) \mid \mathbf{x}\right]$ generally requires integrating (or summing) $\mu_{1}(\mathbf{x}, \mathbf{z})$ against the conditional density of $\mathbf{z}$ given $\mathbf{x}$, but in many cases the form of $\mathrm{E}(y \mid \mathbf{x}, \mathbf{z})$ is simple enough not to require explicit integration. For example, suppose we begin with the model
+
+
+\begin{equation*}
+\mathrm{E}\left(y \mid x_{1}, x_{2}, z\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} z \tag{2.23}
+\end{equation*}
+
+
+but where $z$ is unobserved. By the LIE, and the linearity of the CE operator,\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}\right)=\mathrm{E}\left(\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} z \mid x_{1}, x_{2}\right)$
+
+
+\begin{equation*}
+=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} \mathrm{E}\left(z \mid x_{1}, x_{2}\right) . \tag{2.24}
+\end{equation*}
+
+
+Now, if we make an assumption about $\mathrm{E}\left(z \mid x_{1}, x_{2}\right)$, for example, that it is linear in $x_{1}$ and $x_{2}$,\\
+$\mathrm{E}\left(z \mid x_{1}, x_{2}\right)=\delta_{0}+\delta_{1} x_{1}+\delta_{2} x_{2}$,\\
+then we can plug this into equation (2.24) and rearrange:\\
+$=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3}\left(\delta_{0}+\delta_{1} x_{1}+\delta_{2} x_{2}\right)$\\
+$=\left(\beta_{0}+\beta_{3} \delta_{0}\right)+\left(\beta_{1}+\beta_{3} \delta_{1}\right) x_{1}+\left(\beta_{2}+\beta_{3} \delta_{2}\right) x_{2}$.
+
+This last expression is $\mathrm{E}\left(y \mid x_{1}, x_{2}\right)$; given our assumptions it is necessarily linear in $\left(x_{1}, x_{2}\right)$.
+
+Now suppose equation (2.23) contains an interaction in $x_{1}$ and $z$ :\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}, z\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} z+\beta_{4} x_{1} z$.
+
+Then, again by the LIE,\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} \mathrm{E}\left(z \mid x_{1}, x_{2}\right)+\beta_{4} x_{1} \mathrm{E}\left(z \mid x_{1}, x_{2}\right)$.\\
+If $\mathrm{E}\left(z \mid x_{1}, x_{2}\right)$ is again given in equation (2.25), you can show that $\mathrm{E}\left(y \mid x_{1}, x_{2}\right)$ has terms linear in $x_{1}$ and $x_{2}$ and, in addition, contains $x_{1}^{2}$ and $x_{1} x_{2}$. The usefulness of such derivations will become apparent in later chapters.
+
+The general form of the LIE has other useful implications. Suppose that for some (vector) function $\mathbf{f}(\mathbf{x})$ and a real-valued function $g(\cdot), \mathrm{E}(y \mid \mathbf{x})=g[\mathbf{f}(\mathbf{x})]$. Then\\
+$\mathrm{E}[y \mid \mathbf{f}(\mathbf{x})]=\mathrm{E}(y \mid \mathbf{x})=g[\mathbf{f}(\mathbf{x})]$.
+
+There is another way to state this relationship: If we define $\mathbf{z} \equiv \mathbf{f}(\mathbf{x})$, then $\mathrm{E}(y \mid \mathbf{z})= g(\mathbf{z})$. The vector $\mathbf{z}$ can have smaller or greater dimension than $\mathbf{x}$. This fact is illustrated with the following example.
+
+Example 2.3: If a wage equation is\\
+$\mathrm{E}($ wage $\mid$ educ, exper $)=\beta_{0}+\beta_{1}$ educ $+\beta_{2}$ exper $+\beta_{3}$ exper ${ }^{2}+\beta_{4}$ educ•exper,\\
+then\\
+E (wage | educ, exper, exper ${ }^{2}$, educ•exper)
+
+$$
+=\beta_{0}+\beta_{1} e d u c+\beta_{2} e x p e r+\beta_{3} \text { exper }^{2}+\beta_{4} e d u c \cdot \text { exper. }
+$$
+
+In other words, once educ and exper have been conditioned on, it is redundant to condition on exper ${ }^{2}$ and educ-exper.
+
+The conclusion in this example is much more general, and it is helpful for analyzing models of conditional expectations that are linear in parameters. Assume that, for some functions $g_{1}(\mathbf{x}), g_{2}(\mathbf{x}), \ldots, g_{M}(\mathbf{x})$,\\
+$\mathrm{E}(y \mid \mathbf{x})=\beta_{0}+\beta_{1} g_{1}(\mathbf{x})+\beta_{2} g_{2}(\mathbf{x})+\cdots+\beta_{M} g_{M}(\mathbf{x})$.
+
+This model allows substantial flexibility, as the explanatory variables can appear in all kinds of nonlinear ways; the key restriction is that the model is linear in the $\beta_{j}$. If we define $z_{1} \equiv g_{1}(\mathbf{x}), \ldots, z_{M} \equiv g_{M}(\mathbf{x})$, then equation (2.27) implies that\\
+$\mathrm{E}\left(y \mid z_{1}, z_{2}, \ldots, z_{M}\right)=\beta_{0}+\beta_{1} z_{1}+\beta_{2} z_{2}+\cdots+\beta_{M} z_{M}$.
+
+This equation shows that any conditional expectation linear in parameters can be written as a conditional expectation linear in parameters and linear in some conditioning variables. If we write equation (2.29) in error form as $y=\beta_{0}+\beta_{1} z_{1}+ \beta_{2} z_{2}+\cdots+\beta_{M} z_{M}+u$, then, because $\mathrm{E}(u \mid \mathbf{x})=0$ and the $z_{j}$ are functions of $\mathbf{x}$, it follows that $u$ is uncorrelated with $z_{1}, \ldots, z_{M}$ (and any functions of them). As we will see in Chapter 4, this result allows us to cover models of the form (2.28) in the same framework as models linear in the original explanatory variables.
+
+We also need to know how the notion of statistical independence relates to conditional expectations. If $u$ is a random variable independent of the random vector $\mathbf{x}$, then $\mathrm{E}(u \mid \mathbf{x})=\mathrm{E}(u)$, so that if $\mathrm{E}(u)=0$ and $u$ and $\mathbf{x}$ are independent, then $\mathrm{E}(u \mid \mathbf{x})=$ 0 . The converse of this is not true: $\mathrm{E}(u \mid \mathbf{x})=\mathrm{E}(u)$ does not imply statistical independence between $u$ and $\mathbf{x}$ (just as zero correlation between $u$ and $\mathbf{x}$ does not imply independence).
+
+\subsection*{2.2.5 Average Partial Effects}
+When we explicitly allow the expectation of the response variable, $y$, to depend on unobservables-usually called unobserved heterogeneity-we must be careful in specifying the partial effects of interest. Suppose that we have in mind the (structural) conditional mean $\mathrm{E}(y \mid \mathbf{x}, q)=\mu_{1}(\mathbf{x}, q)$, where $\mathbf{x}$ is a vector of observable explanatory variables and $q$ is an unobserved random variable-the unobserved heterogeneity. (We take $q$ to be a scalar for simplicity; the discussion for a vector is essentially the same.) For continuous $x_{j}$, the partial effect of immediate interest is
+
+
+\begin{equation*}
+\theta_{j}(\mathbf{x}, q) \equiv \partial \mathrm{E}(y \mid \mathbf{x}, q) / \partial x_{j}=\partial \mu_{1}(\mathbf{x}, q) / \partial x_{j} . \tag{2.30}
+\end{equation*}
+
+
+(For discrete $x_{j}$, we would simply look at differences in the regression function for $x_{j}$ at two different values, when the other elements of $\mathbf{x}$ and $q$ are held fixed.) Because $\theta_{j}(\mathbf{x}, q)$ generally depends on $q$, we cannot hope to estimate the partial effects across many different values of $q$. In fact, even if we could estimate $\theta_{j}(\mathbf{x}, q)$ for all $\mathbf{x}$ and $q$, we would generally have little guidance about inserting values of $q$ into the mean function. In many cases we can make a normalization such as $\mathrm{E}(q)=0$, and estimate $\theta_{j}(\mathbf{x}, 0)$, but $q=0$ typically corresponds to a very small segment of the population. (Technically, $q=0$ corresponds to no one in the population when $q$ is continuously distributed.) Usually of more interest is the partial effect averaged across the population distribution of $q$; this is called the average partial effect (APE).
+
+For emphasis, let $\mathbf{x}^{o}$ denote a fixed value of the covariates. The average partial effect evaluated at $\mathbf{x}^{o}$ is\\
+$\delta_{j}\left(\mathbf{x}^{o}\right) \equiv \mathrm{E}_{q}\left[\theta_{j}\left(\mathbf{x}^{o}, q\right)\right]$,\\
+where $\mathrm{E}_{q}[\cdot]$ denotes the expectation with respect to $q$. In other words, we simply average the partial effect $\theta_{j}\left(\mathbf{x}^{o}, q\right)$ across the population distribution of $q$. Definition (2.31) holds for any population relationship between $q$ and $\mathbf{x}$; in particular, they need not be independent. But remember, in definition (2.31), $\mathbf{x}^{o}$ is a nonrandom vector of numbers.
+
+For concreteness, assume that $q$ has a continuous distribution with density function $g(\cdot)$, so that\\
+$\delta_{j}\left(\mathbf{x}^{o}\right)=\int_{\mathbb{R}} \theta_{j}\left(\mathbf{x}^{o}, q\right) g(q) d q$,\\
+where $q$ is simply the dummy argument in the integration. The question we answer here is, Is it possible to estimate $\delta_{j}\left(\mathbf{x}^{o}\right)$ from conditional expectations that depend only on observable conditioning variables? Generally, the answer must be no, as $q$ and $\mathbf{x}$ can be arbitrarily related. Nevertheless, if we appropriately restrict the relationship between $q$ and $\mathbf{x}$, we can obtain a very useful equivalance.
+
+One common assumption in nonlinear models with unobserved heterogeneity is that $q$ and $\mathbf{x}$ are independent. We will make the weaker assumption that $q$ and $\mathbf{x}$ are independent conditional on a vector of observables, $\mathbf{w}$ :\\
+$\mathrm{D}(q \mid \mathbf{x}, \mathbf{w})=\mathrm{D}(q \mid \mathbf{w})$,\\
+where $\mathbf{D}(\cdot \mid \cdot)$ denotes conditional distribution. (If we take $\mathbf{w}$ to be empty, we get the special case of independence between $q$ and $\mathbf{x}$.) In many cases, we can interpret equation (2.33) as implying that $\mathbf{w}$ is a vector of good proxy variables for $q$, but equation (2.33) turns out to be fairly widely applicable. We also assume that $\mathbf{w}$ is redundant or ignorable in the structural expectation\\
+$\mathrm{E}(y \mid \mathbf{x}, q, \mathbf{w})=\mathrm{E}(y \mid \mathbf{x}, q)$.
+
+As we will see in subsequent chapters, many econometric methods hinge on being able to exclude certain variables from the equation of interest, and equation (2.34) makes this assumption precise. Of course, if $\mathbf{w}$ is empty, then equation (2.34) is trivially true.
+
+Under equations (2.33) and (2.34), we can show the following important result, provided that we can interchange a certain integral and partial derivative:\\
+$\delta_{j}\left(\mathbf{x}^{o}\right)=\mathrm{E}_{w}\left[\partial \mathrm{E}\left(y \mid \mathbf{x}^{o}, \mathbf{w}\right) / \partial x_{j}\right]$,\\
+where $\mathrm{E}_{w}[\cdot]$ denotes the expectation with respect to the distribution of $\mathbf{w}$. Before we verify equation (2.35) for the special case of continuous, scalar $q$, we must understand\\
+its usefulness. The point is that the unobserved heterogeneity, $q$, has disappeared entirely, and the conditional expectation $\mathrm{E}(y \mid \mathbf{x}, \mathbf{w})$ can be estimated quite generally because we assume that a random sample can be obtained on $(y, \mathbf{x}, \mathbf{w})$. (Alternatively, when we write down parametric econometric models, we will be able to derive $\mathrm{E}(y \mid \mathbf{x}, \mathbf{w})$.$) Then, estimating the average partial effect at any chosen \mathbf{x}^{o}$ amounts to averaging $\partial \hat{\mu}_{2}\left(\mathbf{x}^{o}, \mathbf{w}_{i}\right) / \partial x_{j}$ across the random sample, where $\mu_{2}(\mathbf{x}, \mathbf{w}) \equiv \mathrm{E}(y \mid \mathbf{x}, \mathbf{w})$.
+
+Proving equation (2.35) is fairly simple. First, we have
+
+$$
+\mu_{2}(\mathbf{x}, \mathbf{w})=\mathrm{E}[\mathrm{E}(y \mid \mathbf{x}, q, \mathbf{w}) \mid \mathbf{x}, \mathbf{w}]=\mathrm{E}\left[\mu_{1}(\mathbf{x}, q) \mid \mathbf{x}, \mathbf{w}\right]=\int_{\mathbb{R}} \mu_{1}(\mathbf{x}, q) g(q \mid \mathbf{w}) d q
+$$
+
+where the first equality follows from the law of iterated expectations, the second equality follows from equation (2.34), and the third equality follows from equation (2.33). If we now take the partial derivative with respect to $x_{j}$ of the equality
+
+
+\begin{equation*}
+\mu_{2}(\mathbf{x}, \mathbf{w})=\int_{\mathbb{R}} \mu_{1}(\mathbf{x}, q) g(q \mid \mathbf{w}) d q \tag{2.36}
+\end{equation*}
+
+
+and interchange the partial derivative and the integral, we have, for any $(\mathbf{x}, \mathbf{w})$,
+
+
+\begin{equation*}
+\partial \mu_{2}(\mathbf{x}, \mathbf{w}) / \partial x_{j}=\int_{\mathbb{R}} \theta_{j}(\mathbf{x}, q) g(q \mid \mathbf{w}) d q \tag{2.37}
+\end{equation*}
+
+
+For fixed $\mathbf{x}^{o}$, the right-hand side of equation (2.37) is simply $\mathrm{E}\left[\theta_{j}\left(\mathbf{x}^{o}, q\right) \mid \mathbf{w}\right]$, and so another application of iterated expectations gives, for any $\mathbf{x}^{o}$,
+
+$$
+\mathrm{E}_{w}\left[\partial \mu_{2}\left(\mathbf{x}^{o}, \mathbf{w}\right) / \partial x_{j}\right]=\mathrm{E}\left\{\mathrm{E}\left[\theta_{j}\left(\mathbf{x}^{o}, q\right) \mid \mathbf{w}\right]\right\}=\delta_{j}\left(\mathbf{x}^{o}\right)
+$$
+
+which is what we wanted to show.\\
+As mentioned previously, equation (2.35) has many applications in models where unobserved heterogeneity enters a conditional mean function in a nonadditive fashion. We will use this result (in simplified form) in Chapter 4, and also extensively in Part IV. The special case where $q$ is independent of $\mathbf{x}$-and so we do not need the proxy variables $\mathbf{w}$-is very simple: the APE of $x_{j}$ on $\mathrm{E}(y \mid \mathbf{x}, q)$ is simply the partial effect of $x_{j}$ on $\mu_{2}(\mathbf{x})=\mathrm{E}(y \mid \mathbf{x})$. In other words, if we focus on average partial effects, there is no need to introduce heterogeneity. If we do specify a model with heterogeneity independent of $\mathbf{x}$, then we simply find $\mathrm{E}(y \mid \mathbf{x})$ by integrating $\mathrm{E}(y \mid \mathbf{x}, q)$ over the distribution of $q$.
+
+Our discussion of average partial effects is closely related to Blundell and Powell's (2003) analysis of an average structural function (ASE). Blundell and Powell essentially define the ASE, at a given value $\mathbf{x}^{o}$, to be $\mathrm{E}_{q}\left[\mu_{1}\left(\mathbf{x}^{o}, q\right)\right]$, where $\mu_{1}(\mathbf{x}, q)= \mathrm{E}(y \mid \mathbf{x}, q)$. In other words, the average structural function takes the conditional ex-\\
+pectation of interest-a "structural" conditional expectation-and averages out the unobservable, $q$. Provided the derivative and expected value can be interchangedwhich holds under very general assumptions, see Bartle (1966)-the ASE leads us to the same place as APEs. For further discussion, see Wooldridge (2005c). We will apply equation (2.35) to nonlinear models in several different settings, including panel data models and models with endogenous explanatory variables.
+
+\subsection*{2.3 Linear Projections}
+In the previous section we saw some examples of how to manipulate conditional expectations. While structural equations are usually stated in terms of CEs, making linearity assumptions about CEs involving unobservables or auxiliary variables is undesirable, especially if such assumptions can be easily relaxed.
+
+By using the notion of a linear projection we can often relax linearity assumptions in auxiliary conditional expectations. Typically this is done by first writing down a structural model in terms of a CE and then using the linear projection to obtain an estimable equation. As we will see in Chapters 4 and 5, this approach has many applications.
+
+Generally, let $y, x_{1}, \ldots, x_{K}$ be random variables representing some population such that $\mathrm{E}\left(y^{2}\right)<\infty, \mathrm{E}\left(x_{j}^{2}\right)<\infty, j=1,2, \ldots, K$. These assumptions place no practical restrictions on the joint distribution of $\left(y, x_{1}, x_{2}, \ldots, x_{K}\right)$ : the vector can contain discrete and continuous variables, as well as variables that have both characteristics. In many cases $y$ and the $x_{j}$ are nonlinear functions of some underlying variables that are initially of interest.
+
+Define $\mathbf{x} \equiv\left(x_{1}, \ldots, x_{K}\right)$ as a $1 \times K$ vector, and make the assumption that the $K \times K$ variance matrix of $\mathbf{x}$ is nonsingular (positive definite). Then the linear projection of $y$ on $1, x_{1}, x_{2}, \ldots, x_{K}$ always exists and is unique:\\
+$\mathrm{L}\left(y \mid 1, x_{1}, \ldots x_{K}\right)=\mathrm{L}(y \mid 1, \mathbf{x})=\beta_{0}+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}=\beta_{0}+\mathbf{x} \boldsymbol{\beta}$,\\
+where, by definition,
+
+
+\begin{align*}
+& \boldsymbol{\beta} \equiv[\operatorname{Var}(\mathbf{x})]^{-1} \operatorname{Cov}(\mathbf{x}, y),  \tag{2.39}\\
+& \beta_{0} \equiv \mathrm{E}(y)-\mathrm{E}(\mathbf{x}) \boldsymbol{\beta}=\mathrm{E}(y)-\beta_{1} \mathrm{E}\left(x_{1}\right)-\cdots-\beta_{K} \mathrm{E}\left(x_{K}\right) . \tag{2.40}
+\end{align*}
+
+
+The matrix $\operatorname{Var}(\mathbf{x})$ is the $K \times K$ symmetric matrix with $(j, k)$ th element given by $\operatorname{Cov}\left(x_{j}, x_{k}\right)$, while $\operatorname{Cov}(\mathbf{x}, y)$ is the $K \times 1$ vector with $j$ th element $\operatorname{Cov}\left(x_{j}, y\right)$. When $K=1$ we have the familiar results $\beta_{1} \equiv \operatorname{Cov}\left(x_{1}, y\right) / \operatorname{Var}\left(x_{1}\right)$ and $\beta_{0} \equiv \mathrm{E}(y)-$\\
+$\beta_{1} \mathrm{E}\left(x_{1}\right)$. As its name suggests, $\mathrm{L}\left(y \mid 1, x_{1}, x_{2}, \ldots, x_{K}\right)$ is always a linear function of the $x_{j}$.
+
+Other authors use a different notation for linear projections, the most common being $\mathrm{E}^{*}(\cdot \mid \cdot)$ and $\mathrm{P}(\cdot \mid \cdot)$. (For example, Chamberlain (1984) and Goldberger (1991) use $\mathrm{E}^{*}(\cdot \mid \cdot)$.) Some authors omit the 1 in the definition of a linear projection because it is assumed that an intercept is always included. Although this is usually the case, we put unity in explicitly to distinguish equation (2.38) from the case that a zero intercept is intended. The linear projection of $y$ on $x_{1}, x_{2}, \ldots, x_{K}$ is defined as\\
+$\mathrm{L}(y \mid \mathbf{x})=\mathrm{L}\left(y \mid x_{1}, x_{2}, \ldots, x_{K}\right)=\gamma_{1} x_{1}+\gamma_{2} x_{2}+\cdots+\gamma_{K} x_{K}=\mathbf{x} \boldsymbol{\gamma}$, where $\boldsymbol{\gamma} \equiv\left(\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)\right)^{-1} \mathrm{E}\left(\mathbf{x}^{\prime} y\right)$. Note that $\boldsymbol{\gamma} \neq \boldsymbol{\beta}$ unless $\mathrm{E}(\mathbf{x})=\mathbf{0}$. Later, we will include unity as an element of $\mathbf{x}$, in which case the linear projection including an intercept can be written as $\mathrm{L}(y \mid \mathbf{x})$.
+
+The linear projection is just another way of writing down a population linear model where the disturbance has certain properties. Given the linear projection in equation (2.38) we can always write\\
+$y=\beta_{0}+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}+u$,\\
+where the error term $u$ has the following properties (by definition of a linear projection): $\mathrm{E}\left(u^{2}\right)<\infty$ and\\
+$\mathrm{E}(u)=0, \quad \operatorname{Cov}\left(x_{j}, u\right)=0, \quad j=1,2, \ldots, K$.
+
+In other words, $u$ has zero mean and is uncorrelated with every $x_{j}$. Conversely, given equations (2.41) and (2.42), the parameters $\beta_{j}$ in equation (2.41) must be the parameters in the linear projection of $y$ on $1, x_{1}, \ldots, x_{K}$ given by definitions (2.39) and $(2.40)$. Sometimes we will write a linear projection in error form, as in equations (2.41) and (2.42), but other times the notation (2.38) is more convenient.
+
+It is important to emphasize that when equation (2.41) represents the linear projection, all we can say about $u$ is contained in equation (2.42). In particular, it is not generally true that $u$ is independent of $\mathbf{x}$ or that $\mathrm{E}(u \mid \mathbf{x})=0$. Here is another way of saying the same thing: equations (2.41) and (2.42) are definitional. Equation (2.41) under $\mathrm{E}(u \mid \mathbf{x})=0$ is an assumption that the conditional expectation is linear.
+
+The linear projection is sometimes called the minimum mean square linear predictor or the least squares linear predictor because $\beta_{0}$ and $\boldsymbol{\beta}$ can be shown to solve the following problem:
+
+
+\begin{equation*}
+\min _{b_{0}, \mathbf{b} \in \mathbb{R}^{K}} \mathrm{E}\left[\left(y-b_{0}-\mathbf{x b}\right)^{2}\right] \tag{2.43}
+\end{equation*}
+
+
+(see Property LP. 6 in the appendix). Because the CE is the minimum mean square predictor-that is, it gives the smallest mean square error out of all (allowable) functions (see Property CE.8)-it follows immediately that if $\mathrm{E}(y \mid \mathbf{x})$ is linear in $\mathbf{x}$, then the linear projection coincides with the conditional expectation.
+
+As with the conditional expectation operator, the linear projection operator satisfies some important iteration properties. For vectors $\mathbf{x}$ and $\mathbf{z}$,\\
+$\mathrm{L}(y \mid 1, \mathbf{x})=\mathrm{L}[\mathrm{L}(y \mid 1, \mathbf{x}, \mathbf{z}) \mid 1, \mathbf{x}]$.
+
+This simple fact can be used to derive omitted variables bias in a general setting as well as proving properties of estimation methods such as two-stage least squares and certain panel data methods.
+
+Another iteration property that is useful involves taking the linear projection of a conditional expectation:\\
+$\mathrm{L}(y \mid 1, \mathbf{x})=\mathrm{L}[\mathrm{E}(y \mid \mathbf{x}, \mathbf{z}) \mid 1, \mathbf{x}]$.
+
+Often we specify a structural model in terms of a conditional expectation $\mathrm{E}(y \mid \mathbf{x}, \mathbf{z})$ (which is frequently linear), but, for a variety of reasons, the estimating equations are based on the linear projection $\mathrm{L}(y \mid 1, \mathbf{x})$. If $\mathrm{E}(y \mid \mathbf{x}, \mathbf{z})$ is linear in $\mathbf{x}$ and $\mathbf{z}$, then equations (2.45) and (2.44) say the same thing.
+
+For example, assume that\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} x_{1} x_{2}$\\
+and define $z_{1} \equiv x_{1} x_{2}$. Then, from Property CE.3,\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}, z_{1}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} z_{1}$.
+
+The right-hand side of equation (2.46) is also the linear projection of $y$ on $1, x_{1}, x_{2}$, and $z_{1}$; it is not generally the linear projection of $y$ on $1, x_{1}, x_{2}$.
+
+Our primary use of linear projections will be to obtain estimable equations involving the parameters of an underlying conditional expectation of interest. Problems 2.2 and 2.3 show how the linear projection can have an interesting interpretation in terms of the structural parameters.
+
+\section*{Problems}
+2.1. Given random variables $y$, $x_{1}$, and $x_{2}$, consider the model\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} x_{2}^{2}+\beta_{4} x_{1} x_{2}$.\\
+a. Find the partial effects of $x_{1}$ and $x_{2}$ on $\mathrm{E}\left(y \mid x_{1}, x_{2}\right)$.\\
+b. Writing the equation as\\
+$y=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} x_{2}^{2}+\beta_{4} x_{1} x_{2}+u$,\\
+what can be said about $\mathrm{E}\left(u \mid x_{1}, x_{2}\right)$ ? What about $\mathrm{E}\left(u \mid x_{1}, x_{2}, x_{2}^{2}, x_{1} x_{2}\right)$ ?\\
+c. In the equation of part b , what can be said about $\operatorname{Var}\left(u \mid x_{1}, x_{2}\right)$ ?\\
+2.2. Let $y$ and $x$ be scalars such that\\
+$\mathrm{E}(y \mid x)=\delta_{0}+\delta_{1}(x-\mu)+\delta_{2}(x-\mu)^{2}$,\\
+where $\mu=\mathrm{E}(x)$.\\
+a. Find $\partial \mathrm{E}(y \mid x) / \partial x$, and comment on how it depends on $x$.\\
+b. Show that $\delta_{1}$ is equal to $\partial \mathrm{E}(y \mid x) / \partial x$ averaged across the distribution of $x$.\\
+c. Suppose that $x$ has a symmetric distribution, so that $\mathrm{E}\left[(x-\mu)^{3}\right]=0$. Show that $\mathrm{L}(y \mid 1, x)=\alpha_{0}+\delta_{1} x$ for some $\alpha_{0}$. Therefore, the coefficient on $x$ in the linear projection of $y$ on $(1, x)$ measures something useful in the nonlinear model for $\mathrm{E}(y \mid x)$ : it is the partial effect $\partial \mathrm{E}(y \mid x) / \partial x$ averaged across the distribution of $x$.\\
+2.3. Suppose that\\
+$\mathrm{E}\left(y \mid x_{1}, x_{2}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}+\beta_{3} x_{1} x_{2}$.\\
+a. Write this expectation in error form (call the error $u$ ), and describe the properties of $u$.\\
+b. Suppose that $x_{1}$ and $x_{2}$ have zero means. Show that $\beta_{1}$ is the expected value of $\partial \mathrm{E}\left(y \mid x_{1}, x_{2}\right) / \partial x_{1}$ (where the expectation is across the population distribution of $x_{2}$ ). Provide a similar interpretation for $\beta_{2}$.\\
+c. Now add the assumption that $x_{1}$ and $x_{2}$ are independent of one another. Show that the linear projection of $y$ on $\left(1, x_{1}, x_{2}\right)$ is\\
+$\mathrm{L}\left(y \mid 1, x_{1}, x_{2}\right)=\beta_{0}+\beta_{1} x_{1}+\beta_{2} x_{2}$.\\
+(Hint: Show that, under the assumptions on $x_{1}$ and $x_{2}, x_{1} x_{2}$ has zero mean and is uncorrelated with $x_{1}$ and $x_{2}$.)\\
+d. Why is equation (2.47) generally more useful than equation (2.48)?\\
+2.4. For random scalars $u$ and $v$ and a random vector $\mathbf{x}$, suppose that $\mathrm{E}(u \mid \mathbf{x}, v)$ is a linear function of $(\mathbf{x}, v)$ and that $u$ and $v$ each have zero mean and are uncorrelated with the elements of $\mathbf{x}$. Show that $\mathrm{E}(u \mid \mathbf{x}, v)=\mathrm{E}(u \mid v)=\rho_{1} v$ for some $\rho_{1}$.\\
+2.5. Consider the two representations\\
+$y=\mu_{1}(\mathbf{x}, \mathbf{z})+u_{1}, \quad \mathrm{E}\left(u_{1} \mid \mathbf{x}, \mathbf{z}\right)=0$.\\
+$y=\mu_{2}(\mathbf{x})+u_{2}, \quad \mathrm{E}\left(u_{2} \mid \mathbf{x}\right)=0$.\\
+Assuming that $\operatorname{Var}(y \mid \mathbf{x}, \mathbf{z})$ and $\operatorname{Var}(y \mid \mathbf{x})$ are both constant, what can you say about the relationship between $\operatorname{Var}\left(u_{1}\right)$ and $\operatorname{Var}\left(u_{2}\right)$ ? (Hint: Use Property CV. 4 in the appendix.)\\
+2.6. Let $\mathbf{x}$ be a $1 \times K$ random vector, and let $q$ be a random scalar. Suppose that $q$ can be expressed as $q=q^{*}+e$, where $\mathrm{E}(e)=0$ and $\mathrm{E}\left(\mathbf{x}^{\prime} e\right)=\mathbf{0}$. Write the linear projection of $q^{*}$ onto ( $1, \mathbf{x}$ ) as $q^{*}=\delta_{0}+\delta_{1} x_{1}+\cdots+\delta_{K} x_{K}+r^{*}$, where $\mathrm{E}\left(r^{*}\right)=0$ and $\mathrm{E}\left(\mathbf{x}^{\prime} r^{*}\right)=\mathbf{0}$.\\
+a. Show that\\
+$\mathrm{L}(q \mid 1, \mathbf{x})=\delta_{0}+\delta_{1} x_{1}+\cdots+\delta_{K} x_{K}$.\\
+b. Find the projection error $r \equiv q-\mathrm{L}(q \mid 1, \mathbf{x})$ in terms of $r^{*}$ and $e$.\\
+2.7. Consider the conditional expectation\\
+$\mathrm{E}(y \mid \mathbf{x}, \mathbf{z})=g(\mathbf{x})+\mathbf{z} \boldsymbol{\beta}$,\\
+where $g(\cdot)$ is a general function of $\mathbf{x}$ and $\boldsymbol{\beta}$ is a $1 \times M$ vector. Typically, this is called a partial linear model. Show that\\
+$\mathrm{E}(\tilde{y} \mid \tilde{\mathbf{z}})=\tilde{\mathbf{z}} \boldsymbol{\beta}$,\\
+where $\tilde{y} \equiv y-\mathrm{E}(y \mid \mathbf{x})$ and $\tilde{\mathbf{z}} \equiv \mathbf{z}-\mathrm{E}(\mathbf{z} \mid \mathbf{x})$. Robinson (1988) shows how to use this result to estimate $\boldsymbol{\beta}$ without specifying $g(\cdot)$.\\
+2.8. Suppose $y$ is a nonnegative continuous variable generated as\\
+$\log (y)=g(\mathbf{x})+u$,\\
+where $\mathrm{E}(u \mid \mathbf{x})=0$. Define $a(\mathbf{x})=\mathrm{E}[\exp (u) \mid \mathbf{x}]$.\\
+a. Show that, using definition (2.9), the elasticity of $\mathrm{E}(y \mid \mathbf{x})$ with respect to $x_{j}$ is\\
+$\frac{\partial g(\mathbf{x})}{\partial x_{j}} \cdot x_{j}+\frac{\partial a(\mathbf{x})}{\partial x_{j}} \cdot \frac{x_{j}}{a(\mathbf{x})}$.\\
+Note that the second term is the elasticity of $a(\mathbf{x})$ with respect to $x_{j}$.\\
+b. If $x_{j}>0$, show that the first part of the expression in part a is $\partial g(\mathbf{x}) / \partial \log \left(x_{j}\right)$.\\
+c. If you apply equation (2.11) to this model, what would you conclude is the "elasticity of $y$ with respect to $x$ "? How does this compare with part b ?\\
+2.9. Let $\mathbf{x}$ be a $1 \times K$ vector with $x_{1} \equiv 1$ (to simplify the notation), and define $\mu(\mathbf{x}) \equiv \mathrm{E}(y \mid \mathbf{x})$. Let $\boldsymbol{\delta}$ be the $K \times 1$ vector of linear projection coefficients of $y$ on $\mathbf{x}$, so that $\boldsymbol{\delta}=\left[\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)\right]^{-1} \mathrm{E}\left(\mathbf{x}^{\prime} y\right)$. Show that $\boldsymbol{\delta}$ is also the vector of coefficients in the linear projection of $\mu(\mathbf{x})$ on $\mathbf{x}$.\\
+2.10. This problem is useful for decomposing the difference in average responses across two groups. It is often used, with specific functional form assumptions, to decompose average wages or earnings across two groups; see, for example, Oaxaca and Ransom (1994). Let $y$ be the response variable, $\mathbf{x}$ a set of explanatory variables, and $s$ a binary group indicator. For example, $s$ could denote gender, union membership status, college graduate versus non-college graduate, and so on. Define $\mu_{0}(\mathbf{x})= \mathrm{E}(y \mid \mathbf{x}, s=0)$ and $\mu_{1}(\mathbf{x})=\mathrm{E}(y \mid \mathbf{x}, s=1)$ to be the regression functions for the two groups.\\
+a. Show that
+
+$$
+\begin{aligned}
+\mathrm{E}(y \mid s=1)-\mathrm{E}(y \mid s=0)= & \left\{\mathrm{E}\left[\mu_{1}(\mathbf{x}) \mid s=1\right]-\mathrm{E}\left[\mu_{0}(\mathbf{x}) \mid s=1\right]\right\} \\
+& +\left\{\mathrm{E}\left[\mu_{0}(\mathbf{x}) \mid s=1\right]-\mathrm{E}\left[\mu_{0}(\mathbf{x}) \mid s=0\right]\right\}
+\end{aligned}
+$$
+
+(Hint: First write $\mathrm{E}(y \mid \mathbf{x}, s)=(1-s) \cdot \mu_{0}(\mathbf{x})+s \cdot \mu_{1}(\mathbf{x})$ and use iterated expectations. Then use simple algebra.)\\
+b. Suppose both expectations are linear: $\mu_{s}(\mathbf{x})=\mathbf{x} \boldsymbol{\beta}_{s}, s=0,1$. Show that $\mathrm{E}(y \mid s=1)-\mathrm{E}(y \mid s=0)=\mathrm{E}(\mathbf{x} \mid s=1) \cdot\left(\boldsymbol{\beta}_{1}-\boldsymbol{\beta}_{0}\right)+[\mathrm{E}(\mathbf{x} \mid s=1)-\mathrm{E}(\mathbf{x} \mid s=0)] \cdot \boldsymbol{\beta}_{0}$.
+
+Can you interpret this decomposition?
+
+\section*{Appendix 2A}
+\section*{2.A. 1 Properties of Conditional Expectations}
+PROPERTY CE.1: Let $a_{1}(\mathbf{x}), \ldots, a_{G}(\mathbf{x})$ and $b(\mathbf{x})$ be scalar functions of $\mathbf{x}$, and let $y_{1}, \ldots, y_{G}$ be random scalars. Then\\
+$\mathrm{E}\left(\sum_{j=1}^{G} a_{j}(\mathbf{x}) y_{j}+b(\mathbf{x}) \mid \mathbf{x}\right)=\sum_{j=1}^{G} a_{j}(\mathbf{x}) \mathrm{E}\left(y_{j} \mid \mathbf{x}\right)+b(\mathbf{x})$\\
+provided that $\mathrm{E}\left(\left|y_{j}\right|\right)<\infty, \mathrm{E}\left[\left|a_{j}(\mathbf{x}) y_{j}\right|\right]<\infty$, and $\mathrm{E}[|b(\mathbf{x})|]<\infty$. This is the sense in which the conditional expectation is a linear operator.\\
+property CE.2: $\quad \mathrm{E}(y)=\mathrm{E}[\mathrm{E}(y \mid \mathbf{x})] \equiv \mathrm{E}[\mu(\mathbf{x})]$.\\
+Property CE. 2 is the simplest version of the law of iterated expectations. As an illustration, suppose that $\mathbf{x}$ is a discrete random vector taking on values $\mathbf{c}_{1}, \mathbf{c}_{2}, \ldots, \mathbf{c}_{M}$ with probabilities $p_{1}, p_{2}, \ldots, p_{M}$. Then the LIE says\\
+$\mathrm{E}(y)=p_{1} \mathrm{E}\left(y \mid \mathbf{x}=\mathbf{c}_{1}\right)+p_{2} \mathrm{E}\left(y \mid \mathbf{x}=\mathbf{c}_{2}\right)+\cdots+p_{M} \mathrm{E}\left(y \mid \mathbf{x}=\mathbf{c}_{M}\right)$.
+
+In other words, $\mathrm{E}(y)$ is simply a weighted average of the $\mathrm{E}\left(y \mid \mathbf{x}=\mathbf{c}_{j}\right)$, where the weight $p_{j}$ is the probability that $\mathbf{x}$ takes on the value $\mathbf{c}_{j}$.\\
+property CE.3: (1) $\mathrm{E}(y \mid \mathbf{x})=\mathrm{E}[\mathrm{E}(y \mid \mathbf{w}) \mid \mathbf{x}]$, where $\mathbf{x}$ and $\mathbf{w}$ are vectors with $\mathbf{x}= \mathbf{f}(\mathbf{w})$ for some nonstochastic function $\mathbf{f}(\cdot)$. (This is the general version of the law of iterated expectations.)\\
+(2) As a special case of part $1, \mathrm{E}(y \mid \mathbf{x})=\mathrm{E}[\mathrm{E}(y \mid \mathbf{x}, \mathbf{z}) \mid \mathbf{x}]$ for vectors $\mathbf{x}$ and $\mathbf{z}$.\\
+property CE.4: If $\mathbf{f}(\mathbf{x}) \in \mathbb{R}^{J}$ is a function of $\mathbf{x}$ such that $\mathrm{E}(y \mid \mathbf{x})=g[\mathbf{f}(\mathbf{x})]$ for some scalar function $g(\cdot)$, then $\mathrm{E}[y \mid \mathbf{f}(\mathbf{x})]=\mathrm{E}(y \mid \mathbf{x})$.\\
+property CE.5: If the vector ( $\mathbf{u}, \mathbf{v}$ ) is independent of the vector $\mathbf{x}$, then $\mathrm{E}(\mathbf{u} \mid \mathbf{x}, \mathbf{v})= \mathrm{E}(\mathbf{u} \mid \mathbf{v})$.\\
+property CE.6: If $u \equiv y-\mathrm{E}(y \mid \mathbf{x})$, then $\mathrm{E}[\mathbf{g}(\mathbf{x}) u]=\mathbf{0}$ for any function $\mathbf{g}(\mathbf{x})$, provided that $\mathrm{E}\left[\left|g_{j}(\mathbf{x}) u\right|\right]<\infty, j=1, \ldots, J$, and $\mathrm{E}(|u|)<\infty$. In particular, $\mathrm{E}(u)=0$ and $\operatorname{Cov}\left(x_{j}, u\right)=0, j=1, \ldots, K$.
+
+Proof: First, note that\\
+$\mathrm{E}(u \mid \mathbf{x})=\mathrm{E}[(y-\mathrm{E}(y \mid \mathbf{x})) \mid \mathbf{x}]=\mathrm{E}[(y-\mu(\mathbf{x})) \mid \mathbf{x}]=\mathrm{E}(y \mid \mathbf{x})-\mu(\mathbf{x})=0$.\\
+Next, by property CE.2, $\mathrm{E}[\mathbf{g}(\mathbf{x}) u]=\mathrm{E}(\mathrm{E}[\mathbf{g}(\mathbf{x}) u \mid \mathbf{x}])=\mathrm{E}[\mathbf{g}(\mathbf{x}) \mathrm{E}(u \mid \mathbf{x})]$ (by property $\mathrm{CE} .1)=\mathbf{0}$ because $\mathrm{E}(u \mid \mathbf{x})=0$.\\
+property CE. 7 (Conditional Jensen's Inequality): If $c: \mathbb{R} \rightarrow \mathbb{R}$ is a convex function defined on $\mathbb{R}$ and $\mathrm{E}[|y|]<\infty$, then\\
+$c[\mathrm{E}(y \mid \mathbf{x})] \leq \mathrm{E}[c(y) \mid \mathbf{x}]$.\\
+Technically, we should add the statement "almost surely- $\mathrm{P}_{\mathbf{x}}$," which means that the inequality holds for all $\mathbf{x}$ in a set that has probability equal to one. As a special\\
+case, $[\mathrm{E}(y)]^{2} \leq \mathrm{E}\left(y^{2}\right)$. Also, if $y>0$, then $-\log [\mathrm{E}(y)] \leq \mathrm{E}[-\log (y)]$, or $\mathrm{E}[\log (y)] \leq \log [\mathrm{E}(y)]$.\\
+property CE.8: If $\mathrm{E}\left(y^{2}\right)<\infty$ and $\mu(\mathbf{x}) \equiv \mathrm{E}(y \mid \mathbf{x})$, then $\mu$ is a solution to $\min _{m \in \mathscr{M}} \mathrm{E}\left[(y-m(\mathbf{x}))^{2}\right]$,\\
+where $\mathscr{M}$ is the set of functions $m: \mathbb{R}^{K} \rightarrow \mathbb{R}$ such that $\mathrm{E}\left[m(\mathbf{x})^{2}\right]<\infty$. In other words, $\mu(\mathbf{x})$ is the best mean square predictor of $y$ based on information contained in $\mathbf{x}$.
+
+Proof: By the conditional Jensen's inequality, if follows that $\mathrm{E}\left(y^{2}\right)<\infty$ implies $\mathrm{E}\left[\mu(\mathbf{x})^{2}\right]<\infty$, so that $\mu \in \mathscr{M}$. Next, for any $m \in \mathscr{M}$, write
+
+$$
+\begin{aligned}
+\mathrm{E}\left[(y-m(\mathbf{x}))^{2}\right] & =\mathrm{E}\left[\{(y-\mu(\mathbf{x}))+(\mu(\mathbf{x})-m(\mathbf{x}))\}^{2}\right] \\
+& =\mathrm{E}\left[(y-\mu(\mathbf{x}))^{2}\right]+\mathrm{E}\left[(\mu(\mathbf{x})-m(\mathbf{x}))^{2}\right]+2 \mathrm{E}[(\mu(\mathbf{x})-m(\mathbf{x})) u]
+\end{aligned}
+$$
+
+where $u \equiv y-\mu(\mathbf{x})$. Thus, by CE.6,\\
+$\mathrm{E}\left[(y-m(\mathbf{x}))^{2}\right]=\mathrm{E}\left(u^{2}\right)+\mathrm{E}\left[(\mu(\mathbf{x})-m(\mathbf{x}))^{2}\right]$.\\
+The right-hand side is clearly minimized at $m \equiv \mu$.
+
+\section*{2.A. 2 Properties of Conditional Variances and Covariances}
+The conditional variance of $y$ given $\mathbf{x}$ is defined as\\
+$\operatorname{Var}(y \mid \mathbf{x}) \equiv \sigma^{2}(\mathbf{x}) \equiv \mathrm{E}\left[\{y-\mathrm{E}(y \mid \mathbf{x})\}^{2} \mid \mathbf{x}\right]=\mathrm{E}\left(y^{2} \mid \mathbf{x}\right)-[\mathrm{E}(y \mid \mathbf{x})]^{2}$.\\
+The last representation is often useful for computing $\operatorname{Var}(y \mid \mathbf{x})$. As with the conditional expectation, $\sigma^{2}(\mathbf{x})$ is a random variable when $\mathbf{x}$ is viewed as a random vector.\\
+property CV.1: $\operatorname{Var}[a(\mathbf{x}) y+b(\mathbf{x}) \mid \mathbf{x}]=[a(\mathbf{x})]^{2} \operatorname{Var}(y \mid \mathbf{x})$.\\
+property CV.2: $\operatorname{Var}(y)=\mathrm{E}[\operatorname{Var}(y \mid \mathbf{x})]+\operatorname{Var}[\mathrm{E}(y \mid \mathbf{x})]=\mathrm{E}\left[\sigma^{2}(\mathbf{x})\right]+\operatorname{Var}[\mu(\mathbf{x})]$.\\
+Proof:
+
+$$
+\begin{aligned}
+\operatorname{Var}(y) \equiv & \mathrm{E}\left[(y-\mathrm{E}(y))^{2}\right]=\mathrm{E}\left[(y-\mathrm{E}(y \mid \mathbf{x})+\mathrm{E}(y \mid \mathbf{x})+\mathrm{E}(y))^{2}\right] \\
+= & \mathrm{E}\left[(y-\mathrm{E}(y \mid \mathbf{x}))^{2}\right]+\mathrm{E}\left[(\mathrm{E}(y \mid \mathbf{x})-\mathrm{E}(y))^{2}\right] \\
+& +2 \mathrm{E}[(y-\mathrm{E}(y \mid \mathbf{x}))(\mathrm{E}(y \mid \mathbf{x})-\mathrm{E}(y))]
+\end{aligned}
+$$
+
+By CE.6, $\mathrm{E}[(y-\mathrm{E}(y \mid \mathbf{x}))(\mathrm{E}(y \mid \mathbf{x})-\mathrm{E}(y))]=0$; so
+
+$$
+\begin{aligned}
+\operatorname{Var}(y) & =\mathrm{E}\left[(y-\mathrm{E}(y \mid \mathbf{x}))^{2}\right]+\mathrm{E}\left[(\mathrm{E}(y \mid \mathbf{x})-\mathrm{E}(y))^{2}\right] \\
+& =\mathrm{E}\left\{\mathrm{E}\left[(y-\mathrm{E}(y \mid \mathbf{x}))^{2} \mid \mathbf{x}\right]\right\}+\mathrm{E}\left[(\mathrm{E}(y \mid \mathbf{x})-\mathrm{E}[\mathrm{E}(y \mid \mathbf{x})])^{2}\right.
+\end{aligned}
+$$
+
+by the law of iterated expectations\\
+$\equiv \mathrm{E}[\operatorname{Var}(y \mid \mathbf{x})]+\operatorname{Var}[\mathrm{E}(y \mid \mathbf{x})]$.\\
+An extension of Property CV. 2 is often useful, and its proof is similar:\\
+property CV.3: $\operatorname{Var}(y \mid \mathbf{x})=\mathrm{E}[\operatorname{Var}(y \mid \mathbf{x}, \mathbf{z}) \mid \mathbf{x}]+\operatorname{Var}[\mathrm{E}(y \mid \mathbf{x}, \mathbf{z}) \mid \mathbf{x}]$.\\
+Consequently, by the law of iterated expectations CE.2, property CV.4: $\quad \mathrm{E}[\operatorname{Var}(y \mid \mathbf{x})] \geq \mathrm{E}[\operatorname{Var}(y \mid \mathbf{x}, \mathbf{z})]$.\\
+For any function $m(\cdot)$ define the mean squared error as $\operatorname{MSE}(y ; m) \equiv \mathrm{E}\left[(y-m(\mathbf{x}))^{2}\right]$. Then CV. 4 can be loosely stated as $\operatorname{MSE}[y ; \mathrm{E}(y \mid \mathbf{x})] \geq \operatorname{MSE}[y ; \mathrm{E}(y \mid \mathbf{x}, \mathbf{z})]$. In other words, in the population one never does worse for predicting $y$ when additional variables are conditioned on. In particular, if $\operatorname{Var}(y \mid \mathbf{x})$ and $\operatorname{Var}(y \mid \mathbf{x}, \mathbf{z})$ are both constant, then $\operatorname{Var}(y \mid \mathbf{x}) \geq \operatorname{Var}(y \mid \mathbf{x}, \mathbf{z})$.
+
+There are also important results relating conditional covariances. The most useful contains Property CV. 3 as a special case (when $y_{1}=y_{2}$ ):\\
+property CCOV.1: $\operatorname{Cov}\left(y_{1}, y_{2} \mid \mathbf{x}\right)=\mathrm{E}\left[\operatorname{Cov}\left(y_{1}, y_{2} \mid \mathbf{x}, \mathbf{z}\right) \mid \mathbf{x}\right]+\operatorname{Cov}\left[\mathrm{E}\left(y_{1} \mid \mathbf{x}, \mathbf{z}\right)\right.$, $\left.\mathrm{E}\left(y_{2} \mid \mathbf{x}, \mathbf{z}\right) \mid \mathbf{x}\right]$.
+
+Proof: By definition, $\operatorname{Cov}\left(y_{1}, y_{2} \mid \mathbf{x}, \mathbf{z}\right)=\mathrm{E}\left\{\left[y_{1}-\mathrm{E}\left(y_{1} \mid \mathbf{x}, \mathbf{z}\right)\right]\left[y_{2}-\mathrm{E}\left(y_{2} \mid \mathbf{x}, \mathbf{z}\right)\right] \mid\right. \mathbf{x}, \mathbf{z}\}$. Write $\mu_{1}(\mathbf{x})=\mathrm{E}\left(y_{1} \mid \mathbf{x}\right), v_{1}(\mathbf{x}, \mathbf{z})=\mathrm{E}\left(y_{1} \mid \mathbf{x}, \mathbf{z}\right)$, and similarly for $y_{2}$. Then simple algebra gives\\
+$\operatorname{Cov}\left(y_{1}, y_{2} \mid \mathbf{x}, \mathbf{z}\right)$
+
+$$
+\begin{aligned}
+= & \mathrm{E}\left\{\left[y_{1}-\mu_{1}(\mathbf{x})+\mu_{1}(\mathbf{x})-v_{1}(\mathbf{x}, \mathbf{z})\right] \cdot\left[y_{2}-\mu_{2}(\mathbf{x})+\mu_{2}(\mathbf{x})-v_{2}(\mathbf{x}, \mathbf{z})\right] \mid \mathbf{x}, \mathbf{z}\right\} \\
+= & \mathrm{E}\left\{\left[y_{1}-\mu_{1}(\mathbf{x})\right]\left[y_{2}-\mu_{2}(\mathbf{x})\right] \mid \mathbf{x}, \mathbf{z}\right\}+\left[\mu_{1}(\mathbf{x})-v_{1}(\mathbf{x}, \mathbf{z})\right]\left[\mu_{2}(\mathbf{x})-v_{2}(\mathbf{x}, \mathbf{z})\right] \\
+& +\mathrm{E}\left\{\left[y_{1}-\mu_{1}(\mathbf{x})\right]\left[\mu_{2}(\mathbf{x})-v_{2}(\mathbf{x}, \mathbf{z})\right] \mid \mathbf{x}, \mathbf{z}\right\} \\
+& +\mathrm{E}\left\{\left[y_{2}-\mu_{2}(\mathbf{x})\right]\left[\mu_{1}(\mathbf{x})-v_{1}(\mathbf{x}, \mathbf{z})\right] \mid \mathbf{x}, \mathbf{z}\right\} \\
+= & \mathrm{E}\left\{\left[y_{1}-\mu_{1}(\mathbf{x})\right]\left[y_{2}-\mu_{2}(\mathbf{x})\right] \mid \mathbf{x}, \mathbf{z}\right\}+\left[\mu_{1}(\mathbf{x})-v_{1}(\mathbf{x}, \mathbf{z})\right]\left[\mu_{2}(\mathbf{x})-v_{2}(\mathbf{x}, \mathbf{z})\right] \\
+& +\left[v_{1}(\mathbf{x}, \mathbf{z})-\mu_{1}(\mathbf{x})\right]\left[\mu_{2}(\mathbf{x})-v_{2}(\mathbf{x}, \mathbf{z})\right]+\left[v_{2}(\mathbf{x}, \mathbf{z})-\mu_{2}(\mathbf{x})\right]\left[\mu_{1}(\mathbf{x})-v_{1}(\mathbf{x}, \mathbf{z})\right] \\
+= & \mathrm{E}\left\{\left[y_{1}-\mu_{1}(\mathbf{x})\right]\left[y_{2}-\mu_{2}(\mathbf{x})\right] \mid \mathbf{x}, \mathbf{z}\right\}-\left[v_{1}(\mathbf{x}, \mathbf{z})-\mu_{1}(\mathbf{x})\right]\left[v_{2}(\mathbf{x}, \mathbf{z})-\mu_{2}(\mathbf{x})\right],
+\end{aligned}
+$$
+
+because the second and third terms cancel. Therefore, by iterated expectations,
+
+$$
+\begin{aligned}
+\mathrm{E}\left[\operatorname{Cov}\left(y_{1}, y_{2} \mid \mathbf{x}, \mathbf{z}\right) \mid \mathbf{x}\right]= & \mathrm{E}\left\{\left[y_{1}-\mu_{1}(\mathbf{x})\right]\left[y_{2}-\mu_{2}(\mathbf{x})\right] \mid \mathbf{x}\right\} \\
+& -\mathrm{E}\left\{\left[v_{1}(\mathbf{x}, \mathbf{z})-\mu_{1}(\mathbf{x})\right]\left[v_{2}(\mathbf{x}, \mathbf{z})-\mu_{2}(\mathbf{x})\right] \mid \mathbf{x}\right\}
+\end{aligned}
+$$
+
+or\\
+$\mathrm{E}\left[\operatorname{Cov}\left(y_{1}, y_{2} \mid \mathbf{x}, \mathbf{z}\right) \mid \mathbf{x}\right]=\operatorname{Cov}\left(y_{1}, y_{2} \mid \mathbf{x}\right)-\operatorname{Cov}\left[\mathrm{E}\left(y_{1} \mid \mathbf{x}, \mathbf{z}\right), \mathrm{E}\left(y_{2} \mid \mathbf{x}, \mathbf{z}\right) \mid \mathbf{x}\right]$\\
+because $\mu_{1}(\mathbf{x})=\mathrm{E}\left[\mathrm{E}\left(y_{1} \mid \mathbf{x}, \mathbf{z}\right) \mid \mathbf{x}\right]$, and similarly for $\mu_{2}(\mathbf{x})$. Simple rearrangement completes the proof.
+
+\section*{2.A. 3 Properties of Linear Projections}
+In what follows, $y$ is a scalar, $\mathbf{x}$ is a $1 \times K$ vector, and $\mathbf{z}$ is a $1 \times J$ vector. We allow the first element of $\mathbf{x}$ to be unity, although the following properties hold in either case. All of the variables are assumed to have finite second moments, and the appropriate variance matrices are assumed to be nonsingular.\\
+property LP.1: If $\mathrm{E}(y \mid \mathbf{x})=\mathbf{x} \boldsymbol{\beta}$, then $\mathrm{L}(y \mid \mathbf{x})=\mathbf{x} \boldsymbol{\beta}$. More generally, if\\
+$\mathrm{E}(y \mid \mathbf{x})=\beta_{1} g_{1}(\mathbf{x})+\beta_{2} g_{2}(\mathbf{x})+\cdots+\beta_{M} g_{M}(\mathbf{x})$,\\
+then\\
+$\mathrm{L}\left(y \mid w_{1}, \ldots, w_{M}\right)=\beta_{1} w_{1}+\beta_{2} w_{2}+\cdots+\beta_{M} w_{M}$,\\
+where $w_{j} \equiv g_{j}(\mathbf{x}), j=1,2, \ldots, M$. This property tells us that, if $\mathrm{E}(y \mid \mathbf{x})$ is known to be linear in some functions $g_{j}(\mathbf{x})$, then this linear function also represents a linear projection.
+
+PROPERTY LP.2: Define $u \equiv y-\mathrm{L}(y \mid \mathbf{x})=y-\mathbf{x} \boldsymbol{\beta}$. Then $\mathrm{E}\left(\mathbf{x}^{\prime} u\right)=\mathbf{0}$.\\
+PROPERTY LP.3: Suppose $y_{j}, j=1,2, \ldots, G$ are each random scalars, and $a_{1}, \ldots, a_{G}$ are constants. Then\\
+$\mathrm{L}\left(\sum_{j=1}^{G} a_{j} y_{j} \mid \mathbf{x}\right)=\sum_{j=1}^{G} a_{j} \mathrm{~L}\left(y_{j} \mid \mathbf{x}\right)$.\\
+Thus, the linear projection is a linear operator.\\
+property LP. 4 (Law of Iterated Projections): $\mathrm{L}(y \mid \mathbf{x})=\mathrm{L}[\mathrm{L}(y \mid \mathbf{x}, \mathbf{z}) \mid \mathbf{x}]$. More precisely, let\\
+$\mathrm{L}(y \mid \mathbf{x}, \mathbf{z}) \equiv \mathbf{x} \boldsymbol{\beta}+\mathbf{z} \boldsymbol{\gamma} \quad$ and $\quad \mathrm{L}(y \mid \mathbf{x})=\mathbf{x} \boldsymbol{\delta}$.
+
+For each element of $\mathbf{z}$, write $\mathrm{L}\left(z_{j} \mid \mathbf{x}\right)=\mathbf{x} \boldsymbol{\pi}_{j}, j=1, \ldots, J$, where $\boldsymbol{\pi}_{j}$ is $K \times 1$. Then $\mathrm{L}(\mathbf{z} \mid \mathbf{x})=\mathbf{x} \boldsymbol{\Pi}$, where $\boldsymbol{\Pi}$ is the $K \times J$ matrix $\boldsymbol{\Pi} \equiv\left(\boldsymbol{\pi}_{1}, \boldsymbol{\pi}_{2}, \ldots, \boldsymbol{\pi}_{J}\right)$. Property LP. 4 implies that
+
+
+\begin{align*}
+\mathrm{L}(y \mid \mathbf{x})=\mathrm{L}(\mathbf{x} \boldsymbol{\beta}+\mathbf{z} \boldsymbol{\gamma} \mid \mathbf{x}) & =\mathrm{L}(\mathbf{x} \mid \mathbf{x}) \boldsymbol{\beta}+\mathrm{L}(\mathbf{z} \mid \mathbf{x}) \boldsymbol{\gamma} \quad \text { (by LP.3) } \\
+& =\mathbf{x} \boldsymbol{\beta}+(\mathbf{x} \boldsymbol{\Pi}) \boldsymbol{\gamma}=\mathbf{x}(\boldsymbol{\beta}+\boldsymbol{\Pi} \boldsymbol{\gamma}) \tag{2.50}
+\end{align*}
+
+
+Thus, we have shown that $\boldsymbol{\delta}=\boldsymbol{\beta}+\boldsymbol{\Pi} \boldsymbol{\gamma}$. This is, in fact, the population analogue of the omitted variables bias formula from standard regression theory, something we will use in Chapter 4.
+
+Another iteration property involves the linear projection and the conditional expectation:\\
+property LP.5: $\quad \mathrm{L}(y \mid \mathbf{x})=\mathrm{L}[\mathrm{E}(y \mid \mathbf{x}, \mathbf{z}) \mid \mathbf{x}]$.\\
+Proof: Write $y=\mu(\mathbf{x}, \mathbf{z})+u$, where $\mu(\mathbf{x}, \mathbf{z})=\mathrm{E}(y \mid \mathbf{x}, \mathbf{z})$. But $\mathrm{E}(u \mid \mathbf{x}, \mathbf{z})=0$; so $\mathrm{E}\left(\mathbf{x}^{\prime} u\right)=\mathbf{0}$, which implies by LP. 3 that $\mathrm{L}(y \mid \mathbf{x})=\mathrm{L}[\mu(\mathbf{x}, \mathbf{z}) \mid \mathbf{x}]+\mathrm{L}(u \mid \mathbf{x})= \mathrm{L}[\mu(\mathbf{x}, \mathbf{z}) \mid \mathbf{x}]=\mathrm{L}[\mathrm{E}(y \mid \mathbf{x}, \mathbf{z}) \mid \mathbf{x}]$.
+
+A useful special case of Property LP. 5 occurs when $\mathbf{z}$ is empty. Then $\mathrm{L}(y \mid \mathbf{x})= \mathrm{L}[\mathrm{E}(y \mid \mathbf{x}) \mid \mathbf{x}]$.\\
+property LP.6: $\boldsymbol{\beta}$ is a solution to
+
+
+\begin{equation*}
+\min _{\mathbf{b} \in \mathbb{R}^{K}} \mathrm{E}\left[(y-\mathbf{x b})^{2}\right] . \tag{2.51}
+\end{equation*}
+
+
+If $\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)$ is positive definite, then $\boldsymbol{\beta}$ is the unique solution to this problem.\\
+Proof: For any $\mathbf{b}$, write $y-\mathbf{x b}=(y-\mathbf{x} \boldsymbol{\beta})+(\mathbf{x} \boldsymbol{\beta}-\mathbf{x b})$. Then
+
+$$
+\begin{aligned}
+(y-\mathbf{x} \mathbf{b})^{2} & =(y-\mathbf{x} \boldsymbol{\beta})^{2}+(\mathbf{x} \boldsymbol{\beta}-\mathbf{x} \mathbf{b})^{2}+2(\mathbf{x} \boldsymbol{\beta}-\mathbf{x} \mathbf{b})(y-\mathbf{x} \boldsymbol{\beta}) \\
+& =(y-\mathbf{x} \boldsymbol{\beta})^{2}+(\boldsymbol{\beta}-\mathbf{b})^{\prime} \mathbf{x}^{\prime} \mathbf{x}(\boldsymbol{\beta}-\mathbf{b})+2(\boldsymbol{\beta}-\mathbf{b})^{\prime} \mathbf{x}^{\prime}(y-\mathbf{x} \boldsymbol{\beta})
+\end{aligned}
+$$
+
+Therefore,
+
+
+\begin{align*}
+\mathrm{E}\left[(y-\mathbf{x b})^{2}\right]= & \mathrm{E}\left[(y-\mathbf{x} \boldsymbol{\beta})^{2}\right]+(\boldsymbol{\beta}-\mathbf{b})^{\prime} \mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)(\boldsymbol{\beta}-\mathbf{b}) \\
+& +2(\boldsymbol{\beta}-\mathbf{b})^{\prime} \mathrm{E}\left[\mathbf{x}^{\prime}(y-\mathbf{x} \boldsymbol{\beta})\right] \\
+= & \mathrm{E}\left[(y-\mathbf{x} \boldsymbol{\beta})^{2}\right]+(\boldsymbol{\beta}-\mathbf{b})^{\prime} \mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)(\boldsymbol{\beta}-\mathbf{b}), \tag{2.52}
+\end{align*}
+
+
+because $\mathrm{E}\left[\mathbf{x}^{\prime}(y-\mathbf{x} \boldsymbol{\beta})\right]=\mathbf{0}$ by LP.2. When $\mathbf{b}=\boldsymbol{\beta}$, the right-hand side of equation\\
+(2.52) is minimized. Further, if $\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)$ is positive definite, $(\boldsymbol{\beta}-\mathbf{b})^{\prime} \mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)(\boldsymbol{\beta}-\mathbf{b})>0$ if $\mathbf{b} \neq \boldsymbol{\beta}$; so in this case $\boldsymbol{\beta}$ is the unique minimizer.
+
+Property LP. 6 states that the linear projection is the minimum mean square linear predictor. It is not necessarily the minimum mean square predictor: if $\mathrm{E}(y \mid \mathbf{x})=\mu(\mathbf{x})$ is not linear in $\mathbf{x}$, then\\
+$\mathrm{E}\left[(y-\mu(\mathbf{x}))^{2}\right]<\mathrm{E}\left[(y-\mathbf{x} \boldsymbol{\beta})^{2}\right]$.
+
+PROPERTY LP.7: This is a partitioned projection formula, which is useful in a variety of circumstances. Write\\
+$\mathrm{L}(y \mid \mathbf{x}, \mathbf{z})=\mathbf{x} \boldsymbol{\beta}+\mathbf{z} \gamma$.
+
+Define the $1 \times K$ vector of population residuals from the projection of $\mathbf{x}$ on $\mathbf{z}$ as $\mathbf{r} \equiv \mathbf{x}-\mathrm{L}(\mathbf{x} \mid \mathbf{z})$. Further, define the population residual from the projection of $y$ on $\mathbf{z}$ as $v \equiv y-\mathrm{L}(y \mid \mathbf{z})$. Then the following are true:
+
+
+\begin{equation*}
+\mathrm{L}(v \mid \mathbf{r})=\mathbf{r} \boldsymbol{\beta} \tag{2.55}
+\end{equation*}
+
+
+and\\
+$\mathrm{L}(y \mid \mathbf{r})=\mathbf{r} \boldsymbol{\beta}$.
+
+The point is that the $\boldsymbol{\beta}$ in equations (2.55) and (2.56) is the same as that appearing in equation (2.54). Another way of stating this result is\\
+$\boldsymbol{\beta}=\left[\mathrm{E}\left(\mathbf{r}^{\prime} \mathbf{r}\right)\right]^{-1} \mathrm{E}\left(\mathbf{r}^{\prime} v\right)=\left[\mathrm{E}\left(\mathbf{r}^{\prime} \mathbf{r}\right)\right]^{-1} \mathrm{E}\left(\mathbf{r}^{\prime} y\right)$.
+
+Proof: From equation (2.54) write\\
+$y=\mathbf{x} \boldsymbol{\beta}+\mathbf{z} \boldsymbol{\gamma}+u, \quad \mathrm{E}\left(\mathbf{x}^{\prime} u\right)=\mathbf{0}, \quad \mathrm{E}\left(\mathbf{z}^{\prime} u\right)=\mathbf{0}$.
+
+Taking the linear projection gives\\
+$\mathrm{L}(y \mid \mathbf{z})=\mathrm{L}(\mathbf{x} \mid \mathbf{z}) \boldsymbol{\beta}+\mathbf{z} \boldsymbol{\gamma}$.
+
+Subtracting equation (2.59) from (2.58) gives $y-\mathrm{L}(y \mid \mathbf{z})=[\mathbf{x}-\mathrm{L}(\mathbf{x} \mid \mathbf{z})] \boldsymbol{\beta}+u$, or\\
+$v=\mathbf{r} \boldsymbol{\beta}+u$.
+
+Since $\mathbf{r}$ is a linear combination of $(\mathbf{x}, \mathbf{z}), \mathrm{E}\left(\mathbf{r}^{\prime} u\right)=\mathbf{0}$. Multiplying equation (2.60) through by $\mathbf{r}^{\prime}$ and taking expectations, it follows that\\
+$\boldsymbol{\beta}=\left[\mathrm{E}\left(\mathbf{r}^{\prime} \mathbf{r}\right)\right]^{-1} \mathrm{E}\left(\mathbf{r}^{\prime} v\right)$.\\
+(We assume that $\mathrm{E}\left(\mathbf{r}^{\prime} \mathbf{r}\right)$ is nonsingular.) Finally, $\mathrm{E}\left(\mathbf{r}^{\prime} v\right)=\mathrm{E}\left[\mathbf{r}^{\prime}(y-\mathrm{L}(y \mid \mathbf{z}))\right]= \mathrm{E}\left(\mathbf{r}^{\prime} y\right)$, since $\mathrm{L}(y \mid \mathbf{z})$ is linear in $\mathbf{z}$ and $\mathbf{r}$ is orthogonal to any linear function of $\mathbf{z}$.
+
+\section*{\begin{center}
+
+\end{document}

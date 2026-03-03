@@ -1,0 +1,2186 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{03C4}{\ifmmode\tau\else{$\tau$}\fi}
+\title{Solutions to Exercises}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Exercise 2.8}
+Proof. Let $\mathbf{a}_{n}=\mathbf{A}_{n} \mathbf{b}_{n}$, where $\mathbf{A}_{n}=\left[A_{n i j}\right]$ and $\mathbf{b}_{n}=\left(b_{n 1}, b_{n 2}, \ldots, b_{n k}\right)^{\prime}$. Then $a_{n i}=\sum_{j=1}^{k} A_{n i j} b_{n j}$. Since $A_{n i j}=o(1)$ and $b_{n j}=O(1), A_{n i j} b_{n j}= o(1)$ by Proposition 2.7 (iii). By Proposition 2.7 (ii), $a_{n i}=o(1)$ because it is the sum of $k$ terms, each of which is $O(1)$. It follows that $\mathbf{a}_{n} \equiv \mathbf{A}_{n} \mathbf{b}_{n}=o(1)$.
+
+\section*{Exercise 2.13}
+Proof. Since $\mathbf{Z}^{\prime} \mathbf{X} / n \xrightarrow{\text { a.s. }} \mathbf{Q}$ and $\hat{\mathbf{P}}_{n} \xrightarrow{\text { a.s. }} \mathbf{P}$, it follows from Proposition 2.11 that $\operatorname{det}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right) \xrightarrow{\text { a.s. }} \operatorname{det}\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)$. Since $\mathbf{Q}$ has full column rank and $\mathbf{P}$ is nonsingular by (iii), $\operatorname{det}\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)>0$. It follows that $\operatorname{det}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)>0$ for all $n$ sufficiently large almost surely, so that ( $\left.\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}$ exists for all $n$ sufficiently large a.s. Hence
+
+$$
+\tilde{\boldsymbol{\beta}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{Y} / n^{2}
+$$
+
+exists for all $n$ sufficiently large a.s. Given ( $i$ ),
+
+$$
+\tilde{\boldsymbol{\beta}}_{n}=\boldsymbol{\beta}_{o}+\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \varepsilon / n^{2} .
+$$
+
+It follows from Proposition 2.11 that
+
+$$
+\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}+\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)^{-1} \mathbf{Q}^{\prime} \mathbf{P} \cdot \mathbf{0}=\boldsymbol{\beta}_{o}
+$$
+
+given ( $i i$ ) and ( $i i i$ ). \(\square\)
+
+\section*{Exercise 2.20}
+Proof. Since $\mathbf{Q}_{n}=O(1)$ and $\mathbf{P}_{n}=O(1)$, it follows from Proposition 2.16 that $\operatorname{det}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)-\operatorname{det}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right) \xrightarrow{\text { a.s. }} 0$. Given (iii), it follows from Lemma 2.19 that $\left\{\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right\}$ is uniformly positive definite, so
+
+$$
+\operatorname{det}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)>\delta>0
+$$
+
+for all $n$ sufficiently large. It follows that $\operatorname{det}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)>\delta / 2>0$ for all $n$ sufficiently large almost surely. Hence
+
+$$
+\tilde{\boldsymbol{\beta}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{Y} / n^{2}
+$$
+
+exists for all $n$ sufficiently large almost surely. Given (i), $\tilde{\boldsymbol{\beta}}_{n}=\boldsymbol{\beta}_{o}+$ ( $\left.\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \boldsymbol{\varepsilon} / n^{2}$. Given (ii) and (iii) it follows from Proposition 2.16 that $\tilde{\boldsymbol{\beta}}_{n}-\left(\boldsymbol{\beta}_{o}+\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \times \mathbf{0}\right) \xrightarrow{\text { a.s. }} \mathbf{0}$, that is, $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.
+
+\section*{Exercise 2.22}
+\section*{Proof.}
+(i) By definition, there exist sets $F, G \subset \Omega$ with $P(F)=P(G)=1$, where for all $\omega \in F$ it holds that $\left|a_{n}(\omega) n^{-\lambda}\right|<\Delta_{a}$ for all $n>N_{a}$, and for all $\omega \in G$ it holds that $\left|b_{n}(\omega) n^{-\mu}\right|<\Delta_{b}$ for all $n>N_{b}$. Set $\Delta=\Delta_{a} \Delta_{b}$ and $N=\max \left(N_{a}, N_{b}\right)$, then for all $\omega \in F \cap G$ it holds that $\left|a_{n}(\omega) b_{n}(\omega) n^{-\lambda} n^{-\mu}\right|<\Delta$ for all $n>N$. Since $P(F \cap G)=1$ the first result follows. To obtain the second result, let $\Delta=\Delta_{a}+\Delta_{b}$, and set $N$ as before. Then for all $\omega \in F \cap G$ it holds that $\left|\left(a_{n}(\omega)+b_{n}(\omega)\right) n^{-\kappa}\right| \leq \left|a_{n}(\omega) n^{-\kappa}+b_{n}(\omega) n^{-\kappa}\right|<\left|a_{n}(\omega) n^{-\lambda}\right|+\left|b_{n}(\omega) n^{-\mu}\right|<\Delta_{a}+\Delta_{b}=\Delta$ for all $n>N$.\\
+(ii) By definition, there exist sets $F, G \subset \Omega$ with $P(F)=P(G)=1$, where for all $\omega \in F$ it holds that $a_{n}(\omega)=o\left(n^{\lambda}\right)$ and for all $\omega \in G$ it holds that $b_{n}(\omega)=o\left(n^{\mu}\right)$. By Proposition 2.7, $a_{n}(\omega) b_{n}(\omega)=o\left(n^{\lambda+\mu}\right)$ and $a_{n}(\omega)+b_{n}(\omega)=o\left(n^{\kappa}\right)$ on $F \cap G$. Since $P(F \cap G)=1$ the results follow.\\
+(iii) Define $F$ as in (i) and $G$ as in (ii). The result follows immediately by Proposition 2.7 and the fact that $P(F \cap G)=1$.
+
+\section*{Exercise 2.29}
+Proof. The proof is identical to that of Exercise 2.13 except that Proposition 2.27 is used instead of Proposition 2.11 and convergence in probability replaces convergence almost surely.
+
+\section*{Exercise 2.32}
+Proof. The proof is identical to that of Exercise 2.20 except that Proposition 2.30 is used in place of Proposition 2.16 and convergence in probability replaces convergence almost surely. \(\square\)
+
+\section*{Exercise 2.35}
+\section*{Proof.}
+(i) Since $a_{n}=O_{p}\left(n^{\lambda}\right)$ and $b_{n}=O_{p}\left(n^{\mu}\right)$, we know that for a given $\varepsilon>0$ there exist $\Delta_{a, \varepsilon}, \Delta_{b, \varepsilon}, N_{a, \varepsilon}$, and $N_{b, \varepsilon}$ such that $P\left(\omega:\left|n^{-\lambda} a_{n}\right|>\right. \left.\Delta_{a, \varepsilon}\right)<\varepsilon / 2$ for $n>N_{a, \varepsilon}$ and $P\left(\omega:\left|n^{-\mu} b_{n}\right|>\Delta_{b, \varepsilon}\right)<\varepsilon / 2$ for $n>N_{b, \varepsilon}$. Define $N=\max \left(N_{a, \varepsilon}, N_{b, \varepsilon}\right)$ and $\Delta_{\varepsilon}=\Delta_{a, \varepsilon} \Delta_{b, \varepsilon}$. Now if
+
+$$
+\left|n^{-\lambda-\mu} a_{n}(\omega) b_{n}(\omega)\right|=\left|n^{-\lambda} a_{n}(\omega) \| n^{-\mu} b_{n}(\omega)\right|>\Delta_{\varepsilon}=\Delta_{a, \varepsilon} \Delta_{b, \varepsilon}
+$$
+
+then $\left|n^{-\lambda} a_{n}(\omega)\right|>\Delta_{a, \varepsilon}$ or $\left|n^{-\mu} b_{n}(\omega)\right|>\Delta_{b, \varepsilon}$. So
+
+$$
+\begin{aligned}
+P\left(\omega:\left|n^{-\lambda-\mu} a_{n}(\omega) b_{n}(\omega)\right|>\Delta_{\varepsilon}\right) \leq & P\left(\omega:\left|n^{-\lambda} a_{n}(\omega)\right|>\Delta_{a, \varepsilon}\right) \\
+& +P\left(\omega:\left|n^{-\mu} b_{n}(\omega)\right|>\Delta_{b, \varepsilon}\right) \\
+< & \varepsilon / 2+\varepsilon / 2=\varepsilon
+\end{aligned}
+$$
+
+for $n>N$, which proves that $a_{n} b_{n}=O_{p}\left(n^{\lambda+\mu}\right)$.\\
+Next, let $\Delta_{\varepsilon}^{\prime}=\Delta_{a, \varepsilon}+\Delta_{b, \varepsilon}$. Since $n^{-\lambda}, n^{-\mu}>n^{\kappa}$ it follows that
+
+$$
+\begin{gathered}
+P\left(\left|n^{-\kappa}\left(a_{n}+b_{n}\right)\right|>\Delta_{\varepsilon}^{\prime}\right) \leq P\left(\left|\left(n^{-\lambda} a_{n}+n^{-\mu} b_{n}\right)\right|>\Delta_{\varepsilon}^{\prime}\right) \\
+<P\left(\mid\left(n^{-\lambda} a_{n}\left|+\left|n^{-\mu} b_{n}\right|>\Delta_{\varepsilon}^{\prime}\right)\right.\right. \\
+<P\left(\mid\left(n^{-\lambda} a_{n} \mid>\Delta_{a, \varepsilon}\right)+P\left(\left|n^{-\mu} b_{n}\right|>\Delta_{b, \varepsilon}\right)\right. \\
+<\varepsilon / 2+\varepsilon / 2=\varepsilon .
+\end{gathered}
+$$
+
+for $n>N$, which proves that $a_{n}+b_{n}=O_{p}\left(n^{\kappa}\right)$.\\
+(ii) We have $n^{-\lambda} a_{n} \xrightarrow{p} 0, n^{-\mu} b_{n} \xrightarrow{p} 0$. It follows from Proposition 2.30 that $n^{-\lambda} a_{n} n^{-\mu} b_{n}=n^{-(\lambda+\mu)} a_{n} b_{n} \xrightarrow{p} 0$ so that $a_{n} b_{n}=o_{p}\left(n^{\lambda+\mu}\right)$. Consider $\left\{a_{n}+b_{n}\right\}$. Since $\left\{a_{n}\right\}$ and $\left\{b_{n}\right\}$ are $o_{p}\left(n^{\kappa}\right)$, we again apply Proposition 2.30 and obtain $n^{-\kappa} a_{n}+n^{-\kappa} b_{n}=n^{-\kappa}\left(a_{n}+b_{n}\right) \xrightarrow{p} 0$.\\
+(iii) We need to prove that for any $\varepsilon>0$, there exist $\delta_{\varepsilon}>0$ and $N_{\varepsilon} \in \mathbb{N}$ such that
+
+$$
+P\left(\left|n^{-\lambda-\mu} a_{n} b_{n}\right|>\delta_{\varepsilon}\right)<\varepsilon
+$$
+
+for all $n>N$. By definition there exist $N_{a, \varepsilon} \in \mathbb{N}$ and $\Delta_{a, \varepsilon}<\infty$ such that $P\left(\omega:\left|n^{-\lambda} a_{n}\right|>\Delta_{a, \varepsilon}\right)<\varepsilon / 2$ for all $n>N_{a, \varepsilon}$. Define $\delta_{b, \varepsilon} \equiv$\\
+$\delta_{\varepsilon} / \Delta_{a, \varepsilon}>0$; then by the definition of convergence in probability, there exists $N_{b, \varepsilon}$ such that $P\left(\left|n^{-\mu} b_{n}\right|>\delta_{b, \varepsilon}\right)<\varepsilon / 2$ for all $n>N_{b, \varepsilon}$. As in (i) we have that
+
+$$
+P\left(\left|n^{-\lambda-\mu} a_{n} b_{n}\right|>\delta_{\varepsilon}\right) \leq P\left(\left|n^{-\lambda} a_{n}\right|>\Delta_{a, \varepsilon}\right)+P\left(\left|n^{-\mu} b_{n}\right|>\delta_{b, \varepsilon}\right)<\varepsilon .
+$$
+
+Since this holds for arbitrary choice of $\varepsilon>0$, we have shown that $a_{n} b_{n}=o_{p}\left(n^{\lambda+\mu}\right)$.
+
+Consider $\left\{a_{n}+b_{n}\right\}$. Since $\left\{b_{n}\right\}$ is also $O_{p}\left(n^{\mu}\right)$, it follows from (i) that $a_{n}+b_{n}=O_{p}\left(n^{\kappa}\right)$.
+
+\section*{Exercise 3.6}
+Proof. We verify the conditions of Exercise 2.13. Given (ii), the elements of $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ and $\left\{\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right\}$ are i.i.d. sequences by Proposition 3.3. The elements of $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ and $\left\{\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right\}$ have finite expected absolute values given (iii.b) and (iv.a). By Theorem 3.1,
+
+$$
+\mathbf{Z}^{\prime} \varepsilon / n=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \xrightarrow{\text { a.s. }} \mathbf{0}
+$$
+
+and
+
+$$
+\mathbf{Z}^{\prime} \mathbf{X} / n=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime} \xrightarrow{\text { a.s. }} \mathbf{Q},
+$$
+
+finite with full column rank. Since (iv.c) is also given, the conditions of Exercise 2.13 are satisfied and the result follows.
+
+\section*{Exercise 3.13}
+Proof. By Minkowski's inequality,
+
+$$
+\begin{aligned}
+E\left|\sum_{h=1}^{p} X_{t h i} \varepsilon_{t h}\right|^{1+\delta} & \leq\left[\sum_{h=1}^{p}\left(E\left|X_{t h i} \varepsilon_{t h}\right|^{1+\delta}\right)^{1 /(1+\delta)}\right]^{1+\delta} \\
+& <\left[\sum_{h=1}^{p} \Delta^{1 /(1+\delta)}\right]^{1+\delta}=p^{1+\delta} \Delta \equiv \Delta^{\prime}
+\end{aligned}
+$$ \(\square\)
+
+\section*{Exercise 3.14}
+Proof. We verify the conditions of Theorem 2.18. By Proposition 3.10, $\left\{\mathbf{X}_{t} \varepsilon_{t}\right\}$ and $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\}$ are independent sequences with elements satisfying the moment condition of Corollary 3.9 given (iii.b), (iv.a), and using the results of Corollary 3.12 and Exercise 3.13. It follows from Corollary 3.9 that
+
+$$
+\mathbf{X}^{\prime} \varepsilon / n=n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t} \varepsilon_{t} \xrightarrow{\text { a.s. }} \mathbf{0}
+$$
+
+and
+
+$$
+\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M}_{n}=n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t} \mathbf{X}_{t}^{\prime}-\mathbf{M}_{n} \xrightarrow{\text { a.s. }} \mathbf{0} .
+$$
+
+$\mathbf{M}_{n}=O(1)$ given (iv.a) as a consequence of Jensen's inequality and the Cauchy-Schwarz inequality. To show this, consider the $i, j$ th element of $\mathbf{M}_{n}$,
+
+$$
+n^{-1} \sum_{t=1}^{n} \sum_{h=1}^{p} E\left(X_{t h i} X_{t h j}\right) .
+$$
+
+Now
+
+$$
+\begin{aligned}
+n^{-1} \sum_{t=1}^{n} \sum_{h=1}^{p} E\left(X_{t h i} X_{t h j}\right) & \leq n^{-1} \sum_{t=1}^{n} \sum_{h=1}^{p}\left|E\left(X_{t h i} X_{t h j}\right)\right| \\
+& \leq n^{-1} \sum_{t=1}^{n} \sum_{h=1}^{p} E\left|X_{t h i} X_{t h j}\right| \\
+& \leq n^{-1} \sum_{t=1}^{n} \sum_{h=1}^{p}\left(E\left|X_{t h i}\right|^{2} E\left|X_{t h j}\right|^{2}\right)^{1 / 2} \\
+& <n^{-1} \sum_{t=1}^{n} \sum_{h=1}^{p} \Delta^{\prime} \\
+& =p \Delta^{\prime}<\infty
+\end{aligned}
+$$
+
+given (iv.a). Hence, the conditions of Theorem 2.18 are satisfied and the result follows.
+
+\section*{Exercise 3.38}
+Proof. We verify the conditions of Exercise 2.13. Given (ii), $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ and $\left\{\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right\}$ are stationary ergodic sequences by Proposition 3.36, with elements having finite expected absolute values given (iii.b) and (iv.a). By\\
+the ergodic theorem (Theorem 3.34),
+
+$$
+\mathbf{Z}^{\prime} \varepsilon / n=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \xrightarrow{\text { a.s. }} \mathbf{0}
+$$
+
+and
+
+$$
+\mathbf{Z}^{\prime} \mathbf{X} / n=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime} \xrightarrow{\text { a.s. }} \mathbf{Q},
+$$
+
+finite with full column rank. Since (iv.c) is also given, the conditions of Exercise 2.13 are satisfied and the result follows.
+
+\section*{Exercise 3.51}
+Proof. We verify the conditions of Theorem 2.18. Given (ii), $\left\{\mathbf{X}_{t} \varepsilon_{t}\right\}$ and $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\}$ are mixing sequences with $\phi$ of size $-r /(2 r-1), r>1$, or $\alpha$ of size $-r /(r-1), r>1$, by Proposition 3.50. Given (iii.b) and (iv.a) the elements of $\left\{\mathbf{X}_{t} \varepsilon_{t}\right\}$ and $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\}$ satisfy the moment condition of Corollary 3.48 by Minkowski's inequality and the Cauchy-Schwarz inequality. It follows that $\mathbf{X}^{\prime} \varepsilon / n \xrightarrow{\text { a.s. }} \mathbf{0}$ and $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M}_{n} \xrightarrow{\text { a.s. }} \mathbf{0} . \mathbf{M}_{n}=O(1)$ by Jensen's inequality given (iv.a). Hence the conditions of Theorem 2.18 are satisfied and the result follows.
+
+\section*{Exercise 3.53}
+Proof. (i) The following conditions are sufficient:\\
+(i) $Y_{t}^{r}=\alpha_{o} Y_{t-1}+\beta_{o} X_{t}+\varepsilon_{t},\left|\alpha_{o}\right|<1,\left|\beta_{o}\right|<\infty$;\\
+(ii) $\left\{\left(Y_{t}, X_{t}\right)\right\}$ is a mixing sequence with $\phi$ of size $-r /(2 r-1), r>1$, or $\alpha$ of size $-r /(r-1), r>1$;\\
+(iii) (a) $E\left(X_{t-j} \varepsilon_{t}\right)=0, j=0,1, \ldots$ and all $t$;\\
+(b) $E\left(\varepsilon_{t} \varepsilon_{t-j}\right)=0, j=1,2, \ldots$ and all $t$;\\
+(iv) (a) $E\left|X_{t}^{2}\right|^{r+\delta}<\Delta<\infty$ and $E\left|\varepsilon_{t}^{2}\right|^{r+\delta}<\Delta<\infty$ for some $0<\delta<r$ and all $t ;$\\
+(b) $\mathbf{M}_{n} \equiv E\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ has $\operatorname{det}\left(\mathbf{M}_{n}\right)>\gamma>0$ for all $n$ sufficiently large, where $\mathbf{X}_{t} \equiv\left(Y_{t-1}^{\prime}, X_{t}\right)^{\prime}$.
+
+First, we verify the hint (see Laha and Rohatgi, 1979, p. 53). We are given that
+
+$$
+\sum_{t=1}^{n}\left(E\left|\mathcal{Z}_{t}\right|^{p}\right)^{1 / p}<\infty
+$$
+
+By Minkowski's inequality for finite sums,
+
+$$
+E\left|\sum_{t=1}^{n}\right| \mathcal{Z}_{t}| |^{p} \leq\left(\sum_{t=1}^{n}\left(E\left|\mathcal{Z}_{t}\right|^{p}\right)^{1 / p}\right)^{p}
+$$
+
+for all $n \geq 1$. Hence
+
+$$
+\begin{aligned}
+\left.\lim _{n \rightarrow \infty} E\left|\sum_{t=1}^{n}\right| \mathcal{Z}_{t}\right|^{p} & \leq \lim _{n \rightarrow \infty}\left(\sum_{t=1}^{n}\left(E\left|\mathcal{Z}_{t}\right|^{p}\right)^{1 / p}\right)^{p} \\
+& =\left(\sum_{t=1}^{\infty}\left(E\left|\mathcal{Z}_{t}\right|^{p}\right)^{1 / p}\right)^{p}
+\end{aligned}
+$$
+
+by continuity of the function $g(x) \equiv x^{p}$. Consequently,
+
+$$
+\begin{aligned}
+E \sum_{t=1}^{\infty} \mathcal{Z}_{t}^{p} & =E \lim _{n \rightarrow \infty} \sum_{t=1}^{n} \mathcal{Z}_{t}^{p} \\
+& \leq E \lim _{n \rightarrow \infty} \sum_{t=1}^{n}\left|\mathcal{Z}_{t}\right|^{p} \\
+& =\lim _{n \rightarrow \infty} E \sum_{t=1}^{n}\left|\mathcal{Z}_{t}\right|^{p} \\
+& \left.\leq\left(\sum_{t=1}^{\infty}\left(E\left|\mathcal{Z}_{t}\right|^{p}\right)^{1 / p}\right)\right)^{p}
+\end{aligned}
+$$
+
+where we have applied the monotone convergence theorem to the function $f_{n}=\left.\left|\sum_{t=1}^{n}\right| \mathcal{Z}_{t}\right|^{p}$ with limit $f=\left.\left|\sum_{t=1}^{\infty}\right| \mathcal{Z}_{t}\right|^{p}\left(0<f_{1} \leq f_{2} \leq \ldots \leq f_{n} \rightarrow\right. f$ ). Thus we obtain the desired result.
+
+Next, we verify the conditions of Exercise 3.51. First $\left\{\left(Y_{t}, X_{t}\right)\right\}$ mixing implies $\left\{\left(\mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\} \equiv\left\{\left(Y_{t-1}, X_{t}, \varepsilon_{t}\right)\right\}$ is mixing and of the same sizes, given (i) and (ii) by Theorem 3.49.
+
+Next, by repeated substitution we can write $Y_{t}$ as
+
+$$
+Y_{t}=\beta_{o} \sum_{j=0}^{\infty} \alpha_{o}^{j} X_{t-j}+\sum_{j=0}^{\infty} \alpha_{o}^{j} \varepsilon_{t-j},
+$$
+
+so that
+
+$$
+Y_{t-1} \varepsilon_{t}=\beta_{o} \sum_{j=0}^{\infty} \alpha_{o}^{j} X_{t-j-1} \varepsilon_{t}+\sum_{j=0}^{\infty} \alpha_{o}^{j} \varepsilon_{t-j-1} \varepsilon_{t}
+$$
+
+Consider $Z_{t}=\left|\beta_{o}\right| \sum_{j=0}^{\infty}\left|\alpha_{o}\right|^{j}\left|X_{t-j-1} \varepsilon_{t}\right|+\sum_{j=0}^{\infty}\left|\alpha_{o}\right|^{j}\left|\varepsilon_{t-j-1} \varepsilon_{t}\right|$. Since the elements $E\left|X_{t-j-1} \varepsilon_{t}\right|<\Delta_{x \varepsilon}<\infty$ and $E\left|\varepsilon_{t-j-1} \varepsilon_{t}\right|<\Delta_{\varepsilon}<\infty$ (apply Cauchy-Schwarz inequality and (iv)), we have that $E\left(Z_{t}\right) \leq \frac{\left|\beta_{o}\right|}{1-\left|\alpha_{o}\right|} \Delta_{x \varepsilon}+ \frac{1}{1-\left|\alpha_{o}\right|} \Delta_{\varepsilon}<\infty$. So by Proposition 3.52 we can interchange the summation and expectation operators. Hence
+
+$$
+E\left(Y_{t-1} \varepsilon_{t}\right)=\beta_{o} \sum_{j=0}^{\infty} \alpha_{o}^{j} E\left(X_{t-j-1} \varepsilon_{t}\right)+\sum_{j=0}^{\infty} \alpha_{o}^{j} E\left(\varepsilon_{t-j-1} \varepsilon_{t}\right)=0
+$$
+
+given (iii.a) and (iii.b). Therefore
+
+$$
+E\left(\mathbf{X}_{t} \varepsilon_{t}\right) \equiv\left(E\left(Y_{t-1} \varepsilon_{t}\right), E\left(X_{t} \varepsilon_{t}\right)\right)^{\prime}=\mathbf{0}
+$$
+
+so that condition (iii.a) of Exercise 3.51 is satisfied.\\
+Now consider condition (iii.b). By the Cauchy-Schwarz inequality,
+
+$$
+E\left|X_{t} \varepsilon_{t}\right|^{r+\delta} \leq\left(E\left|X_{t}^{2}\right|^{r+\delta} E\left|\varepsilon_{t}^{2}\right|^{r+\delta}\right)^{1 / 2}<\Delta<\infty
+$$
+
+given (iv.a). Further,
+
+$$
+E\left|Y_{t-1} \varepsilon_{t}\right|^{r+\delta} \leq\left(E\left|Y_{t-1}^{2}\right|^{r+\delta} E\left|\varepsilon_{t}^{2}\right|^{r+\delta}\right)^{1 / 2}<\left(\Delta^{\prime} \Delta\right)^{1 / 2}<\infty
+$$
+
+provided $E\left|Y_{t-1}^{2}\right|^{r+\delta}<\Delta^{\prime}<\infty$ for some $\Delta^{\prime}$. To show this, we write $Y_{t}$ as above and apply Minkowski's inequality:
+
+$$
+\begin{gathered}
+E\left|Y_{t-1}^{2}\right|^{r+\delta}=E \beta_{o} \sum_{j=0}^{\infty} \alpha_{o}^{j} X_{t-j}+\sum_{j=0}^{\infty} \alpha_{o}^{j} \varepsilon_{t-j} \\
+\leq\left[\sum_{j=0}^{\infty}\left(E\left[\left(\alpha_{o}^{j} \beta_{o} X_{t-j}\right)^{2(r+\delta)}\right]\right)^{\frac{1}{2(r+\delta)}}+\left(E\left[\left(\alpha_{o}^{j} \varepsilon_{t-j}\right)^{2(r+\delta)}\right]\right)^{\frac{1}{2(r+\delta)}}\right]^{2(r+\delta)} \\
+=\left[\sum_{j=0}^{\infty} \alpha_{o}^{j} \beta_{o}\left(E\left[X_{t-j}^{2(r+\delta)}\right]\right)^{\frac{1}{2(r+\delta)}}+\alpha_{o}^{j}\left(E\left[\varepsilon_{t-j}^{2(r+\delta)}\right]\right)^{\frac{1}{2(r+\delta)}}\right]^{2(r+\delta)} \\
+<\left[\sum_{j=0}^{\infty} \alpha_{o}^{j} \beta_{o}(\Delta)^{\frac{1}{2(r+\delta)}}+\alpha_{o}^{j}(\Delta)^{\frac{1}{2(r+\delta)}}\right]^{2(r+\delta)} \\
+=\left[\frac{\beta_{o}+1}{1-\alpha_{o}}(\Delta)^{\frac{1}{2(r+\delta)}}\right]^{2(r+\delta)} \leq\left|\frac{\beta_{o}+1}{1-\alpha_{o}}\right|^{2(r+\delta)} \Delta<\infty .
+\end{gathered}
+$$
+
+if and only if $\left|\alpha_{o}\right|<1$, where we have again used Proposition 3.52 to pass the expectation operator through the summation operator. Therefore (i) and (iv.a) ensure that (iii.b) is satisfied. We now see that all the conditions of Exercise 3.51 hold, so that the OLS estimate of $\left(\alpha_{o}, \beta_{o}\right)$ is consistent.\\
+(ii) Consider the following data generating process:
+
+$$
+\begin{aligned}
+Y_{t} & =\alpha_{o} Y_{t-1}+\varepsilon_{t} \\
+\varepsilon_{t} & =\rho_{o} \varepsilon_{t-1}+v_{t},
+\end{aligned}
+$$
+
+where we set $\beta_{o}=0$ and assume $E\left(Y_{t-1} v_{t}\right)=0, E\left(Y_{t-1} \varepsilon_{t-1}\right)=E\left(Y_{t} \varepsilon_{t}\right)$, and $E\left(\varepsilon_{t}^{2}\right)=\operatorname{var}\left(\varepsilon_{t}\right)=\sigma_{o}^{2}$. Then from Chapter 1 we know that
+
+$$
+E\left(Y_{t-1} \varepsilon_{t}\right)=\sigma_{o}^{2} \rho_{o} /\left(1-\rho_{o} \alpha_{o}\right)
+$$
+
+Therefore, if $\sigma_{o}^{2} \neq 0$ and $\rho_{o} \neq 0$, condition (iii.a) of Exercise 3.51 is violated.
+
+\section*{Exercise 3.77}
+Proof. We verify the moment condition of Theorem 3.76. Since $E\left|\mathcal{Z}_{t}\right|^{2 r}< \Delta<\infty$ for all $t$, it follows that
+
+$$
+\begin{aligned}
+\sum_{t=1}^{\infty} E\left|\mathcal{Z}_{t}\right|^{2 r} / t^{1+r} & <\sum_{t=1}^{\infty} \Delta / t^{1+r} \\
+& =\Delta \sum_{t=1}^{\infty} t^{-(1+r)}<\infty
+\end{aligned}
+$$
+
+since $\sum_{t=1}^{\infty} t^{-(1+r)}<\infty$ for any $r>0$. The result follows from Theorem 3.76.
+
+\section*{Exercise 3.79}
+Proof. We verify the conditions of Exercise 2.20. First, note that $\mathbf{Z}^{\prime} \varepsilon / n= n^{-1} \sum_{h=1}^{p} \mathbf{Z}_{h} \boldsymbol{\varepsilon}_{h}$, where $\mathbf{Z}_{h}$ is the $n \times l$ matrix with rows $\mathbf{Z}_{t h}$ and $\boldsymbol{\varepsilon}_{h}$ is the $n \times 1$ error vector with elements $\varepsilon_{t h}$. By assumption (iii.a), $\left\{Z_{t h i} \varepsilon_{t h}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence. Given (iii.b), the moment conditions of Exercise 3.77 are satisfied so that $n^{-1} \sum_{t=1}^{n} Z_{\text {thi }} \varepsilon_{\text {th }} \xrightarrow{\text { a.s. }} 0, h=1, \ldots, p$, $i=1, \ldots, l$, and therefore $\mathbf{Z}^{\prime} \varepsilon / n \xrightarrow{\text { a.s. }} \mathbf{0}$ by Proposition 2.11.
+
+Next, Proposition 3.50 ensures that $\left\{\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right\}$ is a mixing sequence given (ii), which satisfies the conditions of Corollary 3.48 given (iv.a). It follows from Corollary 3.48 that $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$, and $\mathbf{Q}_{n}=O(1)$ given (iv.a) by Jensen's inequality. Hence the conditions of Exercise 2.20 are satisfied and the result follows.
+
+\section*{Exercise 4.18}
+Proof. Let $\mathbf{V}$ be $k \times k$ with eigenvalues $\lambda_{1}, \ldots, \lambda_{k}$. Since $\mathbf{V}$ is real and symmetric it can be diagonalized by $\mathbf{V}=\mathbf{Q}^{\prime} \mathbf{D Q}$, where $\mathbf{D}=\operatorname{diag}\left(\lambda_{1}, \ldots\right.$, $\lambda_{k}$ ) is the matrix with the eigenvalues of $\mathbf{V}$ along its diagonal and zeros elsewhere, and $\mathbf{Q}$ is an orthogonal matrix that has as its rows the standardized eigenvectors of $\mathbf{V}$ corresponding to $\lambda_{1}, \ldots, \lambda_{k}$. Furthermore, since $\mathbf{V}$ is positive (semi) definite its eigenvalues satisfy $\lambda_{i}>0\left(\lambda_{i}>0\right), i=1, \ldots, k$. Hence, defining $\mathbf{D}^{1 / 2} \equiv \operatorname{diag}\left(\lambda_{1}^{1 / 2}, \ldots, \lambda_{k}^{1 / 2}\right)$, we can define the square root of $\mathbf{V}$ as
+
+$$
+\mathbf{V}^{1 / 2}=\mathbf{Q}^{\prime} \mathbf{D}^{1 / 2} \mathbf{Q}
+$$
+
+which is clearly positive (semi) definite. From
+
+$$
+\left(\mathbf{V}^{1 / 2}\right)^{\prime}=\mathbf{Q}^{\prime}\left(\mathbf{D}^{1 / 2}\right)^{\prime}\left(\mathbf{Q}^{\prime}\right)^{\prime}=\mathbf{V}^{1 / 2}
+$$
+
+we see that $\mathbf{V}^{1 / 2}$ is symmetric, and we verify that
+
+$$
+\begin{aligned}
+\mathbf{V}^{1 / 2} \mathbf{V}^{1 / 2} & =\mathbf{Q}^{\prime} \mathbf{D}^{1 / 2} \mathbf{Q}^{\prime} \mathbf{D}^{1 / 2} \mathbf{Q} \\
+& =\mathbf{Q}^{\prime} \mathbf{D}^{1 / 2} \mathbf{D}^{1 / 2} \mathbf{Q} \\
+& =\mathbf{V},
+\end{aligned}
+$$
+
+where we used the fact that $\mathbf{Q}$ is orthogonal.\\
+The mapping $\mathbf{V} \longmapsto(\mathbf{Q}, \mathbf{D})$ is continuous because for any matrix with $\lim _{n \rightarrow \infty} \mathbf{H}_{n}=\mathbf{0}$, it holds that $\lim _{n \rightarrow \infty} \mathbf{Q}\left(\mathbf{V}+\mathbf{H}_{n}\right) \mathbf{Q}^{\prime}=\mathbf{D}$, thus
+
+$$
+\lim _{n \rightarrow \infty}\left(\mathbf{V}+\mathbf{H}_{n}\right)=\text { Q }^{\prime} \mathbf{D Q} .
+$$
+
+Since also $\lambda \mapsto \sqrt{\lambda}$ is continuous ( $\lambda>0$ ) then it follows that $\mathbf{V} \mapsto \mathbf{V}^{1 / 2}$ is continuous.
+
+\section*{Exercise 4.19}
+Proof. If $\mathcal{Z} \sim N(\mathbf{0}, \mathbf{V})$ it follows from Example 4.12 that
+
+$$
+\mathbf{V}^{-1 / 2} \mathcal{Z} \sim N(\mathbf{0}, \mathbf{I}),
+$$
+
+since $\mathbf{V}^{-1 / 2} \mathbf{V V}^{-1 / 2}=\mathbf{I}$.
+
+\section*{Exercise 4.26}
+Proof. Since $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$, where $\mathbf{Q}_{\boldsymbol{n}}$ is finite and has full column rank for all $n$ sufficiently large, and $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$, where $\mathbf{P}_{n}$ is finite and nonsingular for all $n$ sufficiently large, it follows from Proposition 2.30 that
+
+$$
+\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}-\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n} \xrightarrow{p} \mathbf{0} .
+$$
+
+Also since $\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}$ is nonsingular for all $n$ sufficiently large by Lemma 2.19 given (iii), $\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}$ and $\hat{\boldsymbol{\beta}}_{n}$ exist in probability. So given (i)
+
+$$
+\sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon
+$$
+
+Hence, given ( $i i$ ),
+
+$$
+\begin{aligned}
+\sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)-( & \left.\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \\
+= & {\left[\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n}\right.} \\
+& \left.\quad-\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n}\right] \mathbf{V}_{n}^{1 / 2} \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon
+\end{aligned}
+$$
+
+Premultiplying by $\mathbf{D}_{n}^{-1 / 2}$ yields
+
+$$
+\begin{aligned}
+& \mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)-\mathbf{D}_{n}^{-1 / 2}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \\
+&=\mathbf{D}_{n}^{-1 / 2}\left[\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n}-\right.\left.\left(\mathbf{Q} \mathbf{P}_{n} \mathbf{Q}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n}\right] \\
+& \times \mathbf{V}_{n}^{1 / 2} \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon
+\end{aligned}
+$$
+
+Now $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$ given (ii) and\\
+$\mathbf{D}_{n}^{-1 / 2}\left[\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n}-\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n}\right] \mathbf{V}_{n}^{1 / 2}=o_{p}(1)$\\
+since $\mathbf{D}_{n}^{-1 / 2}=O(1)$ and $\mathbf{V}_{n}^{1 / 2}=O(1)$ given ( $i i$ ) and ( $i i i$ ), and
+
+$$
+\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n}-\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n}=o_{p}(1)
+$$
+
+given (iii) by Proposition 2.30. Hence, by Lemma 4.6,
+
+$$
+\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{0}\right)-\mathbf{D}_{n}^{-1 / 2}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \xrightarrow{p} 0 .
+$$
+
+By Lemma 4.7, $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)$ has the same limiting distribution as
+
+$$
+\mathbf{D}_{n}^{-1 / 2}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon
+$$
+
+We find the asymptotic distribution of this random vector by applying Corollary 4.24 with $\mathbf{A}_{n}^{\prime} \equiv\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n}$ and $\boldsymbol{\Gamma}_{n} \equiv \mathbf{D}_{n}$, which immediately yields
+
+$$
+\mathbf{D}_{n}^{-1 / 2}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})
+$$
+
+Since (ii), (iii) and (iv) hold, $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ as an immediate consequence of Proposition 2.30.
+
+\section*{Exercise 4.33}
+Proof. Given that $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$ and $\ddot{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$, it follows from Proposition 2.30 that $\hat{\mathbf{V}}_{\boldsymbol{n}}-\ddot{\mathbf{V}}_{\boldsymbol{n}}=\left(\hat{\mathbf{V}}_{\boldsymbol{n}}-\mathbf{V}_{\boldsymbol{n}}\right)-\left(\ddot{\mathbf{V}}_{\boldsymbol{n}}-\mathbf{V}_{\boldsymbol{n}}\right) \xrightarrow{\boldsymbol{p}} \mathbf{0}$. It immediately follows from Proposition 2.30 that $\mathcal{W}_{n}-\mathcal{L} \mathcal{M}_{n} \xrightarrow{\boldsymbol{p}} 0$.
+
+\section*{Exercise 4.34}
+Proof. From the solution to the constrained minimization problem we know that
+
+$$
+\ddot{\boldsymbol{\lambda}}_{n}=2\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}\right)^{-1}\left(\mathbf{R} \ddot{\boldsymbol{\beta}}_{n}-\mathbf{r}\right)
+$$
+
+and applying the hint,
+
+$$
+\ddot{\boldsymbol{\lambda}}_{n}=2\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}\right)^{-1} \mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{X}^{\prime}\left(\mathbf{Y}-\mathbf{X} \ddot{\boldsymbol{\beta}}_{n}\right) / n .
+$$
+
+Now $\mathbf{Y}-\mathbf{X} \ddot{\boldsymbol{\beta}}_{n}=\mathbf{Y}-\mathbf{X}_{1} \ddot{\boldsymbol{\beta}}_{1 n}-\mathbf{X}_{2} \ddot{\boldsymbol{\beta}}_{2 n}=\mathbf{Y}-\mathbf{X}_{1} \ddot{\boldsymbol{\beta}}_{1 n}=\ddot{\varepsilon}$ so that
+
+$$
+\ddot{\boldsymbol{\lambda}}_{n}=2\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{R}^{\prime}\right)^{-1} \mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \varepsilon / n .
+$$
+
+Partitioning $\mathbf{R}$ as $\left[\mathbf{0}, \mathbf{I}_{q}\right]$ and $\mathbf{X}^{\prime} \mathbf{X}$ as
+
+$$
+\mathbf{X}^{\prime} \mathbf{X}=\left[\begin{array}{ll}
+\mathbf{X}_{1}^{\prime} \mathbf{X}_{1} & \mathbf{X}_{1}^{\prime} \mathbf{X}_{2} \\
+\mathbf{X}_{2}^{\prime} \mathbf{X}_{1} & \mathbf{X}_{2}^{\prime} \mathbf{X}_{2}
+\end{array}\right]
+$$
+
+and applying the formula for a partitioned inverse gives
+
+$$
+\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{R}^{\prime}=\left(\mathbf{X}_{2}^{\prime}\left(\mathbf{I}-\mathbf{X}_{1}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime}\right) \mathbf{X}_{2}\right)^{-1}
+$$
+
+and\\
+$\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime}=\left(\mathbf{X}_{2}^{\prime}\left(\mathbf{I}-\mathbf{X}_{1}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime}\right) \mathbf{X}_{2}\right)^{-1} \mathbf{X}_{2}^{\prime}\left(\mathbf{I}-\mathbf{X}_{1}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime}\right)$.\\
+Hence by substitution
+
+$$
+\ddot{\boldsymbol{\lambda}}_{n}=2 \mathbf{X}_{2}^{\prime}\left(\mathbf{I}-\mathbf{X}_{1}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime}\right) \ddot{\varepsilon} / n=2 \mathbf{X}_{2}^{\prime} \ddot{\varepsilon} / n
+$$
+
+since $\ddot{\varepsilon}=\left(\mathbf{I}-\mathbf{X}_{1}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime}\right) \mathbf{Y}$ and $\mathbf{I}-\mathbf{X}_{1}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime}$ is idempotent.
+
+\section*{Exercise 4.35}
+Proof. Substituting $\hat{\mathbf{V}}_{n}=\ddot{\sigma}_{n}^{2}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ into the Lagrange multiplier statistic of Theorem 4.32 yields
+
+$$
+\mathcal{L} \mathcal{M}_{n}=n \ddot{\lambda}_{n}^{\prime} \mathbf{R}\left[\ddot{\varepsilon}^{\prime} \ddot{\varepsilon} / n\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)\right]^{-1} \mathbf{R}^{\prime} \ddot{\lambda}_{n} / 4 .
+$$
+
+From Exercise 4.34, $\ddot{\boldsymbol{\lambda}}_{n}=2 \mathbf{X}_{2}^{\prime} \ddot{\varepsilon} / n$ under $H_{0}: \boldsymbol{\beta}_{2}=\mathbf{0}$. Substituting this into the above expression and rearranging gives
+
+$$
+\mathcal{L} \mathcal{M}_{n}=n \ddot{\varepsilon}^{\prime} \mathbf{X}_{2} \mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{R}^{\prime} \mathbf{X}_{2}^{\prime} \ddot{\varepsilon} /\left(\ddot{\varepsilon}^{\prime} \ddot{\varepsilon}\right) .
+$$
+
+Recalling that $\mathbf{X}_{2} \mathbf{R}=\left(\mathbf{0}, \mathbf{X}_{2}\right)$ and $\ddot{\varepsilon}^{\prime} \mathbf{X}_{1}=\mathbf{0}$ we can write
+
+$$
+\ddot{\varepsilon}^{\prime} \mathbf{X}_{2} \mathbf{R}=\ddot{\varepsilon}^{\prime}\left(\mathbf{0}, \mathbf{X}_{2}\right)=\ddot{\varepsilon}^{\prime}\left(\mathbf{X}_{1}, \mathbf{X}_{2}\right)=\ddot{\varepsilon}^{\prime} \mathbf{X},
+$$
+
+which upon substitution immediately yields the result. \(\square\)
+
+\section*{Exercise 4.40}
+Proof. We are given that $s(\boldsymbol{\beta})=\beta_{3}-\beta_{1} \beta_{2}$. Hence $\nabla s(\boldsymbol{\beta})=\left(-\beta_{2},-\beta_{1}, 1\right)^{\prime}$. Substituting $\boldsymbol{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)$ and $\nabla \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)$ into the Wald statistic of Theorem 4.39 yields
+
+$$
+\mathcal{W}_{n}=n\left(\hat{\beta}_{3 n}-\hat{\beta}_{1 n} \hat{\beta}_{2 n}\right)^{2} / \hat{\Gamma}_{n},
+$$
+
+where
+
+$$
+\hat{\Gamma}_{n}=\left(-\hat{\beta}_{2 n},-\hat{\beta}_{1 n}, 1\right)\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \hat{\mathbf{V}}_{n}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}\left(-\hat{\beta}_{2 n},-\hat{\beta}_{1 n}, 1\right)^{\prime} .
+$$
+
+Note that $\mathcal{W}_{n} \stackrel{A}{\sim} \chi_{1}^{2}$ in this case. \(\square\)
+
+\section*{Exercise 4.41}
+Proof. The Lagrange multiplier statistic is motivated by the constrained minimization problem
+
+$$
+\min _{\boldsymbol{\beta}}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta}) / n \quad \text { s.t. } \mathbf{s}(\boldsymbol{\beta})=\mathbf{0} .
+$$
+
+The Lagrangian for the problem is
+
+$$
+\mathcal{L}=(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta}) / n+\mathbf{s}(\boldsymbol{\beta})^{\prime} \boldsymbol{\lambda}
+$$
+
+and the first order conditions are
+
+$$
+\begin{aligned}
+\partial \mathcal{L} / \partial \boldsymbol{\beta} & =2\left(\mathbf{X}^{\prime} \mathbf{X} / n\right) \boldsymbol{\beta}-2 \mathbf{X}^{\prime} \mathbf{Y} / n+\nabla \mathbf{s}(\boldsymbol{\beta})^{\prime} \boldsymbol{\lambda}=\mathbf{0} \\
+\partial \mathcal{L} / \partial \lambda & =\mathbf{s}(\boldsymbol{\beta})=\mathbf{0} .
+\end{aligned}
+$$
+
+Setting $\hat{\boldsymbol{\beta}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{X}^{\prime} \mathbf{Y} / n$ and taking a mean value expansion of $\mathbf{s}(\boldsymbol{\beta})$ around $\hat{\boldsymbol{\beta}}_{n}$ gives
+
+$$
+\begin{aligned}
+& \partial \mathcal{L} / \partial \boldsymbol{\beta}=2\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)\left(\boldsymbol{\beta}-\hat{\boldsymbol{\beta}}_{n}\right)+\nabla \mathbf{s}(\boldsymbol{\beta})^{\prime} \boldsymbol{\lambda}=\mathbf{0} \\
+& \partial \mathcal{L} / \partial \lambda=\mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)+\nabla \overline{\mathbf{s}}^{\prime}\left(\boldsymbol{\beta}-\hat{\boldsymbol{\beta}}_{n}\right)=\mathbf{0},
+\end{aligned}
+$$
+
+where $\nabla \overline{\mathbf{s}}^{\prime}$ is the $q \times k$ Jacobian of $\mathbf{s}$ with $i$ th row evaluated at a mean value $\overline{\boldsymbol{\beta}}_{n}^{(i)}$. Premultiplying the first equation by $\nabla \overline{\mathbf{s}}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$ and substituting $-\mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)=\nabla \overline{\mathbf{s}}^{\prime}\left(\boldsymbol{\beta}-\hat{\boldsymbol{\beta}}_{n}\right)$ gives
+
+$$
+\ddot{\boldsymbol{\lambda}}_{n}=2\left[\nabla \overline{\mathbf{s}}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \nabla \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)\right]^{-1} \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right) .
+$$
+
+Thus, following the procedures of Theorems 4.32 and 4.39 we could propose the statistic
+
+$$
+\mathcal{L} \mathcal{M}_{n}=n \ddot{\lambda}_{n}^{\prime} \hat{\Lambda}_{n}^{-1} \ddot{\lambda}_{n},
+$$
+
+where
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\Lambda}}_{n} \equiv & 4\left(\nabla \overline{\mathbf{s}}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \nabla \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)\right)^{-1} \nabla \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \ddot{\mathbf{V}}_{n} \\
+& \times\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \nabla \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)\left(\nabla \overline{\mathbf{s}}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)\right)^{-1}
+\end{aligned}
+$$
+
+The preceding statistic, however, is not very useful because it depends on generally unknown mean values and also on the unconstrained estimate $\hat{\boldsymbol{\beta}}_{n}$. An asymptotically equivalent statistic replaces $\nabla \overline{\mathbf{s}}^{\prime}$ by $\nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}$ and $\hat{\boldsymbol{\beta}}_{n}$ by $\ddot{\boldsymbol{\beta}}_{n}$ :
+
+$$
+\mathcal{L} \mathcal{M}_{n}=n \ddot{\boldsymbol{\lambda}}_{n}^{\prime} \ddot{\boldsymbol{\Lambda}}_{n}^{-1} \ddot{\boldsymbol{\lambda}}_{n},
+$$
+
+where
+
+$$
+\ddot{\boldsymbol{\lambda}}_{n}=2\left[\nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)\right]^{-1} \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)
+$$
+
+and
+
+$$
+\begin{aligned}
+\ddot{\boldsymbol{\Lambda}}_{n}= & 4\left(\nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)\right)^{-1} \nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \\
+& \times \ddot{\mathbf{V}}_{n}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)\left(\nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)\right)^{-1} .
+\end{aligned}
+$$
+
+To show that $\mathcal{L} \mathcal{M}_{n} \stackrel{A}{\sim} \chi_{q}^{2}$ under $H_{0}$ we note that $\mathcal{L} \mathcal{M}_{n}$ differs from $\mathcal{W}_{n}$ only in that $\ddot{\mathbf{V}}_{n}$ is used in place of $\hat{\mathbf{V}}_{n}$ and $\ddot{\boldsymbol{\beta}}_{n}$ replaces $\hat{\boldsymbol{\beta}}_{n}$. Since $\ddot{\boldsymbol{\beta}}_{n}-\hat{\boldsymbol{\beta}}_{n} \xrightarrow{p} \mathbf{0}$ and $\ddot{\mathbf{V}}_{n}-\hat{\mathbf{V}}_{n} \xrightarrow{p} \mathbf{0}$ under $H_{0}$ given the conditions of Theorem 4.25, it follows from Proposition 2.30 that
+
+$$
+\mathcal{L} \mathcal{M}_{n}-\mathcal{W}_{n} \xrightarrow{p} 0
+$$
+
+given that $\nabla \mathrm{s}$ is continuous. Hence $\mathcal{L} \mathcal{M}_{n} \stackrel{A}{\sim} \chi_{q}^{2}$ by Lemma 4.7. \(\square\)
+
+\section*{Exercise 4.42}
+Proof. First consider testing the hypothesis $\mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r}$. Analogous to Theorem 4.31 the Wald statistic is
+
+$$
+\mathcal{W}_{n} \equiv n\left(\mathbf{R} \tilde{\boldsymbol{\beta}}_{n}-\mathbf{r}\right)^{\prime} \hat{\Gamma}_{n}^{-1}\left(\mathbf{R} \tilde{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) \xrightarrow{d} \chi_{q}^{2}
+$$
+
+under $H_{0}$, where
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\Gamma}}_{n} \equiv & \mathbf{R} \hat{\mathbf{D}}_{n} \mathbf{R}^{\prime} \\
+= & \mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \hat{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right) \\
+& \times\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \mathbf{R}^{\prime}
+\end{aligned}
+$$
+
+To prove $\mathcal{W}_{n}$ has an asymptotic $\chi_{q}^{2}$ distribution under $H_{0}$, we note that
+
+$$
+\mathbf{R} \tilde{\boldsymbol{\beta}}_{n}-\mathbf{r}=\mathbf{R}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)
+$$
+
+so
+
+$$
+\boldsymbol{\Gamma}_{n}^{-1 / 2} \sqrt{n}\left(\mathbf{R} \tilde{\boldsymbol{\beta}}_{n}-\mathbf{r}\right)=\boldsymbol{\Gamma}_{n}^{-1 / 2} \mathbf{R} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right),
+$$
+
+where
+
+$$
+\boldsymbol{\Gamma}_{n}=\mathbf{R}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{V}_{n} \mathbf{P}_{n} \mathbf{Q}_{n}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{R}^{\prime} .
+$$
+
+It follows from Corollary 4.24 that $\boldsymbol{\Gamma}_{n}^{-1 / 2} \mathbf{R} \sqrt{n}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$ so that $\boldsymbol{\Gamma}_{n}^{-1 / 2} \sqrt{n}\left(\mathbf{R} \tilde{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$. Since $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$ from Exercise 4.26 it follows that $\hat{\boldsymbol{\Lambda}}_{n}-\boldsymbol{\Lambda}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ by Proposition 2.30. Hence $\mathcal{W}_{n} \stackrel{A}{\sim} \chi_{q}^{2}$ by Theorem 4.30.
+
+We can derive the Lagrange multiplier statistic from the constrained minimization problem:
+
+$$
+\min _{\beta}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta}) / n^{2} \quad \text { s.t. } \mathbf{R} \boldsymbol{\beta}=\mathbf{r}
+$$
+
+The first-order conditions are
+
+$$
+\begin{aligned}
+& \partial \mathcal{L} / \partial \boldsymbol{\beta}=2\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right) \boldsymbol{\beta}-2\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{Y} / n+\mathbf{R} \boldsymbol{\lambda}=\mathbf{0} \\
+& \partial \mathcal{L} / \partial \boldsymbol{\lambda}=\mathbf{R} \boldsymbol{\beta}-\mathbf{r}=\mathbf{0},
+\end{aligned}
+$$
+
+where $\boldsymbol{\lambda}$ is the vector of Lagrange multipliers. It follows that
+
+$$
+\begin{aligned}
+& \ddot{\boldsymbol{\lambda}}_{n}=2\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \mathbf{R}^{\prime}\right)^{-1}\left(\mathbf{R} \ddot{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) \\
+& \ddot{\boldsymbol{\beta}}_{n}=\tilde{\boldsymbol{\beta}}_{n}-\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \mathbf{R}^{\prime} \ddot{\boldsymbol{\lambda}}_{n} / 2
+\end{aligned}
+$$
+
+Hence, analogous to Theorem 4.32, $\mathcal{L} \mathcal{M}_{n} \equiv n \ddot{\boldsymbol{\lambda}}_{n}^{\prime} \hat{\boldsymbol{\Lambda}}_{n}^{-1} \ddot{\boldsymbol{\lambda}}_{n} \stackrel{A}{\sim} \chi_{q}^{2}$ under $H_{0}$, where
+
+$$
+\begin{aligned}
+\hat{\mathbf{\Lambda}}_{n} \equiv & 4\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \mathbf{R}^{\prime}\right)^{-1} \mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \\
+& \times\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \ddot{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \\
+& \times \mathbf{R}^{\prime}\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \mathbf{R}^{\prime}\right)^{-1}
+\end{aligned}
+$$
+
+and $\ddot{\mathbf{V}}_{n}$ is computed under the constrained regression such that $\ddot{\mathbf{V}}_{n}- \hat{\mathbf{V}}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ under $H_{0}$. If we can show that $\mathcal{L} \mathcal{M}_{n}-\mathcal{W}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$, then we can apply Lemma 4.7 to conclude $\mathcal{L} \mathcal{M}_{n} \stackrel{A}{\sim} \chi_{q}^{2}$. Note that $\mathcal{L} \mathcal{M}_{n}$ differs from\\
+$\mathcal{W}_{n}$ in that $\ddot{\mathbf{V}}_{n}$ is used in place of $\hat{\mathbf{V}}_{n}$. Since $\ddot{\mathbf{V}}_{n}-\hat{\mathbf{V}}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ under $H_{0}$, it follows from Proposition 2.30 that $\mathcal{L} \mathcal{M}_{n}-\mathcal{W}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$.
+
+Next, consider the nonlinear hypothesis $\mathbf{s}\left(\boldsymbol{\beta}_{o}\right)=\mathbf{0}$. The Wald statistic is easily seen to be
+
+$$
+\mathcal{W}_{n} \equiv n \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime} \hat{\boldsymbol{\Gamma}}_{n}^{-1} \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)
+$$
+
+where
+
+$$
+\hat{\boldsymbol{\Gamma}}_{n}^{-1} \equiv \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime} \hat{\mathbf{D}}_{n} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)
+$$
+
+and $\hat{\mathbf{D}}_{n}$ is given in Exercise 4.26. The proof that $\mathcal{W}_{n} \stackrel{A}{\sim} \chi_{q}^{2}$ under $H_{0}$ is identical to that of Theorem 4.39 except that $\tilde{\boldsymbol{\beta}}_{n}$ replaces $\hat{\boldsymbol{\beta}}_{n}, \hat{\mathbf{D}}_{n}$ is appropriately defined, and the results of Exercise 4.26 are used in place of those of Theorem 4.25.
+
+The Lagrange Multiplier statistic can be derived in a manner analogous to Exercise 4.41, and the result is that the Lagrange multiplier statistic has the form of the Wald statistic with the constrained estimates $\ddot{\boldsymbol{\beta}}_{n}$ and $\ddot{\boldsymbol{V}}_{n}$ replacing $\hat{\boldsymbol{\beta}}_{n}$ and $\hat{\mathbf{V}}_{n}$. Thus
+
+$$
+\mathcal{L} \mathcal{M}_{n}=n \ddot{\lambda}_{n}^{\prime} \hat{\Lambda}_{n}^{-1} \ddot{\lambda}_{n}
+$$
+
+where
+
+$$
+\boldsymbol{\lambda}_{n}=2\left[\nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)\right]^{-1} \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)
+$$
+
+and
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\Lambda}}_{n}= & 4\left[\nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)\right]^{-1} \\
+& \times \nabla \mathbf{s}\left(\boldsymbol{\beta}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \ddot{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right) \\
+& \times\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)\left[\nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\right. \\
+& \left.\times\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)\right]^{-1}
+\end{aligned}
+$$
+
+Now $\ddot{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$ and $\nabla \mathbf{s}\left(\ddot{\boldsymbol{\beta}}_{n}\right)-\nabla \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right) \xrightarrow{\boldsymbol{p}} \mathbf{0}$ given that $\nabla \mathbf{s}(\boldsymbol{\beta})$ is continuous. It follows from Proposition 2.30 that $\mathcal{L} \mathcal{M}_{n}-\mathcal{W}_{n} \xrightarrow{p} 0$, so that $\mathcal{L} \mathcal{M}_{n} \stackrel{A}{\sim} \chi_{q}^{2}$ by Lemma 4.7.
+
+\section*{Exercise 4.46}
+Proof. Under the conditions of Exercise 4.26, Proposition 4.45 tells us that the asymptotically efficient estimator is
+
+$$
+\begin{aligned}
+\boldsymbol{\beta}_{n}^{*} & =\left(\mathbf{X}^{\prime} \mathbf{X} \hat{\mathbf{V}}_{n}^{-1} \mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{X} \hat{\mathbf{V}}_{n}^{-1} \mathbf{X}^{\prime} \mathbf{Y} \\
+& =\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \hat{\mathbf{V}}_{n}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{X} \hat{\mathbf{V}}_{n}^{-1} \mathbf{X}^{\prime} \mathbf{Y} \\
+& =\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Y}=\hat{\boldsymbol{\beta}}_{n}
+\end{aligned}
+$$
+
+where we substituted $\mathbf{X}^{\prime} \mathbf{X}=\hat{\mathbf{V}}_{n}$. \(\square\)
+
+\section*{Exercise 4.47}
+Proof. We assume that the conditions of Exercise 4.26 are satisfied. In addition, we assume $\tilde{\sigma}_{n}^{2}\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)-\sigma_{o}^{2} \mathbf{L}_{n} \xrightarrow{p} \mathbf{0}$ so that $\hat{\mathbf{V}}_{n}=\tilde{\sigma}_{n}^{2}\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)$. (This follows from a law of large numbers.) Then from Proposition 4.45 it follows that the asymptotically efficient estimator is
+
+$$
+\begin{aligned}
+\boldsymbol{\beta}_{n}^{*} & =\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\tilde{\sigma}_{n}^{2}\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\tilde{\sigma}_{n}^{2}\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y} \\
+& =\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y} \\
+& =\tilde{\boldsymbol{\beta}}_{2 S L S}
+\end{aligned}
+$$ \(\square\)
+
+\section*{Exercise 4.48}
+Proof. From the definition
+
+$$
+\begin{aligned}
+\sqrt{n}\left(\boldsymbol{\beta}_{n}^{* *}-\boldsymbol{\beta}_{n}^{*}\right)= & \left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right) \\
+& \times\left[\nabla \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right)\right]^{-1} \sqrt{n} \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right)
+\end{aligned}
+$$
+
+it follows that $\sqrt{n}\left(\boldsymbol{\beta}_{n}^{* *}-\boldsymbol{\beta}_{n}^{*}\right) \xrightarrow{p} \mathbf{0}$ provided that $\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}= O_{p}(1), \nabla \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right)=O_{p}(1)$, and $\sqrt{n} \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right)=o_{p}(1)$. The first two are easy to show, so we just show that $\sqrt{n} \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right)=o_{p}(1)$. Taking a mean value expansion and substituting the definition of $\boldsymbol{\beta}_{n}^{*}$ gives
+
+$$
+\begin{aligned}
+\sqrt{n} \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right)= & \sqrt{n} \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)+\sqrt{n} \nabla \overline{\mathbf{s}}_{n}^{\prime}\left(\boldsymbol{\beta}_{n}^{*}-\tilde{\boldsymbol{\beta}}_{n}\right) \\
+= & \sqrt{n} \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)-\nabla \overline{\mathbf{s}}_{n}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right) \\
+& \times\left[\nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\right]^{-1} \sqrt{n} \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right) \\
+= & \left(\mathbf{I}-\nabla \overline{\mathbf{s}}_{n}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\right. \\
+& \left.\times\left[\nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\right]^{-1}\right) \sqrt{n} \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)
+\end{aligned}
+$$
+
+Now\\
+$\mathbf{I}-\nabla \overline{\mathbf{s}}_{n}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\left[\nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\right]^{-1}=o_{p}(1)$ since $\nabla \overline{\mathbf{s}}_{n}-\nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)=o_{p}(1)$, and $\sqrt{n} \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)=\sqrt{n} \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)+\nabla \ddot{\mathbf{s}}_{n}^{\prime} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\right. \left.\boldsymbol{\beta}_{o}\right)=\mathbf{0}+O_{p}(1) O_{p}(1)=O_{p}(1)$ by Lemma 4.6, and the result follows. \(\square\)
+
+\section*{Exercise 4.56}
+Proof. Since $\mathrm{X}_{t}^{o}$ is $\mathcal{F}_{t-1}$-measurable then so is $\mathrm{Z}_{t}^{o}\left(\gamma^{*}\right)=\mathrm{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1}$. For brevity, we write $\mathbf{Z}_{t}^{o}=\mathbf{Z}_{t}^{o}\left(\boldsymbol{\gamma}^{*}\right)$ in the following.
+
+We have
+
+$$
+\begin{aligned}
+E^{o}\left(n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \varepsilon_{t}\right) & =E^{o}\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o} \varepsilon_{t} \mid \mathcal{F}_{t-1}\right)\right) \\
+& =E^{o}\left(n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} E^{o}\left(\varepsilon_{t} \mid \mathcal{F}_{t-1}\right)\right) \\
+& =\mathbf{0}
+\end{aligned}
+$$
+
+and by the martingale difference property
+
+$$
+\begin{aligned}
+\mathbf{V}_{n} & =\operatorname{var}^{o}\left(n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \varepsilon_{t}\right) \\
+& =E^{o}\left(n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{o}\right) \\
+& =E^{o}\left(n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathcal{F}_{t-1}\right) \mathbf{Z}_{t}^{o}\right) \\
+& =E^{o}\left(n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \boldsymbol{\Omega}_{t} \mathbf{Z}_{t}^{o}\right) \\
+& =E^{o}\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o}\right)
+\end{aligned}
+$$
+
+Set $\hat{\mathbf{V}}_{n}=n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o}$.
+
+With $\mathbf{Z}_{t}^{o}=\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1}$ we have
+
+$$
+\begin{aligned}
+\boldsymbol{\beta}_{n}^{*} & =\left(\sum_{t=1}^{n} \mathbf{X}_{t}^{o} \mathbf{Z}_{t}^{o} \hat{\mathbf{V}}_{n}^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \mathbf{X}_{t}^{\prime o}\right)^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \mathbf{Z}_{t}^{\prime o} \hat{\mathbf{V}}_{n}^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \mathbf{Y}_{t}^{\prime o} \\
+& =\left(\sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{\prime o}\right)^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{Y}_{t}^{\prime o} \\
+& =\left(\mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{Y}
+\end{aligned}
+$$
+
+\section*{Exercise 4.58}
+Proof. We have
+
+$$
+\begin{aligned}
+\boldsymbol{\beta}_{n}^{*} & =\left(\sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{Y}_{t}^{o} \\
+& =\left(\sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1}\left(\mathbf{X}_{t}^{o \prime} \boldsymbol{\beta}^{o}+\varepsilon_{t}\right) \\
+& =\boldsymbol{\beta}^{o}+\left(\sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \varepsilon_{t}
+\end{aligned}
+$$
+
+Set
+
+$$
+\mathbf{m}_{n}^{o}\left(\gamma^{*}\right)=n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \Omega_{t}^{-1} \varepsilon_{t}
+$$
+
+and we have
+
+$$
+\begin{aligned}
+& \sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}^{o}\right)=\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1} n^{1 / 2} \mathbf{m}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right) \\
+& =\mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} n^{1 / 2} \mathbf{m}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right) \\
+& +\left[\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1}-\mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1}\right] n^{1 / 2} \mathbf{m}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right) \\
+& =\mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} n^{1 / 2} \mathbf{m}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)+o_{p^{o}}(1)
+\end{aligned}
+$$
+
+using Theorem 4.54 (iii.a) and (ii). So
+
+$$
+\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right)=\mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} \mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right) \mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1}
+$$
+
+where
+
+$$
+\begin{aligned}
+\mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right) & =E^{o}\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \varepsilon_{t} \varepsilon_{t}^{\prime} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \varepsilon_{t} \varepsilon_{t}^{\prime} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathcal{F}_{t-1}\right) \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)
+\end{aligned}
+$$
+
+using the law of iterated expectations.\\
+By assumption, $\mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)=n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)$, so
+
+$$
+\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right)=\left[n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)\right]^{-1}
+$$
+
+Consistency of $\hat{\mathbf{D}}_{n}$ follows given Theorem 4.54 (iii.a) and the assumption that $\mathbf{Q}_{n}^{o}\left(\gamma^{*}\right)=n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)$ by the continuity of the inverse function and given that $\mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)=\mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)$ is uniformly positive definite.
+
+\section*{Exercise 4.60}
+Proof. Similar to Exercise 4.58 we have that
+
+$$
+\begin{aligned}
+\sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}^{o}\right) & =\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \varepsilon_{t} \\
+& =\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right)^{-1} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \varepsilon_{t}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+& +\left[\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1}-\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \mathbf{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right)^{-1}\right] \\
+& \times n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \mathbf{\Omega}_{t}^{o-1} \varepsilon_{t} \\
+& +\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \mathbf{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right)^{-1} \\
+& \times\left[n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \varepsilon_{t}-n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \mathbf{\Omega}_{t}^{o-1} \varepsilon_{t}\right] \\
+& +\left[\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1}-\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \mathbf{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right)^{-1}\right] \\
+& \times\left[n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \varepsilon_{t}-n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \mathbf{\Omega}_{t}^{o-1} \varepsilon_{t}\right] \\
+& =\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \mathbf{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right)^{-1} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \mathbf{\Omega}_{t}^{o-1} \varepsilon_{t} \\
+& +o_{p^{o}}(1) O_{p^{o}}(1)+O(1) o_{p^{o}}(1)+o_{p^{o}}(1) o_{p^{o}}(1)
+\end{aligned}
+$$
+
+using Theorem 4.54 conditions (iii.a) and (ii) on the second, third, and fourth terms.
+
+It follows that
+
+$$
+\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right)=\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right)^{-1},
+$$
+
+which is consistently estimated by
+
+$$
+\hat{\mathbf{D}}_{n}=\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\mathbf{\Omega}}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1}
+$$
+
+given Theorem 4.54 (iii.a).
+
+\section*{Exercise 4.61}
+Proof. (i) Let $\overline{\mathbf{W}}_{\boldsymbol{t}}^{o}=\left(1, W_{\boldsymbol{t}}^{o}\right)^{\prime}$; then
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\alpha}}_{n}= & \left(n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \tilde{\mathbf{W}}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \hat{\varepsilon}_{t}^{2} \\
+= & \left(n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \tilde{\mathbf{W}}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o}\left(\varepsilon_{t}-\mathbf{X}_{t}^{o \prime}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}^{o}\right)\right)^{2} \\
+= & \left(n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \tilde{\mathbf{W}}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \varepsilon_{t}^{2} \\
+& -2\left(n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \tilde{\mathbf{W}}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \varepsilon_{t} \mathbf{X}_{t}^{o \prime}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}^{o}\right) \\
+& +\left(n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \tilde{\mathbf{W}}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o}\left(\mathbf{X}_{t}^{o \prime}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}^{o}\right)\right)^{2} \\
+= & \left(n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \tilde{\mathbf{W}}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \tilde{\mathbf{W}}_{t}^{o} \boldsymbol{\alpha}_{o}+o_{p^{o}}(1)+o_{p^{o}}(1) \\
+= & \alpha_{o}+o_{p^{o}}(1),
+\end{aligned}
+$$
+
+provided that
+
+$$
+\begin{aligned}
+\left(n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \tilde{\mathbf{W}}_{t}^{o \prime}\right)^{-1} & =O_{p^{o}}(1) \\
+n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \varepsilon_{t} \mathbf{X}_{t}^{o \prime} & =O_{p^{o}}(1) \\
+n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o}\left(\mathbf{X}_{t}^{o \prime} \otimes \mathbf{X}_{t}^{o \prime}\right) & =O_{p^{o}}(1)
+\end{aligned}
+$$
+
+and $\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}^{o}\right)=o_{p^{o}}(1)$.\\
+The third condition enables us to verify
+
+$$
+n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o}\left(\mathbf{X}_{t}^{o \prime}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}^{o}\right)\right)=n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o} \mathbf{X}_{t}^{o \prime}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}^{o}\right)\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}^{o}\right)^{\prime} \mathbf{X}_{t}^{o}
+$$
+
+$$
+\begin{aligned}
+& =n^{-1} \sum_{t=1}^{n} \tilde{\mathbf{W}}_{t}^{o}\left(\mathbf{X}_{t}^{o \prime} \otimes \mathbf{X}_{t}^{o \prime}\right) \operatorname{vec}\left(\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}^{o}\right)\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}^{o}\right)^{\prime}\right) \\
+& =O_{p^{o}}(1) o_{p^{o}}(1)=o_{p^{o}}(1)
+\end{aligned}
+$$
+
+The first condition holds quite generally since $W_{t}^{o}$ is bounded. Set $\bar{W}_{n}^{o} \equiv n^{-1} \sum_{t=1}^{n} W_{t}^{o}$ then
+
+$$
+n^{-1} \sum_{t=1}^{n} \overline{\mathbf{W}}_{t}^{o} \overline{\mathbf{W}}_{t}^{o \prime}=\left(\begin{array}{cc}
+1 & \bar{W}_{n}^{o} \\
+\bar{W}_{n}^{o} & n^{-1} \sum_{t=1}^{n} W_{t}^{o 2}
+\end{array}\right) .
+$$
+
+If this matrix is uniformly nonsingular, its inverse is $O_{p^{\circ}}(1)$, and for that it suffices that $\bar{W}_{n}^{o}$ is bounded away from zero and one.\\
+(ii) Consider
+
+$$
+\begin{aligned}
+& n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \varepsilon_{t}-n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \Omega_{t}^{o-1} \varepsilon_{t} \\
+= & n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o}\left(\hat{\Omega}_{n t}^{-1}-\Omega_{t}^{o-1}\right) \varepsilon_{t} \\
+= & n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o}\left(\left(\tilde{\mathbf{W}}_{t}^{o \prime} \hat{\alpha}_{n}\right)^{-1}-\left(\tilde{\mathbf{W}}_{t}^{o \prime} \boldsymbol{\alpha}^{o}\right)^{-1}\right) \varepsilon_{t} \\
+= & n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o}\left(\left(\hat{\alpha}_{1 n}\right)^{-1}-\left(\alpha_{1}^{o}\right)^{-1}\right) \varepsilon_{t} 1\left[W_{t}^{o}=0\right] \\
+& +n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o}\left(\left(\hat{\alpha}_{1 n}+\hat{\alpha}_{2 n}\right)^{-1}-\left(\alpha_{1}^{o}+\alpha_{2}^{o}\right)^{-1}\right) \varepsilon_{t} 1\left[W_{t}^{o}=1\right] \\
+= & \left(\left(\hat{\alpha}_{1 n}\right)^{-1}-\left(\alpha_{1}^{o}\right)^{-1}\right) n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \varepsilon_{t} 1\left[W_{t}^{o}=0\right] \\
+& +\left(\left(\hat{\alpha}_{1 n}+\hat{\alpha}_{2 n}\right)^{-1}-\left(\alpha_{1}^{o}+\alpha_{2}^{o}\right)^{-1}\right) n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \varepsilon_{t} 1\left[W_{t}^{o}=1\right] \\
+= & o_{p^{o}}(1) O_{p^{o}}(1)+o_{p^{o}}(1) O_{p^{o}}(1)
+\end{aligned}
+$$
+
+To obtain the final equality, we apply the martingale difference central limit theorem to the terms $n^{-1 / 2} \sum_{t=1}^{n} \mathrm{X}_{t}^{o} \varepsilon_{t} 1\left[W_{t}^{o}=j\right], j=0,1$, and require that $\alpha_{1}^{o}$ and $\alpha_{1}^{o}+\alpha_{2}^{o}$ are different from zero.
+
+Similarly
+
+$$
+\begin{aligned}
+& n^{-1} \sum_{t=1}^{n} \mathrm{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathrm{X}_{t}^{o \prime}-n^{-1} \sum_{t=1}^{n} \mathrm{X}_{t}^{o} \Omega_{t}^{o-1} \mathrm{X}_{t}^{o \prime} \\
+= & \left(\left(\hat{\alpha}_{1 n}\right)^{-1}-\left(\alpha_{1}^{o}\right)^{-1}\right) n^{-1} \sum_{t=1}^{n} \mathrm{X}_{t}^{o} \mathrm{X}_{t}^{o \prime} 1\left[W_{t}^{o}=0\right] \\
+& +\left(\left(\hat{\alpha}_{1 n}+\hat{\alpha}_{2 n}\right)^{-1}-\left(\alpha_{1}^{o}+\alpha_{2}^{o}\right)^{-1}\right) n^{-1} \sum_{t=1}^{n} \mathrm{X}_{t}^{o} \mathrm{X}_{t}^{o \prime} 1\left[W_{t}^{o}=1\right] \\
+= & o_{p^{o}}(1) O_{p^{o}}(1)+o_{p^{o}}(1) O_{p^{o}}(1)
+\end{aligned}
+$$
+
+\section*{Exercise 4.63}
+Proof. Similar to Exercise 4.60 we have
+
+$$
+\begin{gathered}
+\sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}^{o}\right)=\left(n^{-1} \sum_{t=1}^{n} \hat{\mathbf{X}}_{t}^{o} \hat{\mathbf{\Omega}}_{n t}^{-1} \hat{\mathbf{X}}_{t}^{o \prime}\right)^{-1} n^{-1 / 2} \sum_{t=1}^{n} \hat{\mathbf{X}}_{t}^{o} \hat{\mathbf{\Omega}}_{n t}^{-1} \varepsilon_{t} \\
+=\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right)^{-1} n^{-1 / 2} \sum_{t=1}^{n} \tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \varepsilon_{t} \\
++\left[\left(n^{-1} \sum_{t=1}^{n} \hat{\mathbf{X}}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1}-\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right)^{-1}\right] \\
+\times n^{-1 / 2} \sum_{t=1}^{n} \tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \varepsilon_{t} \\
++\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right)^{-1} \\
+\times\left[n^{-1 / 2} \sum_{t=1}^{n} \hat{\mathbf{X}}_{t}^{o} \hat{\Omega}_{n t}^{-1} \varepsilon_{t}-n^{-1 / 2} \sum_{t=1}^{n} \tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \varepsilon_{t}\right] \\
++\left[\left(n^{-1} \sum_{t=1}^{n} \hat{\mathbf{X}}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1}-\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right)^{-1}\right] \\
+\times\left[n^{-1 / 2} \sum_{t=1}^{n} \hat{\mathbf{X}}_{t}^{o} \hat{\Omega}_{n t}^{-1} \varepsilon_{t}-n^{-1 / 2} \sum_{t=1}^{n} \tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \varepsilon_{t}\right]
+\end{gathered}
+$$
+
+$$
+\begin{aligned}
+=\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right. & )^{-1} n^{-1 / 2} \sum_{t=1}^{n} \tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \varepsilon_{t} \\
+& +o_{p^{o}}(1) O_{p^{o}}(1)+O(1) o_{p^{o}}(1)+o_{p^{o}}(1) o_{p^{o}}(1)
+\end{aligned}
+$$
+
+applying Theorem 4.54 conditions (iii.a) and (ii) to the second, third, and fourth terms.
+
+Since
+
+$$
+\begin{aligned}
+E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right) & =E^{o}\left(E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right) \mid \mathcal{F}_{t-1}\right) \\
+& =E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \tilde{\mathbf{X}}_{t}^{o \prime}\right)
+\end{aligned}
+$$
+
+by the law of iterated expectations, we have
+
+$$
+\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right)=\left(n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \tilde{\mathbf{X}}_{t}^{o \prime}\right)\right)^{-1} .
+$$
+
+To show that the matrix is consistently estimated by
+
+$$
+\hat{\mathbf{D}}_{n}=2\left(n^{-1} \sum_{t=1}^{n} \hat{\mathbf{X}}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}+n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \hat{\mathbf{X}}_{t}^{o \prime}\right)^{-1},
+$$
+
+it suffices that $\hat{\mathbf{D}}_{n}^{-1}-\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right)^{-1}=o_{p^{o}}(1)$. We have
+
+$$
+\begin{aligned}
+& \hat{\mathbf{D}}_{n}^{-1}-\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right)^{-1} \\
+= & (1 / 2)\left(n^{-1} \sum_{t=1}^{n} \hat{\mathbf{X}}_{t}^{o} \hat{\mathbf{\Omega}}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}+n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\mathbf{\Omega}}_{n t}^{-1} \hat{\mathbf{X}}_{t}^{o \prime}\right) \\
+& -n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \tilde{\mathbf{X}}_{t}^{o \prime}\right) \\
+= & (1 / 2)\left(n^{-1} \sum_{t=1}^{n} \hat{\mathbf{X}}_{t}^{o} \hat{\mathbf{\Omega}}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}-n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right) \\
+& +(1 / 2)\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \hat{\mathbf{X}}_{t}^{o \prime}-n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \tilde{\mathbf{X}}_{t}^{o \prime}\right)\right),
+\end{aligned}
+$$
+
+again using the law of iterated expectations.\\
+Now
+
+$$
+n^{-1} \sum_{t=1}^{n} \hat{\mathbf{X}}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}-n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right) \xrightarrow{p^{o}} \mathbf{0}
+$$
+
+by Theorem 4.54 condition (iii) and Theorem 4.62 condition (iii) and the result follows.
+
+\section*{Exercise 4.64}
+Proof. (i)(a) Set $\boldsymbol{v}_{t}=\mathbf{X}_{t}^{\prime o}-E\left(\mathbf{X}_{t}^{\prime o} \mid \mathcal{F}_{t-1}\right)$ so that $\mathbf{X}_{t}^{\prime o}=\mathbf{Z}_{t}^{\prime o} \boldsymbol{\pi}_{o}+\boldsymbol{v}_{t}$. Then
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\pi}}_{n} & =\left(n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \mathbf{Z}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \mathbf{X}_{t}^{o \prime} \\
+& =\boldsymbol{\pi}_{o}+\left(n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \mathbf{Z}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \boldsymbol{v}_{t} \\
+& =\boldsymbol{\pi}_{o}+o_{p^{o}}(1)
+\end{aligned}
+$$
+
+given $n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \mathbf{Z}_{t}^{o \prime}=O_{p^{o}}(1)$ and $n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \boldsymbol{v}_{t}=o_{p^{o}}(1)$; the latter follows by the martingale difference weak law of large numbers.\\
+(b) Substituting
+
+$$
+\hat{\varepsilon}_{t}=\varepsilon_{t}+\mathbf{X}_{t}^{o \prime}\left(\boldsymbol{\beta}^{o}-\tilde{\boldsymbol{\beta}}_{n}\right)
+$$
+
+we have that
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\Sigma}}_{n}= & n^{-1} \sum_{t=1}^{n} \hat{\varepsilon}_{t} \hat{\varepsilon}_{t}^{\prime} \\
+= & n^{-1} \sum_{t=1}^{n} \varepsilon_{t} \varepsilon_{t}^{\prime} \\
+& +n^{-1} \sum_{t=1}^{n} \varepsilon_{t}\left(\boldsymbol{\beta}^{o}-\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime} \mathbf{X}_{t}^{o}+n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o \prime}\left(\boldsymbol{\beta}^{o}-\tilde{\boldsymbol{\beta}}_{n}\right) \varepsilon_{t}^{\prime} \\
+& +n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o \prime}\left(\boldsymbol{\beta}^{o}-\tilde{\boldsymbol{\beta}}_{n}\right)\left(\boldsymbol{\beta}^{o}-\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime} \mathbf{X}_{t}^{o} .
+\end{aligned}
+$$
+
+Given that $n^{-1} \sum_{t=1}^{n} \varepsilon_{t} \mathbf{X}_{t}^{o}$ and $n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o /} \mathbf{X}_{t}^{o}$ are $O_{p^{o}}(1)$, that
+
+$$
+\begin{aligned}
+n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o /} \mathbf{Z}_{t}^{o} & =O_{p^{o}}(1) \\
+n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o /} \varepsilon_{t} & =o_{p^{o}}(1)
+\end{aligned}
+$$
+
+so that $\left(\boldsymbol{\beta}^{o}-\tilde{\boldsymbol{\beta}}_{n}\right)=o_{p^{o}}(1)$, it follows that the last three terms vanish in probability. To see this, apply the rule $\operatorname{vec}(A B C)=\left(C^{\prime} \otimes A\right) \operatorname{vec}(B)$ to each\\
+of terms, for example:
+
+$$
+\begin{aligned}
+\operatorname{vec}\left(n^{-1} \sum_{t=1}^{n} \varepsilon_{t}\left(\boldsymbol{\beta}^{o}-\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime} \mathbf{X}_{t}^{o}\right) & =n^{-1} \sum_{t=1}^{n}\left(\mathbf{X}_{t}^{o \prime} \otimes \varepsilon_{t}\right) \operatorname{vec}\left(\left(\boldsymbol{\beta}^{o}-\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime}\right) \\
+& =O_{p^{o}}(1) o_{p^{o}}(1)=o_{p^{o}}(1)
+\end{aligned}
+$$
+
+Given $n^{-1} \sum_{t=1}^{n} \varepsilon_{t} \varepsilon_{t}^{\prime} \xrightarrow{p^{o}} \Sigma^{o}$ it then follows that $\hat{\Sigma}_{n}=\Sigma^{o}+o_{p^{o}}(1)$.\\
+(ii) To verify condition (iii) of Theorem 4.62 we write
+
+$$
+\begin{aligned}
+& n^{-1 / 2} \sum_{t=1}^{n} \hat{\pi}_{n}^{\prime} \mathbf{Z}_{t}^{o} \hat{\Sigma}_{n}^{-1} \varepsilon_{t}-n^{-1 / 2} \sum_{t=1}^{n} \pi_{o}^{\prime} \mathbf{Z}_{t}^{o} \Sigma^{o-1} \varepsilon_{t} \\
+= & \hat{\pi}_{n}^{\prime} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \hat{\Sigma}_{n}^{-1} \varepsilon_{t}-\pi_{o}^{\prime} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \Sigma^{o-1} \varepsilon_{t} \\
+= & \hat{\pi}_{n}^{\prime} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o}\left(\hat{\Sigma}_{n}^{-1}-\Sigma^{o-1}\right) \varepsilon_{t} \\
+& +\hat{\pi}_{n}^{\prime} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \Sigma^{o-1} \varepsilon_{t}-\pi_{o}^{\prime} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \Sigma^{o-1} \varepsilon_{t} \\
+= & \hat{\pi}_{n}^{\prime} n^{-1 / 2} \sum_{t=1}^{n}\left(\varepsilon_{t}^{\prime} \otimes \mathbf{Z}_{t}^{o}\right) \operatorname{vec}\left(\hat{\Sigma}_{n}^{-1}-\Sigma^{o-1}\right) \\
+& +\left(\hat{\pi}_{n}^{\prime}-\pi_{o}^{\prime}\right) n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \Sigma^{o-1} \varepsilon_{t} \\
+= & O_{p^{o}}(1) O_{p^{o}}(1) o_{p^{o}}(1)+o_{p^{o}}(1) O_{p^{o}}(1)=o_{p^{o}}(1)
+\end{aligned}
+$$
+
+Similarly, to verify condition (vi) of Theorem 4.62 we write
+
+$$
+\begin{aligned}
+& n^{-1} \sum_{t=1}^{n} \hat{\boldsymbol{\pi}}_{n}^{\prime} \mathbf{Z}_{t}^{o} \hat{\mathbf{\Sigma}}_{n}^{-1} \mathbf{X}_{t}^{o}-n^{-1} \sum_{t=1}^{n} \boldsymbol{\pi}_{o}^{\prime} \mathbf{Z}_{t}^{o} \boldsymbol{\Sigma}^{o-1} \mathbf{X}_{t}^{o} \\
+= & \hat{\boldsymbol{\pi}}_{n}^{\prime} n^{-1} \sum_{t=1}^{n}\left(\mathbf{X}_{t}^{\prime} \otimes \mathbf{Z}_{t}^{o}\right) \operatorname{vec}\left(\hat{\boldsymbol{\Sigma}}_{n}^{-1}-\boldsymbol{\Sigma}^{o-1}\right) \\
+& +\left(\hat{\boldsymbol{\pi}}_{n}^{\prime}-\boldsymbol{\pi}_{o}^{\prime}\right) n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \boldsymbol{\Sigma}^{o-1} \mathbf{X}_{t} \\
+= & O_{p^{o}}(1) O_{p^{o}}(1) o_{p^{o}}(1)+o_{p^{o}}(1) O_{p^{o}}(1)=o_{p^{o}}(1)
+\end{aligned}
+$$
+
+\section*{Exercise 5.4}
+Proof. We verify the conditions of Exercise 4.26. To apply Theorem 5.2 let $\mathcal{Z}_{t} \equiv \boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}$, where $\boldsymbol{\lambda}^{\prime} \boldsymbol{\lambda}=1$ and consider
+
+$$
+n^{-1 / 2} \sum_{t=1}^{n} \lambda^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}=n^{-1 / 2} \sum_{t=1}^{n} \mathcal{Z}_{t}
+$$
+
+The summands $\mathcal{Z}_{t}$ are i.i.d. by Proposition 3.2 given (ii) with $E\left(\mathcal{Z}_{t}\right)=0$ given (iii.a) and $\operatorname{var}\left(\mathcal{Z}_{t}\right)=\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{V}^{-1 / 2} \boldsymbol{\lambda}=1$ given (iii.b) and (iii.c). Therefore
+
+$$
+n^{-1 / 2} \sum_{t=1}^{n} \mathcal{Z}_{t}=n^{-1 / 2} \sum_{t=1}^{n} \lambda^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon=\lambda^{\prime} \mathbf{V}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(0,1)
+$$
+
+by Theorem 5.2. It follows from Proposition 5.1 that $\mathbf{V}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$ since if $\mathcal{Y} \sim N(\mathbf{0}, \mathbf{I})$ then $\boldsymbol{\lambda}^{\prime} \mathcal{Y} \sim N(0,1)$, for all $\boldsymbol{\lambda}, \boldsymbol{\lambda}^{\prime} \boldsymbol{\lambda}=1$. By (iii.b) and (iii.c) we have that $\mathbf{V}$ is $O(1)$ and nonsingular. It follows from Theorem 3.1 and Theorem 2.24 that $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ given (ii), (iv.a), and (iv.b). Since the remaining conditions of Exercise 4.26 are satisfied by assumption, the result follows.
+
+\section*{Exercise 5.5}
+Proof. Given the i.i.d. assumption of Exercise 5.4 it follows that
+
+$$
+\mathbf{V}=n^{-1} \sum_{t=1}^{n} E\left(\varepsilon_{t}^{2} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right)=E\left(\varepsilon_{t}^{2} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right)
+$$
+
+Now
+
+$$
+\begin{aligned}
+E\left(\varepsilon_{t}^{2} \mathbf{Z}_{t}^{\prime} \mathbf{Z}_{t}\right) & =E\left(E\left(\varepsilon_{t}^{2} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime} \mid \mathbf{Z}_{t}\right)\right) \\
+& =E\left(E\left(\varepsilon_{t}^{2} \mid \mathbf{Z}_{t}\right) \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right) \\
+& =\sigma_{o}^{2} E\left(\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right) \equiv \sigma_{o}^{2} \mathbf{L}
+\end{aligned}
+$$
+
+Hence $\mathbf{V}=\sigma_{o}^{2} \mathbf{L}$. It follows from Exercise 4.47 that the efficient IV estimator chooses $\mathbf{P}=\mathbf{V}^{-1}$ to yield the two stage least squares estimator,
+
+$$
+\tilde{\boldsymbol{\beta}}_{2 S L S}=\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y} .
+$$
+
+The natural estimator for $\mathbf{V}$ is $\hat{\mathbf{V}}_{n}=\tilde{\sigma}_{n}^{2}\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)$, where
+
+$$
+\tilde{\sigma}_{n}^{2}=\left(\mathbf{Y}-\mathbf{X} \tilde{\boldsymbol{\beta}}_{2 S L S}\right)^{\prime}\left(\mathbf{Y}-\mathbf{X} \tilde{\boldsymbol{\beta}}_{2 S L S}\right) / n .
+$$
+
+The conditions of Exercise 5.4 are not quite strong enough to ensure $\hat{\mathbf{V}}_{n}$ is consistent for $\mathbf{V}$. It suffices that we add\\
+(i') $E\left|\varepsilon_{t}^{2}\right|<\infty$\\
+( $i i^{\prime}$ ) (a) $E\left|Z_{t i}^{2}\right|<\infty, i=1, \ldots, l$;\\
+(b) $E\left|X_{t j}^{2}\right|<\infty, j=1, \ldots, k$;\\
+(c) $\mathbf{L} \equiv E\left(\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right)$ is nonsingular.
+
+Note that ( $i i^{\prime} . a$ ) and ( $i i^{\prime} . b$ ) together imply ( $i v . a$ ) by the Cauchy-Schwarz inequality.
+
+We show that $\mathbf{Z}^{\prime} \mathbf{Z} / n \xrightarrow{p} \mathbf{L}$ and $\tilde{\sigma}_{n}^{2} \xrightarrow{p} \sigma_{o}^{2}$. Since $\left\{\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right\}$ is an i.i.d. sequence given (ii), it follows that $\mathbf{Z}^{\prime} \mathbf{Z} / n=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime} \xrightarrow{p} \mathbf{L}$ by Theorem 3.1 and Theorem 2.24 given ( $i i^{\prime} . a$ ). Next consider
+
+$$
+\begin{aligned}
+& \tilde{\sigma}_{n}^{2}=n^{-1}\left(\boldsymbol{\varepsilon}-\mathbf{X}\left(\tilde{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}_{o}\right)\right)^{\prime}\left(\boldsymbol{\varepsilon}-\mathbf{X}\left(\tilde{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}_{o}\right)\right) \\
+= & \boldsymbol{\varepsilon}^{\prime} \boldsymbol{\varepsilon} / n-2\left(\tilde{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}^{\prime} \boldsymbol{\varepsilon} / n+\left(\tilde{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}_{o}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)\left(\tilde{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}_{o}\right) .
+\end{aligned}
+$$
+
+Now $\tilde{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}_{0} \xrightarrow{\text { a.s. }} \mathbf{0}$. The elements of $\mathbf{X}_{t} \varepsilon_{t}$ have finite expected absolute value given ( $i^{\prime}$ ) and ( $i i^{\prime} . b$ ). Hence $\mathbf{X}^{\prime} \varepsilon / n=O_{a . s \text {. (1) by Theorem 3.1. Sim- }}$ ilarly, $\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}$ has finite expected absolute value given ( $i i^{\prime} . b$ ). Since $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\}$ is an i.i.d. sequence it follows from Theorem 3.1 that $\mathbf{X}^{\prime} \mathbf{X} / n=O_{a . s .}(1)$. Therefore
+
+$$
+2\left(\tilde{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}_{o}\right) \mathbf{X}^{\prime} \varepsilon / n \xrightarrow{p} \mathbf{0}
+$$
+
+and
+
+$$
+\left(\tilde{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}_{o}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)\left(\tilde{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}_{o}\right) \xrightarrow{p} \mathbf{0}
+$$
+
+by Theorem 2.24 and Proposition 2.30. Finally, consider
+
+$$
+\varepsilon^{\prime} \varepsilon / n=n^{-1} \sum_{t=1}^{n} \varepsilon_{t}^{2} .
+$$
+
+Now $\left\{\varepsilon_{t}^{2}\right\}$ is an i.i.d. sequence given (ii) with finite expected absolute value given ( $i^{\prime}$ ). It follows from Theorem 3.1 that $n^{-1} \sum_{t=1}^{n} \varepsilon_{t}^{2}-E\left(\varepsilon_{t}^{2}\right)= n^{-1} \sum_{t=1}^{n} \varepsilon_{t}^{2}-\sigma_{o}^{2} \xrightarrow{\text { a.s. }} 0$.
+
+Hence $\hat{\mathbf{V}}_{n}-\mathbf{V}=\tilde{\sigma}_{n}^{2}\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)-\sigma_{o}^{2} \mathbf{L} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ by Proposition 2.30. Given that $\sigma_{o}^{2}>0$ and $\mathbf{L}$ is nonsingular it follows from Proposition 2.30 that
+
+$$
+\hat{\mathbf{P}}_{n}-\mathbf{P}=\hat{\mathbf{V}}_{n}^{-1}-\mathbf{V}^{-1}=\left(\tilde{\sigma}_{n}^{2}\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)\right)^{-1}-\left(\sigma_{o}^{2} \mathbf{L}\right)^{-1} \xrightarrow{p} \mathbf{0} .
+$$
+
+This completes the exercise. \(\square\)
+
+\section*{Exercise 5.9}
+Proof. For an identically distributed sequence $\left\{\mathcal{Z}_{t}\right\}$ with $E\left(\mathcal{Z}_{t}\right)=\mu$, $\operatorname{var}\left(\mathcal{Z}_{t}\right)=\sigma^{2}<\infty$, the Lindeberg condition reduces to
+
+$$
+\lim _{n \rightarrow \infty} \sigma^{-2} \int_{(z-\mu)^{2}>\varepsilon n \sigma^{2}}(z-\mu)^{2} d F(z)=0
+$$
+
+Now let
+
+$$
+g_{n}(z)=(z-\mu)^{2} 1_{\left\{(z-\mu)^{2} \leq \varepsilon n \sigma^{2}\right\}}(z) .
+$$
+
+Then $\left\{g_{n}\right\}$ is a increasing sequence of functions that converges to the function $g(z)=(z-\mu)^{2}$. The monotone convergence theorem (see Rao, 1973, p. 135) allows us to interchange limit and integral
+
+$$
+\begin{aligned}
+\lim _{n \rightarrow \infty} \int_{(z-\mu)^{2} \leq \varepsilon n \sigma^{2}}(z-\mu)^{2} d F(z) & =\lim _{n \rightarrow \infty} \int_{-\infty}^{\infty} g_{n}(z) d F(z) \\
+& =\int_{-\infty}^{\infty} \lim _{n \rightarrow \infty} g_{n}(z) d F(z) \\
+& =\int_{-\infty}^{\infty}(z-\mu)^{2} d F(z)=\sigma^{2}
+\end{aligned}
+$$
+
+Now
+
+$$
+\begin{aligned}
+& \lim _{n \rightarrow \infty} \sigma^{-2} \int_{(z-\mu)^{2}>\varepsilon n \sigma^{2}}(z-\mu)^{2} d F(z) \\
+= & \lim _{n \rightarrow \infty} \sigma^{-2}\left[\sigma^{2}-\int_{(z-\mu)^{2} \leq \varepsilon n \sigma^{2}}(z-\mu)^{2} d F(z)\right] \\
+= & \sigma^{-2}\left[\sigma^{2}-\lim _{n \rightarrow \infty} \int_{-\infty}^{\infty} g_{n}(z) d F(z)\right] \\
+= & \sigma^{-2}\left[\sigma^{2}-\sigma^{2}\right]=0 .
+\end{aligned}
+$$ \(\square\)
+
+\section*{Exercise 5.12}
+Proof. We verify the conditions of Theorem 4.25. 'To apply Theorem 5.11, let $\mathcal{Z}_{n t} \equiv \boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{X}_{t}^{\prime} \varepsilon_{t}$ and consider
+
+$$
+n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}=n^{-1 / 2} \sum_{t=1}^{n} \mathcal{Z}_{n t} .
+$$
+
+The summands $\mathcal{Z}_{n t}$ are independent by Proposition 3.3 given ( $i i$ ), with $E\left(\mathcal{Z}_{n t}\right)=0$ given (iii.a), and
+
+$$
+\begin{aligned}
+\bar{\sigma}_{n}^{2} & \equiv \operatorname{var}(\sqrt{n} \mathcal{Z})=\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \operatorname{var}\left(n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon\right) \mathbf{V}_{n}^{-1 / 2} \boldsymbol{\lambda} \\
+& =\lambda^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{V}_{n} \mathbf{V}_{n}^{-1 / 2} \boldsymbol{\lambda}=1
+\end{aligned}
+$$
+
+given (iii.c). By (iii.b) $E\left|\mathcal{Z}_{n t}\right|^{2+\delta}$ is uniformly bounded (apply Minkowski's inequality). Hence, for all $\boldsymbol{\lambda}, \boldsymbol{\lambda}^{\prime} \boldsymbol{\lambda}=1$,
+
+$$
+n^{-1 / 2} \sum_{t=1}^{n} \mathcal{Z}_{n t}=n^{-1 / 2} \sum_{t=1}^{n} \mathbf{V}_{n}^{-1 / 2} \mathbf{X}_{t} \epsilon_{t}=\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(0,1)
+$$
+
+and therefore $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$ by Proposition 5.1.\\
+Assumptions (ii), (iv.a), and (iv.b) ensure that $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ by Corollary 3.9 and Theorem 2.24. Given (iv.a) $\mathbf{M}_{n}=O(1)$ and uniformly positive definite given (iv.b). Since (v) also holds, the result follows from Theorem 4.25.
+
+\section*{Exercise 5.18}
+Proof. The following conditions are sufficient for asymptotic normality:\\
+(i') (a) $Y_{t}=\beta_{o 1} Y_{t-1}+\beta_{o 2} Y_{t-2}+\varepsilon_{t}$;\\
+(b) $-1<\beta_{o 2}<1$;\\
+$\beta_{o 2}-\beta_{o 1}<1 ;$\\
+$\beta_{o 1}+\beta_{o 2}<1 ;$\\
+$\left(i i^{\prime}\right)(a)\left\{\varepsilon_{t}\right\}$ is a stationary, ergodic sequence;\\
+(b) $\left\{\varepsilon_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence, where
+
+$$
+\mathcal{F}_{t}=\sigma\left(\ldots, \varepsilon_{t-1}, \varepsilon_{t}\right)
+$$
+
+( $i i i^{\prime}$ ) (a) $E\left(\varepsilon_{t}^{2} \mid \mathcal{F}_{t-1}\right)=\sigma_{o}^{2}>0$.\\
+(b) $E\left|\varepsilon_{t}\right|^{4}=\Delta<\infty$.
+
+We verify the conditions of Theorem 5.17.\\
+(i) is implied by ( $i^{\prime}$ )\\
+(ii) $\left\{\left(\mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\} \equiv\left\{\left(Y_{t-1}^{r}, Y_{t-2}, \varepsilon_{t}\right)\right\}$ is a stationary ergodic sequence by Theorem 3.35,\\
+(iii.a) The data generating process given in ( $i^{\prime} . a$ ) is an $A R(2)$ time series process and condition ( $i^{\prime} . b$ ) is the familiar stationarity condition that the roots of the polynomial $1-\beta_{o 1} z-\beta_{o 2} z^{2}$ lie outside the unit disk. Given\\
+( $i^{\prime} . b$ ) we can write $Y_{t}$ as an infinite moving average, $Y_{t}=\sum_{j=0}^{\infty} c_{j} \varepsilon_{t-j}$, where $c_{j}=\left(\left|\beta_{o 2}\right|^{1 / 2}\right)^{j} a(j)$ and $|a(j)|<\Delta^{\prime}<\infty$ for all $j>0$ (see Dhrymes, 1980, pp. 394-395.) Since $\left|\beta_{o 2}\right|<1$ it follows that $\sum_{j=0}^{\infty}\left|c_{j}\right|<\infty$. Thus, $Y_{t}^{\prime}$ is $\mathcal{F}_{t}$-measurable and
+
+$$
+\begin{aligned}
+& E\left(Y_{t-1} \varepsilon_{t} \mid \mathcal{F}_{t-1}\right)=Y_{t-1}^{r} E\left(E\left(\varepsilon_{t} \mid \mathcal{F}_{t-1}\right)\right)=0 \\
+& E\left(Y_{t-2}^{r} \varepsilon_{t} \mid \mathcal{F}_{t-1}\right)=Y_{t-2}^{r} E\left(E\left(\varepsilon_{t} \mid \mathcal{F}_{t-1}\right)\right)=0
+\end{aligned}
+$$
+
+Given $\left(i i^{\prime} . a\right)\left\{\mathbf{X}_{t} \varepsilon_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence and hence a mixingale. Therefore Theorem 5.17 (iii.a) holds.\\
+(iii.b) We have that $E\left|Y_{t-1} \varepsilon_{t}\right|^{2}<\left(E\left|Y_{t-1}\right|^{4}\right)^{1 / 2}\left(E\left|\varepsilon_{t}\right|^{4}\right)^{1 / 2}$ by the CauchySchwarz inequality. Hence, if we can show $E\left|Y_{t-1}\right|^{4}<\infty$, then condition (iii.b) is verified. Now by Minkowski's inequality (see Exercise 3.53),
+
+$$
+\begin{aligned}
+E\left|Y_{t}\right|^{4} & =E\left|\sum_{j=0}^{\infty} c_{j} \varepsilon_{t-j}\right|^{4} \\
+& \leq\left(\sum_{j=0}^{\infty}\left|c_{j}\right|\left(E\left|\varepsilon_{t-j}\right|^{4}\right)^{1 / 4}\right)^{4} \\
+& <\Delta\left(\sum_{j=0}^{\infty}\left|c_{j}\right|\right)^{4}<\infty
+\end{aligned}
+$$
+
+(iii.c) By the martingale difference assumption and by stationarity we have that
+
+$$
+\begin{aligned}
+\mathbf{V}_{n} & =n^{-1} \sum_{t=1}^{n} E\left(\mathbf{X}_{t} \varepsilon_{t} \varepsilon_{t} \mathbf{X}_{t}^{\prime}\right)=\sigma_{o}^{2} E\left(\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right) \\
+& =\sigma_{o}^{2}\left(\begin{array}{cc}
+E\left(Y_{t-1}^{2}\right) & E\left(Y_{t-1} Y_{t-2}\right) \\
+E\left(Y_{t-2} Y_{t-1}\right) & E\left(Y_{t-2}^{2}\right)
+\end{array}\right)=\sigma_{o}^{2} \mathbf{M}
+\end{aligned}
+$$
+
+which is positive definite if $E\left(Y_{t-1}^{2}\right)^{2}-E\left(Y_{t-2} Y_{t-1}\right)^{2}>0$ or equivalently, if $E\left(Y_{t}^{2}\right)>E\left(\left|Y_{t} Y_{t-1}\right|\right)$. Now
+
+$$
+\begin{aligned}
+E\left(Y_{t}^{2}\right) & =\sigma_{o}^{2}\left(1-\beta_{o 2}\right)\left[\left(1+\beta_{o 2}\right)\left(1-\beta_{o 2}\right)-\beta_{o 1}^{2}\right]^{-1} \\
+E\left(Y_{t} Y_{t-1}\right) & =\sigma_{o}^{2} \beta_{o 1}\left[\left(1+\beta_{o 2}\right)\left(1-\beta_{o 2}\right)-\beta_{o 1}^{2}\right]^{-1},
+\end{aligned}
+$$
+
+(see Granger and Newbold, 1977, Ch. 1) so $E\left(Y_{t}^{2}\right)>E\left(\left|Y_{t} Y_{t-1}\right|\right)$ holds if and only if $\left(1-\beta_{o 2}\right)>\left|\beta_{o 1}\right|$. This is ensured by ( $i^{\prime} . b$ ), and the condition holds.\\
+(iv.a) $E\left|Y_{t-i}^{2}\right|<\infty$ is directly implied by $E\left|Y_{t-i}^{4}\right|<\Delta$ using Jensen's inequality.\\
+(iv.b) That $\mathbf{M}$ is positive definite was proven in (iii.c).
+
+\section*{Exercise 5.19}
+Proof. We verify the conditions of Exercise 4.26. The proof that
+
+$$
+\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})
+$$
+
+is exactly parallel to the proof that
+
+$$
+\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})
+$$
+
+in Theorem 5.17 with $\mathbf{Z}$ replacing $\mathbf{X}$ everywhere. Next, $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ by the ergodic theorem (Theorem 3.34) given (ii), (iv.a), and (iv.b), where $\mathbf{Q}$ is finite with full column rank. Since the conditions of Exercise 4.26 are satisfied, it follows that
+
+$$
+\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I}),
+$$
+
+where
+
+$$
+\mathbf{D}_{n} \equiv\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)^{-1} \mathbf{Q}^{\prime} \mathbf{P} \mathbf{V}_{n} \mathbf{P Q}\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)^{-1}
+$$
+
+Since $\mathbf{D}_{n}-\mathbf{D} \rightarrow \mathbf{0}$ it follows that
+
+$$
+\begin{aligned}
+\mathbf{D}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)- & \mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \\
+& =\left(\mathbf{D}^{-1 / 2} \mathbf{D}_{n}^{1 / 2}-\mathbf{I}\right) \mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \xrightarrow{p} \mathbf{0}
+\end{aligned}
+$$
+
+by Lemma 4.6. Therefore, by Lemma 4.7, $\mathrm{D}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$.
+
+\section*{Exercise 5.21}
+Proof. We verify the conditions of Theorem 4.25. First we apply Theorem 5.20 and Proposition 5.1 to show that $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$. Consider
+
+$$
+\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon=n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}
+$$
+
+By Theorem 3.49, $\left\{\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}\right\}$ is a mixing sequence, with either $\phi$ of size $-r /(2 r-1), r>2$, or $\alpha$ of size $-r /(r-2), r>2$, given ( $i i$ ). Further, $E\left(\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$ given (iii.a), and application of Minkowski's inequality gives
+
+$$
+E\left(\left|\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}\right|^{r+\delta}\right)<\Delta<\infty
+$$
+
+for some $\delta>0$ and for all $t$ given (iii.b).\\
+It follows from Theorem 5.20 that for all $\boldsymbol{\lambda}, \boldsymbol{\lambda}^{\prime} \boldsymbol{\lambda}=1$, we have
+
+$$
+n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}=\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(0,1)
+$$
+
+Hence, by Proposition 5.1, $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, so Theorem 4.25 (ii) holds.
+
+Next, $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ by Corollary 3.48 and Theorem 2.24 given (iv.a). Given (iv.a) $\mathbf{M}_{n}=O(1)$ and $\operatorname{det}\left(\mathbf{M}_{n}\right)>\delta>0$ for all $n$ sufficiently large given (iv.b). Hence, the conditions of Theorem 4.25 are satisfied and the result follows.
+
+\section*{Exercise 5.22}
+Proof. The following conditions are sufficient for asymptotic normality:\\
+(i') (a) $Y_{t}=\beta_{o 1} Y_{t-1}+\beta_{o 2} W_{t}+\varepsilon_{t}$;\\
+(b) $\left|\beta_{o 1}\right|<1,\left|\beta_{o 2}\right|<\infty$;\\
+( $i i^{\prime}$ ) $\left\{Y_{t}\right\}$ is a mixing sequence with either $\phi$ of size $-r / 2(r-1), r>2$, or $\alpha$ of size $-r /(r-2), r>2 ;\left\{W_{t}\right\}$ is a bounded nonstochastic sequence.\\
+(iii') (a) $E\left(\varepsilon_{t} \mid \mathcal{F}_{t-1}\right)=0, \quad t=1,2, \ldots$, where $\mathcal{F}_{t}=\sigma\left(Y_{t}, Y_{t-1}, \ldots\right)$;\\
+(b) $E\left|\varepsilon_{t}\right|^{2 r}<\Delta<\infty, \quad t=1,2, \ldots$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t} \varepsilon_{t}\right)$ is uniformly positive definite, where $\mathbf{X}_{t} \equiv\left(Y_{t-1}, W_{t}\right) ;$\\
+(iv') (a) $\mathbf{M}_{n} \equiv E\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ has $\operatorname{det}\left(\mathbf{M}_{n}\right)>\delta>0$ for all $n$ sufficiently large.\\
+We verify the conditions of Exercise 5.21. Since $\varepsilon_{t}=Y_{t}-\beta_{o 1} Y_{t-1}-\beta_{o 2} W_{t}$, it follows from Theorem 3.49 that $\left\{\left(\mathbf{X}_{t}, \varepsilon_{t}\right)\right\}=\left\{\left(Y_{t-1}^{r}, W_{t}, \varepsilon_{t}\right)\right\}$ is mixing with either $\phi$ of size $-r / 2(r-1), r>2$, or $\alpha$ of size $-r /(r-2), r>2$, given ( $i i^{\prime}$ ). Thus, condition ( $i i$ ) of Exercise 5.21 is satisfied.
+
+Next consider condition (iii). Now $E\left(W_{t} \varepsilon_{t}\right)=W_{t} E\left(\varepsilon_{t}\right)=0$ given $\left(i i i^{\prime} . a\right)$. Also, by repeated substitution we can express $Y_{t}$ as
+
+$$
+Y_{t}=\beta_{o 2} \sum_{j=0}^{\infty} \beta_{o 1}^{j} W_{t-j}+\sum_{j=0}^{\infty} \beta_{o 1}^{j} \varepsilon_{t-j}
+$$
+
+By Proposition 3.52 it follows that $E\left(Y_{t-1} \varepsilon_{t}\right)=0$ given ( $i i i^{\prime} . a$ ) and ( $i i i^{\prime} . c$ ). Hence, $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\left(E\left(Y_{t-1} \varepsilon_{t}\right), E\left(W_{t} \varepsilon_{t}\right)\right)^{\prime}=0$ so that (iii.a) is satisfied. Turning to condition (iii.b) we have $E\left|W_{t} \varepsilon_{t}\right|^{r}=\Delta^{\prime} E\left|\varepsilon_{t}\right|^{r}<\Delta^{\prime} \Delta<\infty$ given ( $i i i^{\prime} . b$ ), where $\left|W_{t}\right|<\Delta^{\prime}<\infty$. Also
+
+$$
+E\left|Y_{t-1} \varepsilon_{t}\right|^{r}<\left(E\left|Y_{t-1}\right|^{2 r}\right)^{1 / 2}\left(E\left|\varepsilon_{t}\right|^{2 r}\right)^{1 / 2}
+$$
+
+by the Cauchy-Schwarz inequality. Since $E\left|\varepsilon_{t}\right|^{2 r}<\Delta<\infty$ given ( $i i i^{\prime} . b$ ), it remains to be shown that $E\left|Y_{t}\right|^{2 r}<\infty$. Applying Minkowski's inequality (see Exercise 3.53),
+
+$$
+\begin{aligned}
+E\left|Y_{t}\right|^{2 r} & =E \beta_{o 2} \sum_{j=0}^{\infty} \beta_{o 1}^{j} W_{t-j}+\sum_{j=0}^{\infty} \beta_{o 1}^{j} \varepsilon_{t-j} \\
+& \leq\left(\left|\beta_{o 2}\right| \sum_{j=0}^{2 r}\left|\beta_{o 1}^{j}\right|\left|W_{t-j}\right|+\sum_{j=0}^{\infty}\left|\beta_{o 1}^{j}\right|\left(E\left|\varepsilon_{t-j}\right|^{2 r}\right)^{1 /(2 r)}\right)^{2 r} \\
+& <\left(\left|\beta_{o 2}\right| \Delta^{\prime}+\Delta^{1 /(2 r)} \sum_{j=0}^{\infty}\left|\beta_{o 1}^{j}\right|\right)^{2 r}<\infty
+\end{aligned}
+$$
+
+if and only if $\left|\beta_{o 1}\right|<1$. Therefore, $E\left|Y_{t-1} \varepsilon_{t}\right|^{r}<\infty$ given ( $i^{\prime}$ ) and ( $i v^{\prime} . a$ ) so that condition (iii.b) is satisfied. Next, condition 5.21 (iii.c) is imposed by $5.22\left(i i i^{\prime} . c\right)$. It remains to verify condition $5.21(i v . a)$. Now $E\left|W_{t}^{2}\right|^{r}= \left|W_{t}\right|^{2 r}<\Delta^{2 r}$ given (iv.a) and $E\left|Y_{t}^{2}\right|^{r / 2}<\infty$ as shown previously. Hence, all conditions of Exercise 5.21 are satisfied so that the OLS estimate of ( $\beta_{o 1}, \beta_{o 2}$ ) is consistent and asymptotically normal.
+
+\section*{Exercise 5.27}
+Proof. First, we apply Corollary 5.26 and Proposition 5.1 to show that
+
+$$
+\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I}) .
+$$
+
+Given ( $\left.i i i^{\prime} . a\right),\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ is a martingale difference sequence with $\operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \boldsymbol{\varepsilon}\right) =\mathbf{V}_{n}$ finite by ( $i i i^{\prime} . b$ ) with $\operatorname{det}\left(\mathbf{V}_{n}\right)>\delta>0$ for all $n$ sufficiently large given ( $i i i^{\prime} . c$ ). Hence, consider
+
+$$
+\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon=n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}
+$$
+
+By writing
+
+$$
+\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}=\sum_{h=1}^{p} \sum_{i=1}^{k} \tilde{\lambda}_{i n} Z_{t h i} \varepsilon_{t h}
+$$
+
+we see that the additivity of conditional expectations implies
+
+$$
+E\left(\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \mid \mathcal{F}_{t-1}\right)=\sum_{h=1}^{p} \sum_{i=1}^{k} \tilde{\lambda}_{i n} E\left(Z_{t h i} \varepsilon_{t h} \mid \mathcal{F}_{t-1}\right)=0,
+$$
+
+as $E\left(Z_{t h i} \varepsilon_{t h} \mid \mathcal{F}_{t-1}\right)=0$ given (iii.a). Applying Minkowski's inequality yields
+
+$$
+\begin{aligned}
+E\left|\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}\right|^{r} & =E \sum_{h=1}^{p} \sum_{i=1}^{k} \tilde{\lambda}_{i n} Z_{t h i} \varepsilon_{t h} \\
+& \leq\left[\sum_{h=1}^{p} \sum_{i=1}^{k} \tilde{\lambda}_{i n}\left(E\left|Z_{t h i} \varepsilon_{t h}\right|^{r}\right)^{1 / r)}\right]^{r} \\
+& <\left[\Delta \sum_{h=1}^{p} \sum_{i=1}^{k} \Delta^{1 / r}\right]^{r}<\infty
+\end{aligned}
+$$
+
+given ( $i i i^{\prime} . b$ ). Further,
+
+$$
+\begin{aligned}
+\bar{\sigma}_{n}^{2} & =\operatorname{var}\left(\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \boldsymbol{\varepsilon}\right) \\
+& =\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \boldsymbol{\varepsilon}\right) \mathbf{V}_{n}^{-1 / 2} \boldsymbol{\lambda}=1
+\end{aligned}
+$$
+
+for all $n$ sufficiently large.\\
+Next, consider
+
+$$
+n^{-1} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \mathbf{V}_{n}^{-1 / 2} \boldsymbol{\lambda}
+$$
+
+Since $\left\{\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right\}$ is a mixing sequence with either $\phi$ of size $-r / 2(r-1)$, $r>2$, or $\alpha$ of size $-r /(r-2), r>2$, by Theorem 3.49 it follows that $n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$ given ( $i i i^{\prime} . b$ ). By Proposition 2.30,
+
+$$
+\begin{aligned}
+n^{-1} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \mathbf{V}_{n}^{-1 / 2} \boldsymbol{\lambda}-\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{V}_{n} \mathbf{V}_{n}^{-1 / 2} \boldsymbol{\lambda} & \\
+& =n^{-1} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \mathbf{V}_{n}^{-1 / 2} \boldsymbol{\lambda}-1 \xrightarrow{p} 0
+\end{aligned}
+$$
+
+Hence, the sequence $\left\{\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}\right\}$ satisfies the conditions of Corollary 5.26, and it follows that $\lambda \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t}=\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(0,1)$. By Proposition 5.1, $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$.
+
+Now, given ( $i i^{\prime}$ ), ( $i v . a$ ), and ( $i v . b$ ), $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ by Corollary 3.48 and Theorem 2.24. The remaining results follow as before. \(\square\)
+
+\section*{Exercise 6.2}
+Proof. The following conditions are sufficient:\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a mixing sequence with either $\phi$ of size $-r / 2(r-1)$, $r>2$, or $\alpha$ of size $-r /(r-2), r>2$;\\
+(iii) (a) $E\left(Z_{t g i} \varepsilon_{t h} \mid \mathcal{F}_{t-1}\right)=0$ for all $t$, where $\left\{\mathcal{F}_{t}\right\}$ is adapted to $\left\{Z_{t g i} \varepsilon_{t h}\right\}$, $g, h=1, \ldots, p, i=1, \ldots, l ;$\\
+(b) $E\left|Z_{t_{g i}} \varepsilon_{t h}\right|^{r+\delta}<\Delta<\infty$ and $E\left|\varepsilon_{t h}\right|^{r+\delta}<\Delta<\infty$ for some $\delta>0$, $g, h=1, \ldots, p, i=1, \ldots, l$, and all $t$;\\
+(c) $E\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathbf{Z}_{t}\right)=\sigma_{o}^{2} \mathbf{I}_{p}, t=1, \ldots, n$;\\
+(iv) (a) $E\left|Z_{\text {thi }}\right|^{r+\delta}<\Delta<\infty$ and $E\left|X_{\text {thj }}\right|^{r+\delta}<\Delta<\infty$ for some $\delta>0$, $h=1, \ldots, p, i=1, \ldots, l, j=1, \ldots k$, and all $t ;$\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has full column rank uniformly in $n$ for all $n$ sufficiently large;\\
+(c) $\mathbf{L}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)$ has $\operatorname{det}\left(\mathbf{L}_{n}\right)>\delta>0$ for all $n$ sufficiently large.
+
+Given conditions (i)--(iv), the asymptotically efficient estimator is
+
+$$
+\tilde{\boldsymbol{\beta}}_{n}=\tilde{\boldsymbol{\beta}}_{2 S L S}=\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+by Exercise 4.47. First, consider $\mathbf{Z}^{\prime} \mathbf{Z} / n$. Now $\left\{\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right\}$ is a mixing sequence with the same size as $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ by Proposition 3.50. Hence, by Corollary 3.48, $\mathbf{Z}^{\prime} \mathbf{Z} / n-\mathbf{L}_{n}=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}-n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right) \xrightarrow{\text { a.s. }} \mathbf{0}$ given (iv.a) and $\mathbf{Z}^{\prime} \mathbf{Z} / n-\mathbf{L}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ by Theorem 2.24.
+
+Next consider
+
+$$
+\begin{aligned}
+\tilde{\sigma}_{n}^{2} \equiv & (n p)^{-1}\left(\mathbf{Y}-\mathbf{X} \tilde{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{Y}-\mathbf{X} \tilde{\boldsymbol{\beta}}_{n}\right) \\
+= & \left(\boldsymbol{\varepsilon}-\mathbf{X}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\right)^{\prime}\left(\boldsymbol{\varepsilon}-\mathbf{X}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\right) /(n p) \\
+= & \boldsymbol{\varepsilon}^{\prime} \boldsymbol{\varepsilon} /(n p)-2\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}^{\prime} \boldsymbol{\varepsilon} /(n p) \\
+& +\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) / p .
+\end{aligned}
+$$
+
+As the conditions of Exercise 3.79 are satisfied, it follows that $\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o} \xrightarrow{\text { a.s. }} \mathbf{0}$. Also, $\mathrm{X}^{\prime} \varepsilon / n=O_{a . s .}(1)$ by Corollary 3.48 given (ii), (iii.b), and (iv.a). Hence $\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \mathbf{X}^{\prime} \boldsymbol{\varepsilon} / n \xrightarrow{\boldsymbol{p}} \mathbf{0}$ by Exercise 2.22 and Theorem 2.24. Similarly, $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\}$ a mixing sequence with size given in (ii) with elements satisfying\\
+the moment condition of Corollary 3.48 given (iv.a), so that $\mathbf{X}^{\prime} \mathbf{X} / n= O_{a . s .}(1)$ and therefore $\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \xrightarrow{\boldsymbol{p}} 0$. Finally, consider
+
+$$
+\varepsilon^{\prime} \varepsilon /(n p)=p^{-1} \sum_{h=1}^{p} n^{-1} \sum_{t=1}^{n} \varepsilon_{t h}^{2} .
+$$
+
+Now for any $h=1, \ldots, p,\left\{\varepsilon_{t h}^{2}\right\}$ is a mixing sequence with $\phi$ of size $-r / 2(r-$ 1), $r>2$, or $\alpha$ of size $-r /(r-2), r>2$. As $\left\{\varepsilon_{t h}^{2}\right\}$ satisfies the moment condition of Corollary 3.48 given (iii.b) and $E\left(\varepsilon_{t h}^{2}\right)=\sigma_{o}^{2}$ given (iii.c), it follows that
+
+$$
+n^{-1} \sum_{t=1}^{n} \varepsilon_{t h}^{2}-n^{-1} \sum_{t=1}^{n} E\left(\varepsilon_{t h}^{2}\right)=n^{-1} \sum_{t=1}^{n} \varepsilon_{t h}^{2}-\sigma_{o}^{2} \xrightarrow{p} 0,
+$$
+
+Hence, $\varepsilon^{\prime} \varepsilon /(n p) \xrightarrow{p} \sigma_{o}^{2}$, and it follows that $\tilde{\sigma}_{n}^{2} \xrightarrow{p} \sigma_{o}^{2}$ by Exercise 2.35. \(\square\)
+
+\section*{Exercise 6.6}
+Proof. The proof is analogous to that of Theorem 6.3. Consider for simplicity the case $p=1$. We decompose $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n}$ as follows:
+
+$$
+\begin{aligned}
+\hat{\mathbf{V}}_{n}-\mathbf{V}_{n}= & n^{-1} \sum_{t=1}^{n} \varepsilon_{t}^{2} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}-n^{-1} \sum_{t=1}^{n} E\left(\varepsilon_{t}^{2} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right) \\
+& -2 n^{-1} \sum_{t=1}^{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t}^{\prime} \varepsilon_{t} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime} \\
+& +n^{-1} \sum^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}
+\end{aligned}
+$$
+
+Now $\left\{\varepsilon_{t}^{2} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right\}$ is a mixing sequence with either $\phi$ of size $-r /(2 r-1)$, $r>1$, or $\alpha$ of size $-r /(r-1), r>1$, given (ii) with elements satisfying the moment condition of Corollary 3.48 given (iii.b). Hence
+
+$$
+n^{-1} \sum_{t=1}^{n} \varepsilon_{t}^{2} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}-n^{-1} \sum_{t=1}^{n} E\left(\varepsilon_{t}^{2} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right) \xrightarrow{p} \mathbf{0} .
+$$
+
+The remaining terms converge to zero in probability as in Theorem 6.3, where we now use results on mixing sequences in place of results on stationary, ergodic sequences. For example, by the Cauchy-Schwarz inequality,
+
+$$
+E\left|X_{t \kappa} Z_{t i} Z_{t j} \varepsilon_{t}\right|^{r+\delta}<\left(E\left|X_{t \kappa} Z_{t i}\right|^{2(r+\delta)}\right)^{1 / 2}\left(E\left|Z_{t j} \varepsilon_{t}\right|^{2(r+\delta)}\right)^{1 / 2}<\Delta<\infty
+$$
+
+given (iii.b) and (iv.a). As $\left\{X_{t \kappa} Z_{t i} Z_{t j} \varepsilon_{t}\right\}$ is a mixing sequence with size given in (ii) and it satisfies the moment condition of Corollary 3.48, it follows that
+
+$$
+n^{-1} \sum_{t=1}^{n} X_{t \kappa} Z_{t i} Z_{t j} \varepsilon_{t}-n^{-1} \sum_{t=1}^{n} E\left(X_{t \kappa} Z_{t i} Z_{t j} \varepsilon_{t}\right) \xrightarrow{p} 0 .
+$$
+
+Since $\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o} \xrightarrow{p} \mathbf{0}$ under the conditions given, we have
+
+$$
+n^{-1} \sum_{t=1}^{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t} \varepsilon_{t} \mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime} \xrightarrow{\boldsymbol{p}} \mathbf{0}
+$$
+
+by Exercise 2.35. Finally, consider the third term. The Cauchy-Schwarz inequality gives $E\left|X_{t \kappa} X_{t \lambda} Z_{t i} Z_{t j}\right|^{r+\delta}<\infty$ so that
+
+$$
+n^{-1} \sum_{t=1}^{n} X_{t \kappa} X_{t \lambda} Z_{t i} Z_{t j}-n^{-1} \sum_{t=1}^{n} E\left(X_{t \kappa} X_{t \lambda} Z_{t i} Z_{t j}\right) \xrightarrow{p} 0
+$$
+
+by Corollary 3.48. Thus the third term vanishes in probability and application of Exercise 2.35 yields $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$. \(\square\)
+
+\section*{Exercise 6.7}
+Proof. The proof is immediate from Exercise 5.27 and Exercise 6.6. \(\square\)
+
+\section*{Exercise 6.8}
+Proof. Conditions (i)-(iv) ensure that Exercise 6.6 holds for $\tilde{\boldsymbol{\beta}}_{n}$ and $\hat{\mathbf{V}}_{n}- \mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$. Next set $\hat{\mathbf{P}}_{n}=\mathbf{V}_{n}^{-1}$ in Exercise 6.7. Then $\mathbf{P}_{n}=\mathbf{V}_{n}^{-1}$ and the result follows. \(\square\)
+
+\section*{Exercise 6.12}
+Proof. Exactly as in the proof of Theorem 6.9, all the terms
+
+$$
+\begin{aligned}
+& (n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime}-E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime}\right) \\
+& -(n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \boldsymbol{\varepsilon}_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime} \\
+& -(n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime} \\
+& +(n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime}
+\end{aligned}
+$$
+
+converge to zero in probability. Note that Theorem 3.49 is invoked to guarantee the summands are mixing sequences with size given in (ii), and the Cauchy-Schwarz inequality is used to verify the moment condition of Corollary 3.48. For example, given (ii) $\left\{\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime}\right\}$ is a mixing sequence with either $\phi$ of size $-r /(2 r-2), r>2$, or $\alpha$ of size $-r /(r-2), r>2$, with elements satisfying the moment condition of Corollary 3.48 given (iii.b).
+
+Hence
+
+$$
+(n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime}-(n-\tau)^{-1} \sum_{t=\tau+1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime}\right) \xrightarrow{p} \mathbf{0}
+$$
+
+The remaining terms can be shown to converge to zero in probability in a manner similar to Theorem 6.3.
+
+\section*{Exercise 6.13}
+Proof. Immediate from Theorem 5.22 and Exercise 6.12. \(\square\)
+
+\section*{Exercise 6.14}
+Proof. Conditions (i)-(iv) ensure that Exercise 6.12 holds for $\tilde{\boldsymbol{\beta}}_{n}$ and $\hat{\mathbf{V}}_{n}- \mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$. Next set $\hat{\mathbf{P}}_{n}=\hat{\mathbf{V}}_{n}^{-1}$ in Exercise 6.13. Then $\mathbf{P}_{n}=\mathbf{V}_{n}^{-1}$ and the result follows. \(\square\)
+
+\section*{Exercise 6.15}
+Proof. Under the conditions of Theorem 6.9 or Exercise 6.12 it holds that $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$, so the result will follow if also $\tilde{\mathbf{V}}_{n}-\hat{\mathbf{V}}_{n} \xrightarrow{p} \mathbf{0}$. Now
+
+$$
+\tilde{\mathbf{V}}_{n}-\hat{\mathbf{V}}_{n}=\sum_{\tau=1}^{m}\left(w_{n \tau}-1\right) n^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \tilde{\varepsilon}_{t-\tau} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime} .
+$$
+
+Since for each $\tau=1, \ldots, m$ we have
+
+$$
+n^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \tilde{\varepsilon}_{t-\tau} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}=O_{p}(1)
+$$
+
+it follows that
+
+$$
+\begin{aligned}
+\tilde{\mathbf{V}}_{n}-\hat{\mathbf{V}}_{n} & =\sum_{\tau=1}^{m}\left(w_{n \tau}-1\right) O_{p}(1) \\
+& =\sum_{\tau=1}^{m} o_{p}(1) O_{p}(1)=o_{p}(1)
+\end{aligned}
+$$
+
+where we used that $w_{n \tau} \xrightarrow{p} 1$. \(\square\)
+
+\section*{Exercise 7.2}
+Proof. Since $\mathcal{X}_{t}=\mathcal{X}_{0}+\sum_{s=1}^{t} \mathcal{Z}_{s}$, we have
+
+$$
+\begin{aligned}
+E\left(\mathcal{X}_{t}\right) & =E\left(\mathcal{X}_{0}+\sum_{s=1}^{t} \mathcal{Z}_{s}\right) \\
+& =0+\sum_{s=1}^{t} E\left(\mathcal{Z}_{s}\right)=0
+\end{aligned}
+$$
+
+and
+
+$$
+\begin{aligned}
+\operatorname{var}\left(\mathcal{X}_{t}\right) & =\operatorname{var}\left(\mathcal{X}_{0}+\sum_{s=1}^{t} \mathcal{Z}_{s}\right) \\
+& =0+\sum_{s=1}^{t} \operatorname{var}\left(\mathcal{Z}_{s}\right)=t \sigma^{2}
+\end{aligned}
+$$
+
+using the independence between $\mathcal{Z}_{r}$ and $\mathcal{Z}_{s}$ for $r \neq s$. \(\square\)
+
+\section*{Exercise 7.3}
+Proof. Note that
+
+$$
+\begin{aligned}
+\mathcal{X}_{t_{4}}-\mathcal{X}_{t_{3}} & =\mathcal{Z}_{t_{4}}+\mathcal{Z}_{t_{4}-1}+\cdots+\mathcal{Z}_{t_{3}+1}, \\
+\mathcal{X}_{t_{2}}-\mathcal{X}_{t_{1}} & =\mathcal{Z}_{t_{2}}+\mathcal{Z}_{t_{2}-1}+\cdots+\mathcal{Z}_{t_{1}+1}
+\end{aligned}
+$$
+
+Since $\left(\mathcal{Z}_{t_{1}+1}, \ldots, \mathcal{Z}_{t_{2}}\right)$ is independent of $\left(\mathcal{Z}_{t_{3}+1}, \ldots, \mathcal{Z}_{t_{4}}\right)$ it follows from Proposition 3.2 (ii) that $\mathcal{X}_{t_{4}}-\mathcal{X}_{t_{3}}$ and $\mathcal{X}_{t_{2}}-\mathcal{X}_{t_{1}}$ are independent. \(\square\)
+
+\section*{Exercise 7.4}
+Proof. By definition
+
+$$
+\begin{aligned}
+\mathcal{W}_{n}(b)-\mathcal{W}_{n}(a)= & n^{-1 / 2} \sum_{t=[n a]+1}^{[n b]} \mathcal{Z}_{t} \\
+= & n^{-1 / 2}([n b]-[n a])^{1 / 2} \\
+& \times([n b]-[n a])^{-1 / 2} \sum_{t=[n a]+1}^{[n b]} \mathcal{Z}_{t}
+\end{aligned}
+$$
+
+The last term $([n b]-[n a])^{-1 / 2} \sum_{t=[n a]+1}^{[n b]} \mathcal{Z}_{t} \xrightarrow{d} N(0,1)$ by the central limit theorem, and $n^{-1 / 2}([n b]-[n a])^{1 / 2}=(([n b]-[n a]) / n)^{1 / 2} \rightarrow(b-a)^{1 / 2}$ as $n \rightarrow \infty$. Hence $\mathcal{W}_{n}(b)-\mathcal{W}_{n}(a) \xrightarrow{d} N(0, b-a)$. \(\square\)
+
+\section*{Exercise 7.22}
+Proof. (i) Let $\mathcal{U} \in C$, and let $\mathcal{U}_{n}$ be a sequence of mappings in $D$ such that $\mathcal{U}_{n} \rightarrow \mathcal{U}$, i.e., $b_{n} \equiv d_{u}\left(\mathcal{U}_{n}, \mathcal{U}\right)=\sup _{a \in[0,1]}\left|\mathcal{U}_{n}(a)-\mathcal{U}(a)\right| \rightarrow 0$ as $n \rightarrow \infty$. We have
+
+$$
+\begin{aligned}
+d_{u}\left(\mathcal{U}_{n}^{2}, \mathcal{U}^{2}\right) & =\sup _{a \in[0,1]}\left|\mathcal{U}_{n}(a)^{2}-\mathcal{U}(a)^{2}\right| \\
+& =\sup _{a \in[0,1]}\left|\mathcal{U}_{n}(a)-\mathcal{U}(a)\right|\left|\mathcal{U}_{n}(a)+\mathcal{U}(a)\right| \\
+& \leq b_{n} \sup _{a \in[0,1]}\left|\mathcal{U}_{n}(a)+\mathcal{U}(a)\right|
+\end{aligned}
+$$
+
+where $b_{n} \equiv d_{u}\left(\mathcal{U}_{n}, \mathcal{U}\right)$. The boundedness of $\mathcal{U}$ and the fact that $b_{n} \rightarrow$ 0 imply that for all $n$ sufficiently large, $\mathcal{U}_{n}$ is bounded on $[0,1]$. Hence, $\sup _{a \in[0,1]}\left|\mathcal{U}_{n}(a)+\mathcal{U}(a)\right|=O(1)$ and it follows that $d_{u}\left(\mathcal{U}_{n}^{2}, \mathcal{U}^{2}\right) \rightarrow 0$, which proves that $M_{1}$ is continuous at $\mathcal{U}$.
+
+Now consider the function on [ 0,1 ] given by
+
+$$
+\mathcal{V}(a)=\left\{\begin{array}{cl}
+\operatorname{int}\left(\frac{1}{1-a}\right), & \text { for } 0 \leq a<1 \\
+0, & \text { for } a=1
+\end{array}\right.
+$$
+
+For $0<a<1 / 2$, this function is 1 , then jumps to 2 for $a=1 / 2$, to 3 for $a=2 / 3$, and so forth. Clearly $\mathcal{V}(a)$ is continuous from the right and has left limits everywhere, so $\mathcal{V} \in D=D[0,1]$.
+
+Next, define the sequence of functions $\mathcal{V}_{n}(a)=\mathcal{V}(a)+\varepsilon / n$, for some $\varepsilon>0$. Then $\mathcal{V}_{n} \in D$ and $\mathcal{V}_{n} \rightarrow \mathcal{V}$.
+
+Since
+
+$$
+\begin{aligned}
+d_{u}\left(\mathcal{V}_{n}^{2}, \mathcal{V}^{2}\right) & =\sup _{a \in[0,1]}\left|\mathcal{V}_{n}(a)^{2}-\mathcal{V}(a)^{2}\right| \\
+& =\sup _{a \in[0,1]}\left|\left(\mathcal{V}_{n}(a)-\mathcal{V}(a)\right)\left(\mathcal{V}_{n}(a)+\mathcal{V}(a)\right)\right| \\
+& =(\varepsilon / n) \sup _{a \in[0,1]}\left|\mathcal{V}_{n}(a)+\mathcal{V}(a)\right|
+\end{aligned}
+$$
+
+is infinite for all $n$, we conclude that $\mathcal{V}_{n}^{2} \nrightarrow \mathcal{V}^{2}$. Hence, $M_{1}$ is not continuous everywhere in $D$.\\
+(ii) Let $\mathcal{U} \in C$; then $\mathcal{U}$ is bounded and $\int_{0}^{1}|\mathcal{U}(a)| d a<\infty$. Let $\left\{\mathcal{U}_{n}\right\}$ be a sequence of functions in $D$ such that $\mathcal{U}_{n} \rightarrow \mathcal{U}$. Define $b_{n} \equiv d_{u}\left(\mathcal{U}_{n}, \mathcal{U}\right)$; then $b_{n} \rightarrow 0$ and $\int_{0}^{1}\left|\mathcal{U}_{n}(a)\right| d a<\int_{0}^{1}|\mathcal{U}(a)| d a+b_{n}$.
+
+Since
+
+$$
+\begin{aligned}
+\left|\int_{0}^{1} \mathcal{U}_{n}(a)^{2} d a-\int_{0}^{1} \mathcal{U}(a)^{2} d a\right| & \leq \int_{0}^{1}\left|\mathcal{U}_{n}(a)^{2}-\mathcal{U}(a)^{2}\right| d a \\
+& =\int_{0}^{1}\left|\mathcal{U}_{n}(a)-\mathcal{U}(a)\right|\left|\mathcal{U}_{n}(a)+\mathcal{U}(a)\right| d a \\
+& \leq b_{n} \int_{0}^{1}\left|\mathcal{U}_{n}(a)+\mathcal{U}(a)\right| d a \\
+& \leq b_{n}\left(b_{n}+2 \int_{0}^{1}|\mathcal{U}(a)| d a\right) \rightarrow 0
+\end{aligned}
+$$
+
+$M_{2}$ is continuous at $\mathcal{U} \in C$.\\
+(iii) Let $\mathcal{V}(a)=a$ for all $a \in[0,1]$ and let $\mathcal{V}_{n}(a)=0$ for $0<a< 1 / n$ and $\mathcal{V}_{n}=\mathcal{V}(a)$ for $a>1 / n$. Thus $d_{u}\left(\mathcal{V}, \mathcal{V}_{n}\right)=1 / n$ and $\mathcal{V}_{n} \rightarrow \mathcal{V}$; however, $\int_{0}^{1} \log \left(\left|\mathcal{V}_{n}(a)\right|\right) d a \nrightarrow \int_{0}^{1} \log (|\mathcal{V}(a)|) d a$, since $\int_{0}^{1} \log (|\mathcal{V}(a)|) d a=-1$ whereas $\int_{0}^{1} \log \left(\left|\mathcal{V}_{n}(a)\right|\right) d a=-\infty$ for all $n$. Hence, it follows that $M_{3}$ is not continuous. \(\square\)
+
+\section*{Exercise 7.23}
+Proof. If $\left\{\varepsilon_{t}\right\}$ satisfies the conditions of the heterogeneous mixing CLT and is globally covariance stationary, then ( $i i$ ) of Theorem 7.21 follows directly from Theorem 7.18. Since $\left\{\varepsilon_{t}\right\}$ is assumed to be mixing, then $\left\{\varepsilon_{t}^{2}\right\}$ is also mixing of the same size (see Proposition 3.50). By Corollary 3.48 it also then follows that $n^{-1} \sum_{t=1}^{n} \varepsilon_{t}^{2}-n^{-1} \sum_{t=1}^{n} E\left(\varepsilon_{t}^{2}\right)=o_{p}(1)$. So if $n^{-1} \sum_{t=1}^{n} E\left(\varepsilon_{t}^{2}\right)$ converges as $n \rightarrow \infty$, then (iii) of Theorem 7.21 holds.
+
+For $\sigma^{2}=\tau^{2}$ it is required that $\lim n^{-1} \sum_{t=2}^{n} \sum_{s=1}^{t-1} E\left(\varepsilon_{t-s} \varepsilon_{t}\right)=0$. It suffices that $\left\{\varepsilon_{t}\right\}$ is independent or that $\left\{\varepsilon_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence. \(\square\)
+
+\section*{Exercise 7.28}
+Proof. From Donsker's theorem and the continuous mapping theorem we have that $n^{-2} \sum_{t=1}^{n} X_{t}^{2} \Rightarrow \sigma_{1}^{2} \int \mathcal{W}_{1}(a)^{2} d a$. The multivariate version of Donsker's theorem states that
+
+$$
+\left(n^{-1 / 2} X_{[n a]}, n^{-1 / 2} Y_{[n a]}\right) \Rightarrow\left(\sigma_{1} \mathcal{W}_{1}(a), \sigma_{2} \mathcal{W}_{2}(a)\right) .
+$$
+
+Applying the continuous mapping theorem to the mapping
+
+$$
+(x, y) \mapsto \int_{0}^{1} x(a) y(a) d a
+$$
+
+we have that
+
+$$
+\begin{aligned}
+n^{-2} \sum_{t=1}^{n} X_{t} Y_{t} & =n^{-1} \sum_{t=1}^{n} \sigma_{1} \mathcal{W}_{1 n}\left(a_{t-1}\right) \sigma_{2} \mathcal{W}_{2 n}\left(a_{t-1}\right) \\
+& =\sigma_{1} \sigma_{2} \int_{0}^{1} \mathcal{W}_{1 n}(a) \mathcal{W}_{2 n}(a) d a \\
+& \Rightarrow \sigma_{1} \sigma_{2} \int_{0}^{1} \mathcal{W}_{1}(a) \mathcal{W}_{2}(a) d a
+\end{aligned}
+$$
+
+Hence
+
+$$
+\begin{aligned}
+\hat{\beta}_{n} & =\left(n^{-2} \sum_{t=1}^{n} X_{t}^{2}\right)^{-1} n^{-2} \sum_{t=1}^{n} X_{t} Y_{t} \\
+& \Rightarrow\left(\sigma_{1}^{2} \int_{0}^{1} \mathcal{W}_{1}(a)^{2} d a\right)^{-1} \sigma_{1} \sigma_{2} \int_{0}^{1} \mathcal{W}_{1}(a) \mathcal{W}_{2}(a) d a \\
+& =\left(\sigma_{2} / \sigma_{1}\right)\left(\int_{0}^{1} \mathcal{W}_{1}(a)^{2} d a\right)^{-1} \int_{0}^{1} \mathcal{W}_{1}(a) \mathcal{W}_{2}(a) d a
+\end{aligned}
+$$
+
+\section*{Exercise 7.31}
+Proof. Since $\left\{\eta_{t}, \varepsilon_{t}\right\}$ satisfies the conditions of Theorem 7.30, it holds that
+
+$$
+\begin{aligned}
+\left(n^{-1 / 2} X_{[n a]}, n^{-1 / 2} Y_{[n a]}\right) & =\left(\sigma_{1} \mathcal{W}_{1 n}\left(a_{t-1}\right), \sigma_{2} \mathcal{W}_{2 n}\left(a_{t-1}\right)\right) \\
+& \Rightarrow\left(\sigma_{1} \mathcal{W}_{1}(a), \sigma_{2} \mathcal{W}_{2}(a)\right)
+\end{aligned}
+$$
+
+where $\sigma_{1}^{2}$ and $\sigma_{2}^{2}$ are the diagonal elements of $\boldsymbol{\Sigma}$ (the off diagonal elements are zero, due to the independence of $\eta_{t}$ and $\varepsilon_{t}$ ). Applying the continuous mapping theorem, we find $\hat{\beta}_{n}$ to have the same limiting distribution as we found in Exercise 7.28.
+
+\section*{Exercise 7.43}
+Proof. (i) If $\left\{\boldsymbol{\eta}_{t}\right\}$ and $\left\{\boldsymbol{\varepsilon}_{t}\right\}$ are independent, then $E\left(\boldsymbol{\eta}_{s} \boldsymbol{\varepsilon}_{t}^{\prime}\right)=\mathbf{0}$ for all $s$ and $t$. So
+
+$$
+\begin{aligned}
+\mathbf{\Lambda}_{n} & \equiv \mathbf{\Sigma}_{1}^{-1 / 2} n^{-1} \sum_{t=2}^{n} \sum_{s=1}^{t-1} E\left(\boldsymbol{\eta}_{s} \boldsymbol{\varepsilon}_{t}^{\prime}\right) \mathbf{\Sigma}_{2}^{-1 / 2 \prime} \\
+& =\mathbf{0}
+\end{aligned}
+$$
+
+and clearly $\mathbf{\Lambda}_{\boldsymbol{n}} \rightarrow \mathbf{\Lambda}=\mathbf{0}$.\\
+(ii) If $\boldsymbol{\eta}_{t}=\boldsymbol{\varepsilon}_{t-1}$, then
+
+$$
+\begin{aligned}
+\boldsymbol{\Lambda}_{n} & \equiv \boldsymbol{\Sigma}_{1}^{-1 / 2} n^{-1} \sum_{t=2}^{n} \sum_{s=1}^{t-1} E\left(\boldsymbol{\eta}_{s} \boldsymbol{\varepsilon}_{t}^{\prime}\right) \boldsymbol{\Sigma}_{2}^{-1 / 2 \prime} \\
+& =\boldsymbol{\Sigma}_{1}^{-1 / 2} n^{-1} \sum_{t=2}^{n} \sum_{s=1}^{t-1} E\left(\varepsilon_{s-1} \varepsilon_{t}^{\prime}\right) \boldsymbol{\Sigma}_{1}^{-1 / 2 \prime}
+\end{aligned}
+$$
+
+If the sequence $\left\{\varepsilon_{t}\right\}$ is covariance stationary such that $\rho_{h} \equiv E\left(\varepsilon_{t} \varepsilon_{t-h}^{\prime}\right)$ is well defined, then
+
+$$
+\begin{aligned}
+n^{-1} \sum_{t=2}^{n} \sum_{s=1}^{t-1} E\left(\varepsilon_{s-1} \varepsilon_{t}^{\prime}\right) & =n^{-1} \sum_{t=2}^{n} \sum_{s=2}^{t} E\left(\varepsilon_{t-s} \varepsilon_{t}^{\prime}\right) \\
+& =n^{-1} \sum_{t=2}^{n} \sum_{s=2}^{t} \rho_{s}^{\prime} \\
+& =\sum_{s=2}^{n} \frac{(n+1-s)}{n} \rho_{s}^{\prime}
+\end{aligned}
+$$
+
+so that
+
+$$
+\mathbf{\Lambda}_{n} \equiv \boldsymbol{\Sigma}_{1}^{-1 / 2}\left(\sum_{s=2}^{n} \cdot \begin{array}{c}
+(n+1-s) \\
+n
+\end{array} \cdot \boldsymbol{\rho}_{s}\right) \boldsymbol{\Sigma}_{1}^{-1 / 2 \prime} \rightarrow \boldsymbol{\Lambda}
+$$
+
+where in this situation we have
+
+$$
+\boldsymbol{\Sigma}_{1}=\boldsymbol{\Sigma}_{2}=\lim _{n \rightarrow \infty} n^{-1} \sum_{t=1}^{n} \sum_{s=1}^{n} \boldsymbol{\rho}_{t-s}=\boldsymbol{\rho}_{0}+\lim _{n \rightarrow \infty} \sum_{s=1}^{n-1} \frac{(n-s)}{n}\left(\boldsymbol{\rho}_{s}+\boldsymbol{\rho}_{s}^{\prime}\right)
+$$
+
+Notice that when $\left\{\varepsilon_{t}\right\}$ is a sequence of independent variables such that $\boldsymbol{\rho}_{s}=\mathbf{0}$ for $s>1$, then $\operatorname{var}\left(\varepsilon_{t}\right)=\boldsymbol{\rho}_{0}=\boldsymbol{\Sigma}_{1}$ and $\boldsymbol{\Lambda}=\mathbf{0}$. This remains true for the case where $\boldsymbol{\eta}_{t}=\varepsilon_{t}$, which is assumed in the likelihood analysis of cointegrated processes by Johansen $(1988,1991)$.
+
+Exercise 7.44\\
+Proof.\\
+(a) This follows from Theorem 7.21 (a), or we have directly
+
+$$
+n^{-2} \sum_{t=1}^{n} X_{t}^{2}=\sigma_{1}^{2} \int_{0}^{1} \mathcal{W}_{1 n}(a) \mathcal{W}_{1 n}(a) d a \Rightarrow \sigma_{1}^{2} \int_{0}^{1} \mathcal{W}_{1}(a)^{2} d a
+$$
+
+(b) Similarly,
+
+$$
+n^{-1} \sum_{t=1}^{n} X_{t} \varepsilon_{t}=\sigma_{1} \int_{0}^{1} \mathcal{W}_{1 n}(a) d \mathcal{W}_{2 n}(a) \sigma_{2} \Rightarrow \sigma_{1} \sigma_{2} \int_{0}^{1} \mathcal{W}_{1}(a) d \mathcal{W}_{2}(a)
+$$
+
+by Theorem 7.42 and using that $\Lambda=0$ since $\left\{\varepsilon_{t}\right\}$ and $\left\{\eta_{t}\right\}$ are independent (see Exercise 7.43).\\
+(c)
+
+$$
+\begin{aligned}
+n\left(\hat{\beta}_{n}-\beta_{o}\right) & =\left(n^{-2} \sum_{t=1}^{n} X_{t}^{2}\right)^{-1}\left(n^{-1} \sum_{t=1}^{n} X_{t} \varepsilon_{t}\right) \\
+& \Rightarrow\left(\sigma_{2} / \sigma_{1}\right)\left[\int_{0}^{1} \mathcal{W}_{1}(a) d a\right]^{-1} \int_{0}^{1} \mathcal{W}_{1}(a) d \mathcal{W}_{2}(a)
+\end{aligned}
+$$
+
+(d) From (c) we have that $n\left(\hat{\beta}_{n}-\beta_{o}\right)=O_{p}(1)$, and by Exercise 2.35 we have that $\left(\hat{\beta}_{n}-\beta_{o}\right)=n^{-1} n\left(\hat{\beta}_{n}-\beta_{o}\right)=o_{p}(1) O_{p}(1)=o_{p}(1)$. So $\hat{\beta}_{n} \xrightarrow{p} \beta_{o}$.
+
+\section*{References}
+\section*{Dhrymes, P. (1980). Econometrics. Springer-Verlag, New York.\\
+Granger, C. W. J. and P. Newbold (1977). Forecasting Economic Time Series. Academic Press, New York.\\
+Johansen, S. (1988). "Statistical analysis of cointegration vectors." Journal of Economic Dynamics and Control, 12, 231-254.\\
+(1991). "Estimation and hypothesis testing of cointegration vectors in Gaussian vector autoregressive models." Econometrica, 59, 1551-80.\\
+Laha, R. G. and V. K. Rohatgi (1979). Probability Theory. Wiley, New York.\\
+Rao, C. R. (1973). Linear Statistical Inference and Its Applications. Wiley, New York.}
+\section*{Index}
+Adapted mixingale, 124\\
+Adapted stochastic sequence, 58\\
+Approximatable stochastic function, 194\\
+AR(1), 48, 49\\
+$\operatorname{ARCH}(q), 102$\\
+ARMA, 49\\
+Asymptotic covariance matrix, 70, 73\\
+estimator, 137\\
+heteroskedasticity consistent, 139146\\
+heteroskedasticity/autocorrelation consistent, 154-164\\
+heteroskedasticity/moving average consistent, 147-154\\
+Newey-West estimator, 163\\
+Asymptotic distribution, 66\\
+Asymptotic efficiency, 83\\
+Bates and White framework, 93\\
+IV estimator, 84\\
+two-stage least squares, 86\\
+Asymptotic equivalence, 67\\
+Asymptotic normality, 71\\
+of $\hat{\boldsymbol{\beta}}_{\boldsymbol{n}}, 71$\\
+of $\tilde{\boldsymbol{\beta}}_{n}, 73$\\
+Asymptotically uncorrelated process, 52, 139, 154\\
+avar, 70, 83
+
+Backshift operator, 42\\
+Best linear unbiased estimator, 3\\
+Borel\\
+sets, 41\\
+$\sigma$-field, 40\\
+Boundary of a set, 173\\
+Bounded in probability, 28\\
+Brownian motion, 169\\
+BM( $\boldsymbol{\Sigma}$ ), 203\\
+definition, 170\\
+$C[0,1], 175$\\
+$C[0, \infty), 172$\\
+$C^{k}[0,1], 187$\\
+$C^{k}[0, \infty), 186$\\
+Cadlag function, 172\\
+Cauchy-Schwarz inequality, 33\\
+Central limit theorem, 113\\
+functional, 175\\
+Liapounov, 118\\
+Lindeberg-Feller, 117\\
+Lindeberg-Lévy, 114\\
+martingale difference, 133\\
+mixing, 130\\
+stationary ergodic adapted mixingale, 125\\
+Wooldridge-White, 130
+
+Characteristic function, 67-71\\
+continuity theorem, 69\\
+uniqueness theorem, 68\\
+Chebyshev inequality, 30\\
+generalized, 29\\
+Classical assumptions of least squares, 2\\
+generalized, 5\\
+Classical linear model, 1-8\\
+Cointegrated processes, 190\\
+likelihood analysis, 258\\
+Cointegrated regression, 199, 201\\
+Conditional expectation, 54-59\\
+linearity of, 55\\
+Consistency\\
+strong, 19\\
+super, 180\\
+weak, 24\\
+Continuity\\
+uniform, 21\\
+Continuity set, 173\\
+Continuous function, 16\\
+Continuous mapping theorem, 178\\
+Convergence\\
+almost sure, 18\\
+in distribution, 65\\
+in probability, 24\\
+in $r$ th mean, 28\\
+of stochastic integral, 199, 201\\
+weak, 171\\
+Covariance stationary process, 52\\
+globally, 177\\
+Cramér-Wold device, 114\\
+functional, 188\\
+$D[0,1], 175$\\
+$D[0, \infty), 172$\\
+$D^{k}[0,1], 187$\\
+$D^{k}[0, \infty), 186$\\
+Data generating process, 94, 207\\
+Dickey-Fuller distribution, 180\\
+Dispersion matrix, 73\\
+Donsker's theorem, 176\\
+multivariate, 188\\
+Ergodic\\
+process, 44\\
+theorem, 44
+
+Estimator\\
+asymptotic covariance matrix, 137\\
+heteroskedasticity consistent, 139-146\\
+heteroskedasticity/autocorrelation consistent, 154-164\\
+heteroskedasticity/moving average consistent, 147-154\\
+generalized least squares, 5, 100\\
+efficiency, 101\\
+feasible, 102\\
+feasible and efficient, 105\\
+generalized method of moments, 85\\
+instrumental variables, 9\\
+constrained, 86\\
+efficient, 109\\
+M-, 210\\
+maximum likelihood, 3, 210\\
+method of moments, 85\\
+ordinary least squares, 2\\
+three-stage least squares, 111\\
+two-stage instrumental variables, 144, 163\\
+two-stage least squares, 10, 144\\
+asymptotically efficient, 86\\
+efficient, 111\\
+Events, 39
+
+Filtration, 58, 193\\
+Finitely correlated process, 138, 147\\
+Fractionally integrated process, 208\\
+Functional central limit theorem, 175\\
+Donsker, 176\\
+heterogeneous mixing, 177\\
+multivariate, 189\\
+Liapounov, 177\\
+Lindeberg-Feller, 177\\
+martingale difference, 178\\
+multivariate, 189\\
+stationary ergodic, 177\\
+$\operatorname{GARCH}(1,1), 102$\\
+Gaussian AR(1), 48
+
+Generalized least squares, 5\\
+estimator, 5\\
+efficiency, 101\\
+feasible estimator, 102\\
+efficient, 105\\
+Generalized method of moments, 85
+
+Heteroskedasticity, 3, 38, 143\\
+ARCH, 102\\
+conditional, 130\\
+GARCH, 102\\
+unconditional, 130\\
+Holder inequality, 33\\
+Hypothesis testing, 74-83
+
+Implication rule, 25\\
+Inequalities\\
+Cauchy-Schwarz, 33\\
+Chebyshev, 30\\
+$c_{r}$, 35\\
+Hölder, 33\\
+Jensen, 29\\
+conditional, 56\\
+Markov, 30\\
+Minkowski, 36\\
+Instrumental variables, 8\\
+estimator, 9\\
+asymptotic normality, 74, 143, 145, 150, 152\\
+consistency, 21, 23, 26, 27, 34, 38, 46, 51, 61\\
+constrained, 86\\
+definition, 9\\
+efficient, 109\\
+Integrated process, 179\\
+fractionally, 208\\
+Invariance principle, 176\\
+Ito stochastic integral, 194\\
+for random step functions, 193
+
+Jensen inequality, 29\\
+conditional, 56
+
+Lagged dependent variable, 7\\
+Lagrange multiplier test, 77\\
+Law of iterated expectations, 57\\
+Law of large numbers\\
+martingale difference, 60
+
+Laws of large numbers, 31\\
+ergodic theorem, 44\\
+i.i.d., 32\\
+i.n.i.d., 35\\
+mixing, 49\\
+Lévy device, 58\\
+Likelihood analysis, 210\\
+cointegrated processes, 258\\
+Likelihood ratio test, 80\\
+Limit, 15\\
+almost sure, 19\\
+in mean square, 29\\
+in probability, 24\\
+Limited dependent variable, 209\\
+Limiting distribution, 66\\
+Lindeberg condition, 117\\
+$M$-estimator, 210\\
+Markov condition, 35\\
+Markov inequality, 30\\
+Martingale difference sequence, 53, 58\\
+Maximum likelihood estimator, 210\\
+Mean value theorem, 80\\
+Measurable\\
+function, 41\\
+one-to-one transformation, 42\\
+space, 39\\
+Measure preserving transformation, 42\\
+Measurement errors, 6\\
+Method of moments estimator, 9\\
+Metric, 173\\
+space, 173\\
+Metrized measurable space, 174\\
+Metrized probability space, 174\\
+Minkowski inequality, 36\\
+Misspecification, 207\\
+Mixing, 47\\
+coefficients, 47\\
+conditions, 46\\
+size, 49\\
+strong, ( $\alpha$-mixing), 47\\
+uniform, ( $\phi$-mixing), 47\\
+Mixingale, 125
+
+Nonlinear model, 209\\
+$O\left(n^{\boldsymbol{\lambda}}\right), 16$\\
+$o\left(n^{\lambda}\right), 16$
+
+Oa.s. $\left(n^{\boldsymbol{\lambda}}\right), 23$\\
+$o_{\text {a.s. }}\left(n^{\boldsymbol{\lambda}}\right), 23$\\
+$O_{p}\left(n^{\boldsymbol{\lambda}}\right), 28$\\
+$o_{p}\left(\boldsymbol{n}^{\boldsymbol{\lambda}}\right), 28$\\
+Ordinary least squares, 2\\
+estimator, 2\\
+definition, 72\\
+asymptotic normality, 72\\
+consistency, 20, 22, 26, 27, 33, 38, 45, 50, 61\\
+definition, 2
+
+Panel data, 11\\
+Partial sum, 169\\
+Probability\\
+measure, 39\\
+space, 39\\
+Product rule, 28
+
+Quasi-maximum likelihood estimator, 79, 210
+
+Random function, 169\\
+step function, 193\\
+Random walk, 167\\
+multivariate, 187\\
+Rcll function, 172
+
+Serially correlated errors, 7\\
+Shift operator, 42\\
+$\sigma$-algebra, 39\\
+$\sigma$-field, 39\\
+Borel, 40\\
+$\sigma$-fields\\
+increasing sequence, 58\\
+Simultaneous systems, 11\\
+for panel data, 12\\
+Spurious regression, 185, 188\\
+Stationary process, 43\\
+covariance stationary, 52\\
+Stochastic function\\
+approximatable, 194\\
+square integrable, 194\\
+Stochastic integral, 192\\
+Strong mixing, 47\\
+Sum of squared residuals, 2\\
+Superconsistency, 180
+
+Test statistics\\
+Lagrange multiplier, 77\\
+Likelihood ratio, 80\\
+Wald, 76, 81\\
+Three-stage least squares\\
+estimator, 111\\
+Two-stage instrumental variables\\
+estimator, 144, 163\\
+Two-stage instrumental variables estimator\\
+asymptotic normality, $146,151,153$, 164\\
+Two-stage least squares, 10\\
+estimator, 144\\
+efficient, 111
+
+Uncorrelated process, 138, 139\\
+asymptotically, 139,154\\
+Uniform asymptotic negligibility, 118\\
+Uniform continuity, 21\\
+theorem, 21\\
+Uniform mixing, 47\\
+Uniform nonsingularity, 22\\
+Uniform positive definiteness, 22\\
+Uniformly full column rank, 22\\
+Uniqueness theorem, 68\\
+Unit root, 179\\
+regression, 178
+
+Vec operator, 142
+
+Wald test, 76, 81\\
+Weak convergence, 171\\
+definition, 174\\
+Wiener measure, 176\\
+Wiener process, 170\\
+definition, 170\\
+multivariate, 186\\
+sample path, 171
+
+
+
+\end{document}

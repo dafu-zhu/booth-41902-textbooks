@@ -1,0 +1,142 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{03C4}{\ifmmode\tau\else{$\tau$}\fi}
+\title{Chapter 8: Directions for Further Study}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+\section*{Directions for Further Study}
+Although the results of the previous chapters cover a considerable range of the possibilities of interest to economists, they also constitute but a modest entry into the rich realm of modern econometrics. We may view the territory before us as extending in a number of different though related directions. Among these are more general data generating processes (DGPs); more general specifications for the models used to analyze these DGPs; estimation procedures alternative to least squares and instrumental variables; and consideration of the consequences and detection of model misspecification.
+
+\subsection*{8.1 Extending the Data Generating Process}
+Loosely speaking, there are three dimensions in which the data generating processes we consider can be extended: moments, memory, and heterogeneity. For example, although we consider unit root DGPs, we have not discussed DGPs that involve deterministic time trends. Nevertheless, the Markov law of large numbers (Theorem 3.7) or the McLeish law of large numbers (Theorem 3.47) can be useful in establishing consistency in models with trending explanatory or instrumental variables. In fact, consistency may happen "faster" in models with these variables because the error variance may become quite negligible in comparison to the magnitude of the regression function $\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}$. Asymptotic normality can be established with\\
+the help of the Lindeberg or Martingale-Lindeberg central limit theorems (Theorems 5.6 or 5.24 ). In fact, conditions ensuring asymptotic normality in models with nonstochastic and possibly trending variables were the subject of careful attention very early on (Grenander, 1954) and there is a well-developed general theory now available (e.g., Crowder, 1980).
+
+Deterministic time trends as usually considered constitute a growth in the first moment of the dependent variable. Trends may occur in higher moments as well. The key to handling such cases is to have available laws of large numbers, central limit theorems and/or functional central limit theorems that permit such possibilities. For example, Wooldridge and White (1988) give FCLT results for processes with possibly trending moments of higher order.
+
+We have considered DGPs satisfying the memory requirements of ergodicity and mixing. Recall also that we imposed the mixingale memory requirement to establish the stationary ergodic CLT and FCLT. Although it constitutes a restriction for stationary ergodic processes, the mixingale notion can also be used to relax the memory conditions in the mixing context. Specifically, by considering stochastic processes that depend on an infinite history of an underlying mixing process, but which depend primarily on the "near epoch" of the mixing process, we can obtain processes that have longer memory than a simple mixing process but which inherit enough of the properties of the underlying mixing process to satisfy the mixingale condition. In fact, it can be shown that such "near epoch dependent" functions of a mixing process are mixingales that are sufficiently well behaved so as to satisfy laws of large numbers, CLTs and FCLTs.
+
+Such conditions were introduced by Ibragimov (1962) and treated by Billingsley (1968). McLeish (1975a,b) used these conditions in developing laws of large numbers, CLTs and FCLTs, which were introduced to econometrics by Gallant and White (1988). See Gallant and White (1988) and Davidson (1994) for further discussion and details.
+
+In Chapter 7, we considered integrated (unit root) processes, which exhibit considerably more dependence than mixing, mixingales, or ergodicity permit. We see, however, that the large sample behavior of our estimators in these cases depends on the FCLT, whose validity is based on the memory properties of the innovations to the integrated process. A memory requirement intermediate to the mixingale and integrated processes considered here is that of fractional integration, a generalization of the notion of integrated processes. A review of such processes is given by Sowell (1992) and Baillie (1996). The tools required to study the large sample properties of estimators associated with fractionally integrated DGPs are extensions of the FCLT and the other tools of Chapter 7. With fractional integration,\\
+the FCLT analogs deliver convergence to "fractional Brownian motion." See, e.g., Taqqu (1975) for further discussion.
+
+To keep our discussion of the FCLT in Chapter 7 relatively simple, we impose the global covariance stationarity assumption, restricting the heterogeneity of the DGP more than is necessary to deliver the FCLT or analogous results. See Wooldridge and White (1988), Davidson (1994), and DeJong and Davidson (2000) for results that do not require global covariance stationarity.
+
+\subsection*{8.2 Nonlinear Models}
+Throughout, we have restricted attention to models linear in the parameters, although we have allowed nonlinear restrictions among the parameters to hold. A more general model that contains many situations of interest to economists can be written as $\mathbf{q}_{t}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \boldsymbol{\beta}\right)$, where for some $\boldsymbol{\beta}_{o}$ it is assumed that $\mathbf{q}_{t}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \boldsymbol{\beta}_{o}\right)=\varepsilon_{t}$.
+
+In the particular case we studied, the model has the form
+
+$$
+\mathbf{q}_{t}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \boldsymbol{\beta}\right)=\mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta} .
+$$
+
+Situations in which the elements of the dependent variable $\mathbf{Y}_{t}$ take values in a restricted subset of the real line are often of considerable interest. For example, suppose $Y_{t}$ is a scalar that can take only the values 0 or 1 (the "limited dependent variable" case). In this case a relevant model is given by
+
+$$
+q\left(\mathbf{X}_{t}, Y_{t}, \boldsymbol{\beta}\right)=Y_{t}^{\prime}-F\left(\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}\right),
+$$
+
+where $F$ is a cumulative distribution function (e.g., the normal or logistic c.d.f.) We interpret $F\left(\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}\right)$ as a model for $E\left(Y_{t} \mid \mathbf{X}_{t}\right)=P\left[Y_{t}=1 \mid \mathbf{X}_{t}\right]$.
+
+There is a vast range of other possibilities of which the linear model is merely a simple and convenient special case. Further, the nature of the model adopted and the other knowledge available about the DGP can play a determining role in the estimation procedures one employs.
+
+\subsection*{8.3 Other Estimation Techniques}
+To estimate parameters of the model $\mathbf{q}_{t}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \boldsymbol{\beta}\right)$ just discussed, we can employ the method of moments introduced and described briefly in Chapter\\
+4. Specifically, if we have instrumental variables $\mathbf{Z}_{t}$ available such that $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}$, then we can attempt to estimate $\boldsymbol{\beta}_{o}$ by solving the problem
+
+$$
+\min _{\beta} \mathbf{q}(\boldsymbol{\beta})^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{q}(\boldsymbol{\beta})
+$$
+
+where $\mathbf{q}(\boldsymbol{\beta})$ is the $n p \times 1$ vector with $t$ th block $\mathbf{q}_{t}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \boldsymbol{\beta}\right)$, so
+
+$$
+\mathbf{Z}^{\prime} \mathbf{q}(\boldsymbol{\beta})=\sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{q}_{t}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \boldsymbol{\beta}\right)
+$$
+
+This corresponds to the method of moments procedure with $\mathbf{g}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \mathbf{Z}_{t}, \boldsymbol{\beta}\right) =\mathbf{Z}_{t} \mathbf{q}_{t}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \boldsymbol{\beta}\right)$.
+
+The properties of this method of moments estimator have been studied by Amemiya (1977), Burguete, Gallant, and Souza (1982), and Hansen (1982), among others.
+
+To establish properties for estimators of nonlinear models analogous to those obtained here, we need somewhat more powerful tools than those given. In particular, repeated use is made of uniform laws of large numbers and the mean value theorem for random functions (e.g., see Jennrich, 1969, and White, 1994).
+
+A leading alternative to the method of instrumental variables studied here is the method of maximum likelihood. In fact, if one assumes that the disturbances $\varepsilon_{t}$ are independent and identically distributed as multivariate normal with unknown covariance matrix, then the optimal IV estimators of Chapter 4 can be shown to be asymptotically equivalent to the maximum likelihood estimator under general conditions. There is a broad range of situations where maximum likelihood and instrumental variables are asymptotically equivalent (see Hausman, 1975, and Amemiya, 1977), although this equivalence fails for the general case of nonlinear models previously mentioned. In that case, maximum likelihood can be shown to be more efficient than instrumental variables (Amemiya, 1977).
+
+Use of the method of maximum likelihood requires an assumption about the distribution of the errors, whereas the instrumental variables method does not. Thus, the method of instrumental variables is available in situations where a knowledge of the error distribution is absent or suspect. Nevertheless, maximum likelihood estimation can be conducted as if the errors have the assumed distribution, whether this assumption is valid or not. This procedure is known as quasi-maximum likelihood estimation, a member of the class of $M$-estimators (Huber, 1967), which contains a wealth of useful and interesting estimators. By selecting an $M$-estimator appropriately, it is possible to obtain estimators that are robust to failure of distributional assumptions or to certain plausible kinds of data errors.
+
+Again, the study of these estimators requires, among other things, use of uniform laws of large numbers and mean value theorems for random functions. A general treatment of these estimators that also highlights the parallels with IV estimators is that of Gallant and White (1988).
+
+\subsection*{8.4 Model Misspecification}
+Throughout this book, we have maintained the assumption that the data generating relationship is known to be
+
+$$
+\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots .
+$$
+
+It would indeed be fortunate if the relationship between $\mathbf{X}_{t}$ and $\mathbf{Y}_{t}$ were ever truly "known." Owing to the complexity of economic phenomena, it is perhaps more realistic to suppose that the relationship between $\mathbf{X}_{t}$ and $\mathbf{Y}_{t}$ is unknown. In this case, a linear relationship such as that just given can be viewed as a convenient approximation but not necessarily as a definitive description of the relationship between $\mathbf{X}_{t}$ and $\mathbf{Y}_{t}$. It then becomes important to consider questions such as "How is this approximation to be interpreted?"; "What are the properties of the estimated parameters of the approximation?"; "How can the approximation be improved?"; and "How can we tell if our approximation is exact?".
+
+For a discussion of these issues that builds on the material in this book in a framework encompassing several of the extensions discussed in this chapter, the reader is referred to Estimation, Inference, and Specification Analysis (White, 1994).
+
+\section*{References}
+Amemiya, T. (1977). "The maximum likelihood estimator and the nonlinear three-stage least squares estimator in the general nonlinear simultaneous equation model." Econometrica, 45, 955-968.\\
+Baillie, R. T. (1996). "Long memory processes and fractional integration in econometrics." Journal of Econometrics, 73, 5-59.\\
+Billingsley, P. (1968). Convergence of Probability Measures. Wiley, New York.\\
+Burguete, J. F., A. R. Gallant, and G. Souza (1982). "On unification of the asymptotic theory of nonlinear econometric models." Econometric Reviews, 1, 151-212.
+
+Crowder, M. J. (1980). "On the asymptotic properties of least-squares estimators in autoregression." Annals of Statistics, 8, 132-146.\\
+Davidson, J. (1994). Stochastic Limit Theory. Oxford University Press, New York.\\
+DeJong R. M. and J. Davidson (2000). "The functional central limit theorem and weak convegence to stochastic integrals I: Weakly dependent processes," forthcoming in Econometric Theory, 16.\\
+Gallant, A. R. and H. White (1988). A Unified Theory of Estimation and Inference for Nonlinear Dynamic Models. Basil Blackwell, Oxford.\\
+Grenander, U. (1954). "On the estimation of regression coefficients in the case of an autocorrelated disturbance." Annals of Mathematical Statistics, 25, 252272.
+
+Hansen, L. P. (1982). "Large sample properties of generalized method of moments estimators." Econometrica, 50, 1029-1054.\\
+Hausman, J. A. (1975). "An instrumental variable approach to full information estimators for linear and certain nonlinear structural models." Econometrica, 43, 727-738.\\
+Huber, P. J. (1967). "The behavior of maximum likelihood estimates under nonstandard conditions." In Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability, vol. 1, pp. 221-233. University of California Press, Berkeley, California.\\
+Ibragimov, I. A. (1962). "Some limit theorems for stationary processes." Theory of Probability and Its Applications, 7, 349-382.\\
+Jennrich, R. I. (1969). "Asymptotic properties of nonlinear least squares estimators." Annals of Mathematical Statistics, 40, 633-643.\\
+McLeish, D. L. (1975a). "A maximal inequality and dependent strong laws." Annals of Probability, 3, 826-836.\\
+(1975b). "Invariance principles for dependent variables." Zeitschrift für Wahrscheinlichkeitstheorie und Verwandte Gebiete, 32, 165-178\\
+Sowell, F. (1992). "Maximum-likelihood-estimation of stationary univariate fractionally integrated time-series models." Journal of Econometrics, 53, 165-188.\\
+Taqqu, M. S. (1975). "Weak convergence to fractional Brownian motion and to the Rosenblatt process." Zeitschrift für Wahrscheinlichkeitstheorie und Verwandte Gebiete, 31, 287-302.\\
+White, H. (1994). Estimation, Inference and Specification Analysis. Cambridge University Press, New York.\\
+Wooldridge, J. M. and H. White (1988). "Some invariance principles and central limit theorems for dependent heterogeneous processes." Econometric Theory, 4, 210-230.
+
+\section*{Solution Set}
+
+\end{document}

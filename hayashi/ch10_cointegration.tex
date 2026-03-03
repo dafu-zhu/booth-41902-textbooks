@@ -1,0 +1,1528 @@
+% This LaTeX document needs to be compiled with XeLaTeX.
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{caption}
+\usepackage{bbold}
+\usepackage{multirow}
+\usepackage{fvextra, csquotes}
+% \usepackage[fallback]{xeCJK}
+\usepackage{polyglossia}
+\usepackage{fontspec}
+\usepackage{newunicodechar}
+\IfFontExistsTF{Noto Serif CJK TC}
+{\setCJKmainfont{Noto Serif CJK TC}}
+{\IfFontExistsTF{STSong}
+  {\setCJKmainfont{STSong}}
+  {\IfFontExistsTF{Droid Sans Fallback}
+    {\setCJKmainfont{Droid Sans Fallback}}
+    {\setCJKmainfont{SimSun}}
+}}
+
+\setmainlanguage{english}
+\IfFontExistsTF{CMU Serif}
+{\setmainfont{CMU Serif}}
+{\IfFontExistsTF{DejaVu Sans}
+  {\setmainfont{DejaVu Sans}}
+  {\setmainfont{Georgia}}
+}
+
+ Finite-Sample Properties of OLS }
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\newunicodechar{×}{\ifmmode\times\else{$\times$}\fi}
+\newunicodechar{⋮}{\ifmmode\vdots\else{$\vdots$}\fi}
+\newunicodechar{⇔}{\ifmmode\Leftrightarrow\else{$\Leftrightarrow$}\fi}
+\newunicodechar{¥}{\ifmmode\text{\yen}\else\yen\fi}
+\title{Chapter 10: Cointegration}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{CHAPTER 10}
+\section*{Cointegration}
+\begin{abstract}
+As the examples of the previous section amply illustrate, many economic time series can be characterized as being $I$ (1). But very often their linear combinations appear to be stationary. Those variables are said to be cointegrated and the weights in the linear combination are called a cointegrating vector. This chapter studies cointegrated systems, namely, vector I(1) processes whose elements are cointegrated.\\
+In the previous chapter, we have defined univariate $\mathrm{I}(0)$ and $\mathrm{I}(1)$ processes. The first section of this chapter presents their generalization to vector processes and defines cointegration for vector I(1) processes. Section 10.2 presents alternative representations of a cointegrated system. Section 10.3 examines in some detail a test of whether a vector I(1) process is cointegrated. Techniques for estimating cointegrating vectors and making inferences about them are developed in Section 10.4.\\
+As an application, Section 10.5 takes up the money demand function. The log real money supply, the nominal interest rate, and the log real income appear to be I(1), but the existence of a stable money demand function implies that those variables are cointegrated, with the coefficients in the money demand function forming a cointegrating vector. The techniques of Section 10.4 are utilized to estimate the cointegrating vector.\\
+Unlike in other chapters, we will not present results in a series of propositions, because the level of the subject matter is such that it is difficult to state assumptions without introducing further technical concepts. However, for technically oriented readers, we indicate in the text references where the assumptions are formally stated.
+\end{abstract}
+
+A Note on Notation: Unlike in other chapters, the symbol " $n$ " is used for the dimension of the vector processes, and as in the previous chapter, the symbol " $T$ " is used for the sample size and " $t$ " is the observation index. Also, if $\mathbf{y}_{t}$ is the $t$-th observation of an $n$-dimensional vector process, its $j$-th element will be denoted $y_{j t}$ instead of $y_{t j}$. We make these changes to be consistent with the notation used in the majority of original papers on cointegration.
+
+\subsection*{10.1 Cointegrated Systems}
+Figure 10.1(a) plots the logs of quarterly real per capita aggregate personal disposable income and personal consumption expenditure for the United States from 1947:Q1 to 1998:Q1. Both series have linear trends and - as will be verified in an example below - stochastic trends. However, these two I(1) series tend to move together, suggesting that the difference is stationary. This is an example of cointegration. Cointegration relations abound in economics. In fact, many of the variables we have examined in the book are cointegrated: prices of the same commodity in two different countries (the difference should be stationary under the weaker version of Purchasing Power Parity), long- and short-term interest rates (even though they have trends, yield differential may be stationary), forward and spot exchange rates, and so forth. Cointegration may characterize more than two variables. For example, the existence of a stable money demand function implies that a linear combination of the log of real money stock, the nominal interest rate, and log aggregate income may be stationary even though each of the three variables is $\mathrm{I}(1)$.
+
+We start out this section by extending the definitions of univariate $\mathrm{I}(0)$ and $\mathrm{I}(1)$ processes of the previous chapter to vector processes. The concept of cointegration for multivariate I(1) processes will then be introduced formally.
+
+\begin{figure}[h]
+\begin{center}
+  \includegraphics[alt={},max width=\textwidth]{14fb0795-6d81-4e76-9788-792298f1ddae-641_541_1133_1383_326}
+\captionsetup{labelformat=empty}
+\caption{Figure 10.1(a): Log Income and Consumption}
+\end{center}
+\end{figure}
+
+\section*{Linear Vector I(0) and I(1) Processes}
+Our definition of vector $\mathrm{I}(0)$ and $\mathrm{I}(1)$ processes follows Hamilton (1994) and Johansen (1995). To introduce the multivariate extension of a zero-mean linear\\
+univariate $\mathrm{I}(0)$ process, consider a zero-mean $n$-dimensional VMA (vector moving average) process:
+
+
+\begin{equation*}
+\underset{(n \times 1)}{\mathbf{u}_{t}}=\underset{(n \times n)}{\boldsymbol{\Psi}(L)} \underset{(n \times 1)}{\boldsymbol{\varepsilon}_{t}}, \boldsymbol{\Psi}(L) \equiv \mathbf{I}_{n}+\boldsymbol{\Psi}_{1} L+\boldsymbol{\Psi}_{2} L^{2}+\cdots, \tag{10.1.1}
+\end{equation*}
+
+
+where $\boldsymbol{\varepsilon}_{t}$ is i.i.d. with
+
+
+\begin{equation*}
+\mathrm{E}\left(\boldsymbol{\varepsilon}_{t}\right)=\mathbf{0}, \mathrm{E}\left(\boldsymbol{\varepsilon}_{t} \boldsymbol{\varepsilon}_{t}^{\prime}\right)=\underset{(n \times n)}{\boldsymbol{\Omega}}, \boldsymbol{\Omega} \text { positive definite } . \tag{10.1.2}
+\end{equation*}
+
+
+(The error process $\boldsymbol{\varepsilon}_{t}$ could be a vector Martingale Difference Sequence satisfying certain properties, but we will not allow for this degree of generality.) As in the univariate case, we impose two restrictions. The first is one-summability: ${ }^{1}$
+
+
+\begin{equation*}
+\left\{\Psi_{j}\right\} \text { is one-summable. } \tag{10.1.3}
+\end{equation*}
+
+
+Since $\left\{\boldsymbol{\Psi}_{j}\right\}$ is absolutely summable when one-summability holds, the multivariate version of Proposition 6.1(d) means that $\mathbf{u}_{t}$ is (strictly) stationary and ergodic. The second restriction on the zero-mean VMA process is
+
+
+\begin{equation*}
+\Psi(1) \neq \underset{(n \times n)}{\mathbf{0}}(n \times n \text { matrix of zeros }) . \tag{10.1.4}
+\end{equation*}
+
+
+That is, at least one element of the $n \times n$ matrix $\boldsymbol{\Psi}(1)$ is not zero. This is a natural multivariate extension of condition (9.2.3b) in the definition of univariate $\mathbf{I}(0)$ processes on page 564.
+
+A (linear) zero-mean $\boldsymbol{n}$-dimensional vector I(0) process or a (linear) zeromean I(0) system is a VMA process satisfying (10.1.1)-(10.1.4). Given a zeromean $I(0)$ system $\mathbf{u}_{t}$, a (linear) vector $I(0)$ process or a (linear) $I(0)$ system can be written as
+
+$$
+\boldsymbol{\delta}+\mathbf{u}_{t},
+$$
+
+where $\delta$ is an $n$-dimensional vector representing the mean of the stationary process. Using the formula (6.5.6) with (6.3.15), the long-run covariance matrix of the $\mathrm{I}(0)$ system is
+
+
+\begin{equation*}
+\Psi(1) \Omega \Psi(1)^{\prime} . \tag{10.1.5}
+\end{equation*}
+
+
+Since $\boldsymbol{\Omega}$ is positive definite and $\boldsymbol{\Psi}(1)$ satisfies (10.1.4), at least one of the diagonal
+
+\footnotetext{${ }^{1}$ A sequence of matrices $\left\{\Psi_{j}\right\}$ is said to be one-summable if $\left\{\Psi_{j, k \ell}\right\}$ is one-summable (i.e., $\sum_{j=0}^{\infty} j\left|\Psi_{j, k \ell}\right|< \infty$ ) for all $k, \ell=1,2, \ldots, n$, where $\Psi_{j, k \ell}$ is the $(k, \ell)$ element of the $n \times n$ matrix $\Psi_{j}$.
+}
+elements of this long-run variance matrix is positive, implying that at least one of the elements of an $\mathrm{I}(0)$ system is individually $\mathrm{I}(0)$ (i.e., $\mathrm{I}(0)$ as a univariate process). We do not necessarily require $\boldsymbol{\Psi}$ (1) to be nonsingular. In fact, accommodating its singularity is the whole point of the theory of cointegration. Consequently, the long-run variance matrix, too, can be singular.
+
+Example 10.1 (A bivariate I(0) system): Consider the following bivariate first-order VMA process:
+
+\[
+\left\{\begin{array}{l}
+u_{1 t}=\varepsilon_{1 t}-\varepsilon_{1, t-1}+\gamma \varepsilon_{2, t-1},  \tag{10.1.6}\\
+u_{2 t}=\varepsilon_{2 t},
+\end{array} \quad \text { or } \mathbf{u}_{t}=\boldsymbol{\varepsilon}_{t}+\boldsymbol{\Psi}_{1} \boldsymbol{\varepsilon}_{t-1}\right.
+\]
+
+where
+
+\[
+\boldsymbol{\varepsilon}_{t}=\left[\begin{array}{l}
+\varepsilon_{1 t}  \tag{10.1.7}\\
+\varepsilon_{2 t}
+\end{array}\right], \quad \boldsymbol{\Psi}_{1}=\left[\begin{array}{rr}
+-1 & \gamma \\
+0 & 0
+\end{array}\right] .
+\]
+
+Since this is a finite-order VMA, the one-summability condition is trivially satisfied. Requirement (10.1.4) is satisfied because
+
+\[
+\boldsymbol{\Psi}(1)=\mathbf{I}_{2}+\boldsymbol{\Psi}_{1}=\left[\begin{array}{ll}
+0 & \gamma  \tag{10.1.8}\\
+0 & 1
+\end{array}\right] \neq \underset{(2 \times 2)}{\mathbf{0}} .
+\]
+
+So this example fits our definition of $\mathrm{I}(0)$ systems. If $\gamma=0$, then the first element, $u_{1 t}$, is actually $\mathrm{I}(-1)$ as a univariate process.
+
+The $\boldsymbol{n}$-dimensional $\mathbf{I}(\mathbf{1})$ system $\mathbf{y}_{t}$ associated with a zero-mean $\mathrm{I}(0)$ system $\mathbf{u}_{t}$ can be defined by the relation
+
+
+\begin{equation*}
+\Delta \mathbf{y}_{t}=\delta+\mathbf{u}_{t} \tag{10.1.9}
+\end{equation*}
+
+
+So the mean of $\Delta \mathbf{y}_{t}$ is $\delta$. Since not every element of the associated zero-mean $\mathrm{I}(0)$ process $\mathbf{u}_{t}$ is required to be individually $\mathrm{I}(0)$, some of the elements of the $\mathrm{I}(1)$ system $\mathbf{y}_{t}$ may not be individually $\mathrm{I}(1) .^{2}$ Substituting (10.1.1) into this, we obtain
+
+
+\begin{equation*}
+\Delta \mathbf{y}_{t}=\boldsymbol{\delta}+\boldsymbol{\Psi}(L) \boldsymbol{\varepsilon}_{t} \tag{10.1.10}
+\end{equation*}
+
+
+This is called the vector moving average (VMA) representation of an I(1)
+
+\footnotetext{${ }^{2}$ In many textbooks and also in Engle and Granger (1987), all elements of an I(1) system are assumed to be individually $\mathrm{I}(1)$, but that assumption is not needed for the development of cointegration theory. This point is emphasized in, e.g., Lütkepohl (1993, pp. 352-353) and Johansen (1995, Chapter 3).
+}
+system. In levels, $\mathbf{y}_{t}$ can be written as
+
+\begin{equation*}
+\mathbf{y}_{t}=\mathbf{y}_{0}+\delta \cdot t+\mathbf{u}_{1}+\mathbf{u}_{2}+\cdots+\mathbf{u}_{t}, \tag{10.1.11}
+\end{equation*}
+
+or, written out in full,
+$$
+\left[\begin{array}{c}
+y_{1 t} \\
+y_{2 t} \\
+\vdots \\
+y_{n t}
+\end{array}\right]=\left[\begin{array}{c}
+y_{1,0} \\
+y_{2,0} \\
+\vdots \\
+y_{n, 0}
+\end{array}\right]+\left[\begin{array}{c}
+\delta_{1} \cdot t \\
+\delta_{2} \cdot t \\
+\vdots \\
+\delta_{n} \cdot t
+\end{array}\right]+\left[\begin{array}{c}
+u_{1,1} \\
+u_{2,1} \\
+\vdots \\
+u_{n, 1}
+\end{array}\right]+\left[\begin{array}{c}
+u_{1,2} \\
+u_{2,2} \\
+\vdots \\
+u_{n, 2}
+\end{array}\right]+\cdots+\left[\begin{array}{c}
+u_{1 t} \\
+u_{2 t} \\
+\vdots \\
+u_{n t}
+\end{array}\right] .
+$$
+
+Regarding the initial value $\mathbf{y}_{0}$, we assume either that it is a vector of fixed constants or that it is random but independent of $\boldsymbol{\varepsilon}_{t}$ for all $t$.
+
+Example 10.2 (A bivariate I(1) system): An I(1) system whose associated zero-mean $\mathrm{I}(0)$ process is the bivariate process in Example 10.1 is
+
+\[
+\left\{\begin{array}{l}
+\Delta y_{1 t}=\delta_{1}+\varepsilon_{1 t}-\varepsilon_{1, t-1}+\gamma \varepsilon_{2, t-1},  \tag{10.1.12}\\
+\Delta y_{2 t}=\delta_{2}+\varepsilon_{2 t},
+\end{array} \quad \text { or } \Delta \mathbf{y}_{t}=\boldsymbol{\delta}+\boldsymbol{\varepsilon}_{t}+\boldsymbol{\Psi}_{\mathbf{I}} \boldsymbol{\varepsilon}_{t-\mathbf{1}},\right.
+\]
+
+where $\boldsymbol{\Psi}_{1}$ is given in (10.1.7). In levels,
+
+\[
+\left\{\begin{array}{l}
+y_{1 t}=y_{1,0}+\delta_{1} \cdot t+\left(\varepsilon_{1 t}-\varepsilon_{1,0}\right)+\gamma \cdot\left(\varepsilon_{2,0}+\varepsilon_{2,1}+\cdots+\varepsilon_{2, t-1}\right)  \tag{10.1.13}\\
+y_{2 t}=y_{2,0}+\delta_{2} \cdot t+\left(\varepsilon_{2,1}+\varepsilon_{2,2}+\cdots+\varepsilon_{2 t}\right)
+\end{array}\right.
+\]
+
+The second element of $\mathbf{y}_{t}$ is $\mathrm{I}(1)$ as a univariate process. If $\gamma=0$, then the first element $y_{1 t}$ is trend stationary because the deviation from the trend function $\left(y_{1,0}-\varepsilon_{1,0}\right)+\delta_{1} \cdot t$ is stationary (actually i.i.d.). Otherwise $y_{1 t}$ is $\mathbf{I}(1)$.
+
+\section*{The Beveridge-Nelson Decomposition}
+For an $\mathrm{I}(1)$ system whose associated zero-mean $\mathrm{I}(0)$ process is $\mathbf{u}_{t}$ satisfying (10.1.1)-(10.1.4), it is easy to obtain the Beveridge-Nelson (BN) decomposition. Recall from Section 9.2 that the univariate BN decomposition is based on the rewriting of the MA filter as (9.2.5) on page 564. The obvious multivariate version\\
+of it is
+
+
+\begin{gather*}
+\underset{(n \times n)}{\Psi(L)}=\underset{(n \times n)}{\Psi(1)}+(1-L) \underset{(n \times n)}{\alpha}(L), \quad \alpha(L)=\sum_{j=0}^{\infty} \alpha_{j} L^{j} \\
+\underset{(n \times n)}{\alpha_{j}}=-\left(\Psi_{j+1}+\Psi_{j+2}+\cdots\right) \tag{10.1.14}
+\end{gather*}
+
+
+So the multivariate analogue of (9.2.6) on page 565 is
+
+
+\begin{equation*}
+\mathbf{u}_{t}=\boldsymbol{\Psi}(1) \varepsilon_{t}+\eta_{t}-\eta_{t-1}, \quad \underset{(n \times 1)}{\eta_{t}} \equiv \alpha(L) \varepsilon_{t} \tag{10.1.15}
+\end{equation*}
+
+
+Since $\boldsymbol{\Psi}(L)$ is one-summable, $\boldsymbol{\alpha}(L)$ is absolutely summable and $\boldsymbol{\eta}_{t}$ is a welldefined covariance-stationary process. Substituting this into (10.1.11), we obtain the multivariate version of the BN decomposition:
+
+
+\begin{equation*}
+\mathbf{y}_{t}=\boldsymbol{\delta} \cdot t+\boldsymbol{\Psi}(1)\left(\boldsymbol{\varepsilon}_{1}+\boldsymbol{\varepsilon}_{2}+\cdots+\boldsymbol{\varepsilon}_{t}\right)+\boldsymbol{\eta}_{t}+\left(\mathbf{y}_{0}-\boldsymbol{\eta}_{0}\right) . \tag{10.1.16}
+\end{equation*}
+
+
+As in the univariate case, the $\mathrm{I}(1)$ system $\mathbf{y}_{t}$ is decomposed into a linear trend $\delta \cdot t$, a stochastic trend $\boldsymbol{\Psi}(1)\left(\boldsymbol{\varepsilon}_{1}+\boldsymbol{\varepsilon}_{2}+\cdots+\boldsymbol{\varepsilon}_{t}\right)$, a stationary component $\boldsymbol{\eta}_{t}$, and the initial condition $\mathbf{y}_{0}-\boldsymbol{\eta}_{0}$. By construction, $\boldsymbol{\eta}_{0}$ is a random variable. So unless $\mathbf{y}_{0}$ is perfectly correlated with $\boldsymbol{\eta}_{0}$, the initial condition is random.
+
+Example 10.2 (continued): For the bivariate I(1) system in Example 10.2, the matrix version of $\boldsymbol{\alpha}(L)$ equals $-\boldsymbol{\Psi}_{1}$ so that the stationary component $\boldsymbol{\eta}_{t}$ in the BN decomposition is
+
+\[
+\boldsymbol{\eta}_{t}=\left[\begin{array}{c}
+\varepsilon_{1 t}-\gamma \varepsilon_{2 t}  \tag{10.1.17}\\
+0
+\end{array}\right] .
+\]
+
+(It should be easy for you to verify this from the matrix version of (9.2.5).) The two-dimensional stochastic trend is written as
+
+\[
+\boldsymbol{\Psi}(1)\left(\boldsymbol{\varepsilon}_{1}+\boldsymbol{\varepsilon}_{2}+\cdots+\boldsymbol{\varepsilon}_{t}\right)=\left[\begin{array}{cc}
+0 & \gamma  \tag{10.1.18}\\
+0 & 1
+\end{array}\right]\left[\begin{array}{c}
+\sum_{s=1}^{t} \varepsilon_{1 s} \\
+\sum_{s=1}^{t} \varepsilon_{2 s}
+\end{array}\right]=\left[\begin{array}{c}
+\gamma \cdot \sum_{s=1}^{t} \varepsilon_{2 s} \\
+\sum_{s=1}^{t} \varepsilon_{2 s}
+\end{array}\right] .
+\]
+
+Thus, the two-dimensional stochastic trend is driven by one common stochastic trend, $\sum_{s=1}^{t} \varepsilon_{2 s}$. This is an example of the "common trend" representation of Stock and Watson (1993) (see Review Question 2 below).
+
+\section*{Cointegration Defined}
+The $\mathrm{I}(1)$ system $\mathbf{y}_{t}$ is not stationary because it contains a stochastic trend $\boldsymbol{\Psi}(1)$ ( $\varepsilon_{1}+\cdots+\varepsilon_{t}$ ), and, if $\boldsymbol{\delta} \neq \mathbf{0}$, a deterministic trend $\boldsymbol{\delta} \cdot t$. The deterministic and stochastic trends, however, may disappear if we take a suitable linear combination of the elements of $\mathbf{y}_{t}$. To pursue this idea, ${ }^{3}$ premultiply both sides of the BN decomposition (10.1.16) by some conformable vector $\mathbf{a}$ to obtain
+
+
+\begin{equation*}
+\mathbf{a}^{\prime} \mathbf{y}_{t}=\mathbf{a}^{\prime} \boldsymbol{\delta} \cdot t+\mathbf{a}^{\prime} \boldsymbol{\Psi}(1)\left(\varepsilon_{1}+\varepsilon_{2}+\cdots+\varepsilon_{t}\right)+\mathbf{a}^{\prime} \boldsymbol{\eta}_{t}+\mathbf{a}^{\prime}\left(\mathbf{y}_{0}-\boldsymbol{\eta}_{0}\right) . \tag{10.1.19}
+\end{equation*}
+
+
+If a satisfies
+
+
+\begin{equation*}
+\mathbf{a}^{\prime} \boldsymbol{\Psi}(1)=\underset{(1 \times n)}{\mathbf{0}^{\prime}}, \tag{10.1.20}
+\end{equation*}
+
+
+then the stochastic trend is eliminated and $\mathbf{a}^{\prime} \mathbf{y}_{t}$ becomes
+
+
+\begin{equation*}
+\mathbf{a}^{\prime} \mathbf{y}_{t}=\mathbf{a}^{\prime} \boldsymbol{\delta} \cdot t+\mathbf{a}^{\prime} \eta_{t}+\mathbf{a}^{\prime}\left(\mathbf{y}_{0}-\eta_{0}\right) . \tag{10.1.21}
+\end{equation*}
+
+
+Strictly speaking, this process is not trend stationary because the initial condition $\mathbf{a}^{\prime}\left(\mathbf{y}_{0}-\boldsymbol{\eta}_{0}\right)$ can be correlated with the subsequent values of $\mathbf{a}^{\prime} \boldsymbol{\eta}_{t}$ (see Review Question 3 below for an illustration). The process would be trend stationary if, for example, the initial value $\mathbf{y}_{0}$ were such that $\mathbf{a}^{\prime}\left(\mathbf{y}_{0}-\boldsymbol{\eta}_{0}\right)=0$.
+
+We are now ready to define cointegration. ${ }^{4}$
+
+Definition 10.1 (Cointegration): Let $\mathbf{y}_{t}$ be an $n$-dimensional I(1) system whose associated zero-mean $\mathrm{I}(0)$ system $\mathbf{u}_{t}$ satisfies (10.1.1)-(10.1.4). We say that $\mathbf{y}_{t}$ is cointegrated with an $n$-dimensional cointegrating vector $\mathbf{a}$ if $\mathbf{a} \neq \mathbf{0}$ and $\mathbf{a}^{\prime} \mathbf{y}_{t}$ can be made trend stationary by a suitable choice of its initial value $\mathbf{y}_{0}$.
+
+Defining cointegration in this way, although dictated by logical consistency, does not necessarily mean that the theory of cointegration requires that the initial condition $\mathbf{y}_{0}$ be chosen as indicated in the definition. The process in (10.1.21) is not stationary because $\boldsymbol{\eta}_{t}$ and $\boldsymbol{\eta}_{0}$ are correlated. However, since $\boldsymbol{\eta}_{t}=\boldsymbol{\alpha}(L) \boldsymbol{\varepsilon}_{t}$ and $\boldsymbol{\alpha}(L)$ is absolutely summable, $\boldsymbol{\eta}_{t}$ and $\boldsymbol{\eta}_{0}$ will become asymptotically independent as $t$ increases. In this sense, the process in (10.1.21) is "asymptotically stationary," and asymptotic stationarity is all that is needed for estimation and inference for cointegrated I(1) systems. ${ }^{5}$
+
+\footnotetext{${ }^{3}$ The idea was originally suggested by Granger (1981). See also Aoki (1968) and Box and Tiao (1977).\\
+${ }^{4}$ Our definition is the same as Definition 3.4 in Johansen (1995).\\
+${ }^{5}$ The distinction between stationarity and asymptotic stationarity is discussed in Lütkepohl (1993, pp. 348349).
+}With cointegration thus defined, we can define the following related concepts.
+
+\begin{itemize}
+  \item (Cointegration rank) The cointegrating rank is the number of linearly independent cointegrating vectors, and the cointegrating space is the space spanned by the cointegrating vectors. As the preceding discussion shows, an $n$-dimensional vector $\mathbf{a}$ is a cointegrating vector if and only if (10.1.20) holds. Since there are $h$ linearly independent such vectors if the cointegration rank is $h$, it follows that
+\end{itemize}
+
+
+\begin{equation*}
+\underset{(n \times n)}{\operatorname{rank}} \underset{(n)}{\Psi(1)]}=n-h \tag{10.1.22}
+\end{equation*}
+
+
+Put differently, the cointegration rank $h$ equals $n-\operatorname{rank}[\Psi(1)]$.
+
+\begin{itemize}
+  \item (Cointegration among subsets of $\mathbf{y}_{t}$ ) At least one of the elements of a cointegrating vector is not zero. Suppose, without loss of generality, that the first element of the cointegrating vector is not zero. Then we say that $y_{1 t}$ (the first element of $\mathbf{y}_{t}$ ) is cointegrated with $\mathbf{y}_{2 t}$ (the remaining $n-1$ elements of $\mathbf{y}_{t}$ ) or that $y_{1 t}$ is part of a cointegrating relationship. We can also define cointegration for a subset of $\mathbf{y}_{t}$. For example, the $n-1$ variables in $\mathbf{y}_{2 t}$ are not cointegrated if there does not exist an ( $n-1$ )-dimensional vector $\mathbf{b} \neq \mathbf{0}$ such that (10.1.20) holds with $\mathbf{a}^{\prime}=\left(0, \mathbf{b}^{\prime}\right)$. Therefore, $\mathbf{y}_{2 t}$ is not cointegrated if and only if the last $n-1$ rows of $\boldsymbol{\Psi}(1)$ are linearly independent.
+  \item (Stochastic cointegration) Note that the deterministic trend $\mathbf{a}^{\prime} \boldsymbol{\delta} \cdot t$ is not eliminated from $\mathbf{a}^{\prime} \mathbf{y}_{t}$ unless the cointegrating vector also satisfies
+\end{itemize}
+
+
+\begin{equation*}
+\mathbf{a}^{\prime} \boldsymbol{\delta}=0 . \tag{10.1.23}
+\end{equation*}
+
+
+In most applications, a cointegrating vector eliminates both the stochastic and deterministic trends in (10.1.19). That is, a vector $\mathbf{a}$ that satisfies (10.1.20) necessarily satisfies (10.1.23), so that $\mathbf{a}^{\prime} \mathbf{y}_{t}$, which can now be written as
+
+
+\begin{equation*}
+\mathbf{a}^{\prime} \mathbf{y}_{t}=\mathbf{a}^{\prime} \boldsymbol{\eta}_{t}+\mathbf{a}^{\prime}\left(\mathbf{y}_{0}-\boldsymbol{\eta}_{0}\right), \tag{10.1.24}
+\end{equation*}
+
+
+is stationary (not just trend stationary) for a suitable choice of $\mathbf{y}_{0}$. This implies that $\boldsymbol{\delta}$ is a linear combination of the columns of $\boldsymbol{\Psi}(1)$, so
+
+\[
+\operatorname{rank}\left[\begin{array}{lll}
+\boldsymbol{\delta} & \vdots & \boldsymbol{\Psi}(1)  \tag{10.1.25}\\
+(n \times(n+1))
+\end{array}\right]=n-h
+\]
+
+Unless otherwise noted, we will assume that (10.1.25) as well as (10.1.22) are\\
+satisfied when the cointegration rank is $h$. If we wish to describe the case where a cointegrating vector eliminates the stochastic trend but not necessarily the deterministic trend, we will use the term stochastic cointegration. Of course, if $\mathbf{y}_{t}$ does not contain a deterministic trend (i.e., if $\boldsymbol{\delta}=\mathbf{0}$ ), then there is no difference between cointegration and stochastic cointegration.
+
+Example 10.2 (continued): In the bivariate I(1) system (10.1.12) in Example 10.2 , the matrix $\Psi(1)$ is given in (10.1.8), so
+
+$$
+\left[\begin{array}{ccc}
+\delta & \vdots & \Psi(1)
+\end{array}\right]=\left[\begin{array}{ccc}
+\delta_{1} & 0 & \gamma \\
+\delta_{2} & 0 & 1
+\end{array}\right] .
+$$
+
+The rank of $\Psi(1)$ is 1 , so the cointegration rank is $1(=2-1)$. All cointegrating vectors can be written as $(c,-c \gamma)^{\prime}, c \neq 0$. The assumption that the cointegration vector also eliminates the deterministic trend can be written as $c \delta_{1}-c \gamma \delta_{2}=0$ or $\delta_{1}=\gamma \delta_{2}$, which implies that the rank of $[\boldsymbol{\delta}: \boldsymbol{\Psi}(1)]$ shown above is one.
+
+Quite a few implications for $\mathrm{I}(1)$ systems follow from the definition of cointegration. For example,
+
+\begin{itemize}
+  \item $(h<n)$ For an $n$-dimensional $\mathrm{I}(1)$ system, the cointegration rank cannot be as large as $n$. If it were $n$, then $\operatorname{rank}[\boldsymbol{\Psi}(1)]=0$ and $\boldsymbol{\Psi}(1)$ would have to be a matrix of zeros, which is ruled out by requirement (10.1.4).
+  \item (Implications of the positive definiteness of the long-run variance of $\Delta \mathbf{y}_{t}$ ) The long-run variance matrix of $\Delta \mathbf{y}_{t}$ is given by $\boldsymbol{\Psi}(1) \boldsymbol{\Omega} \boldsymbol{\Psi}(1)^{\prime}$ (see (10.1.5)), which is positive definite if and only if $\boldsymbol{\Psi}(1)$ is nonsingular. Therefore, $\mathbf{y}_{t}$ is not cointegrated if and only if the long-run variance matrix of $\Delta \mathbf{y}_{t}$ is positive definite. ${ }^{6}$ Since the long-run variance of each element of $\Delta \mathbf{y}_{t}$ is positive if the long-run variance matrix of $\Delta \mathbf{y}_{t}$ is positive definite, it follows that each element of $\mathbf{y}_{t}$ is individually $I(1)$ (i.e., $I(1)$ as a univariate process) if $\mathbf{y}_{t}$ is not cointegrated. The same is true for a subset of $\mathbf{y}_{t}$. For example, consider $\mathbf{y}_{2 t}$, the last $n-1$ elements of $\mathbf{y}_{t}$. The long-run variance matrix of $\Delta \mathbf{y}_{2 t}$ is given by $\boldsymbol{\Psi}_{2}(1) \boldsymbol{\Omega} \boldsymbol{\Psi}_{2}(1)^{\prime}$ where $\boldsymbol{\Psi}_{2}(1)$ is the last $n-1$ rows of $\boldsymbol{\Psi}(1)$. It is positive definite if and only if the rows of $\boldsymbol{\Psi}_{2}(1)$ are linearly independent or $\mathbf{y}_{2 t}$ is not cointegrated. In particular, each element of $\mathbf{y}_{2 t}$ is individually $I(1)$ if $\mathbf{y}_{2 t}$ is not cointegrated.
+\end{itemize}
+
+\footnotetext{${ }^{6}$ This equivalence is specific to linear processes. In general, the positive definiteness of the long-run variance matrix of $\Delta \mathbf{y}_{t}$ is sufficient, but not always necessary, for $\mathbf{y}_{t}$ to be not cointegrated. See Phillips (1986, p. 321).
+}\begin{itemize}
+  \item Suppose that $y_{1 t}$ is cointegrated with $\mathbf{y}_{2 t}$. Then $\mathbf{y}_{2 t}$ is not cointegrated if $h=1$ and cointegrated if $h>1$. The reason is as follows. Cointegration of $y_{1 t}$ with $\mathbf{y}_{2 t}$ implies that there exists a cointegrating vector, call it $\mathbf{a}_{1}$, whose first element is not zero. If $h=1$, then there should not exist an ( $n-1$ )-dimensional vector $\mathbf{b} \neq \mathbf{0}$ such that $\mathbf{a}_{2}^{\prime}=\left(0, \mathbf{b}^{\prime}\right)$ is a cointegrating vector, because $\mathbf{a}_{1}$ and $\mathbf{a}_{2}$ are linearly independent. A vector such as $\mathbf{a}_{2}$ can be found if $h>1$.
+  \item (VAR in first differences?) If $\mathbf{y}_{t}$ is difference stationary (without drift), it is tempting to model it as a stationary finite-order $\operatorname{VAR} \boldsymbol{\Phi}(L) \Delta \mathbf{y}_{t}=\boldsymbol{\varepsilon}_{t}$ where $\boldsymbol{\Phi}(L)$ is a matrix polynomial of degree $p$ such that all the roots of $|\boldsymbol{\Phi}(z)|=0$ are outside the unit circle. But then $\mathbf{y}_{t}$ cannot be cointegrated. The reason is as follows. If $\boldsymbol{\Phi}(L)$ satisfies the stationarity condition, the coefficient matrix sequence $\left\{\boldsymbol{\Psi}_{j}\right\}$ of its inverse $\boldsymbol{\Psi}(L)=\boldsymbol{\Phi}(L)^{-1}$ is bounded by a geometrically declining sequence (see Section 6.3). So $\boldsymbol{\Psi}(L)$ is one-summable and $\Delta \mathbf{y}_{t}= \boldsymbol{\Psi}(L) \boldsymbol{\varepsilon}_{t}$ is a VMA process satisfying (10.1.2) and (10.1.3). Furthermore,
+\end{itemize}
+
+$$
+|\boldsymbol{\Psi}(1)|=\left|\boldsymbol{\Phi}(1)^{-1}\right|=|\boldsymbol{\Phi}(1)|^{-1} \neq 0 .
+$$
+
+So $\boldsymbol{\Psi}(1)$ is nonsingular and the long-run variance matrix of $\Delta \mathbf{y}_{t}$ is positive definite.
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item Let $\left(y_{1 t}, y_{2 t}\right)$ be as in Example 10.2 with $\gamma=0$. Show that $\left\{y_{1 t}+y_{2 t}\right\}$ is $\mathrm{I}(1)$. Hint: You need to show that the long-run variance of $\left\{\Delta y_{1 t}+\Delta y_{2 t}\right\}$ is positive.
+  \item (Stock and Watson (1988) common-trend representation) Let $\mathbf{w}_{t} \equiv \varepsilon_{1}+ \boldsymbol{\varepsilon}_{2}+\cdots+\boldsymbol{\varepsilon}_{t}$ so that the BN decomposition is
+\end{enumerate}
+
+$$
+\mathbf{y}_{t}=\boldsymbol{\delta} \cdot t+\boldsymbol{\Psi}(1) \mathbf{w}_{t}+\boldsymbol{\eta}_{t}+\left(\mathbf{y}_{0}-\boldsymbol{\eta}_{0}\right) .
+$$
+
+A result from linear algebra states that\\
+if $\mathbf{C}$ is an $n \times n$ matrix of rank $n-h$, then there exists an $n \times n$ nonsingular matrix $\mathbf{G}$ and an $n \times(n-h)$ matrix $\mathbf{F}$ of full column rank such that
+
+$$
+\underset{(n \times n)(n \times n)}{\mathbf{C}} \underset{(n \times(n-k))}{\mathbf{G}}=\left[\begin{array}{cc}
+\mathbf{F} & \underset{(n \times h)}{\mathbf{0}}
+\end{array}\right] .
+$$
+
+Show that the permanent component $\boldsymbol{\Psi}(1) \mathbf{w}_{t}$ can be written as $\mathbf{F} \boldsymbol{\tau}_{t}$, where $\mathbf{F}$ is an $n \times(n-h)$ matrix of full column rank and $\boldsymbol{\tau}_{t}$ is an ( $n-h$ )-dimensional\\
+random walk with $\operatorname{Var}\left(\Delta \boldsymbol{\tau}_{t}\right)$ positive definite. Hint: $\boldsymbol{\Psi}(1) \mathbf{w}_{t}=\boldsymbol{\Psi}(1) \mathbf{G G}^{-1} \mathbf{w}_{t}$. Let $\boldsymbol{\tau}_{t}$ be the first $n-h$ elements of $\mathbf{G}^{-1} \mathbf{w}_{t}$. This representation makes clear that an I(1) system with a cointegrating rank of $h$ has $n-h$ common stochastic trends.\\
+3. ( $\mathbf{a}^{\prime} \mathbf{y}_{t}$ is not quite stationary) To show that the process in (10.1.21) is not quite stationary, consider the simple case where $\boldsymbol{\eta}_{t}=\boldsymbol{\varepsilon}_{t}-\boldsymbol{\varepsilon}_{t-1}, \boldsymbol{\delta}=\mathbf{0}$, and $\mathbf{y}_{0}=\mathbf{0}$. Verify that
+
+$$
+\operatorname{Cov}\left(\boldsymbol{\eta}_{t}, \boldsymbol{\eta}_{0}\right)=\left\{\begin{array}{ll}
+2 \boldsymbol{\Omega} & \text { for } t=0, \\
+-\boldsymbol{\Omega} & \text { for } t=1, \\
+\mathbf{0} & \text { for } t>1,
+\end{array} \quad \operatorname{Var}\left(\mathbf{a}^{\prime} \mathbf{y}_{t}\right)= \begin{cases}\mathbf{0} & \text { for } t=0, \\
+6 \mathbf{a}^{\prime} \boldsymbol{\Omega} \mathbf{a} & \text { for } t=1, \\
+4 \mathbf{a}^{\prime} \boldsymbol{\Omega} \mathbf{a} & \text { for } t>1,\end{cases}\right.
+$$
+
+where $\boldsymbol{\Omega}=\operatorname{Var}\left(\boldsymbol{\varepsilon}_{t}\right)$. Verify that $\left\{\mathbf{a}^{\prime} \mathbf{y}_{t}\right\}$ is stationary for $t=2,3, \ldots$.\\
+4. (What if some elements are stationary?) Let $\mathbf{y}_{t}$ be an I(1) system and suppose that the first element of $\mathbf{y}_{t}$ is stationary. Show that the cointegrating rank is at least 1 .\\
+5. (Matrix of cointegrating vectors) Suppose that the cointegration rank of an $n$ dimensional $\mathbf{I}(1)$ system $\mathbf{y}_{t}$ is $h$ and let $\mathbf{A}$ be an $n \times h$ matrix collecting $h$ linearly independent cointegrating vectors. Let $\mathbf{F}$ be any $h \times h$ nonsingular matrix. Show that columns of AF are $h$ linearly independent cointegrating vectors. Hint: Multiplication by a nonsingular matrix does not alter rank.
+
+\subsection*{10.2 Alternative Representations of Cointegrated Systems}
+In addition to the common trend representation (see Review Question 2 of the previous section), there are three other useful representations of cointegrated vector I(1) processes: the triangular representation of Phillips (1991), the VAR representation, and the VECM (vector error-correction model) of Davidson et al. (1978). This section introduces these representations.
+
+\section*{Phillips's Triangular Representation}
+This representation is convenient for the purpose of estimating cointegrating vectors. The representation is valid for any cointegration rank, but we initially assume that the cointegrating rank $h$ is 1 . Let $\mathbf{a}$ be a cointegrating vector, and suppose, without loss of generality, that the first element of $\mathbf{a}$ is not zero (if it is zero, change\\
+the ordering of the variables of the system so that the first element after reordering is not zero). Partition $\mathbf{y}_{t}$ accordingly:
+
+\[
+\underset{(n \times 1)}{\mathbf{y}_{t}} \equiv\left[\begin{array}{c}
+y_{1 t}  \tag{10.2.1}\\
+\mathbf{y}_{2 t} \\
+((n-1) \times 1)
+\end{array}\right]
+\]
+
+Thus, $y_{1 t}$ is cointegrated with $\mathbf{y}_{2 t}$. Since a scalar multiple of a cointegrating vector, too, is a cointegrating vector, we can normalize the cointegrating vector a so that its first element is unity:
+
+\[
+\mathbf{a}=\left[\begin{array}{c}
+a_{1}  \tag{10.2.2}\\
+a_{2} \\
+\vdots \\
+a_{n}
+\end{array}\right]=\left[\begin{array}{c}
+1 \\
+-\gamma \\
+((n-1) \times 1)
+\end{array}\right]
+\]
+
+We have seen in the previous section that if a cointegrating vector a eliminates not only the stochastic trend (i.e., $\mathbf{a}^{\prime} \boldsymbol{\Psi}(1)=\mathbf{0}^{\prime}$ ) but also the deterministic trend (i.e., $\mathbf{a}^{\prime} \boldsymbol{\delta}=0$ ), then $\mathbf{a}^{\prime} \mathbf{y}_{t}$ can be written as (10.1.24). Setting the $\mathbf{a}$ in (10.1.24) to the cointegrating vector in (10.2.2), we obtain
+
+
+\begin{equation*}
+y_{1 t}=\boldsymbol{\gamma}^{\prime} \mathbf{y}_{2 t}+z_{t}^{*}+\mu, \tag{10.2.3}
+\end{equation*}
+
+
+where
+
+
+\begin{equation*}
+z_{t}^{*} \equiv\left(1,-\gamma^{\prime}\right) \eta_{t}, \quad \mu \equiv\left(1,-\gamma^{\prime}\right)\left(\mathbf{y}_{0}-\eta_{0}\right) . \tag{10.2.4}
+\end{equation*}
+
+
+Since $\eta_{t}$ is jointly stationary, $z_{t}^{*}$ is stationary. This equation, with $z_{t}^{*}$ viewed as an error term and $\mu$ as an intercept, is called a cointegrating regression. Its regression coefficients $\boldsymbol{\gamma}$, relating the permanent component in $y_{1 t}$ to those in $\mathbf{y}_{2 t}$, can be interpreted as describing the long-run relationship between $y_{1 t}$ and $\mathbf{y}_{2 t}$. The cointegrating regression will have the trend term $\mathbf{a}^{\prime} \delta \cdot t$ as an additional regressor if the cointegrating vector does not eliminate the deterministic trend in $\mathbf{a}^{\prime} \mathbf{y}_{t}$. The triangular representation is an $n$-equation system consisting of this cointegrating regression and the last $n-1$ rows of (10.1.9):
+
+
+\begin{equation*}
+\Delta \mathbf{y}_{2 t}=\delta_{2}+\mathbf{u}_{2 t}=\underset{((n-1) \times 1)}{\delta_{2}}+\underset{((n-1) \times n)}{\Psi_{2}(L)} \underset{(n \times 1)}{\varepsilon_{t}}, \tag{10.2.5}
+\end{equation*}
+
+
+where $\delta_{2}$ and $\mathbf{u}_{2 t}$ are the last $n-1$ elements of the $n$-dimensional vectors $\delta$ and $\mathbf{u}_{t}$, respectively, and $\boldsymbol{\Psi}_{2}(L)$ is the last $n-1$ rows of the $\boldsymbol{\Psi}(L)$ in the VMA representation (10.1.10). The implication of the $h=1$ assumption is that, as noted in\\
+the previous section, $\mathbf{y}_{2 t}$ is not cointegrated (it would be cointegrated if $h>1$ ). In particular, each element of $\mathbf{y}_{2 t}$ is individually $\mathbf{I}(1)$.
+
+More generally, consider the case where the cointegration rank $h$ is not necessarily 1 . By changing the order of the elements of $\mathbf{y}_{t}$ if necessary, it is possible (see, e.g., Hamilton, 1994, pp. 576-577) to select $h$ linearly independent cointegrating vectors, $\mathbf{a}_{1}, \mathbf{a}_{2}, \ldots, \mathbf{a}_{h}$, such that
+
+\[
+\underset{(n \times h)}{\mathbf{A}} \equiv\left[\begin{array}{lll}
+\mathbf{a}_{1} & \cdots & \mathbf{a}_{h}
+\end{array}\right]=\left[\begin{array}{c}
+\mathbf{I}_{h}  \tag{10.2.6}\\
+(h \times h) \\
+-\boldsymbol{\Gamma} \\
+((n-h) \times h)
+\end{array}\right] .
+\]
+
+Partition $\mathbf{y}_{t}$ conformably as
+
+\[
+\underset{(n \times 1)}{\mathbf{y}_{t}} \equiv\left[\begin{array}{c}
+\mathbf{y}_{1 t}  \tag{10.2.7}\\
+(h \times 1) \\
+\mathbf{y}_{2 t} \\
+((n-h) \times 1)
+\end{array}\right]
+\]
+
+Multiplying both sides of the BN decomposition (10.1.16) by this $\mathbf{A}^{\prime}$ and noting that $\mathbf{A}^{\prime} \boldsymbol{\Psi}(1)=\mathbf{0}$ (since the columns of $\mathbf{A}$ are cointegrating vectors), $\mathbf{A}^{\prime} \boldsymbol{\delta}=\mathbf{0}$ (if those cointegrating vectors also eliminate the deterministic trend), and $\mathbf{A}^{\prime} \mathbf{y}_{t}= \mathbf{y}_{1 t}-\boldsymbol{\Gamma}^{\prime} \mathbf{y}_{2 t}$, we obtain the following $h$ cointegrating regressions:
+
+
+\begin{equation*}
+\underset{(h \times 1)}{\mathbf{y}_{1 t}}=\underset{(h \times(n-h))}{\boldsymbol{\Gamma}_{((n-h) \times 1)}^{\prime}}+\underset{(h \times 1)}{\mathbf{y}_{2 t}}+\underset{(h \times 1)}{\mathbf{z}_{t}^{*}}, \tag{10.2.8}
+\end{equation*}
+
+
+where $\boldsymbol{\mu} \equiv \mathbf{A}^{\prime}\left(\mathbf{y}_{0}-\boldsymbol{\eta}_{0}\right)$ and $\mathbf{z}_{t}^{*} \equiv \mathbf{A}^{\prime} \boldsymbol{\eta}_{t}$. Since $\boldsymbol{\eta}_{t}$ is jointly stationary, so is $\mathbf{z}_{t}^{*}$. The triangular representation is these $h$ cointegrating regressions, supplemented by the rest of the VMA representation:
+
+
+\begin{equation*}
+\underset{((n-h) \times 1)}{\Delta \mathbf{y}_{2 t}}=\underset{((n-h) \times 1)}{\boldsymbol{\delta}_{2}}+\underset{((n-h) \times 1)}{\mathbf{u}_{2 t}}=\underset{((n-h) \times 1)}{\boldsymbol{\delta}_{2}}+\underset{((n-h) \times n)(n \times 1)}{\boldsymbol{\Psi}_{2}(L)} \underset{(n)}{\boldsymbol{\varepsilon}_{t}} . \tag{10.2.9}
+\end{equation*}
+
+
+Here, $\boldsymbol{\Psi}_{2}(L)$ is the last $n-h$ rows of the $\boldsymbol{\Psi}(L)$ in the VMA representation (10.1.10). It is easy to show (see Review Question 1) that $\mathbf{y}_{2 t}$ is not cointegrated.
+
+To illustrate the triangular representation and how it can be derived from the VMA representation, consider
+
+Example 10.3 (From VMA to triangular): In the bivariate system (10.1.12) of Example 10.2, the cointegration rank is 1 . The cointegrating vector whose first element is unity is $(1,-\gamma)^{\prime}$. So the $z_{t}^{*}$ and $\mu$ in (10.2.3) are
+
+
+\begin{gather*}
+z_{t}^{*}=(1,-\gamma) \boldsymbol{\eta}_{t}=\varepsilon_{1 t}-\gamma \varepsilon_{2 t}, \\
+\mu=(1,-\gamma)\left(\mathbf{y}_{0}-\boldsymbol{\eta}_{0}\right)=\left(y_{1,0}-\gamma y_{2,0}\right)-\left(\varepsilon_{1,0}-\gamma \varepsilon_{2,0}\right), \tag{10.2.10}
+\end{gather*}
+
+
+and the triangular representation is
+
+\[
+\left\{\begin{align*}
+y_{1 t} & =\mu+\gamma y_{2 t}+\left(\varepsilon_{1 t}-\gamma \varepsilon_{2 t}\right)  \tag{10.2.11}\\
+\Delta y_{2 t} & =\delta_{2}+\varepsilon_{2 t}
+\end{align*}\right.
+\]
+
+\section*{VAR and Cointegration}
+For the stationary case, we found it useful and convenient to model a vector process as a finite-order VAR. Although, as seen above, no cointegrated I(1) system can be represented as a finite-order VAR in first differences, some cointegrated systems may admit a finite-order VAR representation in levels. So suppose a cointegrated I(1) system $\mathbf{y}_{t}$ can be written as
+
+
+\begin{gather*}
+\underset{(n \times 1)}{\mathbf{y}_{t}}=\boldsymbol{\alpha}+\boldsymbol{\delta} \cdot t+\boldsymbol{\xi}_{t}, \quad \boldsymbol{\Phi}(L) \boldsymbol{\xi}_{t}=\boldsymbol{\varepsilon}_{t}, \\
+\underset{(n \times n)}{\boldsymbol{\Phi}}(L) \equiv \mathbf{I}_{n}-\boldsymbol{\Phi}_{1} L-\boldsymbol{\Phi}_{2} L^{2}-\cdots-\boldsymbol{\Phi}_{p} L^{p} . \tag{10.2.12}
+\end{gather*}
+
+
+For later reference, we eliminate $\boldsymbol{\xi}$ from this to obtain
+
+
+\begin{equation*}
+\mathbf{y}_{t}=\boldsymbol{\alpha}^{*}+\boldsymbol{\delta}^{*} \cdot t+\boldsymbol{\Phi}_{1} \mathbf{y}_{t-1}+\boldsymbol{\Phi}_{2} \mathbf{y}_{t-2}+\cdots+\boldsymbol{\Phi}_{p} \mathbf{y}_{t-p}+\boldsymbol{\varepsilon}_{t}, \tag{10.2.13}
+\end{equation*}
+
+
+where
+
+
+\begin{equation*}
+\underset{(n \times 1)}{\boldsymbol{\alpha}^{*}} \equiv\left(\boldsymbol{\Phi}_{1}+2 \boldsymbol{\Phi}_{2}+\cdots+p \boldsymbol{\Phi}_{p}\right) \boldsymbol{\delta}+\boldsymbol{\Phi}(1) \boldsymbol{\alpha}, \underset{(n \times 1)}{\boldsymbol{\delta}^{*}} \equiv \boldsymbol{\Phi}(1) \boldsymbol{\delta} . \tag{10.2.14}
+\end{equation*}
+
+
+How do we know that this finite-order VAR in levels is a cointegrated I(1) system? An obvious way to find out is to derive the VMA representation, $\Delta \boldsymbol{\xi}_{t}= \boldsymbol{\Psi}(L) \boldsymbol{\varepsilon}_{t}$, from the VAR representation, $\boldsymbol{\Phi}(L) \boldsymbol{\xi}_{t}=\boldsymbol{\varepsilon}_{t}$, and see if $\boldsymbol{\Psi}(L)$ satisfies the definition of a cointegrated system. The derivation is a bit tricky because the VMA representation is in first differences, but it can be done fairly easily as follows. Taking the first difference of both sides of $\boldsymbol{\Phi}(L) \boldsymbol{\xi}_{t}=\boldsymbol{\varepsilon}_{t}$ and noting that $\Delta=1-L$ and $(1-L) \boldsymbol{\Phi}(L)=\boldsymbol{\Phi}(L)(1-L)$, we obtain
+
+
+\begin{equation*}
+\mathbf{\Phi}(L) \Delta \boldsymbol{\xi}_{t}=(1-L) \boldsymbol{\varepsilon}_{t} . \tag{10.2.15}
+\end{equation*}
+
+
+Substitute $\Delta \boldsymbol{\xi}_{t}=\boldsymbol{\Psi}(L) \boldsymbol{\varepsilon}_{t}$ into this to obtain
+
+
+\begin{equation*}
+\boldsymbol{\Phi}(L) \boldsymbol{\Psi}(L) \boldsymbol{\varepsilon}_{t}=(1-L) \boldsymbol{\varepsilon}_{t} \tag{10.2.16}
+\end{equation*}
+
+
+This equation has to hold for any realization of $\boldsymbol{\varepsilon}_{t}$, so
+
+
+\begin{equation*}
+\boldsymbol{\Phi}(L) \boldsymbol{\Psi}(L)=(1-L) \mathbf{I}_{n} \text {. } \tag{10.2.17}
+\end{equation*}
+
+
+This can be solved for $\boldsymbol{\Psi}(L)$ by multiplying both sides from the left by $\boldsymbol{\Phi}(L)^{-1}$, the inverse of $\boldsymbol{\Phi}(L) .^{7}$ This produces: $\boldsymbol{\Psi}(L)=\boldsymbol{\Phi}(L)^{-1}(1-L)$. The question is, under what conditions on $\boldsymbol{\Phi}(L)$ is this $\boldsymbol{\Psi}(L)$ one-summable and $\operatorname{rank}[\boldsymbol{\Psi}(1)]=n-h$ ?
+
+We can easily derive a necessary condition. Setting $L=1$ in (10.2.17), we obtain
+
+
+\begin{equation*}
+\underset{(n \times n)}{\boldsymbol{\Phi}}(1) \underset{(n \times n)}{\boldsymbol{\Psi}}(1)=\underset{(n \times n)}{\mathbf{0}} . \tag{10.2.18}
+\end{equation*}
+
+
+Since the rank of $\boldsymbol{\Psi}$ (1) equals $n-h$ when the cointegration rank of $\boldsymbol{\xi}_{t}$ is $h$, the rank of $\boldsymbol{\Phi}(1)$ is at most $h$. As shown below, the rank is actually $h$. To state a necessary and sufficient condition, let $\mathbf{U}(L)$ and $\mathbf{V}(L)$ be $n \times n$ matrix lag polynomials with all their roots outside the unit circle and let $\mathbf{M}(L)$ be a matrix polynomial satisfying
+
+\[
+\mathbf{M}(L)=\left[\begin{array}{cc}
+(1-L) \mathbf{I}_{n-h} & \mathbf{0}  \tag{10.2.19}\\
+\underset{(h \times(n-h))}{\mathbf{0}} & \mathbf{I}_{h}
+\end{array}\right]
+\]
+
+That is, the first $n-h$ diagonal elements of the diagonal matrix $\mathbf{M}(L)$ are $1-L$ and the remaining $h$ diagonal elements are unity. A necessary and sufficient condition for a finite-order VAR process $\left\{\boldsymbol{\xi}_{t}\right\}$ following $\boldsymbol{\Phi}(L) \boldsymbol{\xi}_{t}=\boldsymbol{\varepsilon}_{t}$ to be a cointegrated I(1) system with rank $h$ is that $\boldsymbol{\Phi}(L)$ can be factored as $\boldsymbol{\Phi}(L)=\mathbf{U}(L) \mathbf{M}(L) \mathbf{V}(L) .^{8}$ Therefore, all the roots of $|\boldsymbol{\Phi}(z)|=0$ are on or outside the unit circle and those that are on the unit circle are all unit roots ( $z=1$ ). It is not sufficient that $\boldsymbol{\Phi}(L)$ has $n-h$ unit roots with the other roots outside the unit circle; see an example in Review Question 4 where $\boldsymbol{\Phi}(z)$ has two unit roots and one root outside the unit circle yet the system is not $\mathbf{I}(1)$. The $n-h$ unit roots have to be located in the system in the particular way indicated by the factorization $\boldsymbol{\Phi}(z)=\mathbf{U}(z) \mathbf{M}(z) \mathbf{V}(z)$.
+
+Setting $z=1$ in this factorization, we obtain $\boldsymbol{\Phi}(1)=\mathbf{U}(1) \mathbf{M}(1) \mathbf{V}(1)$. Since the roots of $\mathbf{U}(z)$ and $\mathbf{V}(z)$ are all outside the unit circle, $\mathbf{U}(1)$ and $\mathbf{V}(1)$ are nonsingular
+
+\footnotetext{${ }^{7}$ The inverse exists because $\boldsymbol{\Phi}_{0}=\mathbf{I}_{n}$ is nonsingular; see Section 6.3. Since we are not assuming the stationarity condition for $\boldsymbol{\Phi}(L)$, the inverse filter may not be absolutely summable.\\
+${ }^{8}$ This result is an implication of the lemma due to Sam Yoo, cited in Engle and Yoo (1991). See Watson (1994, pp. 2870-2873) for an accessible exposition.
+}
+and the rank of $\boldsymbol{\Phi}$ (1) equals the rank of $\mathbf{M}(1)$, which is $h$. That is,
+
+\begin{equation*}
+\operatorname{rank}[\boldsymbol{\Phi}(1)]=h . \tag{10.2.20}
+\end{equation*}
+
+
+Then it follows from basic linear algebra that there exist two $n \times h$ matrices of full column rank, $\mathbf{B}$ and $\mathbf{A}$, such that
+
+
+\begin{equation*}
+\underset{(n \times n)}{\boldsymbol{\Phi}(1)}=\underset{(n \times h)}{\mathbf{B}} \underset{(h \times n)}{\mathbf{A}^{\prime}} . \tag{10.2.21}
+\end{equation*}
+
+
+This is sometimes called the reduced rank condition. The choice of $\mathbf{B}$ and $\mathbf{A}$ is not unique; if $\mathbf{F}$ is an $h \times h$ nonsingular matrix, then $\mathbf{B}\left(\mathbf{F}^{\prime}\right)^{-1}$ and $\mathbf{A F}$ in place of $\mathbf{B}$ and $\mathbf{A}$ also satisfy (10.2.21). Substituting (10.2.21) into (10.2.18), we obtain $\mathbf{B A}^{\prime} \boldsymbol{\Psi}(1)=\mathbf{0}$. Since $\mathbf{B}$ is of full column rank, this equation implies $\mathbf{A}^{\prime} \boldsymbol{\Psi}(1)=\mathbf{0}$. So the columns of the $n \times h$ matrix $\mathbf{A}$ are cointegrating vectors.
+
+\section*{The Vector Error-Correction Model (VECM)}
+For the univariate case, we derived the augmented autoregression (9.4.3) on page 586 from an AR equation. The same idea can be applied to the VAR here. It is a matter of simple algebra to show that the VAR representation $\boldsymbol{\Phi}(L) \boldsymbol{\xi}_{t}=\boldsymbol{\varepsilon}_{t}$ in (10.2.12) can be written equivalently as
+
+
+\begin{equation*}
+\xi_{t}=\rho \xi_{t-1}+\zeta_{1} \Delta \xi_{t-1}+\zeta_{2} \Delta \xi_{t-2}+\cdots+\zeta_{p-1} \Delta \xi_{t-p+1}+\varepsilon_{t}, \tag{10.2.22}
+\end{equation*}
+
+
+where
+
+
+\begin{align*}
+\underset{(n \times n)}{\boldsymbol{\rho}} & \equiv \boldsymbol{\Phi}_{1}+\boldsymbol{\Phi}_{2}+\cdots+\boldsymbol{\Phi}_{p},  \tag{10.2.23}\\
+\underset{(n \times n)}{\zeta_{s}} & \equiv-\left(\boldsymbol{\Phi}_{s+1}+\boldsymbol{\Phi}_{s+2}+\cdots+\boldsymbol{\Phi}_{p}\right) \text { for } s=1,2, \ldots, p-1 \tag{10.2.24}
+\end{align*}
+
+
+Subtracting $\boldsymbol{\xi}_{t-1}$ from both sides of (10.2.22) and noting that $\boldsymbol{\rho}-\mathbf{I}_{n}=-\left(\mathbf{I}_{n}-\right. \left.\boldsymbol{\Phi}_{1}-\boldsymbol{\Phi}_{2}-\cdots-\boldsymbol{\Phi}_{p}\right)=-\boldsymbol{\Phi}(1)$, we can rewrite (10.2.22) as
+
+
+\begin{align*}
+\Delta \boldsymbol{\xi}_{t} & =-\boldsymbol{\Phi}(1) \boldsymbol{\xi}_{t-1}+\zeta_{1} \Delta \boldsymbol{\xi}_{t-1}+\zeta_{2} \Delta \boldsymbol{\xi}_{t-2}+\cdots+\zeta_{p-1} \Delta \boldsymbol{\xi}_{t-p+1}+\boldsymbol{\varepsilon}_{t} \\
+& =-\mathbf{B} \mathbf{A}^{\prime} \boldsymbol{\xi}_{t-1}+\zeta_{1} \Delta \boldsymbol{\xi}_{t-1}+\zeta_{2} \Delta \boldsymbol{\xi}_{t-2}+\cdots+\zeta_{p-1} \Delta \boldsymbol{\xi}_{t-p+1}+\varepsilon_{t} \tag{10.2.25}
+\end{align*}
+
+
+Using the relation $\mathbf{y}_{t}=\boldsymbol{\alpha}+\boldsymbol{\delta} \cdot t+\boldsymbol{\xi}_{t}$, this can be translated into an equation in $\mathbf{y}_{t}$ :
+
+
+\begin{align*}
+\Delta \mathbf{y}_{t} & =\boldsymbol{\alpha}^{*}+\boldsymbol{\delta}^{*} \cdot t-\boldsymbol{\Phi}(1) \mathbf{y}_{t-1}+\zeta_{1} \Delta \mathbf{y}_{t-1}+\cdots+\zeta_{p-1} \Delta \mathbf{y}_{t-p+1}+\boldsymbol{\varepsilon}_{t}  \tag{10.2.26}\\
+& =\boldsymbol{\alpha}^{*}+\boldsymbol{\delta}^{*} \cdot t-\underset{(n \times h)(h \times 1)}{\mathbf{B}} \mathbf{z}_{t-1}+\zeta_{1} \Delta \mathbf{y}_{t-1}+\cdots+\zeta_{p-1} \Delta \mathbf{y}_{t-p+1}+\boldsymbol{\varepsilon}_{t} \tag{10.2.27}
+\end{align*}
+
+
+where $\boldsymbol{\alpha}^{*}$ and $\boldsymbol{\delta}^{*}$ are as in (10.2.14) and $\mathbf{z}_{t}$ is given by
+
+
+\begin{equation*}
+\underset{(h \times 1)}{\mathbf{z}_{t}} \equiv \underset{(h \times n)}{\mathbf{A}_{(n \times 1)}^{\prime}} \underset{(n)}{\mathbf{y}_{t}} . \tag{10.2.28}
+\end{equation*}
+
+
+Since, as noted above, the $n \times h$ matrix $\mathbf{A}$ collects $h$ cointegrating vectors, $\mathbf{z}_{t}$ is trend stationary (with a suitable choice of the initial value $\mathbf{y}_{0}$ ). ${ }^{9}$ This representation is called the vector error-correction model (VECM) or the error-correction representation. If it were not for the term $\mathbf{B} \mathbf{z}_{t-1}$ in the VECM, the process, expressed as a VAR in first differences, could not be cointegrated. The VECM accommodates $h$ cointegrating relationships by including $h$ linear combinations of levels of the variables. If there are no time trends in the cointegrating relations, that is, if $\mathbf{A}^{\prime} \boldsymbol{\delta}=\mathbf{0}$, then $\boldsymbol{\delta}^{*}=\boldsymbol{\Phi}(1) \boldsymbol{\delta}=\mathbf{B A}^{\prime} \boldsymbol{\delta}=\mathbf{0}$. So the VAR and the VECM representations do not involve time trends despite the possible existence of time trends in the elements of $\mathbf{y}_{t}$.
+
+That the same I(0) process has the VMA, VAR, and VECM representations is known as the Granger Representation Theorem.
+
+Example 10.4 (From VMA to VAR/VECM): In the previous example, we derived the triangular representation from the VMA representation (10.1.12). In this example, we derive the VAR and VECM representations from the same VMA representation. For the $\boldsymbol{\Psi}(L)$ in (10.1.12), it is easy to verify that (10.2.17) is satisfied with
+
+\[
+\boldsymbol{\Phi}(L)=\mathbf{I}_{2}-\boldsymbol{\Phi}_{1} L, \quad \boldsymbol{\Phi}_{1}=\left[\begin{array}{cc}
+0 & \gamma  \tag{10.2.29}\\
+0 & 1
+\end{array}\right] .
+\]
+
+So the VMA can be represented by a finite-order VAR. For this VAR, we have
+
+\[
+\boldsymbol{\Phi}(1)=\mathbf{I}_{2}-\boldsymbol{\Phi}_{1}=\left[\begin{array}{rr}
+1 & -\gamma  \tag{10.2.30}\\
+0 & 0
+\end{array}\right],
+\]
+
+which can be written as (10.2.21) with
+
+\footnotetext{${ }^{9}$ Just in case you are wondering why $y_{0}$ is relevant. It is true that you can solve (10.2.27) for $z_{t}$ as
+
+$$
+\mathbf{z}_{t-1}=\left(\mathbf{B}^{\prime} \mathbf{B}\right)^{-1} \mathbf{B}^{\prime}\left[\alpha^{*}+\delta^{*} \cdot t-\Delta \mathbf{y}_{t}+\zeta_{1} \Delta \mathbf{y}_{t-1}+\cdots+\zeta_{p-1} \Delta \mathbf{y}_{t-p+1}+\varepsilon_{t}\right]
+$$
+
+So you might think that $\mathbf{z}_{t}$ is trend stationary regardless of the choice of $\mathbf{y}_{0}$. This is not true, strictly speaking, because, unlike in the VMA representation, $\Delta \mathbf{y}_{t}$ in the VAR/VECM representation is not defined for $t=-1,-2, \ldots$. Only with a judicious choice of $\mathbf{y}_{0}$ can one make $\Delta \mathbf{y}_{t}(t=1,2, \ldots)$ stationary. This point is mentioned in Johansen (1995, Theorem 4.2).
+}
+\[
+\mathbf{B}=\left[\begin{array}{l}
+1  \tag{10.2.31}\\
+0
+\end{array}\right] \text { and } \mathbf{A}=\left[\begin{array}{r}
+1 \\
+-\gamma
+\end{array}\right] \quad(\text { for example }) .
+\]
+
+By (10.2.27) and (10.2.28), the VECM for this choice of $\mathbf{B}$ and $\mathbf{A}$ is
+
+
+\begin{gather*}
+{\left[\begin{array}{l}
+\Delta y_{1 t} \\
+\Delta y_{2 t}
+\end{array}\right]=\left[\begin{array}{c}
+\gamma \delta_{2}+\alpha_{1}-\gamma \alpha_{2} \\
+\delta_{2}
+\end{array}\right]+\left[\begin{array}{c}
+\delta_{1}-\gamma \delta_{2} \\
+0
+\end{array}\right] \cdot t-\left[\begin{array}{l}
+1 \\
+0
+\end{array}\right] z_{t-1}+\boldsymbol{\varepsilon}_{t}} \\
+z_{t} \equiv \mathbf{A}^{\prime} \mathbf{y}_{t}=y_{1 t}-\gamma y_{2 t} \tag{10.2.32}
+\end{gather*}
+
+
+The deterministic trend disappears if $\delta_{1}=\gamma \delta_{2}$, that is, if the cointegrating vector also eliminates the deterministic trend.
+
+\section*{Johansen's ML Procedure}
+In closing this section, having introduced the VECM representation, we here provide an executive summary of the maximum likelihood (ML) estimation of cointegrated systems proposed by Johansen (1988). Go back to the VAR representation (10.2.13). For simplicity, we assume that there is no trend in the cointegrating relations, so that $\delta^{*}=0 .^{10}$ We have considered the conditional ML estimation (conditional on the initial values of $\mathbf{y}$ ) of a VAR in Section 8.7. If the error vector $\boldsymbol{\varepsilon}_{t}$ is jointly normal $N(\mathbf{0}, \boldsymbol{\Omega})$ and if we have a sample of $T+p$ observations $\left(\mathbf{y}_{-p+1}, \mathbf{y}_{-p+2}, \ldots, \mathbf{y}_{T}\right)$, then the (average) log likelihood of $\left(\mathbf{y}_{1}, \ldots, \mathbf{y}_{T}\right)$ conditional on the initial values $\left(\mathbf{y}_{-p+1}, \mathbf{y}_{-p+2}, \ldots, \mathbf{y}_{0}\right)$ is given by
+
+
+\begin{equation*}
+Q_{T}(\boldsymbol{\theta})=-\frac{n}{2} \log (2 \pi)+\frac{1}{2} \log \left(\left|\boldsymbol{\Omega}^{-1}\right|\right)-\frac{1}{2 T} \sum_{t=1}^{T}\left\{\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)^{\prime} \boldsymbol{\Omega}^{-1}\left(\mathbf{y}_{t}-\boldsymbol{\Pi}^{\prime} \mathbf{x}_{t}\right)\right\}, \tag{10.2.33}
+\end{equation*}
+
+
+where $n$ is the dimension of the system (not the sample size), $\boldsymbol{\theta}=(\boldsymbol{\Pi}, \boldsymbol{\Omega})$, and
+
+\[
+\boldsymbol{\Pi}^{\prime} \equiv\left[\begin{array}{ccccc}
+\boldsymbol{\alpha}^{*} & \boldsymbol{\Phi}_{1} & \boldsymbol{\Phi}_{2} & \cdots & \boldsymbol{\Phi}_{p}  \tag{10.2.34}\\
+(n \times 1) & (n \times n) & (n \times n) & & (n \times n)
+\end{array}\right], \quad \underset{((1+n p) \times 1)}{\mathbf{x}_{t}} \equiv\left[\begin{array}{c}
+1 \\
+\mathbf{y}_{t-1} \\
+\mathbf{y}_{t-2} \\
+\vdots \\
+\mathbf{y}_{t-p}
+\end{array}\right]
+\]
+
+\footnotetext{${ }^{10}$ For a thorough treatment of time trends in the VECM, see Johansen (1995, Sections 5.7 and 6.2).
+}Let
+
+
+\begin{equation*}
+\underset{(n \times n)}{\zeta_{0}} \equiv-\boldsymbol{\Phi}(1)=-\left[\mathbf{I}_{n}-\left(\boldsymbol{\Phi}_{1}+\cdots+\boldsymbol{\Phi}_{p}\right)\right] . \tag{10.2.35}
+\end{equation*}
+
+
+Then the reduced rank condition is that $\zeta_{0}=-\mathbf{B A}^{\prime}$ and the VECM (10.2.26) can be written as
+
+
+\begin{equation*}
+\Delta \mathbf{y}_{t}=\boldsymbol{\alpha}^{*}+\zeta_{0} \mathbf{y}_{t-1}+\zeta_{1} \Delta \mathbf{y}_{t-1}+\cdots+\zeta_{p-1} \Delta \mathbf{y}_{t-p+1}+\varepsilon_{t} \tag{10.2.36}
+\end{equation*}
+
+
+Equations (10.2.35) and (10.2.24) provide a one-to-one mapping between ( $\boldsymbol{\Phi}_{1}, \ldots$, $\left.\boldsymbol{\Phi}_{p}\right)$ and $\left(\zeta_{0}, \ldots, \zeta_{p-1}\right)$. Thus the same average log likelihood $Q_{T}(\boldsymbol{\theta})$ can be rewritten in terms of the VECM parameters as
+
+
+\begin{equation*}
+-\frac{n}{2} \log (2 \pi)+\frac{1}{2} \log \left(\left|\boldsymbol{\Omega}^{-1}\right|\right)-\frac{1}{2 T} \sum_{t=1}^{T}\left\{\left(\Delta \mathbf{y}_{t}-\tilde{\boldsymbol{\Pi}}^{\prime} \tilde{\mathbf{x}}_{t}^{\prime}\right)^{\prime} \boldsymbol{\Omega}^{-1}\left(\Delta \mathbf{y}_{t}-\tilde{\boldsymbol{\Pi}}^{\prime} \tilde{\mathbf{x}}_{t}\right)\right\} \tag{10.2.37}
+\end{equation*}
+
+
+where
+
+\[
+\widetilde{\boldsymbol{\Pi}}^{\prime} \equiv\left[\begin{array}{ccccc}
+\boldsymbol{\alpha}^{*} & \zeta_{0} & \zeta_{1} & \cdots & \zeta_{p-1}  \tag{10.2.38}\\
+(n \times 1) & \underset{(n \times n)}{(n \times n)}
+\end{array}\right], \quad \underset{((1+n p) \times 1)}{\tilde{\mathbf{x}}_{t}} \equiv\left[\begin{array}{c}
+1 \\
+\mathbf{y}_{t-1} \\
+\Delta \mathbf{y}_{t-1} \\
+\vdots \\
+\Delta \mathbf{y}_{t-p+1}
+\end{array}\right]
+\]
+
+The ML estimate of the VECM parameters is the $\left(\boldsymbol{\alpha}^{*}, \boldsymbol{\zeta}_{0}, \ldots, \boldsymbol{\zeta}_{p-1}, \boldsymbol{\Omega}\right)$ that maximizes this objective function, subject to the reduced rank constraint that $\zeta_{0}=$ -BA' for some $n \times h$ full rank matrices $\mathbf{A}$ and $\mathbf{B}$. This constraint accommodates $h$ cointegrating relationships on the I(1) system. Obviously, the maximized log likelihood is higher the higher the assumed cointegration rank $h$. Thus, we can use the likelihood ratio statistic to test the null hypothesis that $h=h_{0}$ against the alternative hypothesis of more cointegration. Unlike in the stationary VAR case, the limiting distribution of the likelihood ratio statistic is nonstandard. Given the cointegration rank $h$ thus determined, the ML estimate of $h$ cointegrating vectors can be obtained as the estimate of $\mathbf{A}$. For a more detailed exposition of this procedure, see Hamilton (1994, Chapter 20) and also Johansen (1995, Chapter 6).
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item (Error vector in the triangular representation) Consider the error vector $\left(\mathbf{z}_{t}^{*}, \mathbf{u}_{2 t}\right)$ in the triangular representation (10.2.8) and (10.2.9). It can be written as
+\end{enumerate}
+
+\[
+\left[\begin{array}{c}
+\mathbf{z}_{t}^{*}  \tag{10.2.39}\\
+(h \times 1) \\
+\mathbf{u}_{2 t} \\
+((n-h) \times 1)
+\end{array}\right]=\boldsymbol{\Psi}^{*}(L) \boldsymbol{\varepsilon}_{t} \equiv\left[\begin{array}{c}
+\boldsymbol{\Psi}_{1}^{*}(L) \\
+(h \times n) \\
+\boldsymbol{\Psi}_{2}(L) \\
+((n-h) \times n)
+\end{array}\right] \boldsymbol{\varepsilon}_{t} .
+\]
+
+Here,
+
+
+\begin{equation*}
+\Psi_{1}^{*}(L)=\underset{(h \times n)}{\left(\mathbf{I},-\Gamma^{\prime}\right)} \underset{(n \times n)}{\alpha}(L), \tag{10.2.40}
+\end{equation*}
+
+
+where $\boldsymbol{\alpha}(L)$ is from the BN decomposition and $\boldsymbol{\Psi}_{2}(L)$ is the last $n-h$ rows of $\boldsymbol{\Psi}(L)$ in the VMA representation\\
+(a) Show that $\boldsymbol{\Psi}_{2}(1)$ is of full row rank (i.e., the $n-h$ rows of $\boldsymbol{\Psi}_{2}(1)$ are linearly independent). Hint: Suppose, contrary to the claim, that there exists an $(n-h)$-dimensional vector $\mathbf{b} \neq \mathbf{0}$ such that $\mathbf{b}^{\prime} \boldsymbol{\Psi}_{2}(1)=\mathbf{0}^{\prime}$. Show that $\left(\mathbf{0}^{\prime}, \mathbf{b}^{\prime}\right)$ would be an ( $n$-dimensional) cointegrating vector and the cointegration rank would be at least $h+1$.\\
+(b) Verify that $\Psi^{*}(L)$ is absolutely summable.\\
+(c) Write $\Psi^{*}(L)=\Psi_{0}^{*}+\Psi_{1}^{*} L+\Psi_{2}^{*} L^{2}+\cdots$. For the bivariate process of Example 10.3, verify that $\boldsymbol{\Psi}_{0}^{*}$ is not diagonal. (Therefore, even if the elements of $\boldsymbol{\varepsilon}_{t}$ are uncorrelated, $\mathbf{z}_{t}^{*}$ and $\mathbf{u}_{2 t}$ can be correlated.)\\
+2. (From triangular to VMA representations) For Example 10.3, start from the triangular representation (10.2.11) and recover the VMA representation. Hint: Take the first difference of the cointegrating regression.\\
+3. (An alternative decomposition of $\boldsymbol{\Phi}(1)$ ) For the bivariate system of Example 10.4, verify that
+
+$$
+\mathbf{B}=(\gamma, 0)^{\prime}, \quad \mathbf{A}=(1 / \gamma,-1)^{\prime}
+$$
+
+is an alternative decomposition of $\boldsymbol{\Phi}$ (1). Write down the VECM corresponding to this choice of $\mathbf{B}$ and $\mathbf{A}$.\\
+4. (A trivariate VAR that is I(2)) Consider a trivariate VAR given by
+
+$$
+\left\{\begin{array}{l}
+\left.y_{1 t}=2 y_{1, t-1}-y_{1, t-2}+\varepsilon_{1 t} \quad \text { (i.e., } \Delta^{2} y_{1 t}=\varepsilon_{1 t}\right), \\
+y_{2 t}=\rho y_{2, t-1}+\varepsilon_{2 t} \quad \text { with }|\rho|<1, \text { and } \\
+y_{3 t}=\varepsilon_{3 t} .
+\end{array}\right.
+$$
+
+Verify that this is an $\mathrm{I}(2)$ system by writing $\Delta^{2} \mathbf{y}_{t}$ as a vector moving average process. Write down $\boldsymbol{\Phi}(L)$ for this system and show that $\boldsymbol{\Phi}(z)$ has three roots, two unit roots and one that is outside the unit circle.
+
+\subsection*{10.3 Testing the Null of No Cointegration}
+Having introduced the notion of cointegration, we need to deal with two issues. The first is how to determine the cointegration rank, and the second is how to estimate and do inference on cointegrating vectors. The first will be discussed in this section, and the second will be the topic of the next section. There are several procedures for determining the cointegration rank. Among them are Johansen's (1988) likelihood ratio test derived from the maximum likelihood estimation of the VECM (briefly covered at the end of previous section) and the common trend procedure of Stock and Watson (1988). These procedures allow us to test the null of $h=h_{0}$ where $h_{0}$ is some arbitrary integer between 0 and $n-1$. We will not cover these procedures. ${ }^{11}$ Here, we cover only the simple test suggested by Engle and Granger (1987) and extended by Phillips and Ouliaris (1990). In that test, the null hypothesis is that $h=0$ (no cointegration) and the alternative is that $h \geq 1$.
+
+\section*{Spurious Regressions}
+The test of Engle and Granger (1987) is based on OLS estimation of the regression
+
+
+\begin{equation*}
+y_{1 t}=\mu+\boldsymbol{\gamma}^{\prime} \mathbf{y}_{2 t}+z_{t}^{*}, \tag{10.3.1}
+\end{equation*}
+
+
+where $y_{1 t}$ is the first element of $\mathbf{y}_{t}, \mathbf{y}_{2 t}$ is the vector of the remaining $n-1$ elements, and $z_{t}^{*}$ is an error term. This regression would be a cointegrating regression if $h=1$ and $y_{1 t}$ were part of the cointegrating relationship. Under the null of $h=0$ (no cointegration), however, this regression does not represent a cointegrating relationship. Let ( $\hat{\mu}, \hat{\boldsymbol{\gamma}}$ ) be the OLS coefficient estimates of ( $\mu, \boldsymbol{\gamma}$ ). It turns out that $\hat{\boldsymbol{\gamma}}$
+
+\footnotetext{${ }^{11}$ See Maddala and Kim (1998, Section 7) for a catalogue of available procedures.
+}
+does not provide consistent estimates of any population parameters of the system! For example, even if $y_{1 t}$ is unrelated to $\mathbf{y}_{2 t}$ (in that $\Delta y_{1 t}$ and $\Delta \mathbf{y}_{2 s}$ are independent for all $s, t$ ), the $t$ - and $F$-statistics associated with the OLS estimates become arbitrarily large as the sample size increases, giving a false impression that there is a close connection between $y_{1 t}$ and $\mathbf{y}_{2 t}$. This phenomenon, called the spurious regression, was first discovered in Monte Carlo experiments by Granger and Newbold (1974). Phillips (1986) theoretically derived the large-sample distributions of the statistics for spurious regressions. For example, the $t$-value, if divided by $\sqrt{T}$, converges to a nondegenerate distribution.
+
+\section*{The Residual-Based Test for Cointegration}
+The regression (10.3.1) nevertheless provides a useful device for testing the null of no cointegration, because the OLS residuals, $y_{1 t}-\hat{\mu}-\hat{\boldsymbol{\gamma}}^{\prime} \mathbf{y}_{2 t}$, should appear to have a stochastic trend if $\mathbf{y}_{t}$ is not cointegrated and be stationary otherwise. Engle and Granger (1987) suggested applying the ADF $t$-test to the residuals in order to test the null of no cointegration. Because of the use of the residuals, the test is called the residual-based test for cointegration. The asymptotic distributions of the test statistic for some leading unit-root tests were derived theoretically and the (asymptotic) critical values tabulated by Phillips and Ouliaris (1990) and Hansen (1992a).
+
+In contrast to the univariate unit-root tests, the asymptotic distributions (and hence the asymptotic critical values) depend on the dimension $n$ of the system. This is because the residuals depend on ( $\hat{\mu}, \hat{\gamma}$ ), which, being estimates based on data, are random variables. Here we indicate the appropriate asymptotic critical values when the unit-root test applied to the residuals is the ADF $t$-test of Proposition 9.6 for autoregressions without a constant or time. That is, the ADF $t$-statistic is the $t$ value on the $x_{t-1}$ coefficient in the following augmented autoregression estimated on residuals:
+
+
+\begin{equation*}
+\Delta x_{i}=(\rho-1) x_{t-1}+\zeta_{1} \Delta x_{t-1}+\cdots+\zeta_{p} \Delta x_{t-p}+\text { error }, \tag{10.3.2}
+\end{equation*}
+
+
+where $x_{t}$ here is the residual from regression (10.3.1). There is no need to include a constant in this augmented autoregression because, with the regression already including a constant, the sample mean of the residuals is guaranteed to be zero. There is no need to include time either, because the variables of the regression (10.3.1) implicitly or explicitly include time trends (see below for more on this). The number of lagged changes, $p$, needs to be increased to infinity with the sample\\
+size $T$, but at a rate slower than $T^{1 / 3}$. More precisely, ${ }^{12}$
+
+
+\begin{equation*}
+p \rightarrow \infty \text { but } \frac{p}{T^{1 / 3}} \underset{\mathrm{p}}{\rightarrow} 0 \text { as } T \rightarrow \infty . \tag{10.3.3}
+\end{equation*}
+
+
+The critical values are the same if Phillips' $Z_{t}$-test (see Analytical Exercise 6 of the previous chapter) is used instead of the ADF $t$. There are three cases to consider.
+
+\begin{enumerate}
+  \item $\mathrm{E}\left(\Delta \mathbf{y}_{2 t}\right)=\mathbf{0}$ and $\mathrm{E}\left(\Delta y_{1 t}\right)=0$, so no elements of the I(1) system have drift. The appropriate critical values are in Table 10.1(a), which reproduces Table IIb of Phillips and Ouliaris (1990). For a statement of the conditions on the VMA representation under which the asymptotic distribution is derived, see Hamilton (1994, Proposition 19.4).
+  \item $\mathrm{E}\left(\Delta \mathbf{y}_{2 t}\right) \neq \mathbf{0}$ but $\mathrm{E}\left(\Delta y_{1 t}\right)$ may or may not be zero. This case was discussed by Hansen (1992a). Let $g(\equiv n-1)$ be the number of regressors besides a constant in the regression (10.3.1). Some of the $g$ regressors have drift. Since linear trends from different regressors can be combined into one, ${ }^{13}$ the regression (10.3.1) can be rewritten as a regression of $y_{1 t}$ on a constant, $g-1 \mathrm{I}(1)$ regressors without drift, and one $\mathrm{I}(1)$ regressor with drift. Now, since linear trends dominate stochastic trends (in the sense made precise in the discussion of the BN decomposition in the previous chapter), the I(1) regressor with a trend behaves very much like time in large samples. So the residuals are "asymptotically the same" as the residuals from a regression with a constant, $g-1$ driftless I(1) variables, and time as regressors, in the sense that the limiting distribution of a statistic based on the residuals from the former regression is the same as that from the latter regression.
+\end{enumerate}
+
+The critical values for the ADF $t$ test based on the latter regression are tabulated in Table IIc of Phillips and Ouliaris (1990). Therefore, to find the appropriate critical value when the regression (10.3.1) has a constant and $g$ regressors but not time, turn to this table for $g-1$ regressors. If the regression has only one regressor besides the constant (i.e., if $g=1$ ), then the regression is asymptotically equivalent to a regression of $y_{1 t}$ on a constant and time. For this case, the limiting distribution of the ADF $t$-statistic calculated from the residuals turns out to be the Dickey-Fuller distribution $\left(D F_{t}^{\tau}\right)$ of Proposition 9.8 Table 10.1(b) combines these distributions: for the case of one $\mathrm{I}(1)$
+
+\footnotetext{${ }^{12}$ See Phillips and Ouliaris (1990, Theorem 4.2). The lag length $p$ can be a random variable because it can be data-dependent. This condition is the same as in the Said-Dickey extension of the ADF tests in the previous chapter (see Section 9.4), except that $p$ here can be a random variable.\\
+${ }^{13}$ For example, let $n=3$ so that there are two regressors, $y_{2 t}$ and $y_{3 t}$ with coefficients $\gamma_{1}$ and $\gamma_{2}$, respectively. If $\delta_{2}$ and $\delta_{3}$ are the drifts in $y_{2 t}$ and $y_{3 t}$, respectively, then the linear trends in regression (10.3.1) are $\gamma_{1} \delta_{2} t$ and $\gamma_{2} \delta_{3} t$, which can be combined into a single time trend $\left(\gamma_{1} \delta_{2}+\gamma_{2} \delta_{3}\right) t$.
+}\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 10.1: Critical Values for the ADF $\boldsymbol{t}$-Statistic Applied to Residuals}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\multicolumn{5}{|c|}{Estimated Regression: $y_{1 t}=\mu+\boldsymbol{\gamma}^{\prime} \mathbf{y}_{2 t}$} \\
+\hline
+Number of regressors, excluding constant & 1\% & 2.5\% & 5\% & 10\% \\
+\hline
+\multicolumn{5}{|l|}{(a) Regressors have no drift} \\
+\hline
+1 & -3.96 & -3.64 & -3.37 & -3.07 \\
+\hline
+2 & -4.31 & -4.02 & -3.77 & -3.45 \\
+\hline
+3 & -4.73 & -4.37 & -4.11 & -3.83 \\
+\hline
+4 & -5.07 & -4.71 & -4.45 & -4.16 \\
+\hline
+5 & -5.28 & -4.98 & -4.71 & -4.43 \\
+\hline
+\multicolumn{5}{|l|}{(b) Some regressors have drift} \\
+\hline
+1 & -3.96 & -3.67 & -3.41 & -3.13 \\
+\hline
+2 & -4.36 & -4.07 & -3.80 & -3.52 \\
+\hline
+3 & -4.65 & -4.39 & -4.16 & -3.84 \\
+\hline
+4 & -5.04 & -4.77 & -4.49 & -4.20 \\
+\hline
+5 & -5.36 & -5.02 & -4.74 & -4.46 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Source: For panel (a), Phillips and Ouliaris (1990, Table IIb). For panel (b), the first row is from Fuller (1996, Table 10.A.2), and the other rows are from Phillips and Ouliaris (1990, Table IIc).\\
+regressor ( $g=1$ ), it shows the ADF $t^{\tau}$-distribution, and for the case of $g(>1)$ regressors, it shows the critical values from Table IIc of Phillips and Ouliaris (1990) for $g-1$ regressors. For example, if $g=2$, the 5 percent critical value is -3.80 , which is the 5 percent critical value in Table IIc in Phillips and Ouliaris (1990) for one regressor.\\
+3. This leaves the case where $\mathrm{E}\left(\Delta \mathbf{y}_{2 t}\right)=\mathbf{0}$ and $\mathrm{E}\left(\Delta y_{1 t}\right) \neq 0$. Since $y_{1 t}$ has drift and $\mathbf{y}_{2 t}$ does not, we need to include time in the regression (10.3.1) in order to remove a linear trend from the residuals. The discussion for the previous case makes it clear that the ADF $t$-statistic calculated using the residuals from a regression of $y_{1 t}$ on a constant, $g$ driftless $\mathbf{I}(1)$ regressors $\mathbf{y}_{2 t}$, and time has the asymptotic distribution tabulated in Table 10.1(b) for $g+1$ regressors (or Table IIc of Phillips and Ouliaris, 1990, for $g$ regressors). For example, if $g=2$, the regressor (10.3.1) has a constant, two $\mathrm{I}(1)$ regressors, and time; the critical values can be found from Table 10.1(b) for three regressors.
+
+Several comments are in order about the residual-based test for cointegration.
+
+\begin{itemize}
+  \item (Test consistency) The alternative hypothesis is that $\mathbf{y}_{t}$ is cointegrated (i.e., $h \geq 1$ ). The test is consistent against the alternative as long as $y_{1 t}$ is cointegrated with $\mathbf{y}_{2 t} .{ }^{14}$ The reason (we will discuss it in more detail below for the case with $h=1$ ) is that the OLS residuals from the regression (10.3.1) will converge to a stationary process. However, if $y_{1 t}$ is $\mathrm{I}(1)$ and not part of the cointegration relationship, then the test may have no power against the alternative of cointegration because the OLS residuals, $y_{1 t}-\boldsymbol{\gamma}^{\prime} \mathbf{y}_{2 t}$, with a nonzero coefficient (of unity) on the $\mathrm{I}(1)$ variable $y_{1 t}$, will not converge to a stationary process. Thus, the choice of normalization (of which variable should be used as the dependent variable) matters for the consistency of the test.
+  \item (Should time be included in the regression?) If time is included in the regression (10.3.1), then the drift in $y_{1 t}, \mathrm{E}\left(\Delta y_{1 t}\right)$, affects only the time coefficient, making the numerical value of the residuals (and hence the ADF $t$-value) invariant to $\mathrm{E}\left(\Delta y_{1 t}\right)$. This means that the case 3 procedure, which adds time to the regressors, can be used for case 1 , where $\mathrm{E}\left(\Delta y_{1 t}\right)$ happens to be zero. That is, if you include time in the regression (10.3.1), then the appropriate critical value for case 1 is given from Table 10.1(b) for $g+1$ regressors. The procedure is also valid for case 2 , because if time is included in addition to a constant and $g \mathrm{I}$ (1) regressors with drift, then the regression can be rewritten as a regression with a constant, $g$ driftless $\mathrm{I}(1)$ regressors, and time that combines the drifts in the $g \mathrm{I}(1)$ regressors. This regression falls under case 3 and the critical values provided by Table 10.1(b) for $g+1$ regressors apply. Therefore, when time is included in the regression (10.3.1), the same critical values can be used, regardless of the location of drifts. A possible disadvantage is reduced power in finite samples. The finite-sample power is indeed lower at least for the DGPs examined by Hansen (1992a) in his simulations.
+  \item (Choice of lag length) The requirement (10.3.3) does not provide a practical rule in finite samples for selecting the lag length $p$ in the augmented autoregression to be estimated on the residuals. There seems to be no work in the context of the residual-based test comparable to that of Ng and Perron (1995) for univariate $\mathrm{I}(1)$ processes. The usual practice is to proceed as in the univariate context, which is to use the Akaike information criterion (AIC) or the Bayesian information criterion (BIC), also called the Schwartz information criterion (SIC), to determine the number of lagged changes.
+\end{itemize}
+
+\footnotetext{${ }^{14}$ For the case of $h=1$, this is an implication of Theorem 5.1 of Phillips and Ouliaris (1990). Their remark (d) to this theorem shows that the test is consistent when $h>1$ and hence $\mathbf{y}_{2 t}$ is cointegrated.
+}\begin{itemize}
+  \item (Finite-sample considerations) Besides the residual-based ADF $t$-test, a number of tests are available for testing the null of no cointegration. They include tests proposed by Phillips and Ouliaris (1990), Stock and Watson (1988), and Johansen (1988). Haug (1996) reports a recent Monte Carlo study examining the finite-sample performance of these and other tests. It reveals a tradeoff between power and size distortions (that is, tests with the least size distortion tend to have low power). The residual-based ADF $t$-test with the lag length chosen by AIC, although less powerful than some other tests, has the least size distortion for the DGPs examined.
+\end{itemize}
+
+The following example applies the residual-based test with the ADF $t$-statistic to the consumption-income relationship.
+
+Example 10.5 (Are consumption and income cointegrated?): As was already mentioned in connection with Figure 10.1(a), log income ( $y_{t}$ ) and log consumption ( $c_{t}$ ) appear to be cointegrated with a cointegrating vector of $(1,-1)$. This figure, however, is rather deceiving. The plot of $y_{t}-c_{t}$ (which is the log of the saving rate) in Figure 10.1(b) shows an upward drift right after the war and a downward drift since the mid 1980s. (The latter is the well-publicized fact that the U.S. personal saving rate has been declining.) As seen below, the test results depend on whether to include these periods or not. We initially focus on the sample period of 1950:Q1 to 1986:Q4 (148 obervations).
+
+We first test whether the two series are individually $\mathrm{I}(1)$, by conducting the ADF $t$-test with a constant and time trend in the augmented autoregression. In applying the BIC to select the number of lagged changes in the augmented augoregression, we follow the same practice of the previous chapter: the maximum length $\left(p_{\text {max }}\right)$ is $\left[12 \cdot(T / 100)^{1 / 4}\right]$ (the integer part of $\left[12 \cdot(T / 100)^{1 / 4}\right]$ ), the sample period is fixed at $t=p_{\text {max }}+2, p_{\text {max }}+3, \ldots, T$ in the process of choosing the lag length $p$, and, given $p$, the maximum sample of $t=p+2, p+3, \ldots, T$ is used to estimate the augmented autoregression with $p$ lagged changes. For the present sample size, $p_{\text {max }}$ is 13 .
+
+For disposable income, the BIC selects the lag length of 0 and the ADF $t$-statistic $\left(t^{\tau}\right)$ is -1.80 . The 5 percent critical value from Table 9.2 (c) is -3.41 , so we accept the hypothesis that $y_{t}$ is $\mathrm{I}(1)$. For consumption, the lag length by the BIC is 1 and the $\mathrm{ADF} t$ statistic is -2.07 . So we accept the $\mathrm{I}(1)$ null at 5 percent. Thus, both series might well be described as I(1) with drift.
+
+Turning to the residual-based test for cointegration, the OLS estimate of the static regression is
+
+\begin{figure}[h]
+\begin{center}
+  \includegraphics[alt={},max width=\textwidth]{14fb0795-6d81-4e76-9788-792298f1ddae-666_532_1145_278_234}
+\captionsetup{labelformat=empty}
+\caption{Figure 10.1(b): Log Income Minus Log Consumption}
+\end{center}
+\end{figure}
+
+
+\begin{equation*}
+c_{t}=\underset{(0.009)}{-0.046}+\underset{(0.0037)}{0.975 y_{t}}, \quad R^{2}=0.998, \quad t=1950: \mathrm{Q} 1 \text { to } 1986: \mathrm{Q} 4 . \tag{10.3.4}
+\end{equation*}
+
+
+To conduct the residual-based ADF $t$ test, an augmented autoregression without constant or time is estimated on the residuals with the lag length of 0 selected by the BIC. The ADF $t$ statistic is -5.49 . Since the series have time trends, we turn to Table 10.1(b), rather than Table 10.1(a), to find critical values. For $g=1$, the 5 percent critical value is -3.41 , so we can reject the null of no cointegration.
+
+If the residual-based test is conducted on the entire sample of $47: \mathrm{Q} 1$ to 98:Q1, the ADF $t$ statistic is -2.94 with the lag length of 1 determined by BIC, and thus, we cannot reject the hypothesis that the consumption-onincome regression is spurious!
+
+\section*{Testing the Null of Cointegration}
+In the above test, cointegration is taken as the alternative hypothesis rather than the null. But very often in economics the hypothesis of economic interest is whether the variables in question are cointegrated, so it would be desirable to develop tests where the null hypothesis is that $h=1$ rather than that $h=0$. Very recently, several tests of the null of cointegration have been proposed. For a catalogue of such tests, see Maddala and Kim (1998, Section 4.5). As was true in the testing of\\
+the null that a univariate process is $\mathrm{I}(0)$, there is no single test of cointegration used by the majority of researchers yet. ${ }^{15}$
+
+\section*{QUESTION FOR REVIEW}
+\begin{enumerate}
+  \item For the residual-based test for cointegration with the regression (10.3.1) not including time as a regressor, verify that there is very little difference in the critical value between case 1 and case 2 .
+\end{enumerate}
+
+\subsection*{10.4 Inference on Cointegrating Vectors}
+In the previous section, we examined whether an $\mathrm{I}(1)$ system is cointegrated. In this section, we assume that the system is known to be cointegrated and that the cointegration rank and the associated triangular representation are known. ${ }^{16}$ Our interest is to estimate the cointegrating vectors in the triangular representation and to make inference about them. For the most part, we focus on the special case where the cointegration rank is 1 ; the general case is briefly discussed at the end of the section.
+
+\section*{The SOLS Estimator}
+For the $h=1$ case, the triangular representation is
+
+\[
+\left\{\begin{array}{c}
+y_{1 t}=\mu+\boldsymbol{\gamma}^{\prime} \mathbf{y}_{2 t}+z_{t}^{*}  \tag{10.4.1}\\
+\Delta \mathbf{y}_{2 t}=\boldsymbol{\delta}_{2}+\mathbf{u}_{2 t}
+\end{array},\left[\begin{array}{c}
+z_{t}^{*} \\
+((n-1) \times 1) \\
+\mathbf{u}_{2 t} \\
+((n-1) \times 1)
+\end{array}\right]=\underset{(n \times n)}{\boldsymbol{\Psi}^{*}(L) \underset{(n \times 1)}{\boldsymbol{\varepsilon}_{t}},}\right.
+\]
+
+where $\mathbf{y}_{2 t}$ is not cointegrated. (This is just reproducing (10.2.3) and (10.2.5) with (10.2.39) for $h=1$.) So the regression (10.3.1) is now the cointegrating regression. Therefore, there exists a unique $(n-1)$-dimensional vector $\boldsymbol{\gamma}$ such that $y_{1 t}-\tilde{\boldsymbol{\gamma}}^{\prime} \mathbf{y}_{2 t}$ is a stationary process $\left(z_{t}^{*}\right)$ plus some time-invariant random variable $(\mu)$ when $\tilde{\gamma}=\gamma$ and has a stochastic trend when $\tilde{\gamma} \neq \gamma$. This suggests that the OLS estimate
+
+\footnotetext{${ }^{15}$ The procedures of Johansen (1988) and Stock and Watson (1988) cannot be used for testing the null of cointegration against the alternative of no cointegration, because in their tests the alternative hypothesis specifies more cointegration than the null.\\
+${ }^{16}$ In practice, we rarely have such knowledge, and the decision to entertain a system with $h$ cointegrating relationships is usually based on the outcome of prior tests (such as those mentioned in the previous section) designed for determining the cointegration rank. This creates a pretest problem, because the distribution of the estimated cointegrating vectors does not take into account the uncertainty about the cointegration rank. This issue has not been studied extensively.
+}
+( $\hat{\mu}, \hat{\boldsymbol{\gamma}}$ ) of the coefficient vector, which minimizes the sum of squared residuals, is consistent. In fact, as was shown by Phillips and Durlauf (1986) and Stock (1987) for the case where $\boldsymbol{\delta}_{2}$ in (10.4.1) $\left(=\mathrm{E}\left(\Delta \mathbf{y}_{2 t}\right)\right)$ is zero and by Hansen (1992a, Theorem 1(b)) for the $\boldsymbol{\delta}_{2} \neq \mathbf{0}$ case, the OLS estimate $\hat{\boldsymbol{\gamma}}$ is superconsistent for the cointegrating vector $\boldsymbol{\gamma}$, with the sampling error converging to 0 at a rate faster than the usual rate of $\sqrt{T} .{ }^{17}$ Also, the $R^{2}$ converges to unity. ${ }^{18}$ The OLS estimator of $\boldsymbol{\gamma}$ from the cointegrating regression will be referred to as the "static" OLS (SOLS) estimator of the cointegrating vector. Since the SOLS estimator is consistent, the residuals converge to a zero-mean stationary process. Thus, if a univariate unitroot test such as the ADF test is applied to the residuals, the test will reject the I(1) null in large samples. This is why the residual-based test of the previous section is consistent against cointegration.
+
+This fact - that the OLS coefficient estimates are consistent when the regressors are $\mathrm{I}(1)$ and not cointegrated - is a remarkable result, in sharp contrast to the case of stationary regressors. To appreciate the contrast, remember from Chapter 3 what it takes to obtain a consistent estimator of $\boldsymbol{\gamma}$ when the regressors $\mathbf{y}_{2 t}$ are stationary: for the OLS estimator to be consistent, the error term $z_{t}^{*}$ has to be uncorrelated with $\mathbf{y}_{2 t}$; otherwise we need instrumental variables for $\mathbf{y}_{2 t}$. In contrast, if $y_{1 t}$ is cointegrated with $\mathbf{y}_{2 t}$ and if the $\mathrm{I}(1)$ regressors $\mathbf{y}_{2 t}$ are not cointegrated, as here, then we do not have to worry about the simultaneity bias, at least in large samples, even though the error term $z_{t}^{*}$ and the I(1) regressors are correlated. ${ }^{19}$
+
+In finite samples, however, the bias of the SOLS estimator (the difference between the expected value of the estimator and the true value) can be large, as noted by Banerjee et al. (1986) and Stock (1987). Another shortcoming of SOLS is that the asymptotic distribution of the associated $t$ value depends on nuisance parameters (which are the coefficients in $\boldsymbol{\Psi}^{*}(L)$ in (10.4.1)), so it is difficult to do inference. Later in this section we will introduce another estimator (to be referred to as the "DOLS" estimator) which is efficient and whose associated test statistics (such as the $t$-and Wald statistics) have conventional asymptotic distributions.
+
+\footnotetext{${ }^{17}$ The speed of convergence is $T$ if $\delta_{2}=0$, and $T^{3 / 2}$ if $\delta_{2} \neq 0$. All the studies cited here assume that $\mu$ is a fixed constant. The same conclusion should hold even if $\mu$ is treated as random. As mentioned in Section 10.1 (see the paragraph right below (10.1.21)), strictly speaking, $\mu+z_{t}^{*}$ is not stationary even if $z_{t}^{*}$ is stationary. However, since $\mu$ and $z_{!}^{*}$ are asymptotically independent as $t \rightarrow \infty, \mu+z_{t}^{*}$ is asymptotically stationary, which is all that is needed for the asymptotic results here.\\
+${ }^{18}$ For a statement of the conditions under which these results hold. see Hamilton (1994, Proposition 19.2). Those conditions are restrictions on $\boldsymbol{\Psi}^{*}(L) \boldsymbol{\varepsilon}_{t}$ in (10.4.1).\\
+${ }^{19}$ If $\mathbf{y}_{2 t}$ is cointegrated, then $h \geq 2$ and the regression (10.3.1)-with $n-1$ regressors - is no longer a cointegrating regression (a cointegrating regression should have $n-h$ regressors, see the triangular representation (10.2.8)). This case can be handled by the general methodology presented by Sims, Stock, and Watson (1990). See Hamilton (1994, Chapter 18) or Watson (1994, Section 2) for an accessible exposition of the methodology.
+}\section*{The Bivariate Example}
+To be clear about the source and nature of the correlation between the error term and the $\mathrm{I}(1)$ regressors and also to pave the way for the introduction of the DOLS estimator, consider the bivariate version of (10.4.1). For the time being, assume $\boldsymbol{\Psi}^{*}(L)=\boldsymbol{\Psi}_{0}^{*}$ (so there is no serial correlation in $\left(z_{t}^{*}, u_{2 t}\right)$ ), $\delta_{2}=0$, and $\mu=0$. The triangular representation can be written as
+
+\[
+\left\{\begin{array}{rl}
+y_{1 t} & =\gamma y_{2 t}+z_{t}^{*}  \tag{10.4.2}\\
+\Delta y_{2 t} & =u_{2 t} .
+\end{array},\left[\begin{array}{c}
+z_{t}^{*} \\
+u_{2 t}
+\end{array}\right]=\boldsymbol{\Psi}_{0}^{*} \boldsymbol{\varepsilon}_{t} .\right.
+\]
+
+The error term $z_{t}^{*}$ and the $\mathrm{I}(1)$ regressor $y_{2 t}$ in the cointegrating regression in (10.4.2) can be correlated because
+
+
+\begin{align*}
+\operatorname{Cov}\left(y_{2 t}, z_{t}^{*}\right) & =\operatorname{Cov}\left(y_{2,0}+\Delta y_{2,1}+\Delta y_{2,2}+\cdots+\Delta y_{2 t}, z_{t}^{*}\right) \\
+& =\operatorname{Cov}\left(\Delta y_{2,1}+\Delta y_{2,2}+\cdots+\Delta y_{2 t}, z_{t}^{*}\right) \quad\left(\text { since } \operatorname{Cov}\left(y_{2,0}, z_{t}^{*}\right)=0\right) \\
+& =\operatorname{Cov}\left(u_{2,1}+u_{2,2}+\cdots+u_{2 t}, z_{t}^{*}\right) \quad\left(\text { since } \Delta y_{2 t}=u_{2 t}\right) \\
+& =\operatorname{Cov}\left(u_{2 t}, z_{t}^{*}\right) \quad\left(\text { since }\left(u_{2 t}, z_{t}^{*}\right) \text { is i.i.d. }\right) \tag{10.4.3}
+\end{align*}
+
+
+Since $\boldsymbol{\Psi}_{0}^{*}$ and $\boldsymbol{\Omega}$ are not restricted to be diagonal, $z_{t}^{*}$ and $u_{2 t}$ can be contemporaneously correlated.
+
+To isolate this possible correlation, consider the least squares projection of $z_{t}^{*}$ on a constant and $u_{2 t}\left(=\Delta y_{2 t}\right)$. Recall from Section 2.9 that $\widehat{\mathrm{E}}^{*}(y \mid 1, x)= \left[\mathrm{E}(y)-\beta_{0} \mathrm{E}(x)\right]+\beta_{0} x$ where $\beta_{0}=\operatorname{Cov}(x, y) / \operatorname{Var}(x)$ and that the least squares projection error, $y-\widehat{\mathrm{E}}^{*}(y \mid 1, x)$, has mean zero and is uncorrelated with $x$. Here, the mean is zero for both $z_{t}^{*}$ and $u_{2 t}$. So $\widehat{\mathrm{E}}^{*}\left(z_{t}^{*} \mid 1, u_{2 t}\right)=\beta_{0} u_{2 t}$ and, if we denote the least squares projection error by $v_{t} \equiv z_{t}^{*}-\widehat{\mathrm{E}}^{*}\left(z_{t}^{*} \mid 1, u_{2 t}\right)$, we have
+
+
+\begin{gather*}
+z_{t}^{*}=\beta_{0} u_{2 t}+v_{t}=\beta_{0} \Delta y_{2 t}+v_{t} \\
+\mathrm{E}\left(v_{t}\right)=0, \operatorname{Cov}\left(u_{2 t}, v_{t}\right)=\operatorname{Cov}\left(\Delta y_{2 t}, v_{t}\right)=0 . \tag{10.4.4}
+\end{gather*}
+
+
+Substituting this into the cointegrating regression, we obtain
+
+
+\begin{equation*}
+y_{1 t}=\gamma y_{2 t}+\beta_{0} \Delta y_{2 t}+v_{t} . \tag{10.4.5}
+\end{equation*}
+
+
+This regression will be referred to as the augmented cointegrating regression. Now we show that the $\mathrm{I}(1)$ regressor $y_{2 t}$ is strictly exogenous in that $\operatorname{Cov}\left(y_{2 s}, v_{t}\right)=$ 0 for all $t, s$. By construction, $\operatorname{Cov}\left(\Delta y_{2 t}, v_{t}\right)=0$. For $\operatorname{Cov}\left(\Delta y_{2 s}, v_{t}\right)$ for $t \neq s$,
+
+
+\begin{align*}
+\operatorname{Cov}\left(\Delta y_{2 s}, v_{t}\right) & =\operatorname{Cov}\left(u_{2 s}, v_{t}\right)=\operatorname{Cov}\left(u_{2 s}, z_{t}^{*}-\beta_{0} u_{2 t}\right) \\
+& =\operatorname{Cov}\left(u_{2 s}, z_{t}^{*}\right)-\beta_{0} \operatorname{Cov}\left(u_{2 s}, u_{2 t}\right)=0, \tag{10.4.6}
+\end{align*}
+
+
+because $\left(z_{t}^{*}, u_{2 t}\right)$ is i.i.d. So $\Delta y_{2 t}$ is strictly exogenous. The strict exogeneity of $\Delta y_{2 t}$ implies the same for $y_{2 t}$, because
+
+
+\begin{align*}
+\operatorname{Cov}\left(y_{2 s}, v_{t}\right) & =\operatorname{Cov}\left(y_{2,0}+\Delta y_{2,1}+\Delta y_{2,2}+\cdots+\Delta y_{2 s}, v_{t}\right) \\
+& =\operatorname{Cov}\left(\Delta y_{2,1}+\Delta y_{2,2}+\cdots+\Delta y_{2 s}, v_{t}\right) \quad\left(\text { since } \operatorname{Cov}\left(y_{2,0}, v_{t}\right)=0\right) \\
+& =0 \quad \text { for all } t, s \text { by }(10.4 .6) \tag{10.4.7}
+\end{align*}
+
+
+\section*{Continuing with the Bivariate Example}
+To recapitulate, we have shown that, in the augmented cointegrating regression (10.4.5), the $\mathrm{I}(1)$ regressor is strictly exogenous if $\boldsymbol{\Psi}^{*}(L)=\boldsymbol{\Psi}_{0}^{*}$. Let ( $\hat{\gamma}, \widehat{\beta_{0}}$ ) be the OLS coefficient estimate of ( $\gamma, \beta_{0}$ ) from the augmented cointegrating regression. (This $\hat{\gamma}$ should be distinguished from the SOLS estimator of $\gamma$ in the cointegrating regression in (10.4.2).) This regression, (10.4.5), is very similar to the augmented autoregression (9.4.6) in that one of the two regressors is zero-mean $\mathrm{I}(0)$ and the other is driftless $\mathrm{I}(1)$. We have shown for the augmented autoregression that the " $\mathbf{X}^{\prime} \mathbf{X}^{\prime}$ " matrix, if properly scaled by $T$ and $\sqrt{T}$, is asymptotically diagonal, so the existence of $\mathrm{I}(0)$ regressors can be ignored for the purpose of deriving the limiting distribution of $\hat{\gamma}$, the OLS estimator of the coefficient of the I(1) regressor. The same is true here, and the same argument exploiting the asymptotic diagonality of the suitably scaled " $\mathbf{X}^{\prime} \mathbf{X}^{\prime}$ " matrix shows that the usual $t$-value for the hypothesis that $\gamma=\gamma_{0}$ is asymptotically equivalent to
+
+
+\begin{equation*}
+\tilde{t}=\frac{\frac{1}{T} \sum_{t=1}^{T} y_{2 t} v_{t}}{\sqrt{\frac{\sigma_{v}^{2}}{T^{2}} \sum_{t=1}^{T}\left(y_{2 t}\right)^{2}}} \tag{10.4.8}
+\end{equation*}
+
+
+where $\sigma_{v}^{2}$ is the variance of $v_{t}$. That is, the difference between the usual $t$-value and $\tilde{t}$ in (10.4.8) converges to zero in probability, so the limiting distribution of $t$ and that of $\tilde{t}$ are the same.
+
+In the augmented autoregression used for the ADF test, the limiting distribution of the ADF $t$-statistic was nonstandard (it is the Dickey-Fuller $t$-distribution). In contrast, the asymptotic distribution of $\tilde{t}$ (and hence that of the usual $t$-value) is standard normal. To see why, first recall that the $\mathrm{I}(1)$ regressor $y_{2 t}$ is strictly exogenous in that $\operatorname{Cov}\left(y_{2 s}, v_{t}\right)=0$ for all $t, s$. To develop intuition, temporarily assume that $\left(z_{t}^{*}, u_{2 t}\right)$ is jointly normal. Then $y_{2 s}$ and $v_{t}$ are independent for all ( $s, t$ ), not just uncorrelated. Consequently, the distribution of $v_{t}$ conditional on $\left(y_{2,1}, y_{2,2}, \ldots, y_{2 T}\right)$ is the same as its unconditional distribution, which is $N\left(0, \sigma_{v}^{2}\right)$.
+
+So the distribution of the numerator of (10.4.8) conditional on $\left(y_{2,1}, y_{2,2}, \ldots\right.$, $y_{2 T}$ ) is
+
+$$
+N\left(0, \frac{\sigma_{v}^{2}}{T^{2}} \sum_{t=1}^{T}\left(y_{2 t}\right)^{2}\right)
+$$
+
+But the standard deviation of this normal distribution equals the denominator of $\tilde{t}$, so
+
+$$
+\tilde{t} \mid\left(y_{2,1}, y_{2,2}, \ldots, y_{2 T}\right) \sim N(0,1) .
+$$
+
+Since this conditional distribution of $\tilde{t}$ does not depend on $\left(y_{2,1}, y_{2,2}, \ldots, y_{2 T}\right)$, the unconditional distribution of $\tilde{t}$, too, is $N(0,1)$. (This type of argument is not new to you; see the paragraph containing (1.4.3) of Chapter 1.) Recall from Chapter 2 that, even if the normality assumption is dropped, the distribution of the usual $t$-value is standard normal, albeit asymptotically, in large samples. The same conclusion is true here: the limiting distribution of $\tilde{t}$ is $N(0,1)$ even if ( $z_{t}^{*}, u_{2 t}$ ) is not jointly normal. Proving this requires an argument different from the type used in Chapter 2 , because $y_{2 t}$ here has a stochastic trend. We will not give a formal proof here; just an executive summary. It consists of two parts. The first is to derive the limiting distribution of the numerator of (10.4.8) (which can be done using a result stated in, e.g., Proposition 18.1(e) of Hamilton, 1994, or Lemma 2.3(c) of Watson, 1994). This distribution is nonstandard. The second is to show that normalization (10.4.8) converts the nonstandard distribution into a normal distribution (Lemma 5.1 of Park and Phillips, 1988).
+
+This example of a bivariate $\mathrm{I}(1)$ system is special in several respects: (a) there is no serial correlation in the error process $\left(z_{t}^{*}, u_{2 t}\right)$, (b) the $\mathrm{I}(1)$ regressor $y_{2 t}$ is a scalar, (c) $y_{2 t}$ has no drift, and (d) $\mu=0$. Of these, relaxing (a) requires some thoughts.
+
+\section*{Allowing for Serial Correlation}
+If it is not the case that $\boldsymbol{\Psi}^{*}(L)=\boldsymbol{\Psi}_{0}^{*}$ as in (10.4.2), then $\left(z_{t}^{*}, u_{2 t}\right)$ is serially correlated. Consequently, the $\mathrm{I}(1)$ regressor $y_{2 t}$ in the augmented cointegrating regression (10.4.5) is no longer strictly exogenous because $\operatorname{Cov}\left(\Delta y_{2 s}, v_{t}\right)$, while still zero for $t=s$, is no longer guaranteed to be zero for $t \neq s$. To remove this correlation, consider the least squares projection of $z_{t}^{*}$ on the current, past, and future values of $u_{2}$, not just on the current value of $u_{2}$. Noting that $\Delta y_{2 t}=u_{2 t}$, the projection can\\
+be written as
+
+
+\begin{equation*}
+z_{t}^{*}=\beta(L) \Delta y_{2 t}+v_{t}, \quad \beta(L) \equiv \sum_{j=-\infty}^{\infty} \beta_{j} L^{j} \tag{10.4.9}
+\end{equation*}
+
+
+(This $v_{t}$ is different from the $v_{t}$ in (10.4.5).) By construction, $\mathrm{E}\left(v_{t}\right)=0$ and $\operatorname{Cov}\left(\Delta y_{2 s}, v_{t}\right)=0$ for all $t, s$. The two-sided filter $\beta(L)$ can be of infinite order, but suppose - for now - that it is not and $\beta_{j}=0$ for $|j|>p$. Thus,
+
+
+\begin{align*}
+z_{t}^{*}= & \beta_{0} \Delta y_{2 t}+\beta_{-1} \Delta y_{2, t+1}+\cdots+\beta_{-p} \Delta y_{2, t+p} \\
+& +\beta_{1} \Delta y_{2, t-1}+\cdots+\beta_{p} \Delta y_{2, t-p}+v_{t} \tag{10.4.10}
+\end{align*}
+
+
+Substituting this into the cointegrating regression in (10.4.2), we obtain the (vastly) augmented cointegrating regression
+
+
+\begin{align*}
+y_{1 t}= & \gamma y_{2 t}+\beta_{0} \Delta y_{2 t}+\beta_{-1} \Delta y_{2, t+1}+\cdots+\beta_{-p} \Delta y_{2, t+p} \\
+& +\beta_{1} \Delta y_{2, t-1}+\cdots+\beta_{p} \Delta y_{2, t-p}+v_{t} \tag{10.4.11}
+\end{align*}
+
+
+Since $\operatorname{Cov}\left(\Delta y_{2 s}, v_{t}\right)=0$ for all $t$ and $s, \Delta y_{2 t}$ is strictly exogenous, which means (as seen above) that the level regressor $y_{2 t}$ too is strictly exogenous. Thus, by including not just the current change but also past and future changes of the $\mathbf{I}(1)$ regressor in the augmented cointegrating regression, we are able to maintain the strict exogeneity of $y_{2 t}$. The OLS estimator of the cointegrating vector $\gamma$ based on this augmented cointegrating regression is referred to as the "dynamic" OLS (DOLS), to distinguish it from the SOLS estimator based on the cointegrating regression without changes in $y_{2}$.
+
+There are $2+2 p$ regressors, the first of which is driftless $\mathrm{I}(1)$ and the rest zero-mean $\mathrm{I}(0)$. As before, with suitable scaling by $T$ and $\sqrt{T}$, the $\mathrm{I}(1)$ regressor is asymptotically uncorrelated with the $2 p+1$ zero-mean $\mathbf{I}(0)$ regressors, so that the suitably scaled $\mathbf{X}^{\prime} \mathbf{X}$ matrix is again block diagonal and the zero-mean $\mathbf{I}(0)$ regressors can be ignored for the purpose of deriving the limiting distribution of the DOLS estimate of $\gamma$. Therefore, the expression for the random variable that is asymptotically equivalent to the $t$-value for $\gamma=\gamma_{0}$ is again given by (10.4.8), the expression derived for the case where ( $z_{t}^{*}, u_{2 t}$ ) is serially uncorrelated.
+
+However, when $\left(z_{t}^{*}, u_{2 t}\right)$ is serially correlated, the derivation of the asymptotic distribution of (10.4.8) is not the same as when ( $z_{t}^{*}, u_{2 t}$ ) is serially uncorrelated, because the error term $v_{t}$ can now be serially correlated; the projection (10.4.9), while eliminating the correlation between $\Delta y_{2 s}$ and $v_{t}$ for all $s, t$, does not remove its own serial correlation in $v_{t}$. To examine the asymptotic distribution,\\
+let $\mathbf{V}(T \times T)$ be the autocovariance matrix of $T$ successive values of $v_{t}$ and $\lambda_{v}^{2}$ be the long-run variance of $\boldsymbol{v}_{t}$. Also, let $\mathbf{X}$ in the rest of this subsection be the $T \times \mathbf{l}$ matrix $\left(y_{2,1}, y_{2,2}, \ldots, y_{2 T}\right)^{\prime}$. Again, to develop intuition, temporarily assume that $\left(z_{t}^{*}, u_{2 t}\right)$ are jointly normal. Then, since $y_{2 t}$ is strictly exogenous, the distribution of the numerator of (10.4.8) conditional on $\mathbf{X}$ is normal with mean zero and the conditional variance
+
+
+\begin{equation*}
+\frac{1}{T^{2}} \mathbf{X}^{\prime} \mathbf{V} \mathbf{X} \tag{10.4.12}
+\end{equation*}
+
+
+The square root of this would have to replace the denominator of (10.4.8) to make the ratio standard normal in finite samples. Fortunately, it turns out (see Corollary 2.7 of Phillips, 1988) that, in large samples, the distribution of the numerator is the same as the distribution you would get if $v_{t}$ were serially uncorrelated but with the variance of $\lambda_{v}^{2}$ rather than $\sigma_{v}^{2}$.
+
+Therefore, all that is required to modify the ratio (10.4.8) to accommodate serial correlation in $v_{t}$ is to replace $\sigma_{v}^{2}\left(\equiv \operatorname{Var}\left(v_{t}\right)\right)$ by $\lambda_{v}^{2}$ (the long-run variance of $v_{t}$ ), namely, if $\tilde{t}$ is given by (10.4.8) with $\sigma_{v}^{2}$ still in the denominator, its rescaled value
+
+
+\begin{equation*}
+\left(\frac{\sigma_{v}}{\lambda_{v}}\right) \cdot \tilde{t} \tag{10.4.13}
+\end{equation*}
+
+
+is asymptotically $N(0,1)$ ! Since the OLS $t$-value for $\gamma$ is asymptotically equivalent to $\tilde{t}$, it follows that
+
+
+\begin{equation*}
+\left(\frac{s}{\hat{\lambda}_{v}}\right) \cdot t \underset{\mathrm{~d}}{\rightarrow} N(0,1) \tag{10.4.14}
+\end{equation*}
+
+
+where $\hat{\lambda}_{v}$ is some consistent estimator of $\lambda_{v}$ and $s$ is the usual OLS standard error of regression (it is easy to show that $s$ is consistent for $\sigma_{v}$ ). Put differently, if we rescale the usual standard error of $\hat{\gamma}$ (the OLS estimate of the $y_{2 t}$ coefficient in (10.4.11)) as
+
+
+\begin{equation*}
+\text { rescaled standard error }=\left(\frac{\hat{\lambda}_{v}}{s}\right) \times \text { usual standard error, } \tag{10.4.15}
+\end{equation*}
+
+
+then the $t$-value based on this rescaled standard error is asymptotically $N(0,1)$.\\
+The foregoing argument is applicable only to the coefficient of the $\mathrm{I}(1)$ regressor, so the $t$-values for $\beta$ 's in (10.4.11), even when their standard errors are rescaled as just described, are not necessarily $N(0,1)$ in large samples.
+
+Since the regressors are strictly exogenous, the discussion in Sections 1.6 and 6.7 suggests that the GLS might be applicable. However, the fact noted above that $\mathbf{X}^{\prime} \mathbf{V X}$ behaves asymptotically like $\lambda_{v} \mathbf{X}^{\prime} \mathbf{X}$ implies that the GLS estimator of $\gamma$ (to be referred to as the DGLS estimator) is asymptotically equivalent to the DOLS estimator (or more precisely, $T$ times the difference converges to 0 in probability) (see Phillips, 1988, and Phillips and Park, 1988). Therefore, there is no efficiency gain from correcting for the serial correlation in the error term $v_{t}$ by GLS.
+
+A consistent estimate of $\lambda_{v}$ is easy to obtain. Recall that in Section 6.6 we used the VARHAC procedure to estimate the long-run variance matrix of a vector process. The same procedure can be applied to the present case of a scalar error process. Consider fitting an $\operatorname{AR}(p)$ process to the residuals, $\hat{v}_{t}$, from the augmented cointegrating regression
+
+
+\begin{equation*}
+\hat{v}_{t}=\phi_{1} \hat{v}_{t-1}+\phi_{2} \hat{v}_{t-2}+\cdots+\phi_{p} \hat{v}_{t-p}+e_{t} \quad(t=p+1, \ldots, T) . \tag{10.4.16}
+\end{equation*}
+
+
+(This $p$ should not be confused with the $p$ in the augmented cointegrating regression.) Use the BIC to pick the lag length by searching over the possible lag lengths of $0,1, \ldots, T^{1 / 3}$. Using the relation (6.2.21) on page 385 and noting that the longrun variance is the value at $z=1$ of the autocovariance-generating function, the long-run variance $\lambda_{v}^{2}$ of $v_{t}$ can be estimated by
+
+
+\begin{equation*}
+\hat{\lambda}_{v}^{2}=\frac{\hat{\sigma}_{e}^{2}}{\left(1-\hat{\phi}_{1}-\cdots-\hat{\phi}_{p}\right)^{2}}, \quad \hat{\sigma}_{e}^{2}=\frac{1}{T-p} \sum_{t=p+1}^{T} \hat{e}_{t}^{2}, \tag{10.4.17}
+\end{equation*}
+
+
+where $\hat{\phi}_{j}(j=1,2, \ldots, p)$ are the estimated $\operatorname{AR}(p)$ coefficients and $\hat{e}_{t}$ is the residual from the $\operatorname{AR}(p)$ equation (10.4.16).
+
+\section*{General Case}
+We now turn to the general case of an $n$-dimensional cointegrated system with possibly nonzero drift. We focus on the $h=1$ case because extending it to the case where $h>1$ is straightforward. So the triangular representation is (10.4.1) and the augmented cointegrating regression is
+
+
+\begin{align*}
+y_{1 t}= & \mu+\boldsymbol{\gamma}^{\prime} \mathbf{y}_{2 t}+\boldsymbol{\beta}_{0}^{\prime} \Delta \mathbf{y}_{2 t}+\boldsymbol{\beta}_{-1}^{\prime} \Delta \mathbf{y}_{2, t+1}+\cdots+\boldsymbol{\beta}_{-p}^{\prime} \Delta \mathbf{y}_{2, t+p} \\
+& +\boldsymbol{\beta}_{1}^{\prime} \Delta \mathbf{y}_{2, t-1}+\cdots+\boldsymbol{\beta}_{p}^{\prime} \Delta \mathbf{y}_{2, t-p}+v_{t} \tag{10.4.18}
+\end{align*}
+
+
+Here, $\boldsymbol{\beta}_{j}(j=0,1,2, \ldots, p,-1,-2, \ldots,-p)$ are the least squares projection coefficients in the projection of $z_{t}^{*}$ (the error in the cointegrating regression) on the current, past, and future values of $\Delta \mathbf{y}_{2}$. The DOLS estimator of the cointegrating\\
+vector $\boldsymbol{\gamma}$ is simply the OLS estimator of $\boldsymbol{\gamma}$ from this augmented cointegrating regression.
+
+The following results are proved in Saikkonen (1991) and Stock and Watson (1993). ${ }^{20}$
+
+\begin{enumerate}
+  \item The bivariate results derived above carry over. That is, the DOLS estimator of $\boldsymbol{\gamma}$ is superconsistent and the properly rescaled $t$ - and Wald statistics for hypotheses about $\boldsymbol{\gamma}$ have the conventional asymptotic distributions (standard normal and chi squared). The proper rescaling is to multiply the usual $t$-value by $\left(s / \hat{\lambda}_{v}\right)$ and the Wald statistics by the square of $\left(s / \hat{\lambda}_{v}\right)$. This simple rescaling, however, does not work for the $t$-value and the Wald statistic for hypotheses involving $\mu$ or $\boldsymbol{\beta}_{j}$.
+  \item If the two-sided filter $\boldsymbol{\beta}(L)$ in the projection of $z_{t}^{*}$ on the leads and lags of $\Delta \mathbf{y}_{2 t}$ is infinite order, then the error term $v_{t}$ includes the truncation remainder,
+\end{enumerate}
+
+$$
+\sum_{j=p+1}^{\infty} \boldsymbol{\beta}_{-j}^{\prime} \Delta \mathbf{y}_{2, t+j}+\sum_{j=p+1}^{\infty} \boldsymbol{\beta}_{j}^{\prime} \Delta \mathbf{y}_{2, t-j}
+$$
+
+All the results just mentioned above carry over, provided that $p$ in (10.4.18) is made to increase with the sample size $T$ at a rate slower than $T^{1 / 3}$. See Saikkonen (1991, Section 4) for a statement of required regularity conditions.\\
+3. The estimator is efficient in some precise sense. ${ }^{21}$ The estimator is asymptotically equivalent to other efficient estimators such as Johansen's maximum likelihood procedure based on the VECM, the Fully Modified estimator of Phillips and Hansen (1990), and a nonlinear least squares estimator of Phillips and Loretan (1991) (and also to the DGLS, as mentioned above). For all these efficient estimators, the $t$ - and Wald statistics for hypotheses about $\boldsymbol{\gamma}$, correctly rescaled if necessary, have standard asymptotic distributions (see Watson, 1994, Section 3.4.3, for more details).
+
+\section*{Other Estimators and Finite-Sample Properties}
+Stock and Watson (1993) examined the finite-sample performance of these estimators just mentioned (excluding the Phillips-Loretan estimator). For the DGPs and the sample sizes ( $T=100$ and 300) they examined, the following results emerged.
+
+\footnotetext{${ }^{20}$ These authors assume that $\mu$ is a fixed constant. However, the same conclusions would hold even if $\mu$ were a time-invariant random variable.\\
+${ }^{21}$ The $t$-value is asymptotically $N(0,1)$, but the DOLS estimator itself is not asymptotically normal. So the usual criterion of comparing the variances of the asymptotic distributions among asymptotically normal estimators is not applicable here. See Saikkonen (1991. Section 3) for an appropriate definition of efficiency.
+}
+(1) The bias is smallest for the Johansen estimator and largest for SOLS. (2) However, the variance of the Johansen estimator is much larger than those for the other efficient estimators, and DOLS has the smallest root mean square error (RMSE). (3) For all estimators examined, the distribution of the $t$-values (correctly rescaled if necessary) tends to be spread out relative to $N(0,1)$, suggesting that the null will be rejected too often. These conclusions are broadly consistent with the assessment of Monte Carlo studies found in Maddala and Kim (1998, Section 5.7).
+
+\section*{QUESTION FOR REVIEW}
+\begin{enumerate}
+  \item As we have emphasized, there is a similarity between augmented autoregression (9.4.6) on page 587 and augmented cointegrating regression (10.4.5). Then why is the $t$-value on the $\mathrm{I}(1)$ regressor in the augmented cointegrating regression (10.4.5) asymptotically $N(0,1)$ while that in (9.4.6) is not?
+\end{enumerate}
+
+\subsection*{10.5 Application: The Demand for Money in the United States}
+The literature on the estimation of the money demand function is very large (see Goldfeld and Sichel, 1990, for a review). The money demand equation typically estimated in the literature is
+
+
+\begin{equation*}
+m_{t}-p_{t}=\mu+\gamma_{y} y_{t}+\gamma_{R} R_{t}+z_{t}^{*}, \tag{10.5.1}
+\end{equation*}
+
+
+where $m_{t}$ is the log of money stock in period $t, p_{t}$ is the log of price level, $y_{t}$ is log income, $R_{t}$ is the nominal interest rate, and $z_{t}^{*}$ is some error term. $\gamma_{y}$ is the income elasticity and $\gamma_{R}$ is the interest semielasticity of money demand (it is a semielasticity because the interest rate enters the money demand equation in levels, not in logs). Most empirical analyses that predate the literature on unit roots and cointegration suffer from two drawbacks. First, as will be verified below, all the variables involved, $m_{t}-p_{t}, y_{t}$, and $R_{t}$, appear to contain stochastic trends. If the variables have trends, conventional inference under the stationarity assumption is not valid. Second, the regressors may be endogenous. This is likely to be a serious problem in the case of money demand, because in virtually all macro models a shift in money demand represented by the error term $z_{t}^{*}$ affects the nominal interest rate and perhaps income. A resolution of both problems is provided by the econometric technique for estimating cointegrating regressions presented in the previous section.
+
+Another issue addressed in this section is the stability of the money demand function. The consensus in the literature is that money demand is unstable. This is challenged by Lucas (1988) who, using annual data since 1900, argues that the interest semielasticity is stable if the income elasticity is constrained to be unity. We will examine Lucas' claim by applying the state-of-the-art econometric techniques developed in this chapter.
+
+\section*{The Data}
+We base our analysis on the annual data studied by Lucas (1988), extended by Stock and Watson (1993) to cover 1900-1989. Their measures of the money stock, income, and the nominal interest rate are M1, net national product (NNP), and the six-month commercial paper rate (in percent at an annual rate), respectively. The use of net national product - rather than gross national product - follows the tradition since Friedman (1959) that the scale variable ( $y_{t}$ ) in the money demand equation should be a measure of wealth rather than a measure of transaction volume. There are no official statistics on M1 that date back to as early as 1900, so one needs to do some splicing on series from multiple sources. For the money stock and the interest rate, monthly data were averaged to obtain annual observations. See Appendix B of Stock and Watson (1993) for more details on data construction.
+
+\section*{$(m-p, y, R)$ as a Cointegrated System}
+Figures 10.2 and 10.3 plot $m-p, y$, and $R$. The three series have clear trends. Log real money stock ( $m-p$ ) grew rapidly over the first half of the century, but experienced almost no growth thereafter until 1981. Log income ( $y$ ), on the other hand, grew steadily over the entire sample period with a major interruption from 1930 to the early 1940s, so M1 velocity ( $y-(m-p)$ ), also plotted in Figure 10.3, dropped during that period and then grew steadily until 1981. This movement in M1 velocity is fairly closely followed by the nominal interest rate, which suggests that $m-p, y$, and $R$ are cointegrated, with a cointegrating vector whose element corresponding to $y$ is about 1 .
+
+Inspection of these figures suggests that the three variables, $m-p, y$, and $R$, might be well described as being individually $\mathrm{I}(1)$. In fact, Stock and Watson (1993), based on the ADF tests, report that $m-p$ and $y$ are individually $\mathrm{I}(1)$ with drift, while $R$ is I(1) with no drift. They also report, based on the Stock-Watson (1988) common trend test, that the three-variable system is cointegrated with a cointegrating rank of 1 . In what follows, we proceed under the assumption that $m-p$ is cointegrated with $y$ and $R$. (In the empirical exercise, you will be asked to check the validity of this premise.)
+
+\begin{figure}[h]
+\begin{center}
+  \includegraphics[alt={},max width=\textwidth]{14fb0795-6d81-4e76-9788-792298f1ddae-678_542_1150_438_246}
+\captionsetup{labelformat=empty}
+\caption{Figure 10.2: U.S. Real NNP and Real M1, in Logs}
+\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+  \includegraphics[alt={},max width=\textwidth]{14fb0795-6d81-4e76-9788-792298f1ddae-678_545_1138_1341_250}
+\captionsetup{labelformat=empty}
+\caption{Figure 10.3: Log M1 Velocity (left scale) and Short-Term Commercial Paper Rate (right scale)}
+\end{center}
+\end{figure}
+
+\section*{DOLS}
+The first line of Table 10.2 reports the SOLS estimate of the cointegrating regression (10.5.1). (The sample period is 1903-1987 because in the DOLS estimation below two lead and lagged changes will be included in the augmented cointegrating regression.) The standard errors are not reported because the asymptotic distribution of the associated $t$-ratio, being dependent on nuisance parameters, is unknown. The SOLS estimate of the income elasticity of 0.943 is close to unity, but we cannot tell whether it is insignificantly different from unity. To be able to do inference, we turn to the DOLS estimation of the cointegrating vector, which is to estimate the parameters $\left(\mu, \gamma_{y}, \gamma_{R}\right)$ in the cointegrating regression (10.5.1) by adding $\Delta y_{t}$, $\Delta R_{t}$, and their leads and lags. Following Stock and Watson (1993), the number of leads and lags is (arbitrarily) chosen to be 2 , so the augmented cointegrating regression associated with (10.5.1) is
+
+
+\begin{align*}
+& m_{t}-p_{t} \\
+& =\mu+\gamma_{y} y_{t}+\gamma_{R} R_{t} \\
+& \quad+\beta_{y 0} \Delta y_{t}+\beta_{y,-1} \Delta y_{t+1}+\beta_{y,-2} \Delta y_{t+2}+\beta_{y 1} \Delta y_{t-1}+\beta_{y 2} \Delta y_{t-2} \\
+& \quad+\beta_{R 0} \Delta R_{t}+\beta_{R,-1} \Delta R_{t+1}+\beta_{R,-2} \Delta R_{t+2}+\beta_{R 1} \Delta R_{t-1}+\beta_{R 2} \Delta R_{t-2}+v_{t} \tag{10.5.2}
+\end{align*}
+
+
+This dictates the sample period to be $t=1903, \ldots, 1987$. The DOLS point estimate of $\left(\gamma_{y}, \gamma_{R}\right)$, reported in the second line of Table 10.2, is obtained from estimating this equation by OLS.
+
+To calculate appropriate standard errors, the long-run variance of the error term $v_{t}$ needs to be estimated. For this purpose we fit an autoregressive process to the DOLS residuals. The order of the autoregression is (again arbitrarily) set to 2 . With the DOLS residuals calculated for $t=1903, \ldots, 1987$, the sample period for the AR(2) estimation is for $t=1905, \ldots, 1987$ (sample size $=83$ ). The estimated autoregression is
+
+
+\begin{equation*}
+\hat{v}_{t}=0.93806 \hat{v}_{t-1}-0.13341 \hat{v}_{t-2}, \quad S S R=0.19843 . \tag{10.5.3}
+\end{equation*}
+
+
+We then use the formula (10.4.17), but to be able to replicate the DOLS estimates by Stock and Watson (1993, Table III), we divide the SSR by $T-p-K$ rather than by $T-p$ to calculate $\hat{\sigma}_{e}^{2}$, where $K$ here is the number of regressors in the augmented cointegrating regression (which is 13 here). Thus $\hat{\sigma}_{e}^{2}=0.19843 /(83- 2-13)=0.0029181$ and
+
+
+\begin{equation*}
+\hat{\lambda}_{v}^{2}=\frac{0.0029181}{(1-0.93806+0.13341)^{2}}=0.07647 \tag{10.5.4}
+\end{equation*}
+
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 10.2: SOLS and DOLS Estimates, 1903-1987}
+\begin{tabular}{lcccc}
+\hline\hline
+ & $\gamma_{y}$ & $\gamma_{R}$ & $R^{2}$ & \begin{tabular}{c}
+Std. error \\
+of regression \\
+\end{tabular} \\
+\hline
+SOLS estimates & 0.943 & -0.082 & 0.959 & 0.135 \\
+DOLS estimates & 0.970 & -0.101 & 0.982 & 0.096 \\
+(Rescaled standard errors) & $(0.046)$ & $(0.013)$ &  &  \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Source: The point estimates and standard errors are from Table III of Stock and Watson (1993). The $R^{2}$ and standard error of regression are by author's calculation.
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 10.3: Money Demand in Two Subsamples}
+\begin{tabular}{lccccc}
+\hline\hline
+ & \multicolumn{2}{c}{$1903-1945$} &  & \multicolumn{2}{c}{$1946-1987$} \\
+\cline { 2 - 3 }\cline { 5 - 6 }
+ & $\gamma_{y}$ & $\gamma_{R}$ &  & $\gamma_{y}$ & $\gamma_{R}$ \\
+\hline
+SOLS estimates & 0.919 & -0.085 &  & 0.192 & -0.016 \\
+DOLS estimates & 0.887 & -0.104 &  & 0.269 & -0.027 \\
+(Rescaled standard errors) & $(0.197)$ & $(0.038)$ &  & $(0.213)$ & $(0.025)$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Source: Table III of Stock and Watson (1993).
+
+The estimate $\hat{\lambda}_{v}$ is the square root of this, which is 0.277 . Since the standard error of the DOLS regression is 0.096 , the factor in the formula (10.4.15) for rescaling the usual OLS standard errors from the augmented cointegrating regression is $0.277 / 0.096=2.89$. The numbers in parentheses in Table 10.2 are the adjusted standard errors thus calculated. Now we can see that the estimated income elasticity is not significantly different from unity.
+
+\section*{Unstable Money Demand?}
+Table 10.3 reports the parameter estimates by SOLS and DOLS for two subsamples, 1903-1945 and 1946-1987. (Following Stock and Watson (1993), the break date of 1946 was chosen both because of the natural break at the end of World War II and because it divides the full sample nearly in two.) In sharp contrast to the estimates based on the first-half of the sample, the postwar estimates are very different from those based on the full sample.
+
+Lucas (1988) argues that estimates like these are consistent with a stable demand for money with a unitary income elasticity. To support this view, he points
+
+\begin{figure}[h]
+\begin{center}
+  \includegraphics[alt={},max width=\textwidth]{14fb0795-6d81-4e76-9788-792298f1ddae-681_663_1171_253_298}
+\captionsetup{labelformat=empty}
+\caption{Figure 10.4: Plot of $m-p-y$ against $R$}
+\end{center}
+\end{figure}
+
+to the evidence depicted in Figure 10.4. It plots $m_{t}-p_{t}-y_{t}$ (the log inverse velocity, which would be the dependent variable in the money demand equation (10.5.1) if the income elasticity $\gamma_{y}$ were set to unity) against the interest rate, with the postwar observations indicated by a different set of symbols from the prewar observations. The striking feature is that, although postwar interest rates are substantially higher, postwar observations lie on the line defined by the prewar observations. ${ }^{22}$
+
+This finding suggests that the postwar estimates suffer from the near multicollinearity problem: because of the similar trends in $y$ and $R$ in the postwar period (shown in Figures 10.2 and 10.3), $\gamma_{y}$ and $\gamma_{R}$ estimated on postwar data are strongly correlated. Even though for each element the postwar estimate of $\left(\gamma_{y}, \gamma_{R}\right)$ is different from the prewar estimate, they may not be jointly significantly different. This possibility could be easily checked by the Chow test of structural change, at least if the regressors were stationary. In the Chow test, you would estimate
+
+
+\begin{equation*}
+m_{t}-p_{t}=\mu+\gamma_{y} y_{t}+\gamma_{R} R_{t}+\delta_{0} D_{t}+\delta_{y} y_{t} D_{t}+\delta_{R} R_{t} D_{t}+z_{t}^{*}, \tag{10.5.5}
+\end{equation*}
+
+
+where $D_{t}$ is a dummy variable whose value is 1 if $t \geq 1946$ and 0 otherwise. Thus, the coefficients of the constant, $y_{t}$, and $R_{t}$ are ( $\mu, \gamma_{y}, \gamma_{R}$ ) until 1945 and $\left(\mu+\delta_{0}, \gamma_{y}+\delta_{y}, \gamma_{R}+\delta_{R}\right)$ thereafter. If the regressors are stationary, the Wald statistic for the null hypothesis that $\delta_{0}=0, \delta_{y}=0, \delta_{R}=0$ is asymptotically $\chi^{2}(3)$ as both subsamples grow larger with the relative size held constant (see
+
+\footnotetext{${ }^{22}$ In Lucas' (1988) original plot, the sample period is 1900-1985 and the break date is 1957, but the message of the figure is essentially the same.
+}Analytical Exercise 12 in Chapter 2). Now in the present case where regressors are $\mathrm{I}(1)$ and not cointegrated, it has been shown by Hansen (1992b, Theorem 3(a)) that the Wald statistic (properly rescaled if necessary) has the same asymptotic distribution (of $\chi^{2}$ ) if the parameters of the cointegration regression are estimated by an efficient method such as DOLS (which adds $\Delta y_{t}, \Delta R_{t}$, and their leads and lags to the cointegrating regression (10.5.5)), the Fully Modified estimation, or the Johansen ML. ${ }^{23}$ The DOLS estimates of (10.5.5) augmented with two leads and two lags of $\Delta y$ and $\Delta R$ are shown in Table 10.4. The insignificant Wald statistic supports Lucas' view that the money demand in the United States has been stable in the twentieth century.
+
+\section*{PROBLEM SET FOR CHAPTER 10}
+\section*{EMPIRICAL EXERCISES}
+(Skim Stock and Watson, 1993, Section 7 and Appendix B, before answering.) The file MPYR.ASC has annual data on the following:
+
+Column 1: natural $\log$ of M1 (to be referred to as $m$ )\\
+Column 2: natural $\log$ of the NNP price deflator ( $p$ )\\
+Column 3: natural $\log$ of NNP ( $y$ )\\
+Column 4: the commercial paper rate in percent at an annual rate ( $R$ ).\\
+The sample period is 1900 to 1989. This is the same data used by Stock and Watson (1993) in their study of the U.S. money demand. See their Appendix B for data sources.
+
+Questions (a) and (b) are for verifying the presumption that $m-p$ is cointegrated with $(y, R)$. The rest of the questions are about estimating the cointegrating vector.\\
+(a) (Univariate unit-root tests) Stock and Watson (1993, Appendix B) report that the ADF $t^{\mu}$ and $t^{\tau}$ statistics, computed with 2 and 4 lagged first differences, fail to reject a unit root in each of $m-p$ and $R$ at the 10 percent level and that the unit root hypothesis is not rejected for $y$ with 4 lags, but is rejected at the 10 percent (but not 5 percent) level with 2 lags. Verify these findings. In your tests, use the $t^{\mu}$ test for $R$, and $t^{\tau}$ for $m-p$ and $y$, and use asymptotic critical values (those critical values for $T=\infty$ ).
+
+\footnotetext{${ }^{23}$ We noted in the previous section that the Wald statistic is not asymptotically chi squared even after rescaling if the hypothesis involves $\mu$. Hansen's (1992b) result, however, shows that the Wald statistic for the hypothesis about the difference in $\mu$ is asymptotically chi squared. Hansen (1992b) also develops tests for structural change at unknown break dates.
+}\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 10.4: Test for Structural Change}
+\begin{tabular}{lcccccc}
+\hline\hline
+ & $\gamma_{y}$ & $\gamma_{R}$ & $\delta_{0}$ & $\delta_{y}$ & $\delta_{R}$ & Wald statistic \\
+\hline
+DOLS estimates & 0.925 & -0.090 & 1.36 & -0.52 & 0.048 & 1.85 \\
+(Rescaled standard errors) & $(0.142)$ & $(0.026)$ & $(0.72)$ & $(0.31)$ & $(0.034)$ & $(p$-value $=0.60)$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Source: Author's calculation, to be verified in the empirical exercise.\\
+(b) (Residual-based tests) Conduct the Engle-Granger test of the null that $m-p$ is not cointegrated with $y$ and $R$. Set $p=1$ (which is what is selected by BIC). (If you do not include time in the regression, the ADF $t$-statistic derived from the residuals should be about -4.7. Case 2 discussed in Section 10.3 should apply. So the 5 percent critical value should be -3.80 .)\\
+(c) (DOLS) Reproduce the SOLS and DOLS estimates of the cointegrating vector reported in Table 10.2.\\
+(d) (Chow test) Reproduce the DOLS estimates reported in Table 10.4. They are based on the following augmented cointegrating regression:
+
+$$
+\begin{aligned}
+& m_{t}-p_{t} \\
+& \quad=\mu+\gamma_{y} y_{t}+\gamma_{R} R_{t}+\delta_{0} D_{t}+\delta_{y} y_{t} D_{t}+\delta_{R} R_{t} D_{t} \\
+& \quad+\beta_{y 0} \Delta y_{t}+\beta_{y,-1} \Delta y_{t+1}+\beta_{y,-2} \Delta y_{t+2}+\beta_{y 1} \Delta y_{t-1}+\beta_{y 2} \Delta y_{t-2} \\
+& \quad+\beta_{R 0} \Delta R_{t}+\beta_{R,-1} \Delta R_{t+1}+\beta_{R,-2} \Delta R_{t+2}+\beta_{R 1} \Delta R_{t-1}+\beta_{R 2} \Delta R_{t-2}+v_{t}
+\end{aligned}
+$$
+
+The null hypothesis is that $\delta_{0}=\delta_{y}=\delta_{R}=0$. Set the $p$ in (10.4.16) to 2 . Calculate the Wald statistic for the null hypothesis of no structural change.
+
+\section*{References}
+Aoki, Masanao, 1968, "Control of Large-Scale Dynamic Systems by Aggregation," IEEE Transactions on Automatic Control, AC-13, 246-253.\\
+Banerjee, A., J. Dolado, D. Hendry, and G. Smith, 1986, "Exploring Equilibrium Relationships in Econometrics through Static Models: Some Monte Carlo Evidence," Oxford Bulletin of Economics and Statistics, 48, 253-277.\\
+Box, G., and G. Tiao, 1977, "A Canonical Analysis of Multiple Time Series," Biometrika, 64, 355365.
+
+Davidson, J., D. Hendry, F. Srba, and S. Yeo, 1978, "Econometric Modelling of the Aggregate TimeSeries Relationships between Consumers' Expenditure and Income in the United Kingdom," Economic Journal, 88, 661-692.\\
+Engle, R., and C. Granger, 1987, "Co-Integration and Error Correction: Representation, Estimation, and Testing," Econometrica, 55, 251-276.\\
+Engle, R., and S. Yoo, 1991, "Cointegrated Economic Time Series: An Overview with New Results," in R. Engle and C. Granger (eds.), Long-Run Economic Relations: Readings in Cointegration, New York: Oxford University Press.\\
+Friedman, M., 1959, "The Demand for Money: Some Theoretical and Empirical Results," Journal of Political Economy, 67, 327-351.\\
+Fuller, W., 1996, Introduction to Statistical Time Series (2d ed.), New York: Wiley.\\
+Goldfeld, S., and D. Sichel, 1990, "The Demand for Money," Chapter 8 in B. Friedman and F. Hahn (eds.), Handbook of Monetary Economics, Volume I, New York: North-Holland.
+
+Granger, C., 1981, "Some Properties of Time Series Data and Their Use in Econometric Model Specification," Journal of Econometrics, 16, 121-130.\\
+Granger, C., and P. Newbold, 1974, "Spurious Regressions in Econometrics," Journal of Econometrics, 2, 111-120.\\
+Hamilton, J., 1994, Time Series Analysis, Princeton: Princeton University Press.\\
+Hansen, B., 1992a, "Efficient Estimation and Testing of Cointegrating Vectors in the Presence of Deterministic Trends," Journal of Econometrics, 53, 87-121.\\
+$\_\_\_\_$ , 1992b, "Tests for Parameter Instability in Regressions with I(1) Processes," Journal of Business and Economic Statistics, 10, 321-335.\\
+Haug, A., 1996, "Tests for Cointegration: A Monte Carlo Comparison," Journal of Econometrics, 71, 89-115.\\
+Johansen, S., 1988, "Statistical Analysis of Cointegrated Vectors," Journal of Economic Dyamics and Control, 12, 231-254.\\
+$\_\_\_\_$ , 1995, Likelihood-Based Inference in Cointegrated Vector Auto-Regressive Models, New York: Oxford University Press.\\
+Lucas, R., 1988, Money Demand in the United States: A Quantitative Review, Carnegie-Rochester Conference Series on Public Policy, Volume 29, 137-168.\\
+Lütkepohl, H., 1993, Introduction to Multiple Time Series Analysis (2d ed.), New York: SpringerVerlag.\\
+Maddala, G. S., and In-Moo Kim, 1998, Unit Roots, Cointegration, and Structural Change, New York: Cambridge University Press.\\
+Ng, S., and P. Perron, 1995, "Unit Root Tests in ARMA Models with Data-Dependent Methods for the Selection of the Truncated Lag," Journal of the American Statistical Association, 90, 268-281.\\
+Park, J., and P. Phillips, 1988, "Statistical Inference in Regressions with Integrated Processes: Part 1," Econometric Theory, 4, 468-497.\\
+Phillips, P., 1986, "Understanding Spurious Regressions in Econometrics," Journal of Econometrics, 33, 311-340.\\
+$\_\_\_\_$ , 1988, "Weak Convergence to the Matrix Stochastic Integral $\int_{0}^{1} B d B^{\prime}$," Journal of Multivariate Analysis, 24, 252-264.\\
+$\_\_\_\_$ , 1991, "Optimal Inference in Cointegrated Systems," Econometrica, 59, 283-306.\\
+Phillips, P., and S. Durlauf, 1986, "Multiple Time Series Regression with Integrated Processes," Review of Economic Studies, 53, 473-495.\\
+Phillips, P., and B. Hansen, 1990, "Statistical Inference in Instrumental Variables Regression with 1(1) Processes," Review of Economic Studies, 57, 99-125.\\
+Phillips, P., and M. Loretan, 1991, "Estimating Long-Run Economic Equilibria," Review of Economic Studies, 58, 407-436.\\
+Phillips, P., and S. Ouliaris, 1990, "Asymptotic Properties of Residual Based Tests for Cointegration," Econometrica, 58, 165-193.\\
+Phillips, P., and J. Park, 1988, "Asymptotic Equivalence of OLS and GLS in Regressions with Integrated Regressors," Journal of the American Statistical Association, 83, 111-115.\\
+Saikkonen, P., 1991, "Asymptotically Efficient Estimation of Cointegration Regressions," Econometric Theory, 7, 1-21.\\
+Sims, C., J. Stock, and M. Watson, 1990, "Inference in Linear Time Series Models with Some Unit Roots," Econometrica, 58, 113-144.\\
+Stock, J., 1987, "Asymptotic Properties of Least Squares Estimators of Cointegrating Vectors," Econometrica, 55, 1035-1056.
+
+Stock, J., and M. Watson, 1988, "Testing for Common Trends," Journal of the American Statistical Association, 83, 1097-1107.\\
+$\_\_\_\_$ , 1993, "A Simple Estimator of Cointegrating Vectors in Higher Order Integrated Systems," Econometrica, 61, 783-820.\\
+Watson, M., 1994, "Vector Autoregressions and Cointegration," Chapter 47 in R. Engle, and D. McFadden (eds.), Handbook of Econometrics, Volume IV, New York: North Holland.
+
+
+
+\end{document}

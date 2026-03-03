@@ -1,0 +1,355 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 3: Basic Asymptotic Theory}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\includegraphics[max width=\textwidth, alt={}]{2e17339c-7635-4ef8-aded-2191d8d853ff-0068_111_482_116_283}
+\end{center}}
+This chapter summarizes some definitions and limit theorems that are important for studying large-sample theory. Most claims are stated without proof, as several require tedious epsilon-delta arguments. We do prove some results that build on fundamental definitions and theorems. A good, general reference for background in asymptotic analysis is White (2001). In Chapter 12 we introduce further asymptotic methods that are required for studying nonlinear models.
+
+\subsection*{3.1 Convergence of Deterministic Sequences}
+Asymptotic analysis is concerned with the various kinds of convergence of sequences of estimators as the sample size grows. We begin with some definitions regarding nonstochastic sequences of numbers. When we apply these results in econometrics, $N$ is the sample size, and it runs through all positive integers. You are assumed to have some familiarity with the notion of a limit of a sequence.\\
+definition 3.1: (1) A sequence of nonrandom numbers $\left\{a_{N}: N=1,2, \ldots\right\}$ converges to $a$ (has limit $a$ ) if for all $\varepsilon>0$, there exists $N_{\varepsilon}$ such that if $N>N_{\varepsilon}$, then $\left|a_{N}-a\right|<\varepsilon$. We write $a_{N} \rightarrow a$ as $N \rightarrow \infty$.\\
+(2) A sequence $\left\{a_{N}: N=1,2, \ldots\right\}$ is bounded if and only if there is some $b<\infty$ such that $\left|a_{N}\right| \leq b$ for all $N=1,2, \ldots$. Otherwise, we say that $\left\{a_{N}\right\}$ is unbounded.
+
+These definitions apply to vectors and matrices element by element.\\
+Example 3.1: (1) If $a_{N}=2+1 / N$, then $a_{N} \rightarrow 2$. (2) If $a_{N}=(-1)^{N}$, then $a_{N}$ does not have a limit, but it is bounded. (3) If $a_{N}=N^{1 / 4}, a_{N}$ is not bounded. Because $a_{N}$ increases without bound, we write $a_{N} \rightarrow \infty$.\\
+definition 3.2: (1) A sequence $\left\{a_{N}\right\}$ is $\mathrm{O}\left(N^{\lambda}\right)$ (at most of order $N^{\lambda}$ ) if $N^{-\lambda} a_{N}$ is bounded. When $\lambda=0,\left\{a_{N}\right\}$ is bounded, and we also write $a_{N}=\mathrm{O}(1)$ (big oh one).\\
+(2) $\left\{a_{N}\right\}$ is $\mathrm{o}\left(N^{\lambda}\right)$ if $N^{-\lambda} a_{N} \rightarrow 0$. When $\lambda=0, a_{N}$ converges to zero, and we also write $a_{N}=\mathrm{o}(1)$ (little oh one).
+
+From the definitions, it is clear that if $a_{N}=\mathrm{o}\left(N^{\lambda}\right)$, then $a_{N}=\mathrm{O}\left(N^{\lambda}\right)$; in particular, if $a_{N}=\mathrm{o}(1)$, then $a_{N}=\mathrm{O}(1)$. If each element of a sequence of vectors or matrices is $\mathrm{O}\left(N^{\lambda}\right)$, we say the sequence of vectors or matrices is $\mathrm{O}\left(N^{\lambda}\right)$, and similarly for $\mathrm{o}\left(N^{\lambda}\right)$.
+
+Example 3.2: (1) If $a_{N}=\log (N)$, then $a_{N}=\mathrm{o}\left(N^{\lambda}\right)$ for any $\lambda>0$. (2) If $a_{N}= 10+\sqrt{N}$, then $a_{N}=\mathrm{O}\left(N^{1 / 2}\right)$ and $a_{N}=\mathrm{o}\left(N^{(1 / 2+\gamma)}\right)$ for any $\gamma>0$.
+
+\subsection*{3.2 Convergence in Probability and Boundedness in Probability}
+definition 3.3: (1) A sequence of random variables $\left\{x_{N}: N=1,2, \ldots\right\}$ converges in probability to the constant $a$ if for all $\varepsilon>0$,\\
+$\mathrm{P}\left[\left|x_{N}-a\right|>\varepsilon\right] \rightarrow 0 \quad$ as $N \rightarrow \infty$.\\
+We write $x_{N} \xrightarrow{p} a$ and say that $a$ is the probability limit (plim) of $x_{N}$ : $\operatorname{plim} x_{N}=a$.\\
+(2) In the special case where $a=0$, we also say that $\left\{x_{N}\right\}$ is $\mathrm{o}_{p}(1)$ (little oh $p$ one). We also write $x_{N}=\mathrm{o}_{p}(1)$ or $x_{N} \xrightarrow{p} 0$.\\
+(3) A sequence of random variables $\left\{x_{N}\right\}$ is bounded in probability if and only if for every $\varepsilon>0$, there exists a $b_{\varepsilon}<\infty$ and an integer $N_{\varepsilon}$ such that\\
+$\mathrm{P}\left[\left|x_{N}\right| \geq b_{\varepsilon}\right]<\varepsilon \quad$ for all $N \geq N_{\varepsilon}$.\\
+We write $x_{N}=\mathrm{O}_{p}(1)$ ( $\left\{x_{N}\right\}$ is big oh $p$ one).\\
+If $c_{N}$ is a nonrandom sequence, then $c_{N}=\mathrm{O}_{p}(1)$ if and only if $c_{N}=\mathrm{O}(1) ; c_{N}=\mathrm{o}_{p}(1)$ if and only if $c_{N}=\mathrm{o}(1)$. A simple and very useful fact is that if a sequence converges in probability to any real number, then it is bounded in probability.\\
+lemma 3.1: If $x_{N} \xrightarrow{p} a$, then $x_{N}=\mathrm{O}_{p}(1)$. This lemma also holds for vectors and matrices.
+
+The proof of Lemma 3.1 is not difficult; see Problem 3.1.\\
+definition 3.4: (1) A random sequence $\left\{x_{N}: N=1,2, \ldots\right\}$ is $\mathrm{o}_{p}\left(a_{N}\right)$, where $\left\{a_{N}\right\}$ is a nonrandom, positive sequence, if $x_{N} / a_{N}=\mathrm{o}_{p}(1)$. We write $x_{N}=\mathrm{o}_{p}\left(a_{N}\right)$.\\
+(2) A random sequence $\left\{x_{N}: N=1,2, \ldots\right\}$ is $\mathrm{O}_{p}\left(a_{N}\right)$, where $\left\{a_{N}\right\}$ is a nonrandom, positive sequence, if $x_{N} / a_{N}=\mathrm{O}_{p}(1)$. We write $x_{N}=\mathrm{O}_{p}\left(a_{N}\right)$.\\
+We could have started by defining a sequence $\left\{x_{N}\right\}$ to be $\mathrm{o}_{p}\left(N^{\delta}\right)$ for $\delta \in \mathbb{R}$ if $N^{-\delta} x_{N} \xrightarrow{p} 0$, in which case we obtain the definition of $\mathrm{o}_{p}(1)$ when $\delta=0$. This is where the one in $\mathrm{o}_{p}(1)$ comes from. A similar remark holds for $\mathrm{O}_{p}(1)$.\\
+Example 3.3: If $z$ is a random variable, then $x_{N} \equiv \sqrt{N} z$ is $\mathrm{O}_{p}\left(N^{1 / 2}\right)$ and $x_{N}= \mathrm{o}_{p}\left(N^{\delta}\right)$ for any $\delta>\frac{1}{2}$.
+
+LEMMA 3.2: If $w_{N}=\mathrm{o}_{p}(1), x_{N}=\mathrm{o}_{p}(1), y_{N}=\mathrm{O}_{p}(1)$, and $z_{N}=\mathrm{O}_{p}(1)$, then\\
+(1) $w_{N}+x_{N}=\mathrm{o}_{p}(1)$.\\
+(2) $y_{N}+z_{N}=\mathrm{O}_{p}(1)$.\\
+(3) $y_{N} z_{N}=\mathrm{O}_{p}(1)$.\\
+(4) $x_{N} z_{N}=\mathrm{o}_{p}(1)$.
+
+In derivations, we will write relationships 1 to 4 as $\mathrm{o}_{p}(1)+\mathrm{o}_{p}(1)=\mathrm{o}_{p}(1), \mathrm{O}_{p}(1)+ \mathrm{O}_{p}(1)=\mathrm{O}_{p}(1), \mathrm{O}_{p}(1) \cdot \mathrm{O}_{p}(1)=\mathrm{O}_{p}(1)$, and $\mathrm{o}_{p}(1) \cdot \mathrm{O}_{p}(1)=\mathrm{o}_{p}(1)$, respectively. Because a $\mathrm{o}_{p}(1)$ sequence is $\mathrm{O}_{p}(1)$, Lemma 3.2 also implies that $\mathrm{o}_{p}(1)+\mathrm{O}_{p}(1)=\mathrm{O}_{p}(1)$ and $\mathrm{o}_{p}(1) \cdot \mathrm{o}_{p}(1)=\mathrm{o}_{p}(1)$.
+
+All of the previous definitions apply element by element to sequences of random vectors or matrices. For example, if $\left\{\mathbf{x}_{N}\right\}$ is a sequence of random $K \times 1$ random vectors, $\mathbf{x}_{N} \xrightarrow{p} \mathbf{a}$, where $\mathbf{a}$ is a $K \times 1$ nonrandom vector, if and only if $x_{N j} \xrightarrow{p} a_{j}$, $j=1, \ldots, K$. This is equivalent to $\left\|\mathbf{x}_{N}-\mathbf{a}\right\| \xrightarrow{p} 0$, where $\|\mathbf{b}\| \equiv\left(\mathbf{b}^{\prime} \mathbf{b}\right)^{1 / 2}$ denotes the Euclidean length of the $K \times 1$ vector $\mathbf{b}$. Also, $\mathbf{Z}_{N} \xrightarrow{p} \mathbf{B}$, where $\mathbf{Z}_{N}$ and $\mathbf{B}$ are $M \times K$, is equivalent to $\left\|\mathbf{Z}_{N}-\mathbf{B}\right\| \xrightarrow{p} 0$, where $\|\mathbf{A}\| \equiv\left[\operatorname{tr}\left(\mathbf{A}^{\prime} \mathbf{A}\right)\right]^{1 / 2}$ and $\operatorname{tr}(\mathbf{C})$ denotes the trace of the square matrix $\mathbf{C}$.
+
+A result that we often use for studying the large-sample properties of estimators for linear models is the following. It is easily proven by repeated application of Lemma 3.2 (see Problem 3.2).\\
+lemma 3.3: Let $\left\{\mathbf{Z}_{N}: N=1,2, \ldots\right\}$ be a sequence of $J \times K$ matrices such that $\mathbf{Z}_{N}= \mathrm{o}_{p}(1)$, and let $\left\{\mathbf{x}_{N}\right\}$ be a sequence of $J \times 1$ random vectors such that $\mathbf{x}_{N}=\mathrm{O}_{p}(1)$. Then $\mathbf{Z}_{N}^{\prime} \mathbf{x}_{N}=\mathrm{o}_{p}(1)$.
+
+The next lemma is known as Slutsky's theorem.\\
+lemma 3.4: Let $\mathbf{g}: \mathbb{R}^{K} \rightarrow \mathbb{R}^{J}$ be a function continuous at some point $\mathbf{c} \in \mathbb{R}^{K}$. Let $\left\{\mathbf{x}_{N}: N=1,2, \ldots\right\}$ be sequence of $K \times 1$ random vectors such that $\mathbf{x}_{N} \xrightarrow{p} \mathbf{c}$. Then $\mathbf{g}\left(\mathbf{x}_{N}\right) \xrightarrow{p} \mathbf{g}(\mathbf{c})$ as $N \rightarrow \infty$. In other words,
+
+
+\begin{equation*}
+\operatorname{plim} \mathbf{g}\left(\mathbf{x}_{N}\right)=\mathbf{g}\left(\operatorname{plim} \mathbf{x}_{N}\right) \tag{3.1}
+\end{equation*}
+
+
+if $\mathbf{g}(\cdot)$ is continuous at plim $\mathbf{x}_{N}$.\\
+Slutsky's theorem is perhaps the most useful feature of the plim operator: it shows that the plim passes through nonlinear functions, provided they are continuous. The expectations operator does not have this feature, and this lack makes finite sample analysis difficult for many estimators. Lemma 3.4 shows that plims behave just like regular limits when applying a continuous function to the sequence.
+
+DEFINITION 3.5: Let $(\Omega, \mathscr{F}, \mathrm{P})$ be a probability space. A sequence of events $\left\{\Omega_{N}\right.$ : $N=1,2, \ldots\} \subset \mathscr{F}$ is said to occur with probability approaching one (w.p.a.1) if and only if $\mathrm{P}\left(\Omega_{N}\right) \rightarrow 1$ as $N \rightarrow \infty$.
+
+Definition 3.5 allows that $\Omega_{N}^{c}$, the complement of $\Omega_{N}$, can occur for each $N$, but its chance of occurring goes to zero as $N \rightarrow \infty$.\\
+corollary 3.1: Let $\left\{\mathbf{Z}_{N}: N=1,2, \ldots\right\}$ be a sequence of random $K \times K$ matrices, and let $\mathbf{A}$ be a nonrandom, invertible $K \times K$ matrix. If $\mathbf{Z}_{N} \xrightarrow{p} \mathbf{A}$, then\\
+(1) $\mathbf{Z}_{N}^{-1}$ exists w.p.a.1;\\
+(2) $\mathbf{Z}_{N}^{-1} \xrightarrow{p} \mathbf{A}^{-1}$ or plim $\mathbf{Z}_{N}^{-1}=\mathbf{A}^{-1}$ (in an appropriate sense).
+
+Proof: Because the determinant is a continuous function on the space of all square matrices, $\operatorname{det}\left(\mathbf{Z}_{N}\right) \xrightarrow{p} \operatorname{det}(\mathbf{A})$. Because $\mathbf{A}$ is nonsingular, $\operatorname{det}(\mathbf{A}) \neq 0$. Therefore, it follows that $\mathrm{P}\left[\operatorname{det}\left(\mathbf{Z}_{N}\right) \neq 0\right] \rightarrow 1$ as $N \rightarrow \infty$. This completes the proof of part 1 .
+
+Part 2 requires a convention about how to define $\mathbf{Z}_{N}^{-1}$ when $\mathbf{Z}_{N}$ is nonsingular. Let $\Omega_{N}$ be the set of $\omega$ (outcomes) such that $\mathbf{Z}_{N}(\omega)$ is nonsingular for $\omega \in \Omega_{N}$; we just showed that $\mathrm{P}\left(\Omega_{N}\right) \rightarrow 1$ as $N \rightarrow \infty$. Define a new sequence of matrices by\\
+$\tilde{\mathbf{Z}}_{N}(\omega) \equiv \mathbf{Z}_{N}(\omega)$ when $\omega \in \Omega_{N}, \quad \tilde{\mathbf{Z}}_{N}(\omega) \equiv \mathbf{I}_{K}$ when $\omega \notin \Omega_{N}$.\\
+Then $\mathrm{P}\left(\tilde{\mathbf{Z}}_{N}=\mathbf{Z}_{N}\right)=\mathrm{P}\left(\Omega_{N}\right) \rightarrow 1$ as $N \rightarrow \infty$. Then, because $\mathbf{Z}_{N} \xrightarrow{p} \mathbf{A}, \tilde{\mathbf{Z}}_{N} \xrightarrow{p} \mathbf{A}$. The inverse operator is continuous on the space of invertible matrices, so $\tilde{\mathbf{Z}}_{N}^{-1} \xrightarrow{p} \mathbf{A}^{-1}$. This is what we mean by $\mathbf{Z}_{N}^{-1} \xrightarrow{p} \mathbf{A}^{-1}$; the fact that $\mathbf{Z}_{N}$ can be singular with vanishing probability does not affect asymptotic analysis.
+
+\subsection*{3.3 Convergence in Distribution}
+DEFINITION 3.6: A sequence of random variables $\left\{x_{N}: N=1,2, \ldots\right\}$ converges in distribution to the continuous random variable $x$ if and only if\\
+$F_{N}(\xi) \rightarrow F(\xi) \quad$ as $N \rightarrow \infty$ for all $\xi \in \mathbb{R}$,\\
+where $F_{N}$ is the cumulative distribution function (c.d.f.) of $x_{N}$ and $F$ is the (continuous) c.d.f. of $x$. We write $x_{N} \xrightarrow{d} x$.
+
+When $x \sim \operatorname{Normal}\left(\mu, \sigma^{2}\right)$, we write $x_{N} \xrightarrow{d} \operatorname{Normal}\left(\mu, \sigma^{2}\right)$ or $x_{N} \stackrel{a}{\sim} \operatorname{Normal}\left(\mu, \sigma^{2}\right)$ ( $x_{N}$ is asymptotically normal).
+
+In Definition 3.6, $x_{N}$ is not required to be continuous for any $N$. A good example of where $x_{N}$ is discrete for all $N$ but has an asymptotically normal distribution is the Demoivre-Laplace theorem (a special case of the central limit theorem given in Section 3.4), which says that $x_{N} \equiv\left(s_{N}-N p\right) /[N p(1-p)]^{1 / 2}$ has a limiting standard normal distribution, where $s_{N}$ has the binomial ( $N, p$ ) distribution.
+
+DEFINITION 3.7: A sequence of $K \times 1$ random vectors $\left\{\mathbf{x}_{N}: N=1,2, \ldots\right\}$ converges in distribution to the continuous random vector $\mathbf{x}$ if and only if for any $K \times 1$ nonrandom vector $\mathbf{c}$ such that $\mathbf{c}^{\prime} \mathbf{c}=1, \mathbf{c}^{\prime} \mathbf{x}_{N} \xrightarrow{d} \mathbf{c}^{\prime} \mathbf{x}$, and we write $\mathbf{x}_{N} \xrightarrow{d} \mathbf{x}$.
+
+When $\mathbf{x} \sim \operatorname{Normal}(\mathbf{m}, \mathbf{V})$, the requirement in Definition 3.7 is that $\mathbf{c}^{\prime} \mathbf{x}_{N} \xrightarrow[d]{d} \operatorname{Normal}\left(\mathbf{c}^{\prime} \mathbf{m}, \mathbf{c}^{\prime} \mathbf{V c}\right)$ for every $\mathbf{c} \in \mathbb{R}^{K}$ such that $\mathbf{c}^{\prime} \mathbf{c}=1$; in this case we write $\mathbf{x}_{N} \xrightarrow{d} \operatorname{Normal}(\mathbf{m}, \mathbf{V})$ or $\mathbf{x}_{N} \stackrel{a}{\sim} \operatorname{Normal}(\mathbf{m}, \mathbf{V})$. For the derivations in this book, $\mathbf{m}=\mathbf{0}$.\\
+LEMMA 3.5: If $\mathbf{x}_{N} \xrightarrow{d} \mathbf{x}$, where $\mathbf{x}$ is any $K \times 1$ random vector, then $\mathbf{x}_{N}=\mathrm{O}_{p}(1)$.\\
+As we will see throughout this book, Lemma 3.5 turns out to be very useful for establishing that a sequence is bounded in probability. Often it is easiest to first verify that a sequence converges in distribution.\\
+lemma 3.6: Let $\left\{\mathbf{x}_{N}\right\}$ be a sequence of $K \times 1$ random vectors such that $\mathbf{x}_{N} \xrightarrow{d} \mathbf{x}$. If $\mathbf{g}: \mathbb{R}^{K} \rightarrow \mathbb{R}^{J}$ is a continuous function, then $\mathbf{g}\left(\mathbf{x}_{N}\right) \xrightarrow{d} \mathbf{g}(\mathbf{x})$.
+
+The usefulness of Lemma 3.6, which is called the continuous mapping theorem, cannot be overstated. It tells us that once we know the limiting distribution of $\mathbf{x}_{N}$, we can find the limiting distribution of many interesting functions of $\mathbf{x}_{N}$. This is especially useful for determining the asymptotic distribution of test statistics once the limiting distribution of an estimator is known; see Section 3.5.
+
+The continuity of $\mathbf{g}$ is not necessary in Lemma 3.6, but some restrictions are needed. We will need only the form stated in Lemma 3.6.\\
+corollary 3.2: If $\left\{\mathbf{z}_{N}\right\}$ is a sequence of $K \times 1$ random vectors such that $\mathbf{z}_{N} \xrightarrow{d} \operatorname{Normal}(\mathbf{0}, \mathbf{V})$, then\\
+(1) For any $K \times M$ nonrandom matrix $\mathbf{A}, \mathbf{A}^{\prime} \mathbf{z}_{N} \xrightarrow{d} \operatorname{Normal}\left(\mathbf{0}, \mathbf{A}^{\prime} \mathbf{V A}\right)$.\\
+(2) $\mathbf{z}_{N}^{\prime} \mathbf{V}^{-1} \mathbf{z}_{N} \xrightarrow{d} \chi_{K}^{2}$ (or $\mathbf{z}_{N}^{\prime} \mathbf{V}^{-1} \mathbf{z}_{N} \stackrel{a}{\sim} \chi_{K}^{2}$ ).\\
+lemma 3.7: Let $\left\{\mathbf{x}_{N}\right\}$ and $\left\{\mathbf{z}_{N}\right\}$ be sequences of $K \times 1$ random vectors. If $\mathbf{z}_{N} \xrightarrow{d} \mathbf{z}$ and $\mathbf{x}_{N}-\mathbf{z}_{N} \xrightarrow{p} \mathbf{0}$, then $\mathbf{x}_{N} \xrightarrow{d} \mathbf{z}$.
+
+Lemma 3.7 is called the asymptotic equivalence lemma. In Section 3.5.1 we discuss generally how Lemma 3.7 is used in econometrics. We use the asymptotic equivalence lemma so frequently in asymptotic analysis that after a while we will not even mention that we are using it.
+
+\subsection*{3.4 Limit Theorems for Random Samples}
+In this section we state two classic limit theorems for independent, identically distributed (i.i.d.) sequences of random vectors. These apply when sampling is done randomly from a population.\\
+theorem 3.1: Let $\left\{\mathbf{w}_{i}: i=1,2, \ldots\right\}$ be a sequence of independent, identically distributed $G \times 1$ random vectors such that $E\left(\left|w_{i g}\right|\right)<\infty, g=1, \ldots, G$. Then the sequence satisfies the weak law of large numbers (WLLN): $N^{-1} \sum_{i=1}^{N} \mathbf{w}_{i} \xrightarrow{p} \boldsymbol{\mu}_{w}$, where $\boldsymbol{\mu}_{w} \equiv \mathrm{E}\left(\mathbf{w}_{i}\right)$.\\
+theorem 3.2 (Lindeberg-Levy): Let $\left\{\mathbf{w}_{i}: i=1,2, \ldots\right\}$ be a sequence of independent, identically distributed $G \times 1$ random vectors such that $E\left(w_{i g}^{2}\right)<\infty$, $g=1, \ldots, G$, and $E\left(\mathbf{w}_{i}\right)=\mathbf{0}$. Then $\left\{\mathbf{w}_{i}: i=1,2, \ldots\right\}$ satisfies the central limit theorem (CLT); that is,
+
+$$
+N^{-1 / 2} \sum_{i=1}^{N} \mathbf{w}_{i} \xrightarrow{d} \operatorname{Normal}(\mathbf{0}, \mathbf{B})
+$$
+
+where $\mathbf{B}=\operatorname{Var}\left(\mathbf{w}_{i}\right)=\mathrm{E}\left(\mathbf{w}_{i} \mathbf{w}_{i}^{\prime}\right)$ is necessarily positive semidefinite. For our purposes, $\mathbf{B}$ is almost always positive definite.
+
+In most of this text, we will only need convergence results for independent, identically distributed observations. Nevertheless, sometimes it will not make sense to assume identical distributions across $i$. (Cluster sampling and certain kinds of stratified sampling are two examples.) It is important to know that the WLLN and CLT continue to hold for independent, not identically distributed (i.n.i.d.) observations under rather weak assumptions. See Problem 3.11 for a law of large numbers (which contains a condition that is not the weakest possible; White (2001) contains theorems under weaker conditions). Consistency and asymptotic normality arguments for regression and other estimators are more complicated but still fairly straightforward.
+
+\subsection*{3.5 Limiting Behavior of Estimators and Test Statistics}
+In this section, we apply the previous concepts to sequences of estimators. Because estimators depend on the random outcomes of data, they are properly viewed as random vectors.
+
+\subsection*{3.5.1 Asymptotic Properties of Estimators}
+DEFINITION 3.8: Let $\left\{\hat{\boldsymbol{\theta}}_{N}: N=1,2, \ldots\right\}$ be a sequence of estimators of the $P \times 1$ vector $\boldsymbol{\theta} \in \boldsymbol{\Theta}$, where $N$ indexes the sample size. If
+
+
+\begin{equation*}
+\hat{\boldsymbol{\theta}}_{N} \xrightarrow{p} \boldsymbol{\theta} \tag{3.2}
+\end{equation*}
+
+
+for any value of $\boldsymbol{\theta}$, then we say $\hat{\boldsymbol{\theta}}_{N}$ is a consistent estimator of $\boldsymbol{\theta}$.
+
+Because there are other notions of convergence, in the theoretical literature condition (3.2) is often referred to as weak consistency. This is the only kind of consistency we will be concerned with, so we simply call condition (3.2) consistency. (See White (2001, Chap. 2) for other kinds of convergence.) Since we do not know $\boldsymbol{\theta}$, the consistency definition requires condition (3.2) for any possible value of $\boldsymbol{\theta}$.
+
+DEFINITION 3.9: Let $\left\{\hat{\boldsymbol{\theta}}_{N}: N=1,2, \ldots\right\}$ be a sequence of estimators of the $P \times 1$ vector $\boldsymbol{\theta} \in \boldsymbol{\Theta}$. Suppose that
+
+
+\begin{equation*}
+\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right) \xrightarrow{d} \operatorname{Normal}(\mathbf{0}, \mathbf{V}), \tag{3.3}
+\end{equation*}
+
+
+where $\mathbf{V}$ is a $P \times P$ positive semidefinite matrix. Then we say that $\hat{\boldsymbol{\theta}}_{N}$ is $\sqrt{\mathbf{N}}$ asymptotically normally distributed and $\mathbf{V}$ is the asymptotic variance of $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)$, denoted Avar $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)=\mathbf{V}$.
+
+Even though $\mathbf{V} / N=\operatorname{Var}\left(\hat{\boldsymbol{\theta}}_{N}\right)$ holds only in special cases, and $\hat{\boldsymbol{\theta}}_{N}$ rarely has an exact normal distribution, we treat $\hat{\boldsymbol{\theta}}_{N}$ as if
+
+
+\begin{equation*}
+\hat{\boldsymbol{\theta}}_{N} \sim \operatorname{Normal}(\boldsymbol{\theta}, \mathbf{V} / N) \tag{3.4}
+\end{equation*}
+
+
+whenever statement (3.3) holds. For this reason, $\mathbf{V} / N$ is called the asymptotic variance of $\hat{\boldsymbol{\theta}}_{N}$, and we write
+
+
+\begin{equation*}
+\operatorname{Avar}\left(\hat{\boldsymbol{\theta}}_{N}\right)=\mathbf{V} / N . \tag{3.5}
+\end{equation*}
+
+
+However, the only sense in which $\hat{\boldsymbol{\theta}}_{N}$ is approximately normally distributed with mean $\boldsymbol{\theta}$ and variance $\mathbf{V} / N$ is contained in statement (3.3), and this is what is needed to perform inference about $\boldsymbol{\theta}$. Statement (3.4) is a heuristic statement that leads to the appropriate inference.
+
+When we discuss consistent estimation of asymptotic variances-a topic that will arise often-we should technically focus on estimation of $\mathbf{V} \equiv \operatorname{Avar} \sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)$. In most cases, we will be able to find at least one, and usually more than one, consistent estimator $\hat{\mathbf{V}}_{N}$ of $\mathbf{V}$. Then the corresponding estimator of $\operatorname{Avar}\left(\hat{\boldsymbol{\theta}}_{N}\right)$ is $\hat{\mathbf{V}}_{N} / N$, and we write
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}\left(\hat{\boldsymbol{\theta}}_{N}\right)}=\hat{\mathbf{V}}_{N} / N . \tag{3.6}
+\end{equation*}
+
+
+The division by $N$ in equation (3.6) is practically very important. What we call the asymptotic variance of $\hat{\boldsymbol{\theta}}_{N}$ is estimated as in equation (3.6). Unfortunately, there has not been a consistent usage of the term "asymptotic variance" in econometrics.
+
+Taken literally, a statement such as " $\hat{\mathbf{V}}_{N} / N$ is consistent for $\operatorname{Avar}\left(\hat{\boldsymbol{\theta}}_{N}\right)$ " is not very meaningful because $\mathbf{V} / N$ converges to $\mathbf{0}$ as $N \rightarrow \infty$; typically, $\hat{\mathbf{V}}_{N} / N \xrightarrow{p} \mathbf{0}$ whether\\
+or not $\hat{\mathbf{V}}_{N}$ is consistent for $\mathbf{V}$. Nevertheless, it is useful to have an admittedly imprecise shorthand. In what follows, if we say that " $\hat{\mathbf{V}}_{N} / N$ consistently estimates $\operatorname{Avar}\left(\hat{\boldsymbol{\theta}}_{N}\right)$," we mean that $\hat{\mathbf{V}}_{N}$ consistently estimates $\operatorname{Avar} \sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)$.
+
+DEFINITION 3.10: If $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right) \stackrel{a}{\sim} \operatorname{Normal}(0, \mathbf{V})$ where $\mathbf{V}$ is positive definite with $j$ th diagonal $v_{j j}$, and $\hat{\mathbf{V}}_{N} \xrightarrow{p} \mathbf{V}$, then the asymptotic standard error of $\hat{\theta}_{N j}$, denoted $\operatorname{se}\left(\hat{\theta}_{N j}\right)$, is $\left(\hat{v}_{N j j} / N\right)^{1 / 2}$.
+
+In other words, the asymptotic standard error of an estimator, which is almost always reported in applied work, is the square root of the appropriate diagonal element of $\hat{\mathbf{V}}_{N} / N$. The asymptotic standard errors can be loosely thought of as estimating the standard deviations of the elements of $\hat{\boldsymbol{\theta}}_{N}$, and they are the appropriate quantities to use when forming (asymptotic) $t$ statistics and confidence intervals. Obtaining valid asymptotic standard errors (after verifying that the estimator is asymptotically normally distributed) is often the biggest challenge when using a new estimator.
+
+If statement (3.3) holds, it follows by Lemma 3.5 that $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)=\mathrm{O}_{p}(1)$, or $\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}=\mathrm{O}_{p}\left(N^{-1 / 2}\right)$, and we say that $\hat{\boldsymbol{\theta}}_{N}$ is a $\sqrt{\mathbf{N}}$-consistent estimator of $\boldsymbol{\theta} . \sqrt{N}$ consistency certainly implies that $\operatorname{plim} \hat{\boldsymbol{\theta}}_{N}=\boldsymbol{\theta}$, but it is much stronger because it tells us that the rate of convergence is almost the square root of the sample size $N$ : $\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}=\mathrm{o}_{p}\left(N^{-c}\right)$ for any $0 \leq c<\frac{1}{2}$. In this book, almost every consistent estimator we will study-and every one we consider in any detail-is $\sqrt{N}$-asymptotically normal, and therefore $\sqrt{N}$-consistent, under reasonable assumptions.
+
+If one $\sqrt{N}$-asymptotically normal estimator has an asymptotic variance that is smaller than another's asymptotic variance (in the matrix sense), it makes it easy to choose between the estimators based on asymptotic considerations.
+
+DEFINITION 3.11: Let $\hat{\boldsymbol{\theta}}_{N}$ and $\tilde{\boldsymbol{\theta}}_{N}$ be estimators of $\boldsymbol{\theta}$ each satisfying statement (3.3), with asymptotic variances $\mathbf{V}=\operatorname{Avar} \sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)$ and $\mathbf{D}=\operatorname{Avar} \sqrt{N}\left(\tilde{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)$ (these generally depend on the value of $\boldsymbol{\theta}$, but we suppress that consideration here). Then\\
+(1) $\hat{\boldsymbol{\theta}}_{N}$ is asymptotically efficient relative to $\tilde{\boldsymbol{\theta}}_{N}$ if $\mathbf{D}-\mathbf{V}$ is positive semidefinite for all $\boldsymbol{\theta}$,\\
+(2) $\hat{\boldsymbol{\theta}}_{N}$ and $\tilde{\boldsymbol{\theta}}_{N}$ are $\sqrt{\mathbf{N}}$-equivalent if $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\tilde{\boldsymbol{\theta}}_{N}\right)=\mathrm{o}_{p}(1)$.
+
+When two estimators are $\sqrt{N}$-equivalent, they have the same limiting distribution (multivariate normal in this case, with the same asymptotic variance). This conclusion follows immediately from the asymptotic equivalence lemma (Lemma 3.7). Sometimes, to find the limiting distribution of, say, $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)$, it is easiest to first find the limiting distribution of $\sqrt{N}\left(\tilde{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)$, and then to show that $\hat{\boldsymbol{\theta}}_{N}$ and $\tilde{\boldsymbol{\theta}}_{N}$ are $\sqrt{N}$-equivalent. A good example of this approach is in Chapter 7, where we find the\\
+limiting distribution of the feasible generalized least squares estimator, after we have found the limiting distribution of the GLS estimator.
+
+DEFINITION 3.12: Partition $\hat{\boldsymbol{\theta}}_{N}$ satisfying statement (3.3) into vectors $\hat{\boldsymbol{\theta}}_{N 1}$ and $\hat{\boldsymbol{\theta}}_{N 2}$. Then $\hat{\boldsymbol{\theta}}_{N 1}$ and $\hat{\boldsymbol{\theta}}_{N 2}$ are asymptotically independent if\\
+$\mathbf{V}=\left(\begin{array}{cc}\mathbf{V}_{1} & \mathbf{0} \\ \mathbf{0} & \mathbf{V}_{2}\end{array}\right)$,\\
+where $\mathbf{V}_{1}$ is the asymptotic variance of $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N 1}-\boldsymbol{\theta}_{1}\right)$ and similarly for $\mathbf{V}_{2}$. In other words, the asymptotic variance of $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)$ is block diagonal.
+
+Throughout this section we have been careful to index estimators by the sample size, $N$. This is useful to fix ideas on the nature of asymptotic analysis, but it is cumbersome when applying asymptotics to particular estimation methods. After this chapter, an estimator of $\boldsymbol{\theta}$ will be denoted $\hat{\boldsymbol{\theta}}$, which is understood to depend on the sample size $N$. When we write, for example, $\hat{\boldsymbol{\theta}} \xrightarrow{p} \boldsymbol{\theta}$, we mean convergence in probability as the sample size $N$ goes to infinity.
+
+\subsection*{3.5.2 Asymptotic Properties of Test Statistics}
+We begin with some important definitions in the large-sample analysis of test statistics.\\
+definition 3.13: (1) The asymptotic size of a testing procedure is defined as the limiting probability of rejecting $\mathrm{H}_{0}$ when $\mathrm{H}_{0}$ is true. Mathematically, we can write this as $\lim _{N \rightarrow \infty} \mathrm{P}_{N}$ (reject $\mathrm{H}_{0} \mid \mathrm{H}_{0}$ ), where the $N$ subscript indexes the sample size.\\
+(2) A test is said to be consistent against the alternative $\mathrm{H}_{1}$ if the null hypothesis is rejected with probability approaching one when $\mathrm{H}_{1}$ is true: $\lim _{N \rightarrow \infty} \mathrm{P}_{N}$ (reject $\left.\mathrm{H}_{0} \mid \mathrm{H}_{1}\right)=1$.
+
+In practice, the asymptotic size of a test is obtained by finding the limiting distribution of a test statistic-in our case, normal or chi-square, or simple modifications of these that can be used as $t$ distributed or $F$ distributed - and then choosing a critical value based on this distribution. Thus, testing using asymptotic methods is practically the same as testing using the classical linear model.
+
+A test is consistent against alternative $\mathrm{H}_{1}$ if the probability of rejecting $\mathrm{H}_{0}$ tends to unity as the sample size grows without bound. Just as consistency of an estimator is a minimal requirement, so is consistency of a test statistic. Consistency rarely allows us to choose among tests: most tests are consistent against alternatives that they are supposed to have power against. For consistent tests with the same asymptotic size, we can use the notion of local power analysis to choose among tests. We will cover this briefly in Chapter 12 on nonlinear estimation, where we introduce the notion of\\
+local alternatives-that is, alternatives to $\mathrm{H}_{0}$ that converge to $\mathrm{H}_{0}$ at rate $1 / \sqrt{N}$. Generally, test statistics will have desirable asymptotic properties when they are based on estimators with good asymptotic properties (such as efficiency). We now derive the limiting distribution of a test statistic that is used very often in econometrics.\\
+lemma 3.8: Suppose that statement (3.3) holds, where $\mathbf{V}$ is positive definite. Then for any nonstochastic matrix $Q \times P$ matrix $\mathbf{R}, Q \leq P$, with $\operatorname{rank}(\mathbf{R})=Q$,\\
+$\sqrt{N} \mathbf{R}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right) \stackrel{a}{\sim} \operatorname{Normal}\left(\mathbf{0}, \mathbf{R V R}^{\prime}\right)$\\
+and\\
+$\left[\sqrt{N} \mathbf{R}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)\right]^{\prime}\left[\mathbf{R} \mathbf{V} \mathbf{R}^{\prime}\right]^{-1}\left[\sqrt{N} \mathbf{R}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)\right] \stackrel{a}{\sim} \chi_{Q}^{2}$.\\
+In addition, if plim $\hat{\mathbf{V}}_{N}=\mathbf{V}$ then
+
+$$
+\begin{aligned}
+& {\left[\sqrt{N} \mathbf{R}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)\right]^{\prime}\left[\mathbf{R} \hat{\mathbf{V}}_{N} \mathbf{R}^{\prime}\right]^{-1}\left[\sqrt{N} \mathbf{R}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)\right]} \\
+& \quad=\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)^{\prime} \mathbf{R}^{\prime}\left[\mathbf{R}\left(\hat{\mathbf{V}}_{N} / N\right) \mathbf{R}^{\prime}\right]^{-1} \mathbf{R}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right) \stackrel{a}{\sim} \chi_{Q}^{2}
+\end{aligned}
+$$
+
+For testing the null hypothesis $\mathrm{H}_{0}: \mathbf{R} \boldsymbol{\theta}=\mathbf{r}$, where $\mathbf{r}$ is a $Q \times 1$ nonrandom vector, define the Wald statistic for testing $\mathrm{H}_{0}$ against $\mathrm{H}_{1}: \mathbf{R} \boldsymbol{\theta} \neq \mathbf{r}$ as
+
+
+\begin{equation*}
+W_{N} \equiv\left(\mathbf{R} \hat{\boldsymbol{\theta}}_{N}-\mathbf{r}\right)^{\prime}\left[\mathbf{R}\left(\hat{\mathbf{V}}_{N} / N\right) \mathbf{R}^{\prime}\right]^{-1}\left(\mathbf{R} \hat{\boldsymbol{\theta}}_{N}-\mathbf{r}\right) \tag{3.7}
+\end{equation*}
+
+
+Under $\mathrm{H}_{0}, W_{N} \stackrel{a}{\sim} \chi_{Q}^{2}$. If we abuse the asymptotics and treat $\hat{\boldsymbol{\theta}}_{N}$ as being distributed as $\operatorname{Normal}\left(\boldsymbol{\theta}, \hat{\mathbf{V}}_{N} / N\right)$, we get equation (3.7) exactly.\\
+lemma 3.9: Suppose that statement (3.3) holds, where $\mathbf{V}$ is positive definite. Let $\mathbf{c}$ : $\boldsymbol{\Theta} \rightarrow \mathbb{R}^{Q}$ be a continuously differentiable function on the parameter space $\boldsymbol{\Theta} \subset \mathbb{R}^{P}$, where $Q \leq P$, and assume that $\boldsymbol{\theta}$ is in the interior of the parameter space. Define $\mathbf{C}(\boldsymbol{\theta}) \equiv \nabla_{\theta} \mathbf{c}(\boldsymbol{\theta})$ as the $Q \times P$ Jacobian of $\mathbf{c}$. Then
+
+
+\begin{equation*}
+\sqrt{N}\left[\mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)-\mathbf{c}(\boldsymbol{\theta})\right] \stackrel{a}{\sim} \operatorname{Normal}\left[\mathbf{0}, \mathbf{C}(\boldsymbol{\theta}) \mathbf{V C}(\boldsymbol{\theta})^{\prime}\right] \tag{3.8}
+\end{equation*}
+
+
+and
+
+$$
+\left\{\sqrt{N}\left[\mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)-\mathbf{c}(\boldsymbol{\theta})\right]\right\}^{\prime}\left[\mathbf{C}(\boldsymbol{\theta}) \mathbf{V C}(\boldsymbol{\theta})^{\prime}\right]^{-1}\left\{\sqrt{N}\left[\mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)-\mathbf{c}(\boldsymbol{\theta})\right]\right\} \stackrel{a}{\sim} \chi_{Q}^{2} .
+$$
+
+Define $\hat{\mathbf{C}}_{N} \equiv \mathbf{C}\left(\hat{\boldsymbol{\theta}}_{N}\right)$. Then plim $\hat{\mathbf{C}}_{N}=\mathbf{C}(\boldsymbol{\theta})$. If plim $\hat{\mathbf{V}}_{N}=\mathbf{V}$, then
+
+
+\begin{equation*}
+\left\{\sqrt{N}\left[\mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)-\mathbf{c}(\boldsymbol{\theta})\right]\right\}^{\prime}\left[\hat{\mathbf{C}}_{N} \hat{\mathbf{V}}_{N} \hat{\mathbf{C}}_{N}^{\prime}\right]^{-1}\left\{\sqrt{N}\left[\mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)-\mathbf{c}(\boldsymbol{\theta})\right]\right\} \stackrel{a}{\sim} \chi_{Q}^{2} . \tag{3.9}
+\end{equation*}
+
+
+Equation (3.8) is very useful for obtaining asymptotic standard errors for nonlinear functions of $\hat{\boldsymbol{\theta}}_{N}$. The appropriate estimator of $\operatorname{Avar}\left[\mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)\right]$ is $\hat{\mathbf{C}}_{N}\left(\hat{\mathbf{V}}_{N} / N\right) \hat{\mathbf{C}}_{N}^{\prime}=$\\
+$\hat{\mathbf{C}}_{N}\left[\operatorname{Avar}\left(\hat{\boldsymbol{\theta}}_{N}\right)\right] \hat{\mathbf{C}}_{N}^{\prime}$. Thus, once $\operatorname{Avar}\left(\hat{\boldsymbol{\theta}}_{N}\right)$ and the estimated Jacobian of $\mathbf{c}$ are obtained, we can easily obtain\\
+$\operatorname{Avar}\left[\mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)\right]=\hat{\mathbf{C}}_{N}\left[\operatorname{Avar}\left(\hat{\boldsymbol{\theta}}_{N}\right)\right] \hat{\mathbf{C}}_{N}^{\prime}$.
+
+The asymptotic standard errors are obtained as the square roots of the diagonal elements of equation (3.10). In the scalar case $\hat{\gamma}_{N}=c\left(\hat{\boldsymbol{\theta}}_{N}\right)$, the asymptotic standard error of $\hat{\gamma}_{N}$ is $\left[\nabla_{\theta} c\left(\hat{\boldsymbol{\theta}}_{N}\right)\left[\operatorname{Avar}\left(\hat{\boldsymbol{\theta}}_{N}\right)\right] \nabla_{\theta} c\left(\hat{\boldsymbol{\theta}}_{N}\right)^{\prime}\right]^{1 / 2}$.
+
+Equation (3.9) is useful for testing nonlinear hypotheses of the form $\mathrm{H}_{0}: \mathbf{c}(\boldsymbol{\theta})=\mathbf{0}$ against $\mathrm{H}_{1}: \mathbf{c}(\boldsymbol{\theta}) \neq \mathbf{0}$. The Wald statistic is
+
+
+\begin{equation*}
+W_{N}=\sqrt{N} \mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)^{\prime}\left[\hat{\mathbf{C}}_{N} \hat{\mathbf{V}}_{N} \hat{\mathbf{C}}_{N}^{\prime}\right]^{-1} \sqrt{N} \mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)=\mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)^{\prime}\left[\hat{\mathbf{C}}_{N}\left(\hat{\mathbf{V}}_{N} / N\right) \hat{\mathbf{C}}_{N}^{\prime}\right]^{-1} \mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right) . \tag{3.11}
+\end{equation*}
+
+
+Under $\mathrm{H}_{0}, W_{N} \stackrel{a}{\sim} \chi_{Q}^{2}$.\\
+The method of establishing equation (3.8), given that statement (3.3) holds, is often called the delta method, and it is used very often in econometrics. It gets its name from its use of calculus. The argument is as follows. Because $\boldsymbol{\theta}$ is in the interior of $\boldsymbol{\Theta}$, and because $\operatorname{plim} \hat{\boldsymbol{\theta}}_{N}=\boldsymbol{\theta}, \hat{\boldsymbol{\theta}}_{N}$ is in an open, convex subset of $\boldsymbol{\Theta}$ containing $\boldsymbol{\theta}$ with probability approaching one, therefore w.p.a. 1 we can use a mean value expansion $\mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)=\mathbf{c}(\boldsymbol{\theta})+\ddot{\mathbf{C}}_{N} \cdot\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)$, where $\ddot{\mathbf{C}}_{N}$ denotes the matrix $\mathbf{C}(\boldsymbol{\theta})$ with rows evaluated at mean values between $\hat{\boldsymbol{\theta}}_{N}$ and $\boldsymbol{\theta}$. Because these mean values are trapped between $\hat{\boldsymbol{\theta}}_{N}$ and $\boldsymbol{\theta}$, they converge in probability to $\boldsymbol{\theta}$. Therefore, by Slutsky's theorem, $\ddot{\mathbf{C}}_{N} \xrightarrow{p} \mathbf{C}(\boldsymbol{\theta})$, and we can write
+
+$$
+\begin{aligned}
+\sqrt{N}\left[\mathbf{c}\left(\hat{\boldsymbol{\theta}}_{N}\right)-\mathbf{c}(\boldsymbol{\theta})\right] & =\ddot{\mathbf{C}}_{N} \cdot \sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right), \\
+& =\mathbf{C}(\boldsymbol{\theta}) \sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)+\left[\ddot{\mathbf{C}}_{N}-\mathbf{C}(\boldsymbol{\theta})\right] \sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right), \\
+& =\mathbf{C}(\boldsymbol{\theta}) \sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)+\mathrm{o}_{p}(1) \cdot \mathrm{O}_{p}(1)=\mathbf{C}(\boldsymbol{\theta}) \sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)+\mathrm{o}_{p}(1) .
+\end{aligned}
+$$
+
+We can now apply the asymptotic equivalence lemma (Lemma 3.7) and Lemma 3.8 with $\mathbf{R} \equiv \mathbf{C}(\boldsymbol{\theta})]$ to get equation (3.8).
+
+\section*{Problems}
+3.1. Prove Lemma 3.1.\\
+3.2. Using Lemma 3.2, prove Lemma 3.3.\\
+3.3. Explain why, under the assumptions of Lemma 3.4, $\mathbf{g}\left(\mathbf{x}_{N}\right)=\mathrm{O}_{p}(1)$.\\
+3.4. Prove Corollary 3.2.\\
+3.5. Let $\left\{y_{i}: i=1,2, \ldots\right\}$ be an independent, identically distributed sequence with $\mathrm{E}\left(y_{i}^{2}\right)<\infty$. Let $\mu=\mathrm{E}\left(y_{i}\right)$ and $\sigma^{2}=\operatorname{Var}\left(y_{i}\right)$.\\
+a. Let $\bar{y}_{N}$ denote the sample average based on a sample size of $N$. Find $\operatorname{Var}\left[\sqrt{N}\left(\bar{y}_{N}-\mu\right)\right]$.\\
+b. What is the asymptotic variance of $\sqrt{N}\left(\bar{y}_{N}-\mu\right)$ ?\\
+c. What is the asymptotic variance of $\bar{y}_{N}$ ? Compare this with $\operatorname{Var}\left(\bar{y}_{N}\right)$.\\
+d. What is the asymptotic standard deviation of $\bar{y}_{N}$ ?\\
+e. How would you obtain the asymptotic standard error of $\bar{y}_{N}$ ?\\
+3.6. Give a careful (albeit short) proof of the following statement: If $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}\right)= \mathrm{O}_{p}(1)$, then $\hat{\boldsymbol{\theta}}_{N}-\boldsymbol{\theta}=\mathrm{o}_{p}\left(N^{-\mathrm{c}}\right)$ for any $0 \leq c<\frac{1}{2}$.\\
+3.7. Let $\hat{\theta}$ be a $\sqrt{N}$-asymptotically normal estimator for the scalar $\theta>0$. Let $\hat{\gamma}=\log (\hat{\theta})$ be an estimator of $\gamma=\log (\theta)$.\\
+a. Why is $\hat{\gamma}$ a consistent estimator of $\gamma$ ?\\
+b. Find the asymptotic variance of $\sqrt{N}(\hat{\gamma}-\gamma)$ in terms of the asymptotic variance of $\sqrt{N}(\hat{\theta}-\theta)$.\\
+c. Suppose that, for a sample of data, $\hat{\theta}=4$ and $\operatorname{se}(\hat{\theta})=2$. What is $\hat{\gamma}$ and its (asymptotic) standard error?\\
+d. Consider the null hypothesis $\mathrm{H}_{0}: \theta=1$. What is the asymptotic $t$ statistic for testing $\mathrm{H}_{0}$, given the numbers from part c ?\\
+e. Now state $\mathrm{H}_{0}$ from part d equivalently in terms of $\gamma$, and use $\hat{\gamma}$ and $\operatorname{se}(\hat{\gamma})$ to test $\mathrm{H}_{0}$. What do you conclude?\\
+3.8. Let $\hat{\boldsymbol{\theta}}=\left(\hat{\theta}_{1}, \hat{\theta}_{2}\right)^{\prime}$ be a $\sqrt{N}$-asymptotically normal estimator for $\boldsymbol{\theta}=\left(\theta_{1}, \theta_{2}\right)^{\prime}$, with $\theta_{2} \neq 0$. Let $\hat{\gamma}=\hat{\theta}_{1} / \hat{\theta}_{2}$ be an estimator of $\gamma=\theta_{1} / \theta_{2}$.\\
+a. Show that $\operatorname{plim} \hat{\gamma}=\gamma$.\\
+b. Find $\operatorname{Avar}(\hat{\gamma})$ in terms of $\boldsymbol{\theta}$ and $\operatorname{Avar}(\hat{\boldsymbol{\theta}})$ using the delta method.\\
+c. If, for a sample of data, $\hat{\boldsymbol{\theta}}=(-1.5, .5)^{\prime}$ and $\operatorname{Avar}(\hat{\boldsymbol{\theta}})$ is estimated as $\left(\begin{array}{cc}1 & -.4 \\ -.4 & 2\end{array}\right)$, find the asymptotic standard error of $\hat{\gamma}$.\\
+3.9. Let $\hat{\boldsymbol{\theta}}$ and $\tilde{\boldsymbol{\theta}}$ be two consistent, $\sqrt{N}$-asymptotically normal estimators of the $P \times 1$ parameter vector $\boldsymbol{\theta}$, with Avar $\sqrt{N}(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta})=\mathbf{V}_{1}$ and Avar $\sqrt{N}(\tilde{\boldsymbol{\theta}}-\boldsymbol{\theta})=\mathbf{V}_{2}$. Define a $Q \times 1$ parameter vector by $\boldsymbol{\gamma}=\mathbf{g}(\boldsymbol{\theta})$, where $\mathbf{g}(\cdot)$ is a continuously differentiable function. Show that, if $\hat{\boldsymbol{\theta}}$ is asymptotically more efficient than $\tilde{\boldsymbol{\theta}}$, then $\hat{\boldsymbol{\gamma}} \equiv \mathbf{g}(\hat{\boldsymbol{\theta}})$ is asymptotically efficient relative to $\tilde{\gamma} \equiv \mathbf{g}(\tilde{\boldsymbol{\theta}})$.\\
+3.10. Let $\left\{w_{i}: i=1,2, \ldots\right\}$ be a sequence of independent, identically distributed random variables with $\mathrm{E}\left(w_{i}^{2}\right)<\infty$ and $\mathrm{E}\left(w_{i}\right)=0$. Define the standardized partial sum as $x_{N}=N^{-1 / 2} \sum_{i=1}^{N} w_{i}$. Use Chebyshev's inequality (see, for example, Casella and Berger (2002, p. 122)) to prove that $x_{N}=O_{p}(1)$. Therefore, we can show directly that a standardized partial sum of i.i.d. random variables with finite second moment is $O_{p}(1)$, rather than having to appeal to the central limit theorem.\\
+3.11. Let $\left\{w_{i}: i=1,2, \ldots\right\}$ be a sequence of independent, not (necessarily) identically distributed random variables with $E\left(w_{i}^{2}\right)<\infty, i=1,2, \ldots$ and $E\left(w_{i}\right)=\mu_{i}$, $i=1,2, \ldots$. For each $i$, define $\sigma_{i}^{2}=\operatorname{Var}\left(w_{i}\right)$.\\
+a. Use Chebyshev's inequality to show that a sufficient condition for $N^{-1} \sum_{i=1}^{N}\left(w_{i}-\mu_{i}\right) \xrightarrow{p} 0$ is $N^{-2} \sum_{i=1}^{N} \sigma_{i}^{2} \rightarrow 0$ as $N \rightarrow \infty$.\\
+b. Is the condition from part a satisfied if $\sigma_{i}^{2}<b<\infty, i=1,2, \ldots$ ? (See White (2001) for weaker conditions under which the WLLN holds for i.n.i.d. sequences.)
+
+\section*{$\mathrm{II}_{\text {цккан норег }}$}
+In Part II we begin our econometric analysis of linear models for cross section and panel data. In Chapter 4 we review the single-equation linear model and discuss ordinary least squares estimation. Although this material is, in principle, review, the approach is likely to be different from an introductory linear models course. In addition, we cover several topics that are not traditionally covered in texts but that have proven useful in empirical work. Chapter 5 discusses instrumental variables estimation of the linear model, and Chapter 6 covers some remaining topics to round out our treatment of the single-equation model.
+
+Chapter 7 begins our analysis of systems of equations. The general setup is that the number of population equations is small relative to the (cross section) sample size. This allows us to cover seemingly unrelated regression models for cross section data as well as begin our analysis of panel data. Chapter 8 builds on the framework from Chapter 7 but considers the case where some explanatory variables may be uncorrelated with the error terms. Generalized method of moments estimation is the unifying theme. Chapter 9 applies the methods of Chapter 8 to the estimation of simultaneous equations models, with an emphasis on the conceptual issues that arise in applying such models.
+
+Chapter 10 explicitly introduces unobserved-effects linear panel data models. Under the assumption that the explanatory variables are strictly exogenous conditional on the unobserved effect, we study several estimation methods, including fixed effects, first differencing, and random effects. The last method assumes, at a minimum, that the unobserved effect is uncorrelated with the explanatory variables in all time periods. Chapter 11 considers extensions of the basic panel data model, including failure of the strict exogeneity assumption and models with individual-specific slopes.
+
+\section*{4 Single-Equation Linear Model and Ordinary Least Squares Estimation}
+
+\end{document}

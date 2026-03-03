@@ -1,0 +1,1063 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{03C4}{\ifmmode\tau\else{$\tau$}\fi}
+\title{Chapter 6: Estimating Asymptotic Covariance Matrices}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+In all the preceding chapters, we defined $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon}\right)$ or $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon\right)$ and assumed that a consistent estimator $\hat{\mathbf{V}}_{n}$ for $\mathbf{V}_{n}$ is available. In this chapter we obtain conditions that allow us to find convenient consistent estimators $\hat{\mathbf{V}}_{n}$. Because the theory of estimating $\operatorname{var}\left(n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon}\right)$ is identical to that of estimating $\operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon\right)$, we consider only the latter. Further, because the optimal choice for $\mathbf{P}_{n}$ is $\mathbf{V}_{n}^{-1}$, as we saw in Chapter 4, conditions that permit consistent estimation of $\mathbf{V}_{n}$ will also permit consistent estimation of $\mathbf{P}_{n}=\mathbf{V}_{n}^{-1}$ by $\hat{\mathbf{P}}_{n}=\hat{\mathbf{V}}_{n}^{-1}$.
+
+\subsection*{6.1 General Structure of $\mathbf{V}_{n}$}
+Before proceeding to look at special cases, it is helpful to examine the general form of $\mathbf{V}_{\boldsymbol{n}}$. We have
+
+$$
+\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon\right)=E\left(\mathbf{Z}^{\prime} \varepsilon \varepsilon^{\prime} \mathbf{Z} / n\right),
+$$
+
+because we assume that $E\left(n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon\right)=\mathbf{0}$. In terms of individual observations, this can be expressed as
+
+$$
+\mathbf{V}_{n}=E\left(n^{-1} \sum_{t=1}^{n} \sum_{\tau=1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{\tau}^{\prime} \mathbf{Z}_{\tau}^{\prime}\right) .
+$$
+
+An equivalent way of writing the summation on the right is helpful in obtaining further insight. We can also write
+
+$$
+\begin{aligned}
+\mathbf{V}_{n}= & n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+& +n^{-1} \sum_{\tau=1}^{n-1} \sum_{t=\tau+1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+= & n^{-1} \sum_{t=1}^{n} \operatorname{var}\left(\mathbf{Z}_{t} \varepsilon_{t}\right) \\
+& +n^{-1} \sum_{\tau=1}^{n-1} \sum_{t=\tau+1}^{n} \operatorname{cov}\left(\mathbf{Z}_{t} \varepsilon_{t}, \mathbf{Z}_{t-\tau} \varepsilon_{t-\tau}\right)+\operatorname{cov}\left(\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau}, \mathbf{Z}_{t} \varepsilon_{t}\right)
+\end{aligned}
+$$
+
+The last expression reveals that $\mathbf{V}_{n}$ is the average of the variances of $\mathbf{Z}_{t} \varepsilon_{t}$ plus a term that takes into account the covariances between $\mathbf{Z}_{t} \varepsilon_{t}$ and $\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau}$ for all $t$ and $\tau$. We consider three important special cases.
+
+Case 1. The first case we consider occurs when $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ is uncorrelated, so that
+
+$$
+\operatorname{cov}\left(\mathbf{Z}_{t} \varepsilon_{t}, \mathbf{Z}_{t-\tau} \varepsilon_{t-\tau}\right)=\operatorname{cov}\left(\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau}, \mathbf{Z}_{t} \varepsilon_{t}\right)^{\prime}=\mathbf{0}
+$$
+
+for all $t \neq \tau$, so
+
+$$
+\mathbf{V}_{n}=n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right)
+$$
+
+This occurs when $\left\{\left(\mathbf{Z}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is an independent sequence or when $\left\{\mathbf{Z}_{t} \varepsilon_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence for some adapted $\sigma$-fields $\mathcal{F}_{t}$.
+
+Case 2. The next case we consider occurs when $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ is "finitely correlated," so that
+
+$$
+\operatorname{cov}\left(\mathbf{Z}_{t} \varepsilon_{t}, \mathbf{Z}_{t-\tau} \varepsilon_{t-\tau}\right)=\operatorname{cov}\left(\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau}, \mathbf{Z}_{t} \varepsilon_{t}\right)^{\prime}=\mathbf{0}
+$$
+
+for all $\tau>m, 1<m<\infty$, so
+
+$$
+\begin{aligned}
+\mathbf{V}_{n}= & n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+& +n^{-1} \sum_{\tau=1}^{m} \sum_{t=\tau+1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right)+E\left(\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right)
+\end{aligned}
+$$
+
+This case arises when $E\left(\mathbf{Z}_{t} \varepsilon_{t} \mid \mathcal{F}_{t-\tau}\right)=\mathbf{0}$ for some $\tau, 1<\tau<\infty$ and adapted $\sigma$-fields $\mathcal{F}_{t}$. A simple example of this case arises when $\mathbf{Z}_{t}$ is nonstochastic and $\varepsilon_{t}$ is a scalar MA(1) process, i.e.,
+
+$$
+\varepsilon_{t}=\alpha v_{t}+v_{t-1},
+$$
+
+where $\left\{v_{t}\right\}$ is an i.i.d. sequence with $E\left(v_{t}\right)=0$. Setting $\mathcal{F}_{t}=\sigma\left(\ldots, \varepsilon_{t}\right)$, we readily verify that $E\left(\mathbf{Z}_{t} \varepsilon_{t} \mid \mathcal{F}_{t-\tau}\right)=\mathbf{Z}_{t} E\left(\varepsilon_{t} \mid \mathcal{F}_{t-\tau}\right)=\mathbf{0}$ for $\tau \geq 2$, implying that
+
+$$
+\begin{aligned}
+\mathbf{V}_{n}= & n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t} \mathbf{Z}_{t}^{\prime}\right) \\
+& +n^{-1} \sum_{t=2}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-1} \mathbf{Z}_{t-1}^{\prime}\right)+E\left(\mathbf{Z}_{t-1} \varepsilon_{t-1} \varepsilon_{t} \mathbf{Z}_{t}^{\prime}\right)
+\end{aligned}
+$$
+
+Case 3. The last case that we consider occurs when $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ is an asymptotically uncorrelated sequence so that
+
+$$
+\operatorname{cov}\left(\mathbf{Z}_{t} \varepsilon_{t}, \mathbf{Z}_{t-\tau} \varepsilon_{t-\tau}\right)=\operatorname{cov}\left(\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau}, \mathbf{Z}_{t} \varepsilon_{t}\right)^{\prime} \rightarrow \mathbf{0} \quad \text { as } \tau \rightarrow \infty .
+$$
+
+Rather than making direct use of the assumption that $\left\{\left(\mathbf{Z}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is asymptotically uncorrelated, we shall assume that $\left\{\left(\mathbf{Z}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is a mixing sequence, which will suffice for asymptotic uncorrelatedness.
+
+In what follows, we typically assume that nothing more is known about the correlation structure of $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ beyond that it falls in one of these three cases. If additional knowledge were available, then it could be used to estimate $\mathbf{V}_{n}$; more importantly, however, it could be used to obtain efficient estimators as discussed in Chapter 4. The analysis of this chapter is thus relevant in the common situation in which this knowledge is absent.
+
+\subsection*{6.2 Case 1: $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ Uncorrelated}
+In this section, we treat the case in which
+
+$$
+\mathbf{V}_{n}=n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right)
+$$
+
+A special case of major importance arises when
+
+$$
+E\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathbf{Z}_{t}\right)=\sigma_{o}^{2} \mathbf{I},
+$$
+
+so that
+
+$$
+\mathbf{V}_{n}=n^{-1} \sum_{t=1}^{n} \sigma_{o}^{2} E\left(\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right)=\sigma_{o}^{2} \mathbf{L}_{n}
+$$
+
+Our first result applies to this case.\\
+Theorem 6.1 Suppose $\mathbf{V}_{n}=\sigma_{o}^{2} \mathbf{L}_{n}$, where $\sigma_{o}^{2}<\infty$ and $\mathbf{L}_{n}$ is $O(1)$. If there exists $\tilde{\sigma}_{n}^{2}$ such that $\tilde{\sigma}_{n}^{2} \xrightarrow{p} \sigma_{o}^{2}$ and if $\mathbf{Z}^{\prime} \mathbf{Z} / n-\mathbf{L}_{n} \xrightarrow{p} \mathbf{0}$, then $\hat{\mathbf{V}}_{n} \equiv \tilde{\sigma}_{n}^{2} \mathbf{Z}^{\prime} \mathbf{Z} / n$ is such that $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$.
+
+Proof. Immediate from Proposition 2.30.\\
+Exercise 6.2 Using Exercise 3.79, find conditions that ensure that $\tilde{\sigma}_{n}^{2} \xrightarrow{\boldsymbol{p}} \sigma_{o}^{2}$ and $\mathbf{Z}^{\prime} \mathbf{Z} / n-\mathbf{L}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$, where $\tilde{\sigma}_{n}^{2}=\left(\mathbf{Y}-\mathbf{X} \tilde{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{Y}-\mathbf{X} \tilde{\boldsymbol{\beta}}_{n}\right) /(n p)$.
+
+Conditions under which $\tilde{\sigma}_{n}^{2} \rightarrow \sigma_{o}^{2}$ and $\mathbf{Z}^{\prime} \mathbf{Z} / n-\mathbf{L}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ are easily found from the results of Chapter 3.
+
+In the remainder of this section we consider the cases in which the sequence $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is stationary or $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is a heterogeneous sequence. We invoke the martingale difference assumption in each case, which allows results for independent observations to follow as direct corollaries.
+
+The results that we obtain next are motivated by the following considerations. We are interested in estimating
+
+$$
+\mathbf{V}_{n}=n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right)
+$$
+
+If both $\mathbf{Z}_{t}$ and $\varepsilon_{t}$ were observable, a consistent estimator is easily available from the results of Chapter 3, say,
+
+$$
+\tilde{\mathbf{V}}_{n} \equiv n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}
+$$
+
+For example, if $\left\{\left(\mathbf{Z}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ were a stationary ergodic sequence, then as long as the elements of $\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}$ have finite expected absolute value, it follows from the ergodic theorem that $\overline{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$. Of course, $\varepsilon_{t}$ is not observable. However, it can be estimated by
+
+$$
+\tilde{\varepsilon}_{t} \equiv \mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \tilde{\boldsymbol{\beta}}_{n}
+$$
+
+where $\tilde{\boldsymbol{\beta}}_{n}$ is consistent for $\boldsymbol{\beta}_{o}$. This leads us to consider estimators of the form
+
+$$
+\hat{\mathbf{V}}_{n} \equiv n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}
+$$
+
+As we prove next, replacing $\varepsilon_{t}$ with $\tilde{\varepsilon}_{t}$ makes no difference asymptotically under general conditions, so $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$. These conditions are precisely specified for stationary sequences by the next result.
+
+Theorem 6.3 Suppose that\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \quad \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a stationary ergodic sequence;\\
+(iii) (a) $\left\{\mathbf{Z}_{t} \varepsilon_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{\text {th }}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon\right)=\operatorname{var}\left(\mathbf{Z}_{t} \varepsilon_{t}\right) \equiv \mathbf{V}$ is positive definite;\\
+(iv) (a) $E\left|Z_{t h i} X_{t h j}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l, j=1, \ldots, k$;\\
+(b) $\mathbf{Q} \equiv E\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ has full column rank;\\
+(c) $\hat{\mathbf{P}}_{n} \xrightarrow{p} \mathbf{P}$, finite, symmetric, and positive definite.
+
+Then $\hat{\mathbf{V}}_{n}-\mathbf{V} \xrightarrow{p} \mathbf{0}$, and $\hat{\mathbf{V}}_{n}^{-1}-\mathbf{V}^{-1} \xrightarrow{p} \mathbf{0}$.
+
+Proof. By definition and assumption (iii.a),
+
+$$
+\hat{\mathbf{V}}_{n}-\mathbf{V}=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}-E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right)
+$$
+
+$\operatorname{Now} \tilde{\varepsilon}_{t} \equiv \mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \tilde{\boldsymbol{\beta}}_{n}=\mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}-\mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)=\varepsilon_{t}-\mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)$, given assumption (i). Substituting for $\tilde{\varepsilon}_{t}$, we have
+
+$$
+\begin{aligned}
+\hat{\mathbf{V}}_{n}-\mathbf{V}= & n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}\left(\varepsilon_{t}-\mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\right)\left(\varepsilon_{t}-\mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\right)^{\prime} \mathbf{Z}_{t}^{\prime} \\
+= & n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}-E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+& -n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+& -n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t} \mathbf{Z}_{t}^{\prime} \\
+& +n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t} \mathbf{Z}_{t}^{\prime}
+\end{aligned}
+$$
+
+Given (ii) and (iii.b), the ergodic theorem ensures that $n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}- E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \xrightarrow{\text { a.s. }} \mathbf{0}$, and therefore also vanishes in probability. It suffices that the remaining terms also vanish in probability, by Exercise 2.35.
+
+To analyze the remaining terms, recall that vec $(\mathbf{A B C})=\left(\mathbf{C}^{\prime} \otimes \mathbf{A}\right) \operatorname{vec}(\mathbf{B})$, and apply this to the second summation with $\mathbf{A}, \mathbf{B}$, and $\mathbf{C}$ chosen to give
+
+$$
+\begin{aligned}
+\operatorname{vec}\left(n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) & =n^{-1} \sum_{t=1}^{n} \operatorname{vec}\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+= & n^{-1} \sum_{t=1}^{n}\left(\mathbf{Z}_{t} \varepsilon_{t} \otimes \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right) \operatorname{vec}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)
+\end{aligned}
+$$
+
+The conditions of the theorem ensure that $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\boldsymbol{p}} \boldsymbol{\beta}_{o}$ by Exercise 3.38. To conclude that this term vanishes in probability, it suffices that $n^{-1} \sum_{t=1}^{n} \left(\mathbf{Z}_{t} \varepsilon_{t} \otimes \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ is $O_{p}(1)$ by Corollary 2.36. But this is guaranteed by the ergodic theorem, provided that $E\left(\mathbf{Z}_{t} \varepsilon_{t} \otimes \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ is finite. Conditions (iii.b) and (iv.a) ensure this, as can be verified by repeated application of the Cauchy-Schwarz inequality.
+
+Thus,
+
+$$
+n^{-1} \sum_{t=1}^{n}\left(\mathbf{Z}_{t} \varepsilon_{t} \otimes \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right) \operatorname{vec}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \xrightarrow{p} \mathbf{0}
+$$
+
+Similarly, apply $\operatorname{vec}(\mathbf{A B C})=\left(\mathbf{C}^{\prime} \otimes \mathbf{A}\right) \operatorname{vec}(\mathbf{B})$ to obtain
+
+$$
+\begin{aligned}
+& \operatorname{vec}\left(n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t} \mathbf{Z}_{t}^{\prime}\right) \\
+= & n^{-1} \sum_{t=1}^{n}\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime} \otimes \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right) \operatorname{vec}\left(\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime}\right) .
+\end{aligned}
+$$
+
+Again we have $\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o} \xrightarrow{\boldsymbol{p}} \mathbf{0}$, so this term vanishes provided that $E\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime} \otimes \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ is finite. This is true given (iv.a), as can be verified by Cauchy-Schwarz. The desired result $\hat{\mathbf{V}}_{n}-\mathbf{V} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ now follows by Exercise 2.35. As $\mathbf{V}$ is positive definite given (iii.c), it follows from Proposition 2.30 that $\hat{\mathbf{V}}_{n}^{-1}-\mathbf{V}^{-1} \xrightarrow{p} \mathbf{0}$.
+
+Comparing the conditions of this result with those of Theorem 5.25, we see that we have strengthened moment condition (iv.a) and that this, together with the other assumptions, implies assumption (v) of Theorem 5.25. An immediate corollary of this fact is that the conclusions of Theorem 5.25 hold under the conditions of Theorem 6.3.
+
+Corollary 6.4 Suppose conditions (i)-(iv) of Theorem 6.3 hold. Then
+
+$$
+\mathbf{D}^{-1} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})
+$$
+
+where
+
+$$
+\mathbf{D} \equiv\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)^{-1} \mathbf{Q}^{\prime} \mathbf{P} \mathbf{V P Q}\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)^{-1}
+$$
+
+Further, $\hat{\mathbf{D}}_{n}-\mathbf{D} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \hat{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+Proof. Immediate from Theorem 5.25 and Theorem 6.3.\\
+The usefulness of this result arises in situations in which it is inappropriate to assume that
+
+$$
+E\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathbf{Z}_{t}\right)=\sigma_{o}^{2} \mathbf{I}
+$$
+
+that is, when the errors $\varepsilon_{t}$ exhibit heteroskedasticity of unknown form. The present results thus provide an instrumental variables analog of the heteroskedasticity-consistent covariance matrix estimator of White (1980).
+
+The results of Theorem 6.3 and Corollary 6.4 suggest a simple two-step procedure for obtaining the efficient estimator of Proposition 4.45, i.e.,
+
+$$
+\boldsymbol{\beta}_{n}^{*}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+First, one obtains a consistent estimator for $\boldsymbol{\beta}_{o}$, for example, the 2SLS estimator,
+
+$$
+\tilde{\boldsymbol{\beta}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+and forms
+
+$$
+\hat{\mathbf{V}}_{n}=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}
+$$
+
+where $\tilde{\varepsilon}_{t} \equiv \mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \tilde{\boldsymbol{\beta}}_{n}$. Second, this estimator is then used to compute the efficient estimator $\boldsymbol{\beta}_{n}^{*}$. Because $\boldsymbol{\beta}_{n}^{*}$ can be computed in this way, it is called the two-stage instrumental variables (2SIV) estimator, introduced by White (1982). Formally, we have the following result.
+
+Corollary 6.5 Suppose that\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \quad \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is a stationary ergodic sequence;\\
+(iii) (a) $\left\{\mathrm{Z}_{t} \varepsilon_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence;\\
+(b) $E\left|Z_{t h i} \varepsilon_{t h}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \boldsymbol{\varepsilon}\right)=\operatorname{var}\left(\mathbf{Z}_{t} \boldsymbol{\varepsilon}_{t}\right) \equiv \mathbf{V}$ is positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {th } j}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l, j=1, \ldots, k$, and $E\left|\mathbf{Z}_{t h i}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l ;$\\
+(b) $\mathbf{Q} \equiv E\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ has full column rank;\\
+(c) $\mathbf{L} \equiv E\left(\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right)$ is positive definite.
+
+Define
+
+$$
+\hat{\mathbf{V}}_{n} \equiv n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}
+$$
+
+where $\tilde{\varepsilon}_{t} \equiv \mathbf{Y}_{t}-\mathbf{X}_{t} \overline{\boldsymbol{\beta}}_{n}, \overline{\boldsymbol{\beta}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$, and define
+
+$$
+\boldsymbol{\beta}_{n}^{*} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+Then $\mathbf{D}^{-1 / 2} \sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D}=\left(\mathbf{Q}^{\prime} \mathbf{V}^{-1} \mathbf{Q}\right)^{-1}
+$$
+
+Further, $\hat{\mathbf{D}}_{n}-\mathbf{D} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+Proof. Conditions (i)-(iv) ensure that Theorem 6.3 holds for $\tilde{\boldsymbol{\beta}}_{\boldsymbol{n}}$. (Note that the second part of (iv.a) is redundant if $\mathbf{X}_{t}$ contains a constant.) Next set $\hat{\mathbf{P}}_{n}=\hat{\mathbf{V}}_{n}^{-1}$ in Corollary 6.4. Then $\mathbf{P}=\mathbf{V}^{-1}$, and the result follows.
+
+This result is the most explicit asymptotic normality result obtained so far, because all of the conditions are stated directly in terms of the stochastic properties of the instrumental variables, regressors, and errors. The remainder of the asymptotic normality results stated in this chapter will also share this convenient feature.
+
+We note that results for the OLS estimator follow as a special case upon setting $\mathbf{Z}_{t}=\mathbf{X}_{t}$ and that results for the i.i.d. case follow as immediate corollaries, since an i.i.d. sequence is a stationary ergodic martingale difference sequence when $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}$.
+
+Analogous results hold for heterogeneous sequences. Because the proofs are completely parallel to those just given, they are left as an exercise for the reader.
+
+Exercise 6.6 Prove the following result. Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{0}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \quad \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a mixing sequence with either $\phi$ of size $-r /(2 r- 1), r>1$, or $\alpha$ of size $-r /(r-1), r>1$;\\
+(iii) (a) $\left\{\mathbf{Z}_{t} \varepsilon_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{t h}\right|^{2(r+\delta)}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, l$, and $t$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon\right)$ is uniformly positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{2(r+\delta)}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, l, j=1, \ldots, k$, and $t$;\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has uniformly full column rank;\\
+(c) $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{p} \mathbf{0}$, where $\mathbf{P}_{n}=O(1)$ is symmetric and uniformly positive definite.\\
+Then $\hat{\mathbf{V}}_{\boldsymbol{n}}-\mathbf{V}_{\boldsymbol{n}} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ and $\hat{\mathbf{V}}_{\boldsymbol{n}}^{-1}-\mathbf{V}_{\boldsymbol{n}}^{-1} \xrightarrow{\boldsymbol{p}} \mathbf{0}$.\\
+Exercise 6.7 Prove the following result. Suppose conditions (i)-(iv) of Exercise 6.6 hold. Then $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D}_{n} \equiv\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{V}_{n} \mathbf{P}_{n} \mathbf{Q}_{n}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+Further, $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \hat{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+Exercise 6.8 Prove the following result. Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \quad \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a mixing sequence with either $\phi$ of size $-r /(2 r-1)$, $r>1$, or $\alpha$ of size $-r /(r-1), r>1$;\\
+(iii) (a) $\left\{\mathbf{Z}_{t} \varepsilon_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{t h}\right|^{2(r+\delta)}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, l$, and $t$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \boldsymbol{\varepsilon}\right)$ is uniformly positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{2(r+\delta)}<\Delta<\infty$ and $E\left|Z_{\text {thi }}\right|^{2(r+\delta)}<\Delta<\infty$, for some $\delta>0$ and all $h=1, \ldots, p, i=1, \ldots, l, j=1, \ldots, k$, and $t$;\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has uniformly full column rank;\\
+(c) $\mathbf{L}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)$ is uniformly positive definite.
+
+Define
+
+$$
+\hat{\mathbf{V}}_{n}=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}
+$$
+
+where $\tilde{\varepsilon}_{t}=\mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \tilde{\boldsymbol{\beta}}_{n}, \tilde{\boldsymbol{\beta}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$, and
+
+$$
+\boldsymbol{\beta}_{n}^{*} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+Then $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D}_{n}=\left(\mathbf{Q}_{n}^{\prime} \mathbf{V}_{n}^{-1} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+Further, $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+This result allows for unconditional heterogeneity not allowed by Corollary 6.5, at the expense of imposing somewhat stronger memory and moment conditions. Results for the independent case follow as corollaries because independent sequences are $\phi$-mixing sequences for which we can set $r=1$. Thus the present result contains the result of White (1982) as a special case but also allows for the presence of dynamic effects (lagged dependent or predetermined variables) not permitted there, as well as applying explicitly to systems of equations or panel data.
+
+\subsection*{6.3 Case 2: $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ Finitely Correlated}
+Here we treat the case in which, for $m<\infty$,
+
+$$
+\begin{aligned}
+\mathbf{V}_{n}= & n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+& +n^{-1} \sum_{t=2}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-1}^{\prime} \mathbf{Z}_{t-1}^{\prime}\right)+E\left(\mathbf{Z}_{t-1} \varepsilon_{t-1} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+& \vdots \\
+& +n^{-1} \sum_{t=m+1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-m}^{\prime} \mathbf{Z}_{t-m}^{\prime}\right)+E\left(\mathbf{Z}_{t-m} \varepsilon_{t-m} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+= & n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+& +n^{-1} \sum_{\tau=1}^{m} \sum_{t=\tau+1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right)+E\left(\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right)
+\end{aligned}
+$$
+
+Throughout, we shall assume that this structure is generated by a knowledge that $E\left(\mathbf{Z}_{t} \varepsilon_{t} \mid \mathcal{F}_{t-\tau}\right)=\mathbf{0}$ for $\tau=m+1<\infty$ and adapted $\sigma$-fields $\mathcal{F}_{t}$. The other conditions imposed and methods of proof will be nearly identical to those of the preceding section.
+
+First we consider the estimator
+
+$$
+\begin{aligned}
+\hat{\mathbf{V}}_{n}= & n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+& +n^{-1} \sum_{\tau=1}^{m} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \tilde{\varepsilon}_{t-\tau} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}
+\end{aligned}
+$$
+
+It turns out that $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ under general conditions, as we now demonstrate.
+
+Theorem 6.9 Suppose that\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \quad \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a stationary ergodic sequence;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \boldsymbol{\varepsilon}_{t} \mid \mathcal{F}_{t-\tau}\right)=\mathbf{0}$ for $\tau=m+1<\infty$ and adapted $\sigma$-fields $\mathcal{F}_{t}$;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{\text {th }}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \boldsymbol{\varepsilon}\right)=\mathbf{V}$ is positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l, j=1, \ldots, k$;\\
+(b) $\mathbf{Q} \equiv E\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ has full column rank;\\
+(c) $\hat{\mathbf{P}}_{n} \xrightarrow{p} \mathbf{P}$, finite, symmetric, and positive definite.
+
+Then $\hat{\mathbf{V}}_{n}-\mathbf{V} \xrightarrow{p} \mathbf{0}$ and $\hat{\mathbf{V}}_{n}^{-1}-\mathbf{V}^{-1} \xrightarrow{p} \mathbf{0}$.
+
+Proof. By definition and assumption (iii.a),
+
+$$
+\begin{aligned}
+\hat{\mathbf{V}}_{n}-\mathbf{V}= & n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}-E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+& +n^{-1} \sum_{\tau=1}^{m} \sum_{t=\tau+1}^{n}\left[\mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}-E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right)\right. \\
+& \left.\quad+\mathbf{Z}_{t-\tau} \tilde{\varepsilon}_{t-\tau} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}-E\left(\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right)\right]
+\end{aligned}
+$$
+
+If we can show that
+
+$$
+n^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}-E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right) \xrightarrow{p} \mathbf{0}, \quad \tau=0, \ldots, m
+$$
+
+then the desired result follows by Exercise 2.35.\\
+Now
+
+$$
+\begin{aligned}
+& n^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}-E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right) \\
+& \quad=((n-\tau) / n)(n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}-E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right)
+\end{aligned}
+$$
+
+For $\tau=0, \ldots, m$, we have $((n-\tau) / n) \rightarrow 1$ as $n \rightarrow \infty$, so it suffices to show that for $\tau=0, \ldots, m$,
+
+$$
+(n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}-E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right) \xrightarrow{p} \mathbf{0}
+$$
+
+As before, replace $\tilde{\varepsilon}_{t}$ with $\tilde{\varepsilon}_{t}=\varepsilon_{t}-\mathbf{X}_{t}^{\prime}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)$, to obtain
+
+$$
+\begin{aligned}
+& (n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}-E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right) \\
+& =(n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}-E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right) \\
+& \quad-(n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime} \\
+& \quad-(n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime} \\
+& \quad+(n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime}
+\end{aligned}
+$$
+
+The desired result follows by Exercise 2.35 if each of the terms above vanishes in probability.
+
+The first term vanishes almost surely (in probability) by the ergodic theorem given (ii) and (iii.b). For the second, use vec $(\mathbf{A B C})=\left(\mathbf{C}^{\prime} \otimes\right.$ A) $\operatorname{vec}(\mathbf{B})$ to write
+
+$$
+\begin{aligned}
+& \operatorname{vec}\left((n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right) \\
+& \quad=(n-\tau)^{-1} \sum_{t=\tau+1}^{n}\left(\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau} \otimes \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right) \operatorname{vec}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)
+\end{aligned}
+$$
+
+The conditions of the theorem ensure $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\boldsymbol{p}} \boldsymbol{\beta}_{o}$ by Exercise 3.38, so it suffices that $(n-\tau)^{-1} \sum_{t=\tau+1}^{n}\left(\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau} \otimes \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ is $O_{p}(1)$ by Corollary 2.36. But this follows by the ergodic theorem, given (iii.b) and (iv.a) upon application of Cauchy-Schwarz's inequality.
+
+Similar argument establishes that
+
+$$
+\begin{aligned}
+& \operatorname{vec}\left((n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime}\right) \\
+& \quad=(n-\tau)^{-1} \sum_{t=\tau+1}^{n}\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right) \operatorname{vec}\left(\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime}\right) \xrightarrow{p} \mathbf{0}
+\end{aligned}
+$$
+
+For the final term, use $\operatorname{vec}(\mathbf{A B C})=\left(\mathbf{C}^{\prime} \otimes \mathbf{A}\right) \operatorname{vec}(\mathbf{B})$ to write
+
+$$
+\begin{aligned}
+& \operatorname{vec}\left((n-\tau)^{-1} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime}\right) \\
+= & (n-\tau)^{-1} \sum_{t=\tau+1}^{n}\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right) \operatorname{vec}\left(\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime}\right)
+\end{aligned}
+$$
+
+The conditions of the theorem ensure $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\boldsymbol{p}} \boldsymbol{\beta}_{o}$, while conditions (ii) and (iv.a) ensure that the ergodic theorem applies, which implies
+
+$$
+(n-\tau)^{-1} \sum_{t=\tau+1}^{n}\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)=O_{p}(1)
+$$
+
+The final term thus vanishes by Corollary 2.36 and the proof is complete.
+
+Results analogous to Corollaries 6.4 and 6.5 also follow similarly.\\
+Corollary 6.10 Suppose conditions (i)-(iv) of Theorem 6.9 hold. Then $\mathbf{D}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D} \equiv\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)^{-1} \mathbf{Q}^{\prime} \mathbf{P} \mathbf{V P Q}\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)^{-1} .
+$$
+
+Further, $\hat{\mathbf{D}}_{n}-\mathbf{D} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \hat{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+Proof. Immediate from Exercise 5.19 and Theorem 6.9.\\
+Corollary 6.11 Suppose that\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{0}+\varepsilon_{t}, \quad t=1,2, \ldots, \quad \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a stationary ergodic sequence;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \varepsilon_{t} \mid \mathcal{F}_{t-\tau}\right)=\mathbf{0}$ for $\tau=m+1<\infty$ and adapted $\sigma$-fields $\mathcal{F}_{t}$;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{t h}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l$;\\
+(c) $\mathbf{V}_{\boldsymbol{n}} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \boldsymbol{\varepsilon}\right)=\mathbf{V}$ is positive definite;\\
+(iv) (a) $E\left|Z_{t h i} X_{t h j}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l, j=1, \ldots, k$, and $E\left|Z_{\text {thi }}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l$;\\
+(b) $\mathbf{Q} \equiv E\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ has full column rank;\\
+(c) $\mathbf{L} \equiv E\left(\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right)$ is positive definite.
+
+Define
+
+$$
+\begin{aligned}
+\hat{\mathbf{V}}_{n} \equiv & n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+& +\sum_{\tau=1}^{m} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \tilde{\varepsilon}_{t-\tau} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}
+\end{aligned}
+$$
+
+where $\tilde{\varepsilon}_{t} \equiv \mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \tilde{\boldsymbol{\beta}}_{n}, \tilde{\boldsymbol{\beta}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$, and define
+
+$$
+\boldsymbol{\beta}_{n}^{*} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+Then $\mathbf{D}^{-1 / 2} \sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D}=\left(\mathbf{Q}^{\prime} \mathbf{V}^{-1} \mathbf{Q}\right)^{-1}
+$$
+
+Further, $\hat{\mathbf{D}}_{n}-\mathbf{D} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+Proof. Conditions (i)-(iv) ensure that Theorem 6.9 holds for $\tilde{\boldsymbol{\beta}}_{n}$. Set $\hat{\mathbf{P}}_{n}= \hat{\mathbf{V}}_{n}^{-1}$ in Corollary 6.10. Then $\hat{\mathbf{P}}_{n}=\hat{\mathbf{V}}_{n}^{-1}$ and the result follows.
+
+Results for mixing sequences parallel those of Exercises 6.6-6.8.\\
+Exercise 6.12 Prove the following result. Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \quad \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is a mixing sequence with either $\phi$ of size $-r /(2 r-2)$, $r>2$, or $\alpha$ of size $-r /(r-2), r>2$;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \varepsilon_{t} \mid \mathcal{F}_{t-\tau}\right)=\mathbf{0}$, for $\tau=m+1<\infty$ and adapted $\sigma$-fields $\mathcal{F}_{t}$, $t=1,2, \ldots$;\\
+(b) $E\left|Z_{\text {th } i} \varepsilon_{t h}\right|^{r+\delta}<\Delta<\infty$ for some $\delta>0$ and all $h=l, \ldots, p$, $i=1, \ldots$, l, and $t=1,2, \ldots$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\right)$ is uniformly positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{r+\delta}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, l, j=1, \ldots, k$, and $t=1,2, \ldots$;\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has uniformly full column rank;\\
+(c) $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{p} \mathbf{0}$, where $\mathbf{P}_{n}=O(1)$ is symmetric and uniformly positive definite.
+
+Then $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$ and $\hat{\mathbf{V}}_{n}^{-1}-\mathbf{V}_{n}^{-1} \xrightarrow{p} \mathbf{0}$.\\
+(Hint: be careful to handle $r$ properly to ensure the proper mixing size requirements.)
+
+Exercise 6.13 Prove the following result. Suppose conditions (i)-(iv) of Exercise 6.12 hold. Then $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D}_{n} \equiv\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{V}_{n} \mathbf{P}_{n} \mathbf{Q}_{n}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+Further, $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \hat{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+(Hint: apply Theorem 5.23.)\\
+Exercise 6.14 Prove the following result. Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \quad \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is a mixing sequence with either $\phi$ of size $-r /(2 r-2)$, $r>2$, or $\alpha$ of size $-r /(r-2), r>2$;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \varepsilon_{t} \mid \mathcal{F}_{t-\tau}\right)=\mathbf{0}$ for $\tau=m+1<\infty$ and adapted $\sigma$-fields $\mathcal{F}_{t}$, $t=1,2, \ldots$;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{\text {th }}\right|^{r+\delta}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, l$, and $t=1,2, \ldots$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\right)$ is uniformly positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{r+\delta}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, l, j=1, \ldots, k$, and $t=1,2, \ldots$;\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has uniformly full column rank;\\
+(c) $\mathbf{L}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)$ is uniformly positive definite.
+
+Define
+
+$$
+\begin{aligned}
+\hat{\mathbf{V}}_{n}= & n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+& +n^{-1} \sum_{\tau=1}^{m} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \tilde{\varepsilon}_{t-\tau} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}
+\end{aligned}
+$$
+
+where $\tilde{\varepsilon}_{t} \equiv \mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \tilde{\boldsymbol{\beta}}_{n}, \tilde{\boldsymbol{\beta}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$, and define
+
+$$
+\boldsymbol{\beta}_{n}^{*} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+Then $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D}_{n}=\left(\mathbf{Q}_{n}^{\prime} \mathbf{V}_{n}^{-1} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+Further, $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+Because $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$ and $\mathbf{V}_{n}$ is assumed uniformly positive definite, it follows that $\hat{\mathbf{V}}_{n}$ is positive definite with probability approaching one as $n \rightarrow \infty$. In fact, as the proofs of the theorems demonstrate, the convergence is almost sure (provided $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$ ), so $\hat{\mathbf{V}}_{n}$ will then be positive definite for all $n$ sufficiently large almost surely.
+
+Nevertheless, for given $n$ and particular samples, $\hat{\mathbf{V}}_{n}$ as just analyzed can fail to be positive definite. In fact, not only can it be positive semidefinite, but it can be indefinite. This is clearly inconvenient, as negative variance estimates can lead to results that are utterly useless for testing hypotheses or for any other purpose where variance estimates are required.
+
+What can be done? A simple but effective strategy is to consider the following weighted version of $\hat{\mathbf{V}}_{\boldsymbol{n}}$,
+
+$$
+\begin{aligned}
+\tilde{\mathbf{V}}_{n}= & n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+& +n^{-1} \sum_{\tau=1}^{m} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \tilde{\varepsilon}_{t-\tau} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}
+\end{aligned}
+$$
+
+The estimator $\hat{\mathbf{V}}_{n}$ obtains when $w_{n \tau}=1$ for all $n$ and $\tau$. Moreover, consistency of $\overline{\mathbf{V}}_{n}$ is straightforward to ensure, as the following exercise asks you to verify.
+
+Exercise 6.15 Show that under the conditions of Theorem 6.9 or Exercise 6.12 a sufficient condition to ensure $\overline{\mathbf{V}}_{\boldsymbol{n}}-\mathbf{V}_{\boldsymbol{n}} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ is that $w_{\boldsymbol{n} \boldsymbol{\tau}} \xrightarrow{\boldsymbol{p}} 1$ for each $\tau=1, \ldots, m$.
+
+Subject to this requirement, we can then manipulate $w_{n \tau}$ to ensure the positive definiteness of $\tilde{\mathbf{V}}_{n}$ in finite samples. One natural way to proceed is to let the properties of $\hat{\mathbf{V}}_{\boldsymbol{n}}$ suggest how to choose $w_{\boldsymbol{n} \boldsymbol{\tau}}$. In particular, if $\hat{\mathbf{V}}_{\boldsymbol{n}}$ is positive definite (as evidenced by having all positive eigenvalues), then set $w_{n \tau}=1$. (As is trivially verified, this ensures $w_{n \tau} \xrightarrow{p} 1$.) Otherwise, choose $w_{n \tau}$ to enforce positive definiteness in some principled way. For example, choose $w_{n \tau}=f\left(\tau, \theta_{n}\right)$ and adjust $\theta_{n}$ to the extent needed to\\
+achieve positive definite $\tilde{\mathbf{V}}_{n}$. For example, one might choose $w_{n \tau}=1-\theta_{n} \tau \left(\theta_{n}>0\right), w_{n \tau}=\left(\theta_{n}\right)^{\tau}\left(\theta_{n}<1\right)$, or $w_{n \tau}=\exp \left(-\theta_{n} \tau\right)\left(\theta_{n}>0\right)$. More sophisticated methods are available, but as a practical matter, this simple approach will of ten suffice.
+
+\subsection*{6.4 Case 3: $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ Asymptotically Uncorrelated}
+In this section we consider the general case in which
+
+$$
+\begin{aligned}
+\mathbf{V}_{n}= & n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+& +n^{-1} \sum_{\tau=1}^{n-1} \sum_{t=\tau+1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right)+E\left(\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right)
+\end{aligned}
+$$
+
+The essential restriction we impose is that as $\tau \rightarrow \infty$ the covariance (correlation) between $\mathbf{Z}_{t} \varepsilon_{t}$ and $\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau}$ goes to zero. We ensure this behavior by assuming that $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is a mixing sequence. In the stationary case, we replace ergodicity with mixing, which, as we saw in Chapter 3, implies ergodicity. Mixing is not the weakest possible requirement. Mixingale conditions can also be used in the present context. Nevertheless, to keep our analysis tractable we restrict attention to mixing processes.
+
+The fact that mixing sequences are asymptotically uncorrelated is a consequence of the following lemma.
+
+Lemma 6.16 Let $\mathcal{Z}$ be a random variable measurable with respect to $\mathcal{F}_{n+\tau}^{\infty}$, $0<\tau<\infty$, such that $\|\mathcal{Z}\|_{q} \equiv\left[E|\mathcal{Z}|^{q}\right]^{1 / q}<\infty$ for some $q>1$, and let $1<r \leq q$. Then
+
+$$
+\left\|E\left(\mathcal{Z} \mid \mathcal{F}_{-\infty}^{n}\right)-E(\mathcal{Z})\right\|_{r} \leq 2[\phi(\tau)]^{1-1 / q}\|\mathcal{Z}\|_{q}
+$$
+
+and
+
+$$
+\left\|E\left(\mathcal{Z} \mid \mathcal{F}_{-\infty}^{n}\right)-E(\mathcal{Z})\right\|_{r} \leq 2\left(2^{1 / r}+1\right)[\alpha(\tau)]^{1 / r-1 / q}\|\mathcal{Z}\|_{q}
+$$
+
+Proof. This follows immediately from Lemma 2.1 of McLeish (1975).\\
+For mixing sequences, $\phi(\tau)$ or $\alpha(\tau)$ goes to zero as $\tau \rightarrow \infty$, so this result imposes bounds on the rate that the conditional expectation of $\mathcal{Z}$, given the past up to period $n$, converges to the unconditional expectation as the time separation $\tau$ gets larger and larger.
+
+By setting $r=2$, we obtain the following result.
+
+Corollary 6.17 Let $E\left(\mathcal{Z}_{n}\right)=E\left(\mathcal{Z}_{n+\tau}\right)=0$ and suppose $\operatorname{var}\left(\mathcal{Z}_{n}\right)<\infty$, and for some $q>2, E\left|\mathcal{Z}_{n+\tau}\right|^{q}<\infty, 0<\tau<\infty$. Then
+
+$$
+\left|E\left(\mathcal{Z}_{n} \mathcal{Z}_{n+\tau}\right)\right| \leq 2 \phi(\tau)^{1-1 / q}\left(\operatorname{var}\left(\mathcal{Z}_{n}\right)\right)^{1 / 2}\left\|\mathcal{Z}_{n+\tau}\right\|_{q}
+$$
+
+and
+
+$$
+\begin{aligned}
+\left|E\left(\mathcal{Z}_{n} \mathcal{Z}_{n+\tau}\right)\right| \leq & 2\left(2^{1 / 2}+1\right) \alpha(\tau)^{1 / 2-1 / q}\left(\operatorname{var}\left(\mathcal{Z}_{n}\right)\right)^{1 / 2} \\
+& \times\left\|\mathcal{Z}_{n+\tau}\right\|_{q}
+\end{aligned}
+$$
+
+Proof. Put $\mathcal{F}_{-\infty}^{n}=\sigma\left(\ldots, \mathcal{Z}_{n}\right)$ and $\mathcal{F}_{n+\tau}^{\infty}=\sigma\left(\mathcal{Z}_{n+\tau}, \ldots\right)$. By the law of iterated expectations,
+
+$$
+\begin{aligned}
+E\left(\mathcal{Z}_{n} \mathcal{Z}_{n+\tau}\right) & =E\left(E\left(\mathcal{Z}_{n} \mathcal{Z}_{n+\tau} \mid \mathcal{F}_{-\infty}^{n}\right)\right) \\
+& =E\left(\mathcal{Z}_{n} E\left(\mathcal{Z}_{n+\tau} \mid \mathcal{F}_{-\infty}^{n}\right)\right)
+\end{aligned}
+$$
+
+by Proposition 3.65. It follows from the Cauchy-Schwarz inequality and Jensen's inequality that
+
+$$
+\left|E\left(\mathcal{Z}_{n} \mathcal{Z}_{n+\tau}\right)\right| \leq E\left(\mathcal{Z}_{n}^{2}\right)^{1 / 2} E\left(E\left(\mathcal{Z}_{n+\tau} \mid \mathcal{F}_{-\infty}^{n}\right)^{2}\right)^{1 / 2}
+$$
+
+By Lemma 6.16, we have
+
+$$
+E\left(E\left(\mathcal{Z}_{n+\tau} \mid \mathcal{F}_{-\infty}^{n}\right)^{2}\right)^{1 / 2} \leq 2 \phi(\tau)^{1-1 / q}\left\|\mathcal{Z}_{n+\tau}\right\|_{q}
+$$
+
+and
+
+$$
+E\left(E\left(\mathcal{Z}_{n+\tau} \mid \mathcal{F}_{-\infty}^{n}\right)^{2}\right)^{1 / 2} \leq 2\left(2^{1 / 2}+1\right) \alpha(\tau)^{1 / 2-1 / q}\left\|\mathcal{Z}_{n+\tau}\right\|_{q}
+$$
+
+where we set $r=2$ in Lemma 6.16. Combining these inequalities yields the final results,
+
+$$
+\left|E\left(\mathcal{Z}_{n} \mathcal{Z}_{n+\tau}\right)\right| \leq 2 \phi(\tau)^{1-1 / q}\left(\operatorname{var}\left(\mathcal{Z}_{n}\right)\right)^{1 / 2}\left\|\mathcal{Z}_{n+\tau}\right\|_{q}
+$$
+
+and
+
+$$
+\left|E\left(\mathcal{Z}_{n} \mathcal{Z}_{n+\tau}\right)\right| \leq 2\left(2^{1 / 2}+1\right) \alpha(\tau)^{1 / 2-1 / q}\left(\operatorname{var}\left(\mathcal{Z}_{n}\right)\right)^{1 / 2}\left\|\mathcal{Z}_{n+\tau}\right\|_{q}
+$$
+
+The direct implication of this result is that mixing sequences are asymptotically uncorrelated, because $\phi(\tau) \rightarrow 0(q>2)$ or $\alpha(\tau) \rightarrow 0(q>2)$\\
+implies $\left|E\left(\mathcal{Z}_{n} \mathcal{Z}_{n+\tau}\right)\right| \rightarrow 0$ as $\tau \rightarrow \infty$. For mixing sequences, it follows that $\mathbf{V}_{\boldsymbol{n}}$ might be well approximated by
+
+$$
+\begin{aligned}
+\overline{\mathbf{V}}_{n} \equiv & w_{n 0} n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right) \\
+& +n^{-1} \sum_{\tau=1}^{m} w_{n \tau} \sum_{t=\tau+1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}\right)+E\left(\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right)
+\end{aligned}
+$$
+
+for some value $m$, because the neglected terms (those with $m<\tau<n$ ) will be small in absolute value if $m$ is sufficiently large. Note, however, that if $m$ is simply kept fixed as $n$ grows, the number of neglected terms grows, and may grow in such a way that the sum of the neglected terms does not remain negligible. This suggests that $m$ will have to grow with $n$, so that the terms in $\mathbf{V}_{\boldsymbol{n}}$ ignored by $\overline{\mathbf{V}}_{\boldsymbol{n}}$ remain negligible. We will write $m_{\boldsymbol{n}}$ to make this dependence explicit.
+
+Note that in $\overline{\mathbf{V}}_{n}$ we have introduced weights $w_{n \tau}$ analogous to those appearing in $\tilde{\mathbf{V}}_{n}$ of the previous section. This facilitates our analysis of an extension of that estimator, which we now define as
+
+$$
+\begin{aligned}
+\tilde{\mathbf{V}}_{n} \equiv & w_{n 0} n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+& +n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \tilde{\varepsilon}_{t-\tau} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}
+\end{aligned}
+$$
+
+We establish the consistency of $\tilde{\mathbf{V}}_{n}$ for $\mathbf{V}_{n}$ by first showing that under suitable conditions $\overline{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$ and then showing that $\overline{\mathbf{V}}_{n}-\overline{\mathbf{V}}_{n} \xrightarrow{p} \mathbf{0}$.
+
+Now, however, it will not be enough for consistency just to require $w_{n \tau} \xrightarrow{p} 1$, as we also have to properly treat $m_{n} \rightarrow \infty$. For simplicity, we consider only nonstochastic weights $w_{n \tau}$ in what follows. Stochastic weights can be treated straightforwardly in a similar manner. Our next result provides conditions under which $\overline{\mathbf{V}}_{n}-\mathbf{V}_{n} \rightarrow \mathbf{0}$.
+
+Lemma 6.18 Let $\left\{\mathcal{Z}_{n t}\right\}$ be a double array of random $k \times 1$ vectors such that $E\left(\left|\boldsymbol{\mathcal { Z }}_{n t}^{\prime} \boldsymbol{\mathcal { Z }}_{n t}\right|^{r / 2}\right)<\Delta<\infty$ for some $r>2, E\left(\boldsymbol{\mathcal { Z }}_{n t}\right)=\mathbf{0}, n, t= 1,2, \ldots$, and $\left\{\mathcal{Z}_{n t}\right\}$ is mixing with $\phi$ of size $-r /(r-1)$ or $\alpha$ of size $-2 r /(r-$ 2). Define
+
+$$
+\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathcal{Z}_{n t}\right)
+$$
+
+and for any sequence $\left\{m_{n}\right\}$ of integers and any triangular array $\left\{w_{n \tau}: n=\right. \left.1,2, \ldots ; \tau=1, \ldots, m_{n}\right\} d e f i n e$
+
+$$
+\begin{aligned}
+\overline{\mathbf{V}}_{n} \equiv & w_{n 0} n^{-1} \sum_{t=1}^{n} E\left(\mathcal{Z}_{n t} \mathcal{Z}_{n t}^{\prime}\right) \\
+& +n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} E\left(\mathcal{Z}_{n t} \mathcal{Z}_{n, t-\tau}^{\prime}\right)+E\left(\mathcal{Z}_{n, t-\tau} \mathcal{Z}_{n t}^{\prime}\right)
+\end{aligned}
+$$
+
+If $m_{n} \rightarrow \infty$ as $n \rightarrow \infty$, if $\left|w_{n \tau}\right|<\Delta, n=1,2, \ldots, \tau=1, \ldots, m_{n}$, and if for each $\tau, w_{n \tau} \rightarrow 1$ as $n \rightarrow \infty$ then $\overline{\mathbf{V}}_{n}-\mathbf{V}_{n} \rightarrow \mathbf{0}$.
+
+Proof. See Gallant and White (1988, Lemma 6.6).\\
+Here we see the explicit requirements that $m_{n} \rightarrow \infty$ and $w_{n \tau} \rightarrow 1$ for each $\tau$.
+
+Our next result is an intermediate lemma related to Lemma 6.19 of White (1984). That result, however, contained an error, as pointed out by Phillips (1985) and Newey and West (1987), that resulted in an incorrect rate for $m_{n}$. The following result gives a correct rate.
+
+Lemma 6.19 Let $\left\{\mathcal{Z}_{n t}\right\}$ be a double array of random $k \times 1$ vectors such that $E\left(\left|\boldsymbol{\mathcal { Z }}_{n t}^{\prime} \boldsymbol{\mathcal { Z }}_{n t}\right|^{r}\right)<\Delta<\infty$ for some $r>2, E\left(\boldsymbol{\mathcal { Z }}_{n t}\right)=\mathbf{0}, n, t=1,2, \ldots$ and $\left\{\mathcal{Z}_{n t}\right\}$ is mixing with $\phi$ of size $-r /(r-1)$ or $\alpha$ of size $-2 r /(r-2)$. Define
+
+$$
+\zeta_{n t \tau}^{i j}=\mathcal{Z}_{n t i} \mathcal{Z}_{n, t-\tau, j}-E\left(\mathcal{Z}_{n t i} \mathcal{Z}_{n, t-\tau, j}\right)
+$$
+
+If $m_{n}=o\left(n^{1 / 4}\right)$ and $\left|w_{n \tau}\right|<\Delta, n=1,2, \ldots, \tau=1, \ldots, m_{n}$, then for all $i, j=1, \ldots, k$
+
+$$
+n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \zeta_{n t \tau}^{i j} \xrightarrow{p} 0
+$$
+
+Proof. See Gallant and White (1988, Lemma 6.7 (d)).\\
+We now have the results we need to establish the consistency of a generally useful estimator for $\operatorname{var}\left(n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{n t}\right)$.
+
+Theorem 6.20 Let $\left\{\mathcal{Z}_{n t}\right\}$ be a double array of random $k \times 1$ vectors such that $E\left(\left|\mathcal{Z}_{n t}^{\prime} \mathcal{Z}_{n t}\right|^{r}\right)<\Delta<\infty$ for some $r>2, E\left(\mathcal{Z}_{n t}\right)=\mathbf{0}, n, t=1,2, \ldots$ and $\left\{\mathcal{Z}_{n t}\right\}$ is mixing with $\phi$ of size $-r /(r-1)$ or $\alpha$ of size $-2 r /(r-2)$. Define
+
+$$
+\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{n t}\right)
+$$
+
+and for any sequence $\left\{m_{n}\right\}$ of integers and any triangular array $\left\{w_{n \tau}: n=\right. \left.1,2, \ldots ; \tau=1, \ldots, m_{n}\right\}$ define
+
+$$
+\begin{aligned}
+\tilde{\mathbf{V}}_{n} \equiv & w_{n 0} n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{n t} \mathcal{Z}_{n t}^{\prime} \\
+& +n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathcal{Z}_{n t} \mathcal{Z}_{n, t-\tau}^{\prime}+\mathcal{Z}_{n, t-\tau} \mathcal{Z}_{n t}^{\prime}
+\end{aligned}
+$$
+
+If $m_{n} \rightarrow \infty$ as $n \rightarrow \infty, m_{n}=o\left(n^{1 / 4}\right)$, and if $\left|w_{n \tau}\right|<\Delta, n=1,2, \ldots$, $\tau=1, \ldots, m_{n}$, and if for each $\tau, w_{n \tau} \rightarrow 1$ as $n \rightarrow \infty$, then $\tilde{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$.
+
+Proof. For $\overline{\mathbf{V}}_{n}$ as defined in Lemma 6.18 we have
+
+$$
+\tilde{\mathbf{V}}_{n}-\mathbf{V}_{n}=\left(\tilde{\mathbf{V}}_{n}-\overline{\mathbf{V}}_{n}\right)+\left(\overline{\mathbf{V}}_{n}-\mathbf{V}_{n}\right) .
+$$
+
+By Lemma 6.18 it follows that $\overline{\mathbf{V}}_{n}-\mathbf{V}_{n} \rightarrow \mathbf{0}$ so the result holds if $\overline{\mathbf{V}}_{n}- \overline{\mathbf{V}}_{n} \xrightarrow{p} \mathbf{0}$.
+
+Now
+
+$$
+\begin{aligned}
+\tilde{\mathbf{V}}_{n}-\overline{\mathbf{V}}_{n}= & w_{n 0} n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{n t} \mathcal{Z}_{n t}^{\prime}-E\left(\mathcal{Z}_{n t} \mathcal{Z}_{n t}^{\prime}\right) \\
+& +n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathcal{Z}_{n t} \mathcal{Z}_{n, t-\tau}^{\prime}-E\left(\mathcal{Z}_{n t} \mathcal{Z}_{n, t-\tau}^{\prime}\right) \\
+& +n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathcal{Z}_{n, t-\tau} \mathcal{Z}_{n t}^{\prime}-E\left(\mathcal{Z}_{n, t-\tau} \mathcal{Z}_{n t}^{\prime}\right)
+\end{aligned}
+$$
+
+The first term converges almost surely to zero by the mixing law of large numbers Corollary 3.48, while the next term, which has $i, j$ element
+
+$$
+n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathcal{Z}_{n t i} \mathcal{Z}_{n, t-\tau, j}-E\left(\mathcal{Z}_{n t i} \mathcal{Z}_{n, t-\tau, j}\right)
+$$
+
+converges in probability to zero by Lemma 6.19. The final term is the transpose of the preceding term so it too vanishes in probability, and the result follows.
+
+With this result, we can establish the consistency of $\hat{\mathbf{V}}_{n}$ for the instrumental variables estimator by setting $\mathcal{Z}_{n t}=\mathbf{Z}_{t} \varepsilon_{t}$ and handling the additional terms that arise from the presence of $\tilde{\varepsilon}_{t}$ in place of $\varepsilon_{t}$ with an application of Lemma 6.19.
+
+Because the results for stationary mixing sequences follow as corollaries to the results for general mixing sequences, we state only the results for general mixing sequences.
+
+Theorem 6.21 Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \quad \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a mixing sequence with either $\phi$ of size $-r /(r-1)$ or $\alpha$ of size $-2 r /(r-2), r>2$;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}, \quad t=1,2, \ldots$;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{t h}\right|^{2(r+\delta)}<\Delta<\infty$ for some $\delta>0, h=1, \ldots, p, i= 1, \ldots, l$, and all $t$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\right)$ is uniformly positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{2(r+\delta)}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, l, j=1, \ldots, k$, and $t=1,2, \ldots$;\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has uniformly full column rank;\\
+(c) $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$, where $\mathbf{P}_{n}=O(1)$ and is symmetric and uniformly positive definite.
+
+Define $\overline{\mathbf{V}}_{n}$ as above. If $m_{n} \rightarrow \infty$ as $n \rightarrow \infty$ such that $m_{n}=o\left(n^{1 / 4}\right)$, and if $\left|w_{n \tau}\right|<\Delta, n=1,2, \ldots, \tau=1, \ldots, m_{n}$ such that $w_{n \tau} \rightarrow 1$ as $n \rightarrow \infty$ for each $\tau$, then $\tilde{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$ and $\tilde{\mathbf{V}}_{n}^{-1}-\mathbf{V}_{n}^{-1} \xrightarrow{p} \mathbf{0}$.
+
+Proof. By definition
+
+$$
+\begin{aligned}
+\tilde{\mathbf{V}}_{n}-\mathbf{V}_{n}= & w_{n 0} n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+& +n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \tilde{\varepsilon}_{t-\tau} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}-\mathbf{V}_{n}
+\end{aligned}
+$$
+
+Substituting $\tilde{\varepsilon}_{t}=\varepsilon_{t}-\mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)$ gives
+
+$$
+\begin{aligned}
+\tilde{\mathbf{V}}_{n}- & \mathbf{V}_{n}=w_{n 0} n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+& +n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}-\mathbf{V}_{n}+\mathbf{A}_{n}
+\end{aligned}
+$$
+
+where
+
+$$
+\begin{aligned}
+\mathbf{A}_{n}= & -w_{n 0} n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t} \mathbf{Z}_{t}^{\prime} \\
+& -w_{n 0} n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \boldsymbol{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+& +w_{n 0} n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t} \mathbf{Z}_{t}^{\prime} \\
+& -n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime} \\
+& -n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime} \\
+& +n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime} \\
+& -n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t-\tau} \varepsilon_{t-\tau}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t} \mathbf{Z}_{t}^{\prime} \\
+& -n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+& +n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t} \mathbf{Z}_{t}^{\prime}
+\end{aligned}
+$$
+
+The conditions of the theorem ensure that the conditions of Theorem 6.20 hold for $\mathcal{Z}_{n t}=\mathrm{Z}_{t} \varepsilon_{t}$, so that
+
+$$
+\begin{gathered}
+w_{n 0} n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}+n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \varepsilon_{t-\tau} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}
+\end{gathered}
+$$
+
+The desired result then follows provided that all remaining terms (in $\mathbf{A}_{n}$ ) vanish in probability.
+
+The mixing and moment conditions imposed are more than enough to ensure that the terms involving $w_{n 0}$ vanish in probability, by arguments\\
+identical to those used in the proof of Exercise 6.6. Thus, consider the term
+
+$$
+\begin{aligned}
+& \operatorname{vec}\left(n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{X}_{t-\tau} \mathbf{Z}_{t-\tau}^{\prime}\right) \\
+& \quad=n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n}\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right) \operatorname{vec}\left(\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime}\right) \\
+& \quad=n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n}\left[\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right)\right. \\
+& \left.\quad-E\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right)\right] \operatorname{vec}\left(\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime}\right) \\
+& \quad+n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} E\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right) \operatorname{vec}\left(\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime}\right)
+\end{aligned}
+$$
+
+Applying Lemma 6.19 with $\mathcal{Z}_{n t}=\operatorname{vec}\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right)$ we have that
+
+$$
+n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n}\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right)-E\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right) \xrightarrow{p} \mathbf{0}
+$$
+
+This together with the fact that $\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ ensures that the first of the two terms above vanishes. It therefore suffices to show that
+
+$$
+n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} E\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \mathbf{Z}_{t} \varepsilon_{t}\right) \operatorname{vec}\left(\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)^{\prime}\right)
+$$
+
+vanishes in probability.\\
+Under the conditions of the theorem, we have $\sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)=O_{p}(1)$ (by asymptotic normality, Theorem 5.23) so it will suffice that
+
+$$
+n^{-3 / 2} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} E\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right)=o(1)
+$$
+
+Applying the triangle inequality and Jensen's inequality we have
+
+$$
+\begin{aligned}
+\mid n^{-3 / 2} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} E( & \left.\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right) \mid \\
+& <n^{-3 / 2} \sum_{\tau=1}^{m_{n}}\left|w_{n \tau}\right| \sum_{t=\tau+1}^{n} E\left|\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right|
+\end{aligned}
+$$
+
+where the absolute value and inequality are understood to hold element by element. Because second moments of $\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}$ and $\mathbf{Z}_{t} \varepsilon_{t}$ are uniformly bounded, the Minkowski and Cauchy-Schwarz inequalities ensure the existence of a finite matrix $\Delta$ such that $E\left|\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right|<\Delta$. Further $\left|w_{n \tau}\right| \leq \Delta$ for all $n$ and $\tau$, so that
+
+$$
+\begin{aligned}
+n^{-3 / 2} \sum_{\tau=1}^{m_{n}} & w_{n \tau} \sum_{t=\tau+1}^{n} E\left|\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \otimes \mathbf{Z}_{t} \varepsilon_{t}\right| \\
+& \leq n^{-3 / 2} \sum_{\tau=1}^{m_{n}}\left|w_{n \tau}\right|(n-\tau) \Delta \\
+& \leq n^{-3 / 2} m_{n} \Delta(n-\tau) \Delta \\
+& \leq n^{-1 / 2} m_{n} \Delta \Delta
+\end{aligned}
+$$
+
+But $m_{n}=o\left(n^{1 / 4}\right)$, so $n^{-1 / 2} m_{n} \rightarrow 0$, which implies
+
+$$
+n^{-3 / 2} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} E\left(\mathbf{Z}_{t-\tau} \mathbf{X}_{t-\tau}^{\prime} \leftrightarrow \mathbf{Z}_{t} \varepsilon_{t}\right)=o(1)
+$$
+
+as we needed.\\
+The same argument works for all of the other terms under the conditions given, so the result follows.
+
+Comparing the conditions of this result to the asymptotic normality result, Theorem 5.23, we see that the memory conditions here are twice as strong as in Theorem 5.23. The moment conditions on $\mathbf{Z}_{t} \varepsilon_{t}$ are roughly twice as strong as in Theorem 5.23, while those on $\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}$ are roughly four times as strong.
+
+The rate $m_{n}=o\left(n^{1 / 4}\right)$ is not necessarily the optimal rate, and other methods of proof can deliver faster rates for $m_{n}$. (See, e.g., Andrews, 1991.) For discussion on methods relevant for choosing $m_{n}$, see Den Haan and Levin (1997).
+
+Gallant and White (1988, Lemma 6.5) provide the following conditions on $w_{n \tau}$ guaranteeing the positive definiteness of $\tilde{\mathbf{V}}_{n}$.
+
+Lemma 6.22 Let $\left\{\mathcal{Z}_{n t}\right\}$ be an arbitrary double array and let $\left\{a_{n i}\right\}, n= 1,2, \ldots, i=1, \ldots, m_{n}+1$ be a triangular array of real numbers. Then for any triangular array of weights
+
+$$
+w_{n \tau}=\sum_{i=\tau+1}^{m_{n}+1} a_{n i} a_{n, i-\tau}, \quad n=1,2, \ldots, \tau=1, \ldots, m_{n}
+$$
+
+we have
+
+$$
+\mathcal{Y}_{n}=w_{n 0} \sum_{t=1}^{n} \mathcal{Z}_{n t}^{2}+2 \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=1}^{n} \mathcal{Z}_{n t} \mathcal{Z}_{n, t-\tau}>0
+$$
+
+Proof. See Gallant and White (1988, Lemma 6.5).\\
+For example, choosing $a_{n i}=\left(m_{n}+1\right)^{1 / 2}$ for all $i=1, \ldots, m_{n}+1$ delivers
+
+$$
+w_{n \tau}=1-\tau /\left(m_{n}+1\right), \quad \tau=1, \ldots, m_{n},
+$$
+
+which are the Bartlett (1950) weights given by Newey and West (1987). Other choices for $a_{n i}$ lead to other choices of weights that arise in the problem of estimating the spectrum of a time series at zero frequency. (See Anderson (1971, Ch. 8) for further discussion.) This is quite natural, as $\mathbf{V}_{n}$ can be interpreted precisely as the value of the spectrum of $\mathbf{Z}_{t} \varepsilon_{t}$ at zero frequency.
+
+Corollary 6.23 Suppose the conditions of Theorem 6.21 hold. Then
+
+$$
+\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I}),
+$$
+
+where
+
+$$
+\mathbf{D}_{n} \equiv\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{V}_{n} \mathbf{P}_{n} \mathbf{Q}_{n}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+Further, $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \tilde{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+Proof. Immediate from Theorem 5.23 and Theorem 6.21.\\
+This result contains versions of all preceding asymptotic normality results as special cases while making minimal assumptions on the error covariance structure.
+
+Finally, we state a general result for the 2SIV estimator.\\
+Corollary 6.24 Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \quad \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a mixing sequence with either $\phi$ of size $-r /(r-1)$ or $\alpha$ of size $-2 r /(r-2), r>2$;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}, \quad t=1,2, \ldots$;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{t h}\right|^{2(r+\delta)}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots$, l, and $t=1,2, \ldots$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\right)$ is uniformly positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{2(r+\delta)}<\Delta<\infty$ and $E\left|Z_{\text {thi }}\right|^{(r+\delta)}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p, i=1, \ldots, l, j=1, \ldots, k$, and $t=1,2, \ldots$;\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has uniformly full column rank;\\
+(c) $\mathbf{L}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)$ is uniformly positive definite.
+
+Define
+
+$$
+\begin{aligned}
+\tilde{\mathbf{V}}_{n} \equiv & w_{n 0} n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \\
+& +n^{-1} \sum_{\tau=1}^{m_{n}} w_{n \tau} \sum_{t=\tau+1}^{n} \mathbf{Z}_{t} \tilde{\varepsilon}_{t} \tilde{\varepsilon}_{t-\tau}^{\prime} \mathbf{Z}_{t-\tau}^{\prime}+\mathbf{Z}_{t-\tau} \tilde{\varepsilon}_{t-\tau} \tilde{\varepsilon}_{t}^{\prime} \mathbf{Z}_{t}^{\prime}
+\end{aligned}
+$$
+
+where $\tilde{\varepsilon}_{t} \equiv \mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \tilde{\boldsymbol{\beta}}_{n}, \tilde{\boldsymbol{\beta}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$, and define
+
+$$
+\boldsymbol{\beta}_{n}^{*} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z} \tilde{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \tilde{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+If $m_{n} \rightarrow \infty$ as $n \rightarrow \infty$ such that $m_{n}=o\left(n^{1 / 4}\right)$ and if $\left|w_{n \tau}\right|<\Delta, n= 1,2, \ldots, \tau=1, \ldots, m_{n}$ such that $w_{n \tau} \rightarrow 1$ as $n \rightarrow \infty$ for each $\tau$, then $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D}_{n}=\left(\mathbf{Q}_{n}^{\prime} \mathbf{V}_{n}^{-1} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+Further, $\tilde{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\tilde{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \tilde{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+Proof. Conditions (i)-(iv) ensure that Theorem 6.21 holds for $\tilde{\boldsymbol{\beta}}_{n}$. Set $\hat{\mathbf{P}}_{n}=\tilde{\mathbf{V}}_{n}^{-1}$ in Corollary 6.23. Then $\mathbf{P}_{n}=\mathbf{V}_{n}^{-1}$, and the result follows.
+
+\section*{References}
+Anderson, T. W. (1971). The Statistical Analysis of Time Series. Wiley, New York.
+
+Andrews, D. W. K. (1991). "Heteroskedasticity and autocorrelation consistent covariance matrix estimation." Econometrica, 59, 817-858.\\
+Bartlett, M. S. (1950). "Periodogram analysis and continuous spectra." Biometrika, 37, 1-16.
+
+Den Haan, W. J. and A. T. Levin (1997). "A practitioner's guide to robust covariance matrix estimation." In Handbook of Statistics, vol. 15, G. S. Maddala and C. R. Rao, eds., pp. 309-327. Elsevier, Amsterdam.\\
+Gallant, A. R. and H. White (1988). A Unified Theory of Estimation and Inference for Nonlinear Dynamic Models. Basil Blackwell, Oxford.\\
+McLeish, D. L. (1975). "A maximal inequality and dependent strong laws." Annals of Probability, 3, 826-836.\\
+Newey, W. and K. West (1987). "A simple positive semi-definite, heteroskedasticity and autocorrelation consistent covariance matrix." Econometrica, 55, 703-708.\\
+Phillips, P. C. B. (1985). Personal communication.\\
+White, H. (1980). "A heteroskedasticity-consistent covariance matrix estimator and a direct test for heteroskedasticity." Econometrica, 48, 817-838.\\
+(1982). "Instrumental variables regression with independent observations." Econometrica, 50, 483-500.\\
+(1984). Asymptotic Theory for Econometricians. Academic Press, Orlando.
+
+\section*{CHAPTER 7}
+
+\end{document}

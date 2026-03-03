@@ -1,0 +1,478 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{03C4}{\ifmmode\tau\else{$\tau$}\fi}
+\title{Chapter 1: The Linear Model and Instrumental Variables Estimators}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+The purpose of this book is to provide the reader with the tools and concepts needed to study the behavior of econometric estimators and test statistics in large samples. Throughout, attention will be directed to estimation and inference in the framework of a linear stochastic relationship such as
+
+$$
+Y_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1, \ldots, n,
+$$
+
+where we have $n$ observations on the scalar dependent variable $Y_{t}^{-}$and the vector of explanatory variables $\mathbf{X}_{t}=\left(X_{t 1}, X_{t 2}, \ldots, X_{t k}\right)^{\prime}$. The scalar stochastic disturbance $\varepsilon_{t}$ is unobserved, and $\boldsymbol{\beta}_{o}$ is an unknown $k \times 1$ vector of coefficients that we are interested in learning about, either through estimation or through hypothesis testing. In matrix notation this relationship is written as
+
+$$
+\mathbf{Y}=\mathbf{X} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon},
+$$
+
+where $\mathbf{Y}$ is an $n \times 1$ vector, $\mathbf{X}$ is an $n \times k$ matrix with rows $\mathbf{X}_{t}^{\prime}$, and $\varepsilon$ is an $n \times 1$ vector with elements $\varepsilon_{t}$.\\
+(Our notation embodies a convention we follow throughout: scalars will be represented in standard type, while vectors and matrices will be represented in boldface. Throughout, all vectors are column vectors.)
+
+Most econometric estimators can be viewed as solutions to an optimization problem. For example, the ordinary least squares estimator is the value\\
+for $\boldsymbol{\beta}$ that minimizes the sum of squared residuals
+
+$$
+\begin{aligned}
+\operatorname{SSR}(\boldsymbol{\beta}) & =(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta}) \\
+& =\sum_{t=1}^{n}\left(Y_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}\right)^{2}
+\end{aligned}
+$$
+
+The first-order conditions for a minimum are
+
+$$
+\begin{aligned}
+\partial \operatorname{SSR}(\boldsymbol{\beta}) / \partial \boldsymbol{\beta} & =-2 \mathbf{X}^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta}) \\
+& =-2 \sum_{t=1}^{n} \mathbf{X}_{t}\left(Y_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}\right)=\mathbf{0}
+\end{aligned}
+$$
+
+If $\mathbf{X}^{\prime} \mathbf{X}=\sum_{t=1}^{n} \mathbf{X}_{t} \mathbf{X}_{t}^{\prime}$ is nonsingular, this system of $k$ equations in $k$ unknowns can be uniquely solved for the ordinary least squares (OLS) estimator
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\beta}}_{n} & =\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Y} \\
+& =\left(\sum_{t=1}^{n} \mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right)^{-1} \sum_{t=1}^{n} \mathbf{X}_{t} Y_{t}
+\end{aligned}
+$$
+
+Our interest centers on the behavior of estimators such as $\hat{\boldsymbol{\beta}}_{n}$ as $n$ grows larger and larger. We seek conditions that will allow us to draw conclusions about the behavior of $\hat{\boldsymbol{\beta}}_{n}$; for example, that $\hat{\boldsymbol{\beta}}_{n}$ has a particular distribution or certain first and second moments.
+
+The assumptions of the classical linear model allow us to draw such conclusions for any $n$. These conditions and results can be formally stated as the following theorem.
+
+Theorem 1.1 The following are the assumptions of the classical linear model.\\
+(i) The data are generated as $Y_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1, \ldots, n, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$.\\
+(ii) $\mathbf{X}$ is a nonstochastic and finite $n \times k$ matrix, $n>k$.\\
+(iii) $\mathbf{X}^{\prime} \mathbf{X}$ is nonsingular.\\
+(iv) $E(\boldsymbol{\varepsilon})=\mathbf{0}$.\\
+(v) $\varepsilon \sim N\left(\mathbf{0}, \sigma_{o}^{2} \mathbf{I}\right), \quad \sigma_{o}^{2}<\infty$.\\
+(a) (Existence) Given (i)-(iii), $\hat{\boldsymbol{\beta}}_{n}$ exists and is unique.\\
+(b) (Unbiasedness) Given (i)-(iv), $E\left(\hat{\boldsymbol{\beta}}_{n}\right)=\boldsymbol{\beta}_{o}$.\\
+(c) (Normality) Given (i)-(v), $\hat{\boldsymbol{\beta}}_{n} \sim N\left(\boldsymbol{\beta}_{o}, \sigma_{o}^{2}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}\right)$.\\
+(d) (Efficiency) Given (i)--(v), $\hat{\boldsymbol{\beta}}_{n}$ is the maximum likelihood estimator and is the best unbiased estimator in the sense that the variance covariance matrix of any other unbiased estimator exceeds that of $\hat{\boldsymbol{\beta}}_{n}$ by a positive semidefinite matrix, regardless of the value of $\boldsymbol{\beta}_{o}$.
+
+Proof. See Theil (1971, Ch. 3).\\
+In the statement of the assumptions above, $E(\cdot)$ denotes the expected value operator, and $\varepsilon \sim N\left(\mathbf{0}, \sigma_{o}^{2} \mathbf{I}\right)$ means that $\varepsilon$ is distributed as ( $\sim$ ) multivariate normal with mean vector zero and covariance matrix $\sigma_{o}^{2} \mathbf{I}$, where $\mathbf{I}$ is the identity matrix.
+
+The properties of existence, unbiasedness, normality, and efficiency of an estimator are the small sample analogs of the properties that will be the focus of interest here. Unbiasedness tells us that the distribution of $\hat{\boldsymbol{\beta}}_{n}$ is centered around the unknown true value $\boldsymbol{\beta}_{o}$, whereas the normality property allows us to construct confidence intervals and test hypotheses using the $t$ - or $F$-distributions (see Theil, 1971, pp. 130-146). The efficiency property guarantees that our estimator has the greatest possible precision within a given class of estimators and also helps ensure that tests of hypotheses have high power.
+
+Of course, the classical assumptions are rather stringent and can easily fail in situations faced by economists. Since failures of assumptions (iii) and (iv) are easily remedied (exclude linearly dependent regressors if (iii) fails; include a constant in the model if (iv) fails), we will concern ourselves primarily with the failure of assumptions (ii) and (v). The possible failure of assumption (i) is a subject that requires a book in itself (see, e.g., White, 1994) and will not be considered here. Nevertheless, the tools developed in this book will be essential to understanding and treating the consequences of the failure of assumption (i).
+
+Let us briefly examine the consequences of various failures of assumptions (ii) or (v). First, suppose that $\varepsilon$ exhibits heteroskedasticity or serial correlation, so that $E\left(\varepsilon \varepsilon^{\prime}\right)=\boldsymbol{\Omega} \neq \sigma_{0}^{2} \mathbf{I}$. We have the following result for the OLS estimator.
+
+Theorem 1.2 Suppose the classical assumptions (i)-(iv) hold but replace $(v)$ with $\left(v^{\prime}\right) \varepsilon \sim N(\mathbf{0}, \boldsymbol{\Omega}), \boldsymbol{\Omega}$ finite and nonsingular. Then (a) and (b) hold as before, (c) is replaced by\\
+( $c^{\prime}$ ) (Normality) Given ( $i$ ) $-\left(v^{\prime}\right)$,
+
+$$
+\hat{\boldsymbol{\beta}}_{n} \sim N\left(\boldsymbol{\beta}_{o},\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \boldsymbol{\Omega} \mathbf{X}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}\right),
+$$
+
+and (d) does not hold; that is, $\hat{\boldsymbol{\beta}}_{n}$ is no longer necessarily the best unbiased estimator.
+
+Proof. By definition, $\hat{\boldsymbol{\beta}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Y}$. Given (i),
+
+$$
+\hat{\boldsymbol{\beta}}_{n}=\boldsymbol{\beta}_{o}+\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \varepsilon,
+$$
+
+where $\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \epsilon$ is a linear combination of jointly normal random variables and is therefore jointly normal with
+
+$$
+E\left(\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \varepsilon\right)=\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} E(\varepsilon)=\mathbf{0}
+$$
+
+given (ii) and (iv) and
+
+$$
+\begin{aligned}
+\operatorname{var}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \epsilon & =E\left(\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \epsilon \epsilon^{\prime} \mathbf{X}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}\right) \\
+& =\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} E\left(\epsilon \epsilon^{\prime}\right) \mathbf{X}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \\
+& =\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{\Omega} \mathbf{X}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}
+\end{aligned}
+$$
+
+given (ii) and (v'). Hence $\hat{\boldsymbol{\beta}}_{n} \sim N\left(\boldsymbol{\beta}_{o},\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \boldsymbol{\Omega} \mathbf{X}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}\right)$. That (d) does not hold follows because there exists an unbiased estimator with a smaller covariance matrix than $\hat{\boldsymbol{\beta}}_{n}$, namely, $\boldsymbol{\beta}_{n}^{*}=\left(\mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{Y}$. We examine its properties next.
+
+As long as $\Omega$ is known, the presence of serial correlation or heteroskedasticity does not cause problems for testing hypotheses or constructing confidence intervals. This can still be done using ( $c^{\prime}$ ), although the failure of (d) indicates that the OLS estimator may not be best for these purposes. However, if $\boldsymbol{\Omega}$ is unknown (apart from a factor of proportionality), testing hypotheses and constructing confidence intervals is no longer a simple matter. One might be able to construct tests based on estimates of $\boldsymbol{\Omega}$, but the resulting statistics may have very complicated distributions. As we shall see in Chapter 6, this difficulty is lessened in large samples by the availability of convenient approximations based on the central limit theorem and laws of large numbers.
+
+If $\Omega$ is known, efficiency can be regained by applying OLS to a linear transformation of the original model, i.e.,
+
+$$
+\mathbf{C}^{-1} \mathbf{Y}=\mathbf{C}^{-1} \mathbf{X} \boldsymbol{\beta}_{o}+\mathbf{C}^{-1} \varepsilon
+$$
+
+or
+
+$$
+\mathbf{Y}^{*}=\mathbf{X}^{*} \boldsymbol{\beta}_{o}+\epsilon^{*}
+$$
+
+where $\mathbf{Y}^{*}=\mathbf{C}^{-1} \mathbf{Y}, \mathbf{X}^{*}=\mathbf{C}^{-1} \mathbf{X}, \varepsilon^{*}=\mathbf{C}^{-1} \varepsilon$ and $\mathbf{C}$ is a nonsingular factorization of $\boldsymbol{\Omega}$ such that $\mathbf{C C}^{\prime}=\boldsymbol{\Omega}$ so that $\mathbf{C}^{-1} \boldsymbol{\Omega} \mathbf{C}^{-1 \prime}=\mathbf{I}$. This transformation ensures that $E\left(\varepsilon^{*} \varepsilon^{* \prime}\right)=E\left(\mathbf{C}^{-1} \varepsilon \varepsilon^{\prime} \mathbf{C}^{-1 \prime}\right)=\mathbf{C}^{-1} E\left(\varepsilon \varepsilon^{\prime}\right) \mathbf{C}^{-1 \prime}= \mathbf{C}^{-1} \boldsymbol{\Omega} \mathbf{C}^{-1 \prime}=\mathbf{I}$, so that assumption (v) once again holds. The least squares estimator for the transformed model is
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\beta}}_{n}^{*} & =\left(\mathbf{X}^{* \prime} \mathbf{X}^{*}\right)^{-1} \mathbf{X}^{* \prime} \mathbf{Y}^{*} \\
+& =\left(\mathbf{X}^{\prime} \mathbf{C}^{-1 \prime} \mathbf{C}^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{C}^{-1 \prime} \mathbf{C}^{-1} \mathbf{Y} \\
+& =\left(\mathbf{X}^{\prime} \mathbf{\Omega}^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{\Omega}^{-1} \mathbf{Y}
+\end{aligned}
+$$
+
+The estimator $\hat{\boldsymbol{\beta}}_{n}^{*}$ is called the generalized least squares (GLS) estimator, and its properties are given by the following result.
+
+Theorem 1.3 The following are the "generalized" classical assumptions.\\
+(i) The data are generated as $Y_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1, \ldots, n, \quad \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$.\\
+(ii) X is a nonstochastic and finite $n \times k$ matrix, $n>k$.\\
+(iii*) $\boldsymbol{\Omega}$ is finite and positive definite, and $\mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}$ is nonsingular.\\
+(iv) $E(\varepsilon)=\mathbf{0}$.\\
+$\left(v^{*}\right) \varepsilon \sim N(\mathbf{0}, \boldsymbol{\Omega})$.\\
+(a) (Existence) Given (i) $-\left(i i i^{*}\right), \hat{\boldsymbol{\beta}}_{n}^{*}$ exists and is unique.\\
+(b) (Unbiasedness) Given (i)-(iv), $E\left(\hat{\boldsymbol{\beta}}_{n}^{*}\right)=\boldsymbol{\beta}_{o}$.\\
+(c) (Normality) Given (i)-(v*), $\hat{\boldsymbol{\beta}}_{n}^{*} \sim N\left(\boldsymbol{\beta}_{o},\left(\mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}\right)^{-1}\right)$.\\
+(d) (Efficiency) Given ( $i)-\left(v^{*}\right), \hat{\boldsymbol{\beta}}_{n}^{*}$ is the maximum likelihood estimator and is the best unbiased estimator.
+
+Proof. Apply Theorem 1.1 with $Y_{t}^{*}=\mathbf{X}_{t}^{* \prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}^{*}$.\\
+If $\Omega$ is known, we obtain efficiency by transforming the model "back" to a form in which OLS gives the efficient estimator. However, if $\Omega$ is unknown, this transformation is not immediately available. It might be possible to estimate $\boldsymbol{\Omega}$, say by $\hat{\Omega}$, but $\hat{\Omega}$ is then random and so is the factorization $\hat{\mathbf{C}}$. Theorem 1.1 no longer applies. Nevertheless, it turns out that in large samples we can often proceed by replacing $\boldsymbol{\Omega}$ with a suitable estimator $\hat{\boldsymbol{\Omega}}$. We consider such situations in Chapter 4.
+
+Hypothesis testing in the classical linear model relies heavily on being able to make use of the $t$ - and $F$-distributions. However, it is quite possible that the normality assumption ( $v$ ) or ( $v^{*}$ ) may fail. When this happens, the classical $t$ - and $F$-statistics generally no longer have the $t$ - and $F$ distributions. Nevertheless, the central limit theorem can be applied when $n$ is large to guarantee that $\hat{\boldsymbol{\beta}}_{n}$ or $\hat{\boldsymbol{\beta}}_{n}^{*}$ is distributed approximately as normal, as we shall see in Chapters 4 and 5.
+
+Now consider what happens when assumption (ii) fails, so that the explanatory variables $\mathbf{X}_{t}$ are stochastic. In some cases, this causes no real problems because we can examine the properties of our estimators "conditional" on $\mathbf{X}$. For example, consider the unbiasedness property. To demonstrate unbiasedness we use (i) to write
+
+$$
+\hat{\boldsymbol{\beta}}_{\boldsymbol{n}}=\boldsymbol{\beta}_{o}+\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \boldsymbol{\varepsilon} .
+$$
+
+If $\mathbf{X}$ is random, we can no longer write $E\left(\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \varepsilon\right)=\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} E(\varepsilon)$. However, by taking conditional expectations, we can treat $\mathbf{X}$ as "fixed," so we have
+
+$$
+\begin{aligned}
+E\left(\hat{\boldsymbol{\beta}}_{n} \mid \mathbf{X}\right) & =\boldsymbol{\beta}_{o}+E\left(\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \varepsilon \mid \mathbf{X}\right) \\
+& =\boldsymbol{\beta}_{o}+\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} E(\varepsilon \mid \mathbf{X})
+\end{aligned}
+$$
+
+If we are willing to assume $E(\varepsilon \mid \mathbf{X})=\mathbf{0}$, then conditional unbiasedness follows, i.e.,
+
+$$
+E\left(\hat{\boldsymbol{\beta}}_{n} \mid \mathbf{X}\right)=\boldsymbol{\beta}_{o} .
+$$
+
+Unconditional unbiasedness follows from this as a consequence of the law of iterated expectations (given in Chapter 3), i.e.,
+
+$$
+E\left(\hat{\boldsymbol{\beta}}_{n}\right)=E\left[E\left(\hat{\boldsymbol{\beta}}_{n} \mid \mathbf{X}\right)\right]=E\left(\boldsymbol{\beta}_{o}\right)=\boldsymbol{\beta}_{o}
+$$
+
+The other properties can be similarly considered. However, the assumption that $E(\varepsilon \mid \mathbf{X})=\mathbf{0}$ is crucial. If $E(\boldsymbol{\varepsilon} \mid \mathbf{X}) \neq \mathbf{0}, \hat{\boldsymbol{\beta}}_{\boldsymbol{n}}$ need not be unbiased, either conditionally or unconditionally.
+
+Situations in which $E(\varepsilon \mid \mathbf{X}) \neq \mathbf{0}$ can arise easily in economics. For example, $\mathbf{X}_{t}$ may contain errors of measurement. Suppose the data are generated as
+
+$$
+Y_{t}=\mathbf{W}_{t}^{\prime} \boldsymbol{\beta}_{o}+\nu_{t}, \quad E\left(\mathbf{W}_{t} \nu_{t}\right)=\mathbf{0}
+$$
+
+but we measure $\mathbf{W}_{t}$ subject to errors $\boldsymbol{\eta}_{t}$, as $\mathbf{X}_{t}=\mathbf{W}_{t}+\boldsymbol{\eta}_{t}, E\left(\mathbf{W}_{t} \boldsymbol{\eta}_{t}^{\prime}\right)=\mathbf{0}$, $E\left(\boldsymbol{\eta}_{t} \boldsymbol{\eta}_{t}^{\prime}\right) \neq \mathbf{0}, E\left(\boldsymbol{\eta}_{t} \nu_{t}\right)=\mathbf{0}$. Then
+
+$$
+Y_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\nu_{t}-\boldsymbol{\eta}_{t}^{\prime} \boldsymbol{\beta}_{o}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}
+$$
+
+With $\varepsilon_{t}=\nu_{t}-\boldsymbol{\eta}_{t}^{\prime} \boldsymbol{\beta}_{o}$, we have $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=E\left[\left(\mathbf{W}_{t}+\boldsymbol{\eta}_{t}\right)\left(\nu_{t}-\boldsymbol{\eta}_{t}^{\prime} \boldsymbol{\beta}_{o}\right)\right]= -E\left(\boldsymbol{\eta}_{t} \boldsymbol{\eta}_{t}^{\prime}\right) \boldsymbol{\beta}_{o} \neq \mathbf{0}$. Now $E(\boldsymbol{\varepsilon} \mid \mathbf{X})=\mathbf{0}$ implies that for all $t, E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$, since $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=E\left[E\left(\mathbf{X}_{t} \varepsilon_{t} \mid \mathbf{X}\right)\right]=E\left[\mathbf{X}_{t} E\left(\varepsilon_{t} \mid \mathbf{X}\right)\right]=\mathbf{0}$. Hence $E\left(\mathbf{X}_{t} \varepsilon_{t}\right) \neq \mathbf{0}$ implies $E(\boldsymbol{\varepsilon} \mid \mathbf{X}) \neq \mathbf{0}$. The OLS estimator will not be unbiased in the presence of measurement errors.
+
+As another example, consider the data generating process
+
+$$
+\begin{aligned}
+Y_{t} & =Y_{t-1} \alpha_{o}+\mathbf{W}_{t}^{\prime} \boldsymbol{\delta}_{o}+\varepsilon_{t}, & & E\left(\mathbf{W}_{t} \varepsilon_{t}\right)=\mathbf{0} \\
+\varepsilon_{t} & =\rho_{o} \varepsilon_{t-1}+\nu_{t}, & & E\left(\varepsilon_{t-1} \nu_{t}\right)=0
+\end{aligned}
+$$
+
+This is the case of serially correlated errors in the presence of a lagged dependent variable $Y_{t-1}$. Let $\mathbf{X}_{t}=\left(Y_{t-1}, \mathbf{W}_{t}^{\prime}\right)^{\prime}$ and $\boldsymbol{\beta}_{o}=\left(\alpha_{o}, \boldsymbol{\delta}_{o}^{\prime}\right)^{\prime}$. Again, we have
+
+$$
+Y_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}
+$$
+
+but
+
+$$
+E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=E\left(\left(Y_{t-1}, \mathbf{W}_{t}^{\prime}\right)^{\prime} \varepsilon_{t}\right)=\left(E\left(Y_{t-1} \varepsilon_{t}\right), \mathbf{0}\right)^{\prime} .
+$$
+
+If we also assume $E\left(Y_{t-1} \nu_{t}\right)=0, E\left(Y_{t-1} \varepsilon_{t-1}\right)=E\left(Y_{t} \varepsilon_{t}\right)$, and $E\left(\varepsilon_{t}^{2}\right)=\sigma_{o}^{2}$, it can be shown that
+
+$$
+E\left(Y_{t-1} \varepsilon_{t}\right)=\frac{\sigma_{o}^{2} \rho_{o}}{1-\rho_{o} \alpha_{o}}
+$$
+
+Thus if $\rho_{o} \neq 0$, then $E\left(\mathbf{X}_{t} \varepsilon_{t}\right) \neq \mathbf{0}$ so that $E(\varepsilon \mid \mathbf{X}) \neq \mathbf{0}$ and OLS is not generally unbiased.
+
+As a final example, consider a system of simultaneous equations
+
+$$
+\begin{array}{rlr}
+Y_{t 1}=Y_{t 2} \alpha_{o}+\mathbf{W}_{t 1}^{\prime} \boldsymbol{\delta}_{o}+\varepsilon_{t 1}, & E\left(\mathbf{W}_{t 1} \varepsilon_{t 1}\right)=\mathbf{0} \\
+Y_{t 2}=\mathbf{W}_{t 2}^{\prime} \gamma_{0}+\varepsilon_{t 2}, & E\left(\mathbf{W}_{t 2} \varepsilon_{t 2}\right)=\mathbf{0}
+\end{array}
+$$
+
+Suppose we are only interested in the first equation, but we know $E\left(\varepsilon_{t 1} \varepsilon_{t 2}\right) =\sigma_{12} \neq 0$. Let $\mathbf{X}_{t 1}=\left(Y_{t 2}, \mathbf{W}_{t 1}^{\prime}\right)^{\prime}$ and $\boldsymbol{\beta}_{o}=\left(\alpha_{o}, \boldsymbol{\delta}_{o}^{\prime}\right)^{\prime}$. The equation of interest is now
+
+$$
+Y_{t 1}=\mathbf{X}_{t 1}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t 1}
+$$
+
+In this case $E\left(\mathbf{X}_{t 1} \varepsilon_{t 1}\right)=E\left(\left(Y_{t 2}, \mathbf{W}_{t 1}^{\prime}\right)^{\prime} \varepsilon_{t 1}\right)=\left(E\left(Y_{t 2}^{r} \varepsilon_{t 1}\right), \mathbf{0}\right)^{\prime}$. Now
+
+$$
+E\left(Y_{t 2} \varepsilon_{t 1}\right)=E\left(\left(\mathbf{W}_{t 2}^{\prime} \boldsymbol{\gamma}_{0}+\varepsilon_{t 2}\right) \varepsilon_{t 1}\right)=E\left(\varepsilon_{t 1} \varepsilon_{t 2}\right)=\sigma_{12} \neq 0
+$$
+
+assuming $E\left(\mathbf{W}_{t 2} \varepsilon_{t 1}\right)=\mathbf{0}$. Thus $E\left(\mathbf{X}_{t 1} \varepsilon_{t 1}\right)=\left(\sigma_{12}, \mathbf{0}\right)^{\prime} \neq \mathbf{0}$, so again OLS is not generally unbiased, either conditionally or unconditionally.
+
+Not only is the OLS estimator generally biased in these circumstances, but it can be shown under reasonable conditions that this bias does not get smaller as $n$ gets larger. Fortunately, there is an alternative to least squares that is better behaved, at least in large samples. This alternative, first used by P. G. Wright (1928) and his son S. Wright (1925) and formally developed by Reiersøl $(1941,1945)$ and Geary $(1949)$, exploits the fact that even when $E\left(\mathbf{X}_{t} \varepsilon_{t}\right) \neq \mathbf{0}$, it is often possible to use economic theory to find other variables that are uncorrelated with the errors $\varepsilon_{t}$. Without such variables, correlations between the observables and unobservables (the errors $\varepsilon_{t}$ ) persistently contaminate our estimators, making it impossible to learn anything about $\boldsymbol{\beta}_{o}$. Hence, these variables are instrumental in allowing us to estimate $\boldsymbol{\beta}_{o}$, and we shall denote these "instrumental variables" as an $l \times 1$ vector $\mathbf{Z}_{t}$. The $n \times l$ matrix $\mathbf{Z}$ has rows $\mathbf{Z}_{t}^{\prime}$.
+
+To be useful, the instrumental variables must also be closely enough related to $\mathbf{X}_{t}$ so that $\mathbf{Z}^{\prime} \mathbf{X}$ has full column rank. If we know from economic theory that $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$, then $\mathbf{X}_{t}$ can serve directly as the set of instrumental variables. As we saw previously, $\mathbf{X}_{t}$ may be correlated with $\varepsilon_{t}$ so we cannot always choose $\mathbf{Z}_{t}=\mathbf{X}_{t}$. Nevertheless, in each of those examples, the structure of the data generating process suggests some reasonable choices for $\mathbf{Z}$. In the case of errors of measurement, a useful set of instrumental variables would be another set of measurements on $\mathbf{W}_{t}$ subject to errors $\boldsymbol{\xi}_{t}$ uncorrelated with $\boldsymbol{\eta}_{t}$ and $\nu_{t}$, say $\mathbf{Z}_{t}=\mathbf{W}_{t}+\boldsymbol{\xi}_{t}$. Then $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=E\left[\left(\mathbf{W}_{t}+\boldsymbol{\xi}_{t}\right)\left(\nu_{t}-\boldsymbol{\eta}_{t}^{\prime} \boldsymbol{\beta}_{o}\right)\right]=\mathbf{0}$. In the case of serial correlation in the presence of lagged dependent variables, a useful choice is $\mathbf{Z}_{t}=\left(\mathbf{W}_{t}^{\prime}, \mathbf{W}_{t-1}^{\prime}\right)^{\prime}$ provided $E\left(\mathbf{W}_{t-1} \varepsilon_{t}\right)=\mathbf{0}$, which is not unreasonable. Note that the relation $Y_{t-1}=Y_{t-2} \alpha_{o}+\mathbf{W}_{t-1}^{\prime} \boldsymbol{\delta}_{o}+\varepsilon_{t-1}$ ensures that $\mathbf{W}_{t-1}$ will be related to $Y_{t-1}$. In the case of simultaneous equations, a useful choice is $\mathbf{Z}_{t}=\left(\mathbf{W}_{t 1}^{\prime}, \mathbf{W}_{t 2}^{\prime}\right)^{\prime}$. The relation $Y_{t 2}=\mathbf{W}_{t 2}^{\prime} \gamma_{0}+\varepsilon_{2 t}$ ensures that $\mathbf{W}_{t 2}$ will be related to $Y_{t 2}$.
+
+In what follows, we shall simply assume that such instrumental variables are available. However, in Chapter 4 we shall be able to specify precisely how best to choose the instrumental variables.
+
+Earlier, we stated the important fact that most econometric estimators can be viewed as solutions to an optimization problem. In the present context, the zero correlation property $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}$ provides the fundamental basis for estimating $\boldsymbol{\beta}_{o}$. Because $\varepsilon_{t}=Y_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}, \boldsymbol{\beta}_{o}$ is a solution of the\\
+equations $E\left(\mathbf{Z}_{t}\left(Y_{t}^{r}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}\right)\right)=\mathbf{0}$. However, we usually do not know the expectations $E\left(\mathbf{Z}_{t} Y_{t}\right)$ and $E\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ needed to find a solution to these equations, so we replace expectations with sample averages, which we hope will provide a close enough approximation. Thus, consider finding a solution to the equations
+
+$$
+n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}\left(Y_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}\right)=\mathbf{Z}^{\prime}\left(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta}_{o}\right) / n=\mathbf{0}
+$$
+
+This is a system of $l$ equations in $k$ unknowns. If $l<k$, there is a multiplicity of solutions; if $l=k$, the unique solution is $\tilde{\boldsymbol{\beta}}_{n}=\left(\mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$, provided that $\mathbf{Z}^{\prime} \mathbf{X}$ is nonsingular; and if $l>k$, these equations need have no solution, although there may be a value for $\boldsymbol{\beta}$ that makes $\mathbf{Z}^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})$ "closest" to zero.
+
+This provides the basis for solving an optimization problem. Because economic theory typically leads to situations in which $l>k$, we can estimate $\boldsymbol{\beta}_{o}$ by finding that value of $\boldsymbol{\beta}$ that minimizes the quadratic distance from zero of $\mathbf{Z}^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})$,
+
+$$
+d_{n}(\boldsymbol{\beta})=(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})
+$$
+
+where $\hat{\mathbf{P}}_{n}$ is a symmetric $l \times l$ positive definite norming matrix which may be stochastic. For now, $\hat{\mathbf{P}}_{n}$ can be any symmetric positive definite matrix. In Chapter 4 we shall see how the choice of $\hat{\mathbf{P}}_{n}$ affects the properties of our estimator and how $\hat{\mathbf{P}}_{n}$ can best be chosen.
+
+We choose the quadratic distance measure because the minimization problem "minimize $d_{n}(\boldsymbol{\beta})$ with respect to $\boldsymbol{\beta}$ " has a convenient linear solution and yields many well-known econometric estimators. Other distance measures yield other families of estimators that we will not consider here.
+
+The first-order conditions for a minimum are
+
+$$
+\partial d_{n}(\boldsymbol{\beta}) / \partial \boldsymbol{\beta}=-2 \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})=\mathbf{0}
+$$
+
+Provided that $\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}$ is nonsingular (for which it is necessary that $\mathbf{Z}^{\prime} \mathbf{X}$ have full column rank), the resulting solution is the instrumental variables (IV) estimator (also known as the "method of moments" estimator)
+
+$$
+\tilde{\boldsymbol{\beta}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+All of the estimators considered in this book have this form, and by choosing $\mathbf{Z}$ or $\hat{\mathbf{P}}_{n}$ appropriately, we can obtain a large number of the estimators of interest to econometricians. For example, with $\mathbf{Z}=\mathbf{X}$ and $\hat{\mathbf{P}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$,\\
+$\tilde{\boldsymbol{\beta}}_{n}=\hat{\boldsymbol{\beta}}_{n}$; that is, the IV estimator equals the OLS estimator. Given any $\mathbf{Z}$, choosing $\hat{\mathbf{P}}_{n}=\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)^{-1}$ gives an estimator known as two-stage least squares (2SLS). The tools developed in the following chapters will allow us to pick $\mathbf{Z}$ and $\hat{\mathbf{P}}_{n}$ in ways appropriate to many of the situations encountered in economics.
+
+Now consider the problem of determining whether $\tilde{\boldsymbol{\beta}}_{\boldsymbol{n}}$ is unbiased. If the data generating process is $\mathbf{Y}=\mathbf{X} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}$, we have
+
+$$
+\begin{aligned}
+\tilde{\boldsymbol{\beta}}_{n} & =\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{Y} \\
+& =\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime}\left(\mathbf{X} \boldsymbol{\beta}_{o}+\epsilon\right) \\
+& =\boldsymbol{\beta}_{o}+\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \epsilon,
+\end{aligned}
+$$
+
+so that
+
+$$
+E\left(\tilde{\boldsymbol{\beta}}_{n}\right)=\boldsymbol{\beta}_{o}+E\left(\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \varepsilon\right) .
+$$
+
+In general, it is not possible to guarantee that the second term above vanishes, even when $E(\varepsilon \mid \mathbf{Z})=\mathbf{0}$. In fact, the expectation in the second term above may not even be defined. For this reason, the concept of unbiasedness is not particularly relevant to the study of IV estimators. Instead, we shall make use of the weaker concept of consistency. Loosely speaking, an estimator is "consistent" for $\boldsymbol{\beta}_{o}$ if it gets closer and closer to $\boldsymbol{\beta}_{o}$ as $n$ grows. In Chapters 2 and 3 we make this concept precise and explore the consistency properties of OLS and IV estimators. For the examples above in which $E(\varepsilon \mid \mathbf{X}) \neq \mathbf{0}$, it turns out that OLS is not consistent, whereas consistent IV estimators are available under general conditions.
+
+Although we only consider linear stochastic relationships in this book, this still covers a wide range of situations. For example, suppose we have several equations that describe demand for a group of $p$ commodities:
+
+$$
+\begin{aligned}
+Y_{t 1}= & \mathbf{X}_{t 1}^{\prime} \boldsymbol{\beta}_{1}+\varepsilon_{t 1} \\
+Y_{t 2}= & \mathbf{X}_{t 2}^{\prime} \boldsymbol{\beta}_{2}+\varepsilon_{t 2} \\
+& \vdots \\
+Y_{t p}= & \mathbf{X}_{t p}^{\prime} \boldsymbol{\beta}_{p}+\varepsilon_{t p}, \quad t=1, \ldots, n .
+\end{aligned}
+$$
+
+Now let $\mathbf{Y}_{t}$, be a $p \times 1$ vector, $\mathbf{Y}_{t}=\left(Y_{t 1}^{\prime}, Y_{t 2}, \ldots, Y_{t p}\right)^{\prime}$, let $\varepsilon_{t}^{\prime}=\left(\varepsilon_{t 1}\right.$, $\left.\varepsilon_{t 2}, \ldots, \varepsilon_{t p}\right)$, let $\boldsymbol{\beta}_{o}=\left(\boldsymbol{\beta}_{1}^{\prime}, \boldsymbol{\beta}_{2}^{\prime} \ldots, \boldsymbol{\beta}_{p}^{\prime}\right)^{\prime}$, and let
+
+$$
+\mathbf{X}_{t}=\begin{array}{cccc}
+- & \mathbf{X}_{t 1} & \mathbf{0} & \cdots \\
+\mathbf{0} & \mathbf{X}_{t 2} & & \mathbf{0} \\
+\vdots & \vdots & \ddots & \vdots \\
+\mathbf{0} & \mathbf{0} & \cdots & \mathbf{X}_{t p}
+\end{array}
+$$
+
+Now $\mathrm{X}_{t}$ is a $k \times p$ matrix, where $k=\sum_{i=1}^{p} k_{i}$ and $\mathrm{X}_{t i}$ is a $k_{i} \times 1$ vector.\\
+The system of equations can be written as
+
+$$
+\left[\begin{array}{c}
+Y_{t 1} \\
+Y_{t 2} \\
+\vdots \\
+Y_{t p}
+\end{array}\right]=\left[\begin{array}{cccc}
+\mathbf{X}_{t 1} & \mathbf{0} & \cdots & \mathbf{0} \\
+\mathbf{0} & \mathbf{X}_{t 2} & & \mathbf{0} \\
+\vdots & \vdots & \ddots & \vdots \\
+\mathbf{0} & \mathbf{0} & \cdots & \mathbf{X}_{t p}
+\end{array}\right]^{\prime}\left[\begin{array}{c}
+\boldsymbol{\beta}_{1} \\
+\boldsymbol{\beta}_{2} \\
+\vdots \\
+\boldsymbol{\beta}_{p}
+\end{array}\right]+\begin{gathered}
+-\varepsilon_{t 1} \\
+\varepsilon_{t 2} \\
+\vdots \\
+-\varepsilon_{t p}
+\end{gathered}
+$$
+
+or
+
+$$
+\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}
+$$
+
+Letting $\mathbf{Y}=\left(\mathbf{Y}_{1}^{\prime}, \mathbf{Y}_{2}^{\prime} \ldots, \mathbf{Y}_{n}^{\prime}\right)^{\prime}, \mathbf{X}=\left(\mathbf{X}_{1}, \mathbf{X}_{2}, \ldots, \mathbf{X}_{n}\right)^{\prime}$, and $\boldsymbol{\varepsilon}=\left(\boldsymbol{\varepsilon}_{1}^{\prime}\right.$, $\left.\varepsilon_{2}^{\prime}, \ldots, \varepsilon_{n}^{\prime}\right)^{\prime}$, we can write this system as
+
+$$
+\mathbf{Y}=\mathbf{X} \boldsymbol{\beta}_{o}+\varepsilon
+$$
+
+Now $\mathbf{Y}$ is $p n \times 1, \varepsilon$ is $p n \times 1$, and $\mathbf{X}$ is $p n \times k$. This allows us to consider simultaneous systems of equations in the present framework.
+
+Alternatively, suppose that we have observations on an individual $t$ in each of $p$ time periods,
+
+$$
+\begin{aligned}
+Y_{t 1}= & \mathbf{X}_{t 1}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t 1} \\
+Y_{t 2}= & \mathbf{X}_{t 2}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t 2} \\
+& \vdots \\
+Y_{t p}= & \mathbf{X}_{t p}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t p}, \quad t=1, \ldots, n
+\end{aligned}
+$$
+
+Define $\mathbf{Y}_{t}$ and $\varepsilon_{t}$ as above, and let
+
+$$
+\mathbf{X}_{t}=\left[\mathbf{X}_{t 1}, \mathbf{X}_{t 2}, \ldots, \mathbf{X}_{t p}\right]
+$$
+
+be a $k \times p$ matrix. The observations can now be written as
+
+$$
+\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}
+$$
+
+or equivalently as
+
+$$
+\mathbf{Y}=\mathbf{X} \boldsymbol{\beta}_{o}+\varepsilon
+$$
+
+with $\mathbf{Y}, \mathbf{X}$, and $\epsilon$ as defined above. This allows us to consider panel data in the present framework. Further, by adopting appropriate definitions,\\
+the case of simultaneous systems of equations for panel data can also be considered.
+
+Recall that the GLS estimator was obtained by considering a linear transformation of a linear stochastic relationship, i.e.,
+
+$$
+\mathbf{Y}^{*}=\mathbf{X}^{*} \boldsymbol{\beta}_{o}+\varepsilon^{*}
+$$
+
+where $\mathbf{Y}^{*}=\mathbf{C}^{-1} \mathbf{Y}, \mathbf{X}^{*}=\mathbf{C}^{-1} \mathbf{X}$, and $\varepsilon^{*}=\mathbf{C}^{-1} \varepsilon$ for some nonsingular matrix $\mathbf{C}$. It follows that any such linear transformation can be considered within the present framework.
+
+The reason for restricting our attention to linear models and IV estimators is to provide clear motivation for the concepts and techniques introduced while also maintaining a relatively simple focus for the discussion. Nevertheless, the tools presented have a much wider applicability and are directly relevant to many other models and estimation techniques.
+
+\section*{References}
+Geary, R. C. (1949). "Determination of linear relations between systematic parts of variables with errors in observation, the variances of which are unknown." Econometrica, 17, 30-59.\\
+Reiersøl, O. (1941). "Confluence analysis by means of lag moments and other methods of confluence analysis." Econometrica, 9, 1-24.\\
+(1945). "Confluence analysis by means of instrumental sets of variables." Akiv för Matematik, Astronomi och Fysik, 32a, 1-119.\\
+Theil, H. (1971). Principles of Econometrics. Wiley, New York.\\
+White, H. (1994). Estimation, Inference and Specification Analysis. Cambridge University Press, New York.\\
+Wright, P. G. (1928). The Tariff on Animal and Vegetable Oils. Macmillan, New York.
+
+Wright, S. (1925). "Corn and Hog Correlations," U.S. Department of Agriculture, Bulletin No. 1300, Washington D.C.
+
+\section*{For Further Reading}
+The references given below provide useful background and detailed discussion of many of the issues touched upon in this chapter.
+
+Chow, G. C. (1983). Econometrics, Chapters 1, 2. McGraw-Hill, New York.
+
+Dhrymes, P. (1978). Introductory Econometrics, Chapters 1-3, 6.1-6.3. SpringerVerlag, New York.
+
+Goldberger, A. S. (1964). Econometric Theory, Chapters 4, 5.1-5.4, 7.1-7.4. Wiley, New York.
+
+Hamilton, J. D. (1994). Time Series Analysis. Princeton University Press, Princeton.
+
+Harvey, A. C. (1981). The Econometric Analysis of Time Series, Chapters 1.2, $1.3,1.5,1.6,2.1-2.4,2.7-2.10,7.1-7.2,8.1,9.1-9.2$. Wiley, New York.
+
+Intriligator, M. (1978). Econometric Models, Techniques and Applications, Chapters 2, 4, 5, 6.1-6.5, 10. Prentice-Hall, Englewood Cliffs, New Jersey.
+
+Johnston, J. and J. DiNardo (1997). Econometric Methods. 4th ed. Chapters 5-8. McGraw-Hill, New York.
+
+Kmenta, J. (1971). Elements of Econometrics, Chapters 7, 8, 10.1-10.3. Macmillan, New York.
+
+Maddala, G. S. (1977). Econometrics, Chapters 7, 8, 11.1-11.4, 14, 16.1-16.3. McGraw-Hill, New York.
+
+Malinvaud, E. (1970). Statistical Methods of Econometrics, Chapters 1-5, 6.1-6.7. North-Holland, Amsterdam.
+
+Theil, H. (1971). Principles of Econometrics, Chapters 3, 6, 7.1-7.2, 9. Wiley, New York.
+
+\section*{CHAPTER 2}
+
+\end{document}

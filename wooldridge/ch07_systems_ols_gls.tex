@@ -1,0 +1,1062 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 7: Estimating Systems of Equations by OLS and GLS}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsection*{7.1 Introduction}
+This chapter begins our analysis of linear systems of equations. The first method of estimation we cover is system ordinary least squares, which is a direct extension of OLS for single equations. In some important special cases the system OLS estimator turns out to have a straightforward interpretation in terms of single-equation OLS estimators. But the method is applicable to very general linear systems of equations.
+
+We then turn to a generalized least squares (GLS) analysis. Under certain assumptions, GLS-or its operationalized version, feasible GLS-will turn out to be asymptotically more efficient than system OLS. Nevertheless, we emphasize in this chapter that the efficiency of GLS comes at a price: it requires stronger assumptions than system OLS in order to be consistent. This is a practically important point that is often overlooked in traditional treatments of linear systems, particularly those that assume the explanatory variables are nonrandom.
+
+As with our single-equation analysis, we assume that a random sample is available from the population. Usually the unit of observation is obvious-such as a worker, a household, a firm, or a city. For example, if we collect consumption data on various commodities for a cross section of families, the unit of observation is the family (not a commodity).
+
+The framework of this chapter is general enough to apply to panel data models. Because the asymptotic analysis is done as the cross section dimension tends to infinity, the results are explicitly for the case where the cross section dimension is large relative to the time series dimension. (For example, we may have observations on $N$ firms over the same $T$ time periods for each firm. Then, we assume we have a random sample of firms that have data in each of the $T$ years.) The panel data model covered here, while having many useful applications, does not fully exploit the replicability over time. In Chapters 10 and 11 we explicitly consider panel data models that contain time-invariant, unobserved effects in the error term.
+
+\subsection*{7.2 Some Examples}
+We begin with two examples of systems of equations. These examples are fairly general, and we will see later that variants of them can also be cast as a general linear system of equations.
+
+Example 7.1 (Seemingly Unrelated Regressions): The population model is a set of $G$ linear equations,
+
+
+\begin{align*}
+& y_{1}=\mathbf{x}_{1} \boldsymbol{\beta}_{1}+u_{1} \\
+& y_{2}=\mathbf{x}_{2} \boldsymbol{\beta}_{2}+u_{2}  \tag{7.1}\\
+& \vdots \\
+& y_{G}=\mathbf{x}_{G} \boldsymbol{\beta}_{G}+u_{G},
+\end{align*}
+
+
+where $\mathbf{x}_{g}$ is $1 \times K_{g}$ and $\boldsymbol{\beta}_{g}$ is $K_{g} \times 1, g=1,2, \ldots, G$. In many applications $\mathbf{x}_{g}$ is the same for all $g$ (in which case the $\boldsymbol{\beta}_{g}$ necessarily have the same dimension), but the general model allows the elements and the dimension of $\mathbf{x}_{g}$ to vary across equations. Remember, the system (7.1) represents a generic person, firm, city, or whatever from the population. The system (7.1) is often called Zellner's (1962) seemingly unrelated regressions (SUR) model (for cross section data in this case). The name comes from the fact that, since each equation in the system (7.1) has its own vector $\boldsymbol{\beta}_{g}$, it appears that the equations are unrelated. Nevertheless, correlation across the errors in different equations can provide links that can be exploited in estimation; we will see this point later.
+
+As a specific example, the system (7.1) might represent a set of demand functions for the population of families in a country:
+
+$$
+\begin{aligned}
+& \text { housing }=\beta_{10}+\beta_{11} \text { houseprc }+\beta_{12} \text { foodprc }+\beta_{13} \text { clothprc }+\beta_{14} \text { income } \\
+& \quad+\beta_{15} \text { size }+\beta_{16} \text { age }+u_{1} \text {. } \\
+& \begin{aligned}
+\text { food }= & \beta_{20}+\beta_{21} \text { houseprc }+\beta_{22} \text { foodprc }+\beta_{23} \text { clothprc }+\beta_{24} \text { income } \\
++ & \beta_{25} \text { size }+\beta_{26} \text { age }+u_{2} \text {. } \\
+\text { clothing }= & \beta_{30}+\beta_{31} \text { houseprc }+\beta_{32} \text { foodprc }+\beta_{33} \text { clothprc }+\beta_{34} \text { income } \\
+& +\beta_{35} \text { size }+\beta_{36} \text { age }+u_{3} \text {. }
+\end{aligned}
+\end{aligned}
+$$
+
+In this example, $G=3$ and $\mathbf{x}_{g}$ (a $1 \times 7$ vector) is the same for $g=1,2,3$.\\
+When we need to write the equations for a particular random draw from the population, $y_{g}, \mathbf{x}_{g}$, and $u_{g}$ will also contain an $i$ subscript: equation $g$ becomes $y_{i g}= \mathbf{x}_{i g} \boldsymbol{\beta}_{g}+u_{i g}$. For the purposes of stating assumptions, it does not matter whether or not we include the $i$ subscript. The system (7.1) has the advantage of being less cluttered while focusing attention on the population, as is appropriate for applications. But for derivations we will often need to indicate the equation for a generic cross section unit $i$.
+
+When we study the asymptotic properties of various estimators of the $\boldsymbol{\beta}_{g}$, the asymptotics is done with $G$ fixed and $N$ tending to infinity. In the household demand\\
+example, we are interested in a set of three demand functions, and the unit of observation is the family. Therefore, inference is done as the number of families in the sample tends to infinity.
+
+The assumptions that we make about how the unobservables $u_{g}$ are related to the explanatory variables $\left(\mathbf{x}_{1}, \mathbf{x}_{2}, \ldots, \mathbf{x}_{G}\right)$ are crucial for determining which estimators of the $\boldsymbol{\beta}_{g}$ have acceptable properties. Often, when system (7.1) represents a structural model (without omitted variables, errors-in-variables, or simultaneity), we can assume that\\
+$\mathrm{E}\left(u_{g} \mid \mathbf{x}_{1}, \mathbf{x}_{2}, \ldots, \mathbf{x}_{G}\right)=0, \quad g=1, \ldots, G$.
+
+One important implication of assumption (7.2) is that $u_{g}$ is uncorrelated with the explanatory variables in all equations, as well as all functions of these explanatory variables. When system (7.1) is a system of equations derived from economic theory, assumption (7.2) is often very natural. For example, in the set of demand functions that we have presented, $\mathbf{x}_{g} \equiv \mathbf{x}$ is the same for all $g$, and so assumption (7.2) is the same as $\mathrm{E}\left(u_{g} \mid \mathbf{x}_{g}\right)=\mathrm{E}\left(u_{g} \mid \mathbf{x}\right)=0$.
+
+If assumption (7.2) is maintained, and if the $\mathbf{x}_{g}$ are not the same across $g$, then any explanatory variables excluded from equation $g$ are assumed to have no effect on expected $y_{g}$ once $\mathbf{x}_{g}$ has been controlled for. That is,\\
+$\mathrm{E}\left(y_{g} \mid \mathbf{x}_{1}, \mathbf{x}_{2}, \ldots \mathbf{x}_{G}\right)=\mathrm{E}\left(y_{g} \mid \mathbf{x}_{g}\right)=\mathbf{x}_{g} \boldsymbol{\beta}_{g}, \quad g=1,2, \ldots, G$.
+
+There are examples of SUR systems where assumption (7.3) is too strong, but standard SUR analysis either explicitly or implicitly makes this assumption.
+
+Our next example involves panel data.\\
+Example 7.2 (Panel Data Model): Suppose that for each cross section unit we observe data on the same set of variables for $T$ time periods. Let $\mathbf{x}_{t}$ be a $1 \times K$ vector for $t=1,2, \ldots, T$, and let $\boldsymbol{\beta}$ be a $K \times 1$ vector. The model in the population is\\
+$y_{t}=\mathbf{x}_{t} \boldsymbol{\beta}+u_{t}, \quad t=1,2, \ldots, T$,\\
+where $y_{t}$ is a scalar. For example, a simple equation to explain annual family saving over a five-year span is\\
+sav $_{t}=\beta_{0}+\beta_{1}$ inc $_{t}+\beta_{2}$ age $_{t}+\beta_{3}$ educ $_{t}+u_{t}, \quad t=1,2, \ldots, 5$,\\
+where $i n c_{t}$ is annual income, $e d u c_{t}$ is years of education of the household head, and age $_{t}$ is age of the household head. This is an example of a linear panel data model. It\\
+is a static model because all explanatory variables are dated contemporaneously with $\operatorname{sav}_{t}$.
+
+The panel data setup is conceptually very different from the SUR example. In Example 7.1, each equation explains a different dependent variable for the same cross section unit. Here we only have one dependent variable we are trying to explain-sav-but we observe $s a v$, and the explanatory variables, over a five-year period. (Therefore, the label "system of equations" is really a misnomer for panel data applications. At this point, we are using the phrase to denote more than one equation in any context.) As we will see in the next section, the statistical properties of estimators in SUR and panel data models can be analyzed within the same structure.
+
+When we need to indicate that an equation is for a particular cross section unit $i$ during a particular time period $t$, we write $y_{i t}=\mathbf{x}_{i t} \boldsymbol{\beta}+u_{i t}$. We will omit the $i$ subscript whenever its omission does not cause confusion.
+
+What kinds of exogeneity assumptions do we use for panel data analysis? One possibility is to assume that $u_{t}$ and $\mathbf{x}_{t}$ are orthogonal in the conditional mean sense:
+
+
+\begin{equation*}
+\mathrm{E}\left(u_{t} \mid \mathbf{x}_{t}\right)=0, \quad t=1, \ldots, T \tag{7.5}
+\end{equation*}
+
+
+We call this contemporaneous exogeneity of $\mathbf{x}_{t}$ because it only restricts the relationship between the disturbance and explanatory variables in the same time period. Naturally, assumption (7.5) implies that each element of $\mathbf{x}_{t}$ is uncorrelated with $u_{t}$. A stronger assumption on the explanatory variables is
+
+
+\begin{equation*}
+\mathrm{E}\left(u_{t} \mid \mathbf{x}_{t}, \mathbf{x}_{t-1}, \ldots, \mathbf{x}_{1}\right)=0, \quad t=1, \ldots, T \tag{7.6}
+\end{equation*}
+
+
+(which, of course, implies that $\mathbf{x}_{s}$ is uncorrelated with $u_{t}$ for all $s \leq t$ ). When assumption (7.6) holds we say that $\left\{\mathbf{x}_{t}\right\}$ is sequentially exogenous. When we combine sequential exogeneity and (7.4), we obtain\\
+$\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, \mathbf{x}_{t-1}, \ldots, \mathbf{x}_{1}\right)=\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right)=\mathbf{x}_{t} \boldsymbol{\beta}$,\\
+which implies that whatever we have included in $\mathbf{x}_{t}$, no further lags of $\mathbf{x}_{t}$ are needed to explain the expected value of $y_{t}$. Once lagged variables are included in $\mathbf{x}_{t}$, it is often desirable (although not necessary) to have assumption (7.7) hold. For example, if $y_{t}$ is a measure of average worker productivity at the firm level, and $\mathbf{x}_{t}$ includes a current measure of worker training along with, say, two lags, then we probably hope that two lags are sufficient to capture the distributed lag of productivity on training. However, if we have only a small number of time periods available, we might have to settle for two lags capturing most, but not necessarily all, of the lagged effect.
+
+An even stronger form of exogeneity is that $u_{t}$ has zero mean conditional on all explanatory variables in all time periods:\\
+$\mathrm{E}\left(u_{t} \mid \mathbf{x}_{1}, \mathbf{x}_{2}, \ldots, \mathbf{x}_{T}\right)=0, \quad t=1, \ldots, T$.
+
+Under assumption (7.8), we say the $\left\{\mathbf{x}_{t}\right\}$ are strictly exogenous. Clearly, condition (7.8) implies that $u_{t}$ is uncorrelated with all explanatory variables in all time periods, including future time periods. We can write assumption (7.8) under equation (7.4) as $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{1}, \mathbf{x}_{2}, \ldots, \mathbf{x}_{T}\right)=\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right)=\mathbf{x}_{t} \boldsymbol{\beta}$. This condition is necessarily false if, say, $\mathbf{x}_{t+1}$ includes $y_{t}$.
+
+Contemporaneous exogeneity says nothing about the relationship between $\mathbf{x}_{s}$ and $u_{t}$ for any $s \neq t$, sequential exogeneity leaves the relationship unrestricted for $s>t$, but strict exogeneity rules out correlation between the errors and explanatory variables across all time periods. It is critically important to understand that these three assumptions can have different implications for the statistical properties of different estimators.
+
+To illustrate the differences among assumptions (7.5), (7.6), and (7.8), let $\mathbf{x}_{t} \equiv \left(1, y_{t-1}\right)$. Then assumption (7.5) holds by construction if $\mathrm{E}\left(y_{t} \mid y_{t-1}\right)=\beta_{0}+\beta_{1} y_{t-1}$, which just means that $\mathrm{E}\left(y_{t} \mid y_{t-1}\right)$ is linear in $y_{t-1}$. The sequential exogeneity assumption holds if we further assume $\mathrm{E}\left(y_{t} \mid y_{t-1}, y_{t-2}, \ldots, y_{0}\right)=\mathrm{E}\left(y_{t} \mid y_{t-1}\right)$, which means that only one lag of the dependent variable appears in the fully dynamic expectation $\mathrm{E}\left(y_{t} \mid y_{t-1}, y_{t-2}, \ldots, y_{0}\right)$ (in addition to $\mathrm{E}\left(y_{t} \mid y_{t-1}\right)$ being linear in $y_{t-1}$ ). Often this is an intended assumption for a dynamic model, but it is an extra assumption compared with assumption (7.5). In this example, the strict exogeneity condition (7.8) must fail because $\mathbf{x}_{t+1}=\left(1, y_{t}\right)$, and therefore $\mathrm{E}\left(u_{t} \mid \mathbf{x}_{1}, \mathbf{x}_{2}, \ldots, \mathbf{x}_{T}\right)= \mathrm{E}\left(u_{t} \mid y_{0}, \ldots, y_{T-1}\right)=u_{t} \neq 0$ for $t=1,2, \ldots, T-1$ (because $\left.u_{t}=y_{t}-\beta_{0}-\beta_{1} y_{t-1}\right)$. Incidentally, it is not nearly enough to assume that the unconditional expected value of the error is zero, something that is almost always true in regression models.
+
+Strict exogeneity can fail even if $\mathbf{x}_{t}$ does not contain lagged dependent variables. Consider a model relating poverty rates to welfare spending per capita, at the city level. A finite distributed lag (FDL) model is
+
+
+\begin{equation*}
+\text { poverty }_{t}=\theta_{t}+\delta_{0} \text { welfare }_{t}+\delta_{1} \text { welfare }_{t-1}+\delta_{2} \text { welfare }_{t-2}+u_{t} . \tag{7.9}
+\end{equation*}
+
+
+The parameter $\theta_{t}$ simply denotes different aggregate time effects for each year. The contemporaneous exogeneity assumption holds if we assume $\mathrm{E}\left(\right.$ poverty $_{t} \mid$ welfare $_{t}$, welfare $_{t-1}$, welfare $_{t-2}$ ) is linear. In this example, we probably intend that sequential exogeneity holds, too, but this is an empirical question: Is a two-year lag sufficient to capture lagged effects of welfare spending on poverty rates?
+
+Even if two lags of spending suffice to capture the distributed lag dynamics, strict exogeneity generally fails if welfare spending reacts to past poverty rates. An equation that captures this feedback is\\
+welfare $_{t}=\eta_{t}+\rho_{1}$ poverty $_{t-1}+r_{t}$.
+
+Generally, the strict exogeneity assumption (7.8) will be violated if $\rho_{1} \neq 0$ because welfare $_{t+1}$ depends on $u_{t}$ (after substituting (7.9) into (7.10)) and $\mathbf{x}_{t+1}$ contains welfare $_{t+1}$.
+
+As we will see in this and the next several chapters, how we go about estimating $\boldsymbol{\beta}$ depends crucially on whether strict exogeneity holds, or only one of the weaker assumptions. Classical treatments of ordinary least squares and genereralized least squares with panel data tend to treat the $\mathbf{x}_{i t}$ as fixed in repeated samples; in practice, this is the same as the strict exogeneity assumption.
+
+\subsection*{7.3 System Ordinary Least Squares Estimation of a Multivariate Linear System}
+\subsection*{7.3.1 Preliminaries}
+We now analyze a general multivariate model that contains the examples in Section 7.2, and many others, as special cases. Assume that we have independent, identically distributed cross section observations $\left\{\left(\mathbf{X}_{i}, \mathbf{y}_{i}\right): i=1,2, \ldots, N\right\}$, where $\mathbf{X}_{i}$ is a $G \times K$ matrix and $\mathbf{y}_{i}$ is a $G \times 1$ vector. Thus, $\mathbf{y}_{i}$ contains the dependent variables for all $G$ equations (or time periods, in the panel data case). The matrix $\mathbf{X}_{i}$ contains the explanatory variables appearing anywhere in the system. For notational clarity we include the $i$ subscript for stating the general model and the assumptions.
+
+The multivariate linear model for a random draw from the population can be expressed as
+
+
+\begin{equation*}
+\mathbf{y}_{i}=\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{u}_{i}, \tag{7.11}
+\end{equation*}
+
+
+where $\boldsymbol{\beta}$ is the $K \times 1$ parameter vector of interest and $\mathbf{u}_{i}$ is a $G \times 1$ vector of unobservables. Equation (7.11) explains the $G$ variables $y_{i 1}, \ldots, y_{i G}$ in terms of $\mathbf{X}_{i}$ and the unobservables $\mathbf{u}_{i}$. Because of the random sampling assumption, we can state all assumptions in terms of a generic observation; in examples, we will often omit the $i$ subscript.
+
+Before stating any assumptions, we show how the two examples introduced in Section 7.2 fit into this framework.
+
+Example 7.1 (SUR, continued): The SUR model (7.1) can be expressed as in equation (7.11) by defining $\mathbf{y}_{i}=\left(y_{i 1}, y_{i 2}, \ldots, y_{i G}\right)^{\prime}, \mathbf{u}_{i}=\left(u_{i 1}, u_{i 2}, \ldots, u_{i G}\right)^{\prime}$, and\\
+$\mathbf{X}_{i}=\left(\begin{array}{ccccc}\mathbf{x}_{i 1} & \mathbf{0} & \mathbf{0} & \cdots & \mathbf{0} \\ \mathbf{0} & \mathbf{x}_{i 2} & & & \mathbf{0} \\ \mathbf{0} & \mathbf{0} & & & \vdots \\ \vdots & & & & \mathbf{0} \\ \mathbf{0} & \mathbf{0} & \mathbf{0} & \cdots & \mathbf{x}_{i G}\end{array}\right), \quad \boldsymbol{\beta}=\left(\begin{array}{c}\boldsymbol{\beta}_{1} \\ \boldsymbol{\beta}_{2} \\ \vdots \\ \boldsymbol{\beta}_{G}\end{array}\right)$.
+
+Note that the dimension of $\mathbf{X}_{i}$ is $G \times\left(K_{1}+K_{2}+\cdots+K_{G}\right)$, so we define $K \equiv K_{1}+\cdots+K_{G}$.
+
+Example 7.2 (Panel Data, continued): The panel data model (7.6) can be expressed as in equation (7.11) by choosing $\mathbf{X}_{i}$ to be the $T \times K$ matrix $\mathbf{X}_{i}=\left(\mathbf{x}_{i 1}^{\prime}, \mathbf{x}_{i 2}^{\prime}, \ldots, \mathbf{x}_{i T}^{\prime}\right)^{\prime}$.
+
+\subsection*{7.3.2 Asymptotic Properties of System Ordinary Least Squares}
+Given the model in equation (7.11), we can state the key orthogonality condition for consistent estimation of $\boldsymbol{\beta}$ by system ordinary least squares (SOLS).
+
+ASSUMPTION SOLS.1: $\quad \mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{u}_{i}\right)=\mathbf{0}$.\\
+Assumption SOLS. 1 appears similar to the orthogonality condition for OLS analysis of single equations. What it implies differs across examples because of the multipleequation nature of equation (7.11). For most applications, $\mathbf{X}_{i}$ has a sufficient number of elements equal to unity, so that Assumption SOLS. 1 implies that $\mathrm{E}\left(\mathbf{u}_{i}\right)=\mathbf{0}$, and we assume zero mean for the sake of discussion.
+
+It is informative to see what Assumption SOLS. 1 entails in the previous examples.\\
+Example 7.1 (SUR, continued): In the SUR case, $\mathbf{X}_{i}^{\prime} \mathbf{u}_{i}=\left(\mathbf{x}_{i 1} u_{i 1}, \ldots, \mathbf{x}_{i G} u_{i G}\right)^{\prime}$, and so Assumption SOLS. 1 holds if and only if\\
+$\mathrm{E}\left(\mathbf{x}_{i g}^{\prime} u_{i g}\right)=\mathbf{0}, \quad g=1,2, \ldots, G$.
+
+Thus, Assumption SOLS. 1 does not require $\mathbf{x}_{i h}$ and $u_{i g}$ to be uncorrelated when $h \neq g$.
+
+Example 7.2 (Panel Data, continued): For the panel data setup, $\mathbf{X}_{i}^{\prime} \mathbf{u}_{i}=\sum_{t=1}^{T} \mathbf{x}_{i t}^{\prime} u_{i t}$; therefore, a sufficient, and very natural, condition for Assumption SOLS. 1 is\\
+$\mathrm{E}\left(\mathbf{x}_{i t}^{\prime} u_{i t}\right)=\mathbf{0}, \quad t=1,2, \ldots, T$.
+
+Like assumption (7.5), assumption (7.14) allows $\mathbf{x}_{i s}$ and $u_{i t}$ to be correlated when $s \neq t$; in fact, assumption (7.14) is weaker than assumption (7.5). Therefore, Assumption SOLS. 1 does not impose strict exogeneity in panel data contexts.
+
+Assumption SOLS. 1 is the weakest assumption we can impose in a regression framework to get consistent estimators of $\boldsymbol{\beta}$. As the previous examples show, Assumption SOLS. 1 can hold when some elements of $\mathbf{X}_{i}$ are correlated with some elements of $\mathbf{u}_{i}$. Much stronger is the zero conditional mean assumption\\
+$\mathrm{E}\left(\mathbf{u}_{i} \mid \mathbf{X}_{i}\right)=\mathbf{0}$,\\
+or $\mathrm{E}\left(u_{i g} \mid \mathbf{X}_{i}\right)=0, g=1,2, \ldots, G$. Assumption (7.15) implies, at a minimum, that each element of $\mathbf{X}_{i}$ is uncorrelated with each element of $\mathbf{u}_{i}$. For example, in the SUR model, (7.15) implies that $\mathbf{x}_{i h}$ is uncorrelated with $u_{i g}$ for $g=h$ and $g \neq h$. In the panel data example, (7.15) is the strict exogeneity assumption (7.8). As we will see later, for large-sample analysis, assumption (7.15) can be relaxed to a zero correlation assumption-all elements of $\mathbf{X}_{i}$ are uncorrelated with all elements of $\mathbf{u}_{i}$. The stronger assumption (7.15) is closely linked to traditional treatments of systems of equations under the assumption of nonrandom regressors.
+
+Under Assumption SOLS. 1 the vector $\boldsymbol{\beta}$ satisfies\\
+$\mathrm{E}\left[\mathbf{X}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \boldsymbol{\beta}\right)\right]=\mathbf{0}$,\\
+or $\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right) \boldsymbol{\beta}=\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{y}_{i}\right)$. For each $i, \mathbf{X}_{i}^{\prime} \mathbf{y}_{i}$ is a $K \times 1$ random vector and $\mathbf{X}_{i}^{\prime} \mathbf{X}_{i}$ is a $K \times K$ symmetric, positive semidefinite random matrix. Therefore, $\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)$ is always a $K \times K$ symmetric, positive semidefinite nonrandom matrix (the expectation here is defined over the population distribution of $\mathbf{X}_{i}$ ). To be able to estimate $\boldsymbol{\beta}$, we need to assume that it is the only $K \times 1$ vector that satisfies assumption (7.16).\\
+assumption SOLS.2: $\quad \mathbf{A} \equiv \mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)$ is nonsingular (has rank $K$ ).\\
+Under Assumptions SOLS. 1 and SOLS.2, we can write $\boldsymbol{\beta}$ as\\
+$\boldsymbol{\beta}=\left[\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)\right]^{-1} \mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{y}_{i}\right)$,\\
+which shows that Assumptions SOLS. 1 and SOLS. 2 identify the vector $\boldsymbol{\beta}$. The analogy principle suggests that we estimate $\boldsymbol{\beta}$ by the sample analogue of assumption (7.17). Define the system ordinary least squares (SOLS) estimator of $\boldsymbol{\beta}$ as
+
+
+\begin{equation*}
+\hat{\boldsymbol{\beta}}=\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{y}_{i}\right) \tag{7.18}
+\end{equation*}
+
+
+For computing $\hat{\boldsymbol{\beta}}$ using matrix language programming, it is sometimes useful to write $\hat{\boldsymbol{\beta}}=\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Y}$, where $\mathbf{X} \equiv\left(\mathbf{X}_{1}^{\prime}, \mathbf{X}_{2}^{\prime}, \ldots, \mathbf{X}_{N}^{\prime}\right)^{\prime}$ is the $N G \times K$ matrix of stacked $\mathbf{X}$ and $\mathbf{Y} \equiv\left(\mathbf{y}_{1}^{\prime}, \mathbf{y}_{2}^{\prime}, \ldots, \mathbf{y}_{N}^{\prime}\right)^{\prime}$ is the $N G \times 1$ vector of stacked observations on the $\mathbf{y}_{i}$. For asymptotic derivations, equation (7.18) is much more convenient. In fact, the consistency of $\hat{\boldsymbol{\beta}}$ can be read off equation (7.18) by taking probability limits. We summarize with a theorem:\\
+theorem 7.1 (Consistency of System OLS): Under Assumptions SOLS. 1 and SOLS. 2, $\hat{\boldsymbol{\beta}} \xrightarrow{p} \boldsymbol{\beta}$.
+
+It is useful to see what the system OLS estimator looks like for the SUR and panel data examples.
+
+Example 7.1 (SUR, continued): For the SUR model,\\
+$\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}=\sum_{i=1}^{N}\left(\begin{array}{ccccc}\mathbf{x}_{i 1}^{\prime} \mathbf{x}_{i 1} & \mathbf{0} & \mathbf{0} & \cdots & \mathbf{0} \\ \mathbf{0} & \mathbf{x}_{i 2}^{\prime} \mathbf{x}_{i 2} & & & \mathbf{0} \\ \mathbf{0} & \mathbf{0} & & & \vdots \\ \vdots & & & & \mathbf{0} \\ \mathbf{0} & \mathbf{0} & \mathbf{0} & \cdots & \mathbf{x}_{i G}^{\prime} \mathbf{x}_{i G}\end{array}\right) ; \quad \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{y}_{i}=\sum_{i=1}^{N}\left(\begin{array}{c}\mathbf{x}_{i 1}^{\prime} y_{i 1} \\ \mathbf{x}_{i 2}^{\prime} y_{i 2} \\ \vdots \\ \mathbf{x}_{i G}^{\prime} y_{i G}\end{array}\right)$.\\
+Straightforward inversion of a block diagonal matrix shows that the OLS estimator from equation (7.18) can be written as $\hat{\boldsymbol{\beta}}=\left(\hat{\boldsymbol{\beta}}_{1}^{\prime}, \hat{\boldsymbol{\beta}}_{2}^{\prime}, \ldots, \hat{\boldsymbol{\beta}}_{G}^{\prime}\right)^{\prime}$, where each $\hat{\boldsymbol{\beta}}_{g}$ is just the single-equation OLS estimator from the $g$ th equation. In other words, system OLS estimation of an SUR model (without restrictions on the parameter vectors $\boldsymbol{\beta}_{g}$ ) is equivalent to OLS equation by equation. Assumption SOLS. 2 is easily seen to hold if $\mathrm{E}\left(\mathbf{x}_{i g}^{\prime} \mathbf{x}_{i g}\right)$ is nonsingular for all $g$.
+
+Example 7.2 (Panel Data, continued): In the panel data case,\\
+$\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}=\sum_{i=1}^{N} \sum_{t=1}^{T} \mathbf{x}_{i t}^{\prime} \mathbf{x}_{i t} ; \quad \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{y}_{i}=\sum_{i=1}^{N} \sum_{t=1}^{T} \mathbf{x}_{i t}^{\prime} y_{i t}$.\\
+Therefore, we can write $\hat{\boldsymbol{\beta}}$ as\\
+$\hat{\boldsymbol{\beta}}=\left(\sum_{i=1}^{N} \sum_{t=1}^{T} \mathbf{x}_{i t}^{\prime} \mathbf{x}_{i t}\right)^{-1}\left(\sum_{i=1}^{N} \sum_{t=1}^{T} \mathbf{x}_{i t}^{\prime} y_{i t}\right)$.
+
+This estimator is called the pooled ordinary least squares (POLS) estimator because\\
+it corresponds to running OLS on the observations pooled across $i$ and $t$. We mentioned this estimator in the context of independent cross sections in Section 6.5. The estimator in equation (7.19) is for the same cross section units sampled at different points in time. Theorem 7.1 shows that the POLS estimator is consistent under the orthogonality conditions in assumption (7.14) and the mild condition rank $\mathrm{E}\left(\sum_{t=1}^{T} \mathbf{x}_{i t}^{\prime} \mathbf{x}_{i t}\right)=K$.
+
+In the general system (7.11), the system OLS estimator does not necessarily have an interpretation as OLS equation by equation or as pooled OLS. As we will see in Section 7.7 for the SUR setup, sometimes we want to impose cross equation restrictions on the $\boldsymbol{\beta}_{g}$, in which case the system OLS estimator has no simple interpretation.
+
+While OLS is consistent under Assumptions SOLS. 1 and SOLS.2, it is not necessarily unbiased. Assumption (7.15), and the finite sample assumption $\operatorname{rank}\left(\mathbf{X}^{\prime} \mathbf{X}\right)= K$, do ensure unbiasedness of OLS conditional on $\mathbf{X}$. (This conclusion follows because, under independent sampling, $\mathrm{E}\left(\mathbf{u}_{i} \mid \mathbf{X}_{1}, \mathbf{X}_{2}, \ldots, \mathbf{X}_{N}\right)=\mathrm{E}\left(\mathbf{u}_{i} \mid \mathbf{X}_{i}\right)=\mathbf{0}$ under assumption (7.15).) We focus on the weaker Assumption SOLS. 1 because assumption (7.15) is often violated in economic applications, something we already saw for a dynamic panel data model.
+
+For inference, we need to find the asymptotic variance of the OLS estimator under essentially the same two assumptions; technically, the following derivation requires the elements of $\mathbf{X}_{i}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{X}_{i}$ to have finite expected absolute value. From (7.18) and (7.11), write
+
+$$
+\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})=\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{u}_{i}\right)
+$$
+
+Because $\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{u}_{i}\right)=\mathbf{0}$ under Assumption SOLS.1, the CLT implies that
+
+
+\begin{equation*}
+N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{u}_{i} \xrightarrow{d} \operatorname{Normal}(\mathbf{0}, \mathbf{B}) \tag{7.20}
+\end{equation*}
+
+
+where
+
+
+\begin{equation*}
+\mathbf{B} \equiv \mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{X}_{i}\right) \equiv \operatorname{Var}\left(\mathbf{X}_{i}^{\prime} \mathbf{u}_{i}\right) \tag{7.21}
+\end{equation*}
+
+
+In particular, $N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{u}_{i}=\mathrm{O}_{p}(1)$. But $\left(\mathbf{X}^{\prime} \mathbf{X} / N\right)^{-1}=\mathbf{A}^{-1}+\mathrm{o}_{p}(1)$, so
+
+
+\begin{align*}
+\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}) & =\mathbf{A}^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{u}_{i}\right)+\left[\left(\mathbf{X}^{\prime} \mathbf{X} / N\right)^{-1}-\mathbf{A}^{-1}\right]\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{u}_{i}\right) \\
+& =\mathbf{A}^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{u}_{i}\right)+\mathrm{o}_{p}(1) \cdot \mathrm{O}_{p}(1) \\
+& =\mathbf{A}^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{u}_{i}\right)+\mathrm{o}_{p}(1) \tag{7.22}
+\end{align*}
+
+
+Therefore, just as with single-equation OLS and 2SLS, we have obtained an asymptotic representation for $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$ that is a nonrandom linear combination of a partial sum that satisfies the CLT. Equations (7.20) and (7.22) and the asymptotic equivalence lemma imply
+
+
+\begin{equation*}
+\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}) \xrightarrow{d} \operatorname{Normal}\left(\mathbf{0}, \mathbf{A}^{-1} \mathbf{B A}^{-1}\right) . \tag{7.23}
+\end{equation*}
+
+
+We summarize with a theorem.\\
+theorem 7.2 (Asymptotic Normality of SOLS): Under Assumptions SOLS. 1 and SOLS.2, equation (7.23) holds.
+
+The asymptotic variance of $\hat{\boldsymbol{\beta}}$ is\\
+$\operatorname{Avar}(\hat{\boldsymbol{\beta}})=\mathbf{A}^{-1} \mathbf{B} \mathbf{A}^{-1} / N$,\\
+so that $\mathrm{Avar}(\hat{\boldsymbol{\beta}})$ shrinks to zero at the rate $1 / N$, as expected. Consistent estimation of A is simple:\\
+$\hat{\mathbf{A}} \equiv \mathbf{X}^{\prime} \mathbf{X} / N=N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}$.
+
+A consistent estimator of $\mathbf{B}$ can be found using the analogy principle. First, because $\mathbf{B}=\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{X}_{i}\right), N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{X}_{i} \xrightarrow{p} \mathbf{B}$. Since the $\mathbf{u}_{i}$ are not observed, we replace them with the SOLS residuals:\\
+$\hat{\mathbf{u}}_{i} \equiv \mathbf{y}_{i}-\mathbf{X}_{i} \hat{\boldsymbol{\beta}}=\mathbf{u}_{i}-\mathbf{X}_{i}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$.
+
+Using matrix algebra and the law of large numbers, it can be shown that\\
+$\hat{\mathbf{B}} \equiv N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\mathbf{u}}_{i} \hat{\mathbf{u}}_{i}^{\prime} \mathbf{X}_{i} \xrightarrow{p} \mathbf{B}$.\\
+(To establish equation (7.27), we need to assume that certain moments involving $\mathbf{X}_{i}$ and $\mathbf{u}_{i}$ are finite.) Therefore, Avar $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$ is consistently estimated by $\hat{\mathbf{A}}^{-1} \hat{\mathbf{B}} \hat{\mathbf{A}}^{-1}$, and $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$ is estimated as
+
+
+\begin{equation*}
+\hat{\mathbf{V}} \equiv\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\mathbf{u}}_{i} \hat{\mathbf{u}}_{i}^{\prime} \mathbf{X}_{i}\right)\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)^{-1} . \tag{7.28}
+\end{equation*}
+
+
+Under Assumptions SOLS. 1 and SOLS.2, we perform inference on $\boldsymbol{\beta}$ as if $\hat{\boldsymbol{\beta}}$ is normally distributed with mean $\boldsymbol{\beta}$ and variance matrix (7.28). The square roots of the diagonal elements of the matrix (7.28) are reported as the asymptotic standard errors. The $t$ ratio, $\hat{\beta}_{j} / \operatorname{se}\left(\hat{\beta}_{j}\right)$, has a limiting normal distribution under the null hypothesis $\mathrm{H}_{0}: \beta_{j}=0$. Sometimes the $t$ statistics are treated as being distributed as $t_{N G-K}$, which is asymptotically valid because $N G-K$ should be large.
+
+The estimator in matrix (7.28) is another example of a robust variance matrix estimator because it is valid without any second-moment assumptions on the errors $\mathbf{u}_{i}$ (except, as usual, that the second moments are well defined). In a multivariate setting it is important to know what this robustness allows. First, the $G \times G$ unconditional variance matrix, $\boldsymbol{\Omega} \equiv \mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$, is entirely unrestricted. This fact allows cross equation correlation in an SUR system as well as different error variances in each equation. In panel data models, an unrestricted $\boldsymbol{\Omega}$ allows for arbitrary serial correlation and time-varying variances in the disturbances. A second kind of robustness is that the conditional variance matrix, $\operatorname{Var}\left(\mathbf{u}_{i} \mid \mathbf{X}_{i}\right)$, can depend on $\mathbf{X}_{i}$ in an arbitrary, unknown fashion. The generality afforded by formula (7.28) is possible because of the $N \rightarrow \infty$ asymptotics.
+
+In special cases it is useful to impose more structure on the conditional and unconditional variance matrix of $\mathbf{u}_{i}$ in order to simplify estimation of the asymptotic variance. We will cover an important case in Section 7.5.2. Essentially, the key restriction will be that the conditional and unconditional variances of $\mathbf{u}_{i}$ are the same.
+
+There are also some special assumptions that greatly simplify the analysis of the pooled OLS estimator for panel data; see Section 7.8.
+
+\subsection*{7.3.3 Testing Multiple Hypotheses}
+Testing multiple hypotheses in a fully robust manner is easy once $\hat{\mathbf{V}}$ in matrix (7.28) has been obtained. The robust Wald statistic for testing $\mathrm{H}_{0}: \mathbf{R} \boldsymbol{\beta}=\mathbf{r}$, where $\mathbf{R}$ is $Q \times K$ with rank $Q$ and $\mathbf{r}$ is $Q \times 1$, has its usual form, $W=(\mathbf{R} \hat{\boldsymbol{\beta}}-\mathbf{r})^{\prime}\left(\mathbf{R} \hat{\mathbf{V}} \mathbf{R}^{\prime}\right)^{-1}(\mathbf{R} \hat{\boldsymbol{\beta}}-\mathbf{r})$. Under $\mathrm{H}_{0}, W \stackrel{a}{\sim} \chi_{Q}^{2}$. In the SUR case this is the easiest and most robust way of testing cross equation restrictions on the parameters in different equations using system OLS. In the panel data setting, the robust Wald test provides a way of testing\\
+multiple hypotheses about $\boldsymbol{\beta}$ without assuming homoskedasticity or serial independence of the errors.
+
+\subsection*{7.4 Consistency and Asymptotic Normality of Generalized Least Squares}
+\subsection*{7.4.1 Consistency}
+System OLS is consistent under fairly weak assumptions, and we have seen how to perform robust inference using OLS. If we strengthen Assumption SOLS. 1 and add assumptions on the conditional variance matrix of $\mathbf{u}_{i}$, we can do better using a generalized least squares procedure. As we will see, GLS is not usually feasible because it requires knowing the variance matrix of the errors up to a multiplicative constant. Nevertheless, deriving the consistency and asymptotic distribution of the GLS estimator is worthwhile because it turns out that the feasible GLS estimator is asymptotically equivalent to GLS.
+
+We are still interested in estimating the parameter vector $\boldsymbol{\beta}$ in equation (7.9), but consistency of GLS generally requires a stronger assumption than Assumption SOLS.1. Although we can, for certain purposes, get by with a weaker assumption, the most straightforward analysis follows from assuming each element of $\mathbf{X}_{i}$ is uncorrelated with each element $\mathbf{u}_{i}$. The strengthening of Assumption SOLS. 1 is most easily stated using the Kronecker product:\\
+assumption SGLS.1: $\quad \mathrm{E}\left(\mathbf{X}_{i} \otimes \mathbf{u}_{i}\right)=\mathbf{0}$.\\
+Typically, at least one element of $\mathbf{X}_{i}$ is unity, so in practice Assumption SGLS. 1 implies that $\mathrm{E}\left(\mathbf{u}_{i}\right)=\mathbf{0}$. We will assume that $\mathbf{u}_{i}$ has a zero mean for our dicussion but not in proving any results. A sufficient condition for Assumption SGLS. 1 is the zero conditional mean assumption $\mathrm{E}\left(\mathbf{u}_{i} \mid \mathbf{X}_{i}\right)=\mathbf{0}$, which, of course, also implies $\mathrm{E}\left(\mathbf{u}_{i}\right)=\mathbf{0}$.
+
+The second moment matrix of $\mathbf{u}_{i}$-which is necessarily constant across $i$ by the random sampling assumption-plays a critical role for GLS estimation of systems of equations. Define the $G \times G$ positive semi-definite matrix $\boldsymbol{\Omega}$ as\\
+$\boldsymbol{\Omega} \equiv \mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$.
+
+Because $\mathrm{E}\left(\mathbf{u}_{i}\right)=\mathbf{0}$ in the vast majority of applications, we will refer to $\boldsymbol{\Omega}$ as the unconditional variance matrix of $\mathbf{u}_{i}$. For our general treatment, we assume it is actually positive definite. In applications where the dependent variables satisfy an adding up constraint across equations-such as expenditure shares summing to unity-an equation must be dropped to ensure that $\boldsymbol{\Omega}$ is nonsingular, a topic we return to in Section 7.3.3.
+
+Having defined $\boldsymbol{\Omega}$, and assuming it is nonsingular, we can state a weaker version of Assumption SGLS. 1 that is nevertheless sufficient for consistency of the GLS (and feasible GLS) estimator:\\
+$\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right)=\mathbf{0}$,\\
+which simply says that the linear combination $\boldsymbol{\Omega}^{-1} \mathbf{X}_{i}$ of $\mathbf{X}_{i}$ is uncorrelated with $\mathbf{u}_{i}$. It follows that Assumption SGLS. 1 implies (7.30); a concise proof using matrix algebra is\\
+$\operatorname{vec} \mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right)=\mathrm{E}\left(\operatorname{vec}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right)\right]=\mathrm{E}\left[\left(\mathbf{u}_{i}^{\prime} \otimes \mathbf{X}_{i}^{\prime}\right) \operatorname{vec} \boldsymbol{\Omega}^{-1}\right]=\mathbf{0}$.\\
+(Recall that for conformable matrices $\mathbf{D}, \mathbf{E}$, and $\mathbf{F}$, $\operatorname{vec}(\mathbf{D E F})=\left(\mathbf{F}^{\prime} \otimes \mathbf{D}\right) \operatorname{vec}(\mathbf{E})$, where $\operatorname{vec}(\mathbf{C})$ is the vectorization of the matrix $\mathbf{C}$; see, for example, Theil (1983).)
+
+If (7.30) is sufficient for consistency of GLS, how come we make Assumption SGLS.1? There are a couple of reasons. First, SGLS. 1 is more straightforward to interpret, and is independent of the structure of $\boldsymbol{\Omega}$. Second-and this is more subtle-when we turn to feasible GLS estimation in Section 7.5, Assumption SGLS. 1 is used to establish the $\sqrt{N}$-equivalance of GLS and feasible GLS. If we knew $\boldsymbol{\Omega}$, (7.30) would be attractive as an assumption, but we almost never know $\boldsymbol{\Omega}$ (even up to a multiplicative constant). Assumption (7.30) will be relevant in Section 7.5.3, where we discuss imposing diagonality on the variance matrix.
+
+In place of Assumption SOLS. 2 we assume that a weighted expected outer product of $\mathbf{X}_{i}$ is nonsingular. Here we insert the assumption of a nonsingular variance matrix for completeness:\\
+assumption SGLS.2: $\boldsymbol{\Omega}$ is positive definite and $\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)$ is nonsingular.\\
+The usual motivation for the GLS estimator is to transform a system of equations where the error has a nonscalar variance-covariance matrix into a system where the error vector has a scalar variance-covariance matrix. We obtain this by multiplying equation (7.11) by $\boldsymbol{\Omega}^{-1 / 2}$ :\\
+$\boldsymbol{\Omega}^{-1 / 2} \mathbf{y}_{i}=\left(\boldsymbol{\Omega}^{-1 / 2} \mathbf{X}_{i}\right) \boldsymbol{\beta}+\boldsymbol{\Omega}^{-1 / 2} \mathbf{u}_{i}, \quad$ or $\quad \mathbf{y}_{i}^{*}=\mathbf{X}_{i}^{*} \boldsymbol{\beta}+\mathbf{u}_{i}^{*}$.
+
+Simple algebra shows that $\mathrm{E}\left(\mathbf{u}_{i}^{*} \mathbf{u}_{i}^{* /}\right)=\mathbf{I}_{G}$.\\
+Now we estimate equation (7.31) by system OLS. (As yet, we have no real justification for this step, but we know SOLS is consistent under some assumptions.) Call this estimator $\boldsymbol{\beta}^{*}$. Then
+
+
+\begin{equation*}
+\boldsymbol{\beta}^{*} \equiv\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{* \prime} \mathbf{X}_{i}^{*}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{* \prime} \mathbf{y}_{i}^{*}\right)=\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{y}_{i}\right) . \tag{7.32}
+\end{equation*}
+
+
+This is the generalized least squares (GLS) estimator of $\boldsymbol{\beta}$. Under Assumption SGLS.2, $\boldsymbol{\beta}^{*}$ exists with probability approaching one as $N \rightarrow \infty$.
+
+We can write $\boldsymbol{\beta}^{*}$ using full matrix notation as $\boldsymbol{\beta}^{*}=\left[\mathbf{X}^{\prime}\left(\mathbf{I}_{N} \otimes \boldsymbol{\Omega}^{-1}\right) \mathbf{X}\right]^{-1}$. $\left[\mathbf{X}^{\prime}\left(\mathbf{I}_{N} \otimes \boldsymbol{\Omega}^{-1}\right) \mathbf{Y}\right]$, where $\mathbf{X}$ and $\mathbf{Y}$ are the data matrices defined in Section 7.3.2 and $\mathbf{I}_{N}$ is the $N \times N$ identity matrix. But for establishing the asymptotic properties of $\boldsymbol{\beta}^{*}$, it is most convenient to work with equation (7.32).
+
+We can establish consistency of $\boldsymbol{\beta}^{*}$ under Assumptions SGLS. 1 and SGLS. 2 by writing
+
+
+\begin{equation*}
+\boldsymbol{\beta}^{*}=\boldsymbol{\beta}+\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right) . \tag{7.33}
+\end{equation*}
+
+
+By the weak law of large numbers (WLLN), $N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i} \xrightarrow{p} \mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)$. By Assumption SGLS. 2 and Slutsky's theorem (Lemma 3.4), $\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)^{-1} \xrightarrow{p} \mathbf{A}^{-1}$, where $\mathbf{A}$ is now defined as\\
+$\mathbf{A} \equiv \mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)$.
+
+Now we must show that plim $N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}=\mathbf{0}$, which holds by the WLLN under Assumption SGLS.2. Thus, we have shown that the GLS estimator is consistent under SGLS. 1 and SGLS.2.
+
+The proof of consistency that we have sketched fails if we only make Assumption SOLS.1: $\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{u}_{i}\right)=\mathbf{0}$ does not imply $\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right)=\mathbf{0}$, except when $\boldsymbol{\Omega}$ and $\mathbf{X}_{i}$ have special structures. If Assumption SOLS. 1 holds but Assumption SGLS. 1 fails, the transformation in equation (7.31) generally induces correlation between $\mathbf{X}_{i}^{*}$ and $\mathbf{u}_{i}^{*}$. This can be an important point, especially for certain panel data applications. If we are willing to make the zero conditional mean assumption (7.15), $\boldsymbol{\beta}^{*}$ can be shown to be unbiased conditional on $\mathbf{X}$.
+
+\subsection*{7.4.2 Asymptotic Normality}
+We now sketch the asymptotic normality of the GLS estimator under Assumptions SGLS. 1 and SGLS. 2 and some weak moment conditions. The first step is familiar:
+
+
+\begin{equation*}
+\sqrt{N}\left(\boldsymbol{\beta}^{*}-\boldsymbol{\beta}\right)=\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right) . \tag{7.35}
+\end{equation*}
+
+
+By the CLT, $N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i} \xrightarrow{d} \operatorname{Normal}(\mathbf{0}, \mathbf{B})$, where
+
+
+\begin{equation*}
+\mathbf{B} \equiv \mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right) \tag{7.36}
+\end{equation*}
+
+
+Further, since $N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}=\mathrm{O}_{p}(1)$ and $\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)^{-1}-\mathbf{A}^{-1}= \mathrm{o}_{p}(1)$, we can write $\sqrt{N}\left(\boldsymbol{\beta}^{*}-\boldsymbol{\beta}\right)=\mathbf{A}^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right)+\mathrm{o}_{p}(1)$. It follows from the asymptotic equivalence lemma that\\
+$\sqrt{N}\left(\boldsymbol{\beta}^{*}-\boldsymbol{\beta}\right) \stackrel{a}{\sim} \operatorname{Normal}\left(\mathbf{0}, \mathbf{A}^{-1} \mathbf{B A}^{-1}\right)$.
+
+Thus,\\
+$\operatorname{Avar}(\hat{\boldsymbol{\beta}})=\mathbf{A}^{-1} \mathbf{B A}^{-1} / N$.
+
+The asymptotic variance in equation (7.38) is not the asymptotic variance usually derived for GLS estimation of systems of equations. Typically the formula is reported as $\mathbf{A}^{-1} / N$. But equation (7.38) is the appropriate expression under the assumptions made so far. The simpler form, which results when $\mathbf{B}=\mathbf{A}$, is not generally valid under Assumptions SGLS. 1 and SGLS.2, because we have assumed nothing about the variance matrix of $\mathbf{u}_{i}$ conditional on $\mathbf{X}_{i}$. In Section 7.5.2 we make an assumption that simplifies equation (7.38).
+
+\subsection*{7.5 Feasible Generalized Least Squares}
+\subsection*{7.5.1 Asymptotic Properties}
+Obtaining the GLS estimator $\boldsymbol{\beta}^{*}$ requires knowing $\boldsymbol{\Omega}$ up to scale. That is, we must be able to write $\boldsymbol{\Omega}=\sigma^{2} \mathbf{C}$, where $\mathbf{C}$ is a known $G \times G$ positive definite matrix and $\sigma^{2}$ is allowed to be an unknown constant. Sometimes $\mathbf{C}$ is known (one case is $\mathbf{C}=\mathbf{I}_{G}$ ), but much more often it is unknown. Therefore, we now turn to the analysis of feasible GLS (FGLS) estimation.
+
+In FGLS estimation we replace the unknown matrix $\boldsymbol{\Omega}$ with a consistent estimator. Because the estimator of $\boldsymbol{\Omega}$ appears highly nonlinearly in the expression for the FGLS estimator, deriving finite sample properties of FGLS is generally difficult. (However, under essentially assumption (7.15) and some additional assumptions, including symmetry of the distribution of $\mathbf{u}_{i}$, Kakwani (1967) showed that the distribution of the FGLS is symmetric about $\boldsymbol{\beta}$, a property which means that the FGLS is unbiased if its expected value exists; see also Schmidt (1976, Section 2.5).) The asymptotic properties of the FGLS estimator are easily established as $N \rightarrow \infty$ because, as we will show, its first-order asymptotic properties are identical to those of the GLS estimator under Assumptions SGLS.1 and SGLS.2. It is for this purpose that we spent some time on GLS. After establishing the asymptotic equivalence, we can easily obtain the limiting distribution of the FGLS estimator. Of course, GLS is trivially a special case of FGLS where there is no first-stage estimation error.
+
+We initially assume we have a consistent estimator, $\hat{\boldsymbol{\Omega}}$, of $\boldsymbol{\Omega}$ :
+
+
+\begin{equation*}
+\operatorname{plim}_{N \rightarrow \infty} \hat{\boldsymbol{\Omega}}=\boldsymbol{\Omega} \tag{7.39}
+\end{equation*}
+
+
+(Because the dimension of $\hat{\boldsymbol{\Omega}}$ does not depend on $N$, equation (7.39) makes sense when defined element by element.) When $\boldsymbol{\Omega}$ is allowed to be a general positive definite matrix, the following estimation approach can be used. First, obtain the system OLS estimator of $\boldsymbol{\beta}$, which we denote $\check{\boldsymbol{\beta}}$ in this section to avoid confusion. We already showed that $\check{\boldsymbol{\beta}}$ is consistent for $\boldsymbol{\beta}$ under Assumptions SOLS. 1 and SOLS.2, and therefore under Assumptions SGLS. 1 and SOLS.2. (In what follows, we assume that Assumptions SOLS. 2 and SGLS. 2 both hold.) By the WLLN, $\operatorname{plim}\left(N^{-1} \sum_{i=1}^{N} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)= \boldsymbol{\Omega}$, and so a natural estimator of $\boldsymbol{\Omega}$ is
+
+
+\begin{equation*}
+\hat{\boldsymbol{\Omega}} \equiv N^{-1} \sum_{i=1}^{N} \check{\mathbf{u}}_{i} \check{\mathbf{u}}_{i}^{\prime}, \tag{7.40}
+\end{equation*}
+
+
+where $\check{\mathbf{u}}_{i} \equiv \mathbf{y}_{i}-\mathbf{X}_{i} \check{\boldsymbol{\beta}}$ are the SOLS residuals. We can show that this estimator is consistent for $\boldsymbol{\Omega}$ under Assumptions SGLS. 1 and SOLS. 2 and standard moment conditions. First, write
+
+
+\begin{equation*}
+\check{\mathbf{u}}_{i}=\mathbf{u}_{i}-\mathbf{X}_{i}(\check{\boldsymbol{\beta}}-\boldsymbol{\beta}), \tag{7.41}
+\end{equation*}
+
+
+so that
+
+
+\begin{equation*}
+\check{\mathbf{u}}_{i} \check{\mathbf{u}}_{i}^{\prime}=\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}-\mathbf{u}_{i}(\check{\boldsymbol{\beta}}-\boldsymbol{\beta})^{\prime} \mathbf{X}_{i}^{\prime}-\mathbf{X}_{i}(\check{\boldsymbol{\beta}}-\boldsymbol{\beta}) \mathbf{u}_{i}^{\prime}+\mathbf{X}_{i}(\check{\boldsymbol{\beta}}-\boldsymbol{\beta})(\check{\boldsymbol{\beta}}-\boldsymbol{\beta})^{\prime} \mathbf{X}_{i}^{\prime} . \tag{7.42}
+\end{equation*}
+
+
+Therefore, it suffices to show that the averages of the last three terms converge in probability to zero. Write the average of the vec of the first term as $N^{-1} \sum_{i=1}^{N}\left(\mathbf{X}_{i} \otimes \mathbf{u}_{i}\right)$. $(\check{\boldsymbol{\beta}}-\boldsymbol{\beta})$, which is $\mathrm{o}_{p}(1)$ because $\operatorname{plim}(\check{\boldsymbol{\beta}}-\boldsymbol{\beta})=\mathbf{0}$ and $N^{-1} \sum_{i=1}^{N}\left(\mathbf{X}_{i} \otimes \mathbf{u}_{i}\right) \xrightarrow{p} \mathbf{0}$. The third term is the transpose of the second. For the last term in equation (7.42), note that the average of its vec can be written as
+
+
+\begin{equation*}
+N^{-1} \sum_{i=1}^{N}\left(\mathbf{X}_{i} \otimes \mathbf{X}_{i}\right) \cdot \operatorname{vec}\left\{(\check{\boldsymbol{\beta}}-\boldsymbol{\beta})(\check{\boldsymbol{\beta}}-\boldsymbol{\beta})^{\prime}\right\} . \tag{7.43}
+\end{equation*}
+
+
+Now $\operatorname{vec}\left\{(\check{\boldsymbol{\beta}}-\boldsymbol{\beta})(\check{\boldsymbol{\beta}}-\boldsymbol{\beta})^{\prime}\right\}=\mathrm{o}_{p}(1)$. Further, assuming that each element of $\mathbf{X}_{i}$ has finite second moment, $N^{-1} \sum_{i=1}^{N}\left(\mathbf{X}_{i} \otimes \mathbf{X}_{i}\right)=\mathrm{O}_{p}(1)$ by the WLLN. This step takes care of the last term, since $\mathrm{O}_{p}(1) \cdot \mathrm{o}_{p}(1)=\mathrm{o}_{p}(1)$. We have shown that
+
+
+\begin{equation*}
+\hat{\boldsymbol{\Omega}}=N^{-1} \sum_{i=1}^{N} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime}+\mathrm{o}_{p}(1) \tag{7.44}
+\end{equation*}
+
+
+and so equation (7.39) follows immediately. (In fact, a more careful analysis shows that the $\mathrm{o}_{p}(1)$ in equation (7.44) can be replaced by $\mathrm{o}_{p}\left(N^{-1 / 2}\right)$; see Problem 7.4.)
+
+Sometimes the elements of $\boldsymbol{\Omega}$ are restricted in some way. In such cases a different estimator of $\boldsymbol{\Omega}$ is often used that exploits these restrictions. As with $\hat{\boldsymbol{\Omega}}$ in equation (7.40), such estimators typically use the system OLS residuals in some fashion and lead to consistent estimators assuming the structure of $\boldsymbol{\Omega}$ is correctly specified. The advantage of equation (7.40) is that it is consistent for $\boldsymbol{\Omega}$ quite generally. However, if $N$ is not very large relative to $G$, equation (7.40) can have poor finite sample properties. In Section 7.5.3 we discuss the consequences of using an inconsistent estimator of $\boldsymbol{\Omega}$. For now, we assume (7.39).
+
+Given $\hat{\boldsymbol{\Omega}}$, the feasible GLS (FGLS) estimator of $\boldsymbol{\beta}$ is
+
+
+\begin{equation*}
+\hat{\boldsymbol{\beta}}=\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{y}_{i}\right), \tag{7.45}
+\end{equation*}
+
+
+or, in full matrix notation, $\hat{\boldsymbol{\beta}}=\left[\mathbf{X}^{\prime}\left(\mathbf{I}_{N} \otimes \hat{\boldsymbol{\Omega}}^{-1}\right) \mathbf{X}\right]^{-1}\left[\mathbf{X}^{\prime}\left(\mathbf{I}_{N} \otimes \hat{\boldsymbol{\Omega}}^{-1}\right) \mathbf{Y}\right]$.\\
+We have already shown that the (infeasible) GLS estimator is consistent under Assumptions SGLS. 1 and SGLS.2. Because $\hat{\boldsymbol{\Omega}}$ converges to $\boldsymbol{\Omega}$, it is not surprising that FGLS is also consistent. Rather than show this result separately, we verify the stronger result that FGLS has the same limiting distribution as GLS.
+
+The limiting distribution of FGLS is obtained by writing
+
+
+\begin{equation*}
+\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})=\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}\right)^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{u}_{i}\right) \tag{7.46}
+\end{equation*}
+
+
+Now
+
+$$
+N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{u}_{i}-N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}=\left[N^{-1 / 2} \sum_{i=1}^{N}\left(\mathbf{u}_{i} \otimes \mathbf{X}_{i}\right)^{\prime}\right] \operatorname{vec}\left(\hat{\boldsymbol{\Omega}}^{-1}-\boldsymbol{\Omega}^{-1}\right) .
+$$
+
+Under Assumption SGLS.1, the CLT implies that $N^{-1 / 2} \sum_{i=1}^{N}\left(\mathbf{u}_{i} \otimes \mathbf{X}_{i}\right)=\mathrm{O}_{p}(1)$. Because $\mathrm{O}_{p}(1) \cdot \mathrm{o}_{p}(1)=\mathrm{o}_{p}(1)$, it follows that
+
+$$
+N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{u}_{i}=N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}+\mathrm{o}_{p}(1) .
+$$
+
+A similar argument shows that $N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}=N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}+\mathrm{o}_{p}(1)$. Therefore, we have shown that
+
+
+\begin{equation*}
+\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})=\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right)+\mathrm{o}_{p}(1) \tag{7.47}
+\end{equation*}
+
+
+The first term in equation (7.47) is just $\sqrt{N}\left(\boldsymbol{\beta}^{*}-\boldsymbol{\beta}\right)$, where $\boldsymbol{\beta}^{*}$ is the GLS estimator. We can write equation (7.47) as\\
+$\sqrt{N}\left(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}^{*}\right)=\mathrm{o}_{p}(1)$,\\
+which shows that $\hat{\boldsymbol{\beta}}$ and $\boldsymbol{\beta}^{*}$ are $\sqrt{N}$-equivalent. Recall from Chapter 3 that this statement is much stronger than simply saying that $\boldsymbol{\beta}^{*}$ and $\hat{\boldsymbol{\beta}}$ are both consistent for $\boldsymbol{\beta}$. There are many estimators, such as system OLS, that are consistent for $\boldsymbol{\beta}$ but are not $\sqrt{N}$-equivalent to $\boldsymbol{\beta}^{*}$.
+
+The asymptotic equivalence of $\hat{\boldsymbol{\beta}}$ and $\boldsymbol{\beta}^{*}$ has practically important consequences. The most important of these is that, for performing asymptotic inference about $\boldsymbol{\beta}$ using $\hat{\boldsymbol{\beta}}$, we do not have to worry that $\hat{\boldsymbol{\Omega}}$ is an estimator of $\boldsymbol{\Omega}$. Of course, whether the asymptotic approximation gives a reasonable approximation to the actual distribution of $\hat{\boldsymbol{\beta}}$ is difficult to tell. With large $N$, the approximation is usually pretty good. But if $N$ is small relative to $G$, ignoring estimation of $\boldsymbol{\Omega}$ in performing inference about $\boldsymbol{\beta}$ can be misleading.
+
+We summarize the limiting distribution of FGLS with a theorem.\\
+theorem 7.3 (Asymptotic Normality of FGLS): Under Assumptions SGLS. 1 and SGLS.2,\\
+$\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}) \stackrel{a}{\sim} \operatorname{Normal}\left(\mathbf{0}, \mathbf{A}^{-1} \mathbf{B} \mathbf{A}^{-1}\right)$,\\
+where $\mathbf{A}$ is defined in equation (7.34) and $\mathbf{B}$ is defined in equation (7.36).\\
+In the FGLS context, a consistent estimator of $\mathbf{A}$ is
+
+
+\begin{equation*}
+\hat{\mathbf{A}} \equiv N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i} \tag{7.50}
+\end{equation*}
+
+
+A consistent estimator of $\mathbf{B}$ is also readily available after FGLS estimation. Define the FGLS residuals by
+
+
+\begin{equation*}
+\hat{\mathbf{u}}_{i} \equiv \mathbf{y}_{i}-\mathbf{X}_{i} \hat{\boldsymbol{\beta}}, \quad i=1,2, \ldots, N \tag{7.51}
+\end{equation*}
+
+
+(The only difference between the FGLS and SOLS residuals is that the FGLS estimator is inserted in place of the SOLS estimator; in particular, the FGLS residuals are not from the transformed equation (7.31).) Using standard arguments, a consistent\\
+estimator of $\mathbf{B}$ is\\
+$\hat{\mathbf{B}} \equiv N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \hat{\mathbf{u}}_{i} \hat{\mathbf{u}}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}$.\\
+The estimator of $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$ can be written as
+
+
+\begin{equation*}
+\hat{\mathbf{A}}^{-1} \hat{\mathbf{B}} \hat{\mathbf{A}}^{-1} / N=\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \hat{\mathbf{u}}_{i} \hat{\mathbf{u}}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}\right)\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}\right)^{-1} . \tag{7.52}
+\end{equation*}
+
+
+This is the extension of the White (1980b) heteroskedasticity-robust asymptotic variance estimator to the case of systems of equations; see also White (2001). This estimator is valid under Assumptions SGLS. 1 and SGLS.2; that is, it is completely robust.
+
+Incidentally, if system OLS and feasible GLS have both been used to estimate $\boldsymbol{\beta}$, and both estimators are presumed to be consistent, then it is legitimate to compare the fully robust variance matrices, (7.28) and (7.52), respectively, to determine whether FGLS appears to be asymptotically more efficient-keeping in mind that these are just estimates based on one random sample. The nonrobust OLS variance matrix generally should not be considered because it is valid only under very restrictive assumptions.
+
+\subsection*{7.5.2 Asymptotic Variance of Feasible Generalized Least Squares under a Standard Assumption}
+Under the assumptions so far, FGLS really has nothing to offer over SOLS. In addition to being computationally more difficult, FGLS is less robust than SOLS. So why is FGLS used? The answer is that, under an additional assumption, FGLS is asymptotically more efficient than SOLS (and other estimators). First, we state the weakest condition that simplifies estimation of the asymptotic variance for FGLS. For reasons to be seen shortly, we call this a system homoskedasticity assumption.\\
+assumption SGLS.3: $\quad \mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)=\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)$, where $\boldsymbol{\Omega} \equiv \mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$.\\
+Another way to state this assumption is $\mathbf{B}=\mathbf{A}$, which, from expression (7.49), simplifies the asymptotic variance. As stated, Assumption SGLS. 3 is somewhat difficult to interpret. When $G=1$, it reduces to Assumption OLS.3. When $\boldsymbol{\Omega}$ is diagonal and $\mathbf{X}_{i}$ has either the SUR or panel data structure, Assumption SGLS. 3 implies a kind of conditional homoskedasticity in each equation (or time period). Generally, Assumption SGLS. 3 puts restrictions on the conditional variances and covariances of ele-\\
+ments of $\mathbf{u}_{i}$. A sufficient (though certainly not necessary) condition for Assumption SGLS. 3 is easier to interpret:\\
+$\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{X}_{i}\right)=\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$.
+
+If $\mathrm{E}\left(\mathbf{u}_{i} \mid \mathbf{X}_{i}\right)=\mathbf{0}$, then assumption (7.53) is the same as assuming $\operatorname{Var}\left(\mathbf{u}_{i} \mid \mathbf{X}_{i}\right)= \operatorname{Var}\left(\mathbf{u}_{i}\right)=\boldsymbol{\Omega}$, which means that each variance and each covariance of elements involving $\mathbf{u}_{i}$ must be constant conditional on all of $\mathbf{X}_{i}$. This is a natural way of stating a system homoskedasticity assumption, but it is sometimes too strong.
+
+When $G=2, \boldsymbol{\Omega}$ contains three distinct elements, $\sigma_{1}^{2}=\mathrm{E}\left(u_{i 1}^{2}\right), \sigma_{2}^{2}=\mathrm{E}\left(u_{i 2}^{2}\right)$, and $\sigma_{12}=\mathrm{E}\left(u_{i 1} u_{i 2}\right)$. These elements are not restricted by the assumptions we have made. (The inequality $\left|\sigma_{12}\right|<\sigma_{1} \sigma_{2}$ must always hold for $\boldsymbol{\Omega}$ to be a nonsingular covariance matrix.) But assumption (7.53) requires $\mathrm{E}\left(u_{i 1}^{2} \mid \mathbf{X}_{i}\right)=\sigma_{1}^{2}, \mathrm{E}\left(u_{i 2}^{2} \mid \mathbf{X}_{i}\right)=\sigma_{2}^{2}$, and $\mathrm{E}\left(u_{i 1} u_{i 2} \mid \mathbf{X}_{i}\right)=\sigma_{12}$ : the conditional variances and covariance must not depend on $\mathbf{X}_{i}$.
+
+That assumption (7.53) implies Assumption SGLS. 3 is a consequence of iterated expectations:
+
+$$
+\begin{aligned}
+\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right) & =\mathrm{E}\left[\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i} \mid \mathbf{X}_{i}\right)\right] \\
+& =\mathrm{E}\left[\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{X}_{i}\right) \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right]=\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \boldsymbol{\Omega} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right) \\
+& =\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)
+\end{aligned}
+$$
+
+While assumption (7.53) is easier to intepret, we use Assumption SGLS. 3 for stating the next theorem because there are cases, including some dynamic panel data models, where Assumption SGLS. 3 holds but assumption (7.53) does not.\\
+theorem 7.4 (Usual Variance Matrix for FGLS): Under Assumptions SGLS.1SGLS.3, the asymptotic variance of the FGLS estimator is $\operatorname{Avar}(\hat{\boldsymbol{\beta}})=\mathbf{A}^{-1} / N \equiv \left[\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)\right]^{-1} / N$.
+
+We obtain an estimator of $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$ by using our consistent estimator of $\mathbf{A}$ :\\
+$\widehat{\operatorname{Avar}(\hat{\boldsymbol{\beta}})}=\hat{\mathbf{A}}^{-1} / N=\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}\right)^{-1}$.
+
+Equation (7.54) is the "usual" formula for the asymptotic variance of FGLS. It is nonrobust in the sense that it relies on Assumption SGLS. 3 in addition to Assumptions SGLS. 1 and SGLS.2. If system heteroskedasticity in $\mathbf{u}_{i}$ is suspected, then the robust estimator (7.52) should be used.
+
+Assumption (7.53) has important efficiency implications. One consequence of Problem 7.2 is that, under Assumptions SGLS.1, SOLS.2, SGLS.2, and (7.53), the
+
+FGLS estimator is more efficient than the system OLS estimator. We can actually say much more: FGLS is more efficient than any other estimator that uses the orthogonality conditions $\mathrm{E}\left(\mathbf{X}_{i} \otimes \mathbf{u}_{i}\right)=\mathbf{0}$. This conclusion will follow as a special case of Theorem 8.4 in Chapter 8, where we define the class of competing estimators. If we replace Assumption SGLS. 1 with the zero conditional mean assumption (7.15), then an even stronger efficiency result holds for FGLS, something we treat in Section 8.6.
+
+\subsection*{7.5.3 Properties of Feasible Generalized Least Squares with (Possibly Incorrect) Restrictions on the Unconditional Variance Matrix}
+Sometimes we might wish to impose restrictions in estimating $\boldsymbol{\Omega}$, possibly because $G$ (in the panel data case, $T$ ) is large relative to $N$ (which means an unrestricted estimator of $\boldsymbol{\Omega}$ might result in poor finite sample properties of FGLS), or because a particular structure for $\boldsymbol{\Omega}$ suggests itself. For example, in a panel data context with strictly exogenous regressors, an $\operatorname{AR}(1)$ model of serial correlation, with variances constant over time, might seem plausible, and greatly conserves on parameters when $T$ is even moderately large. The element ( $t, s$ ) in $\boldsymbol{\Omega}$ is of the form $\sigma_{e}^{2} \rho^{|t-s|}$ for $|\rho|<1$; we describe this further in Section 7.8.6. In Chapter 10, we discuss an important panel data model with constant variances over time where the pairwise correlations across any two different time periods are constant.
+
+It is important to know that under Assumption SGLS.1, feasible GLS with an incorrect structure imposed on $\boldsymbol{\Omega}$, is generally consistent and $\sqrt{N}$-asymptotically normal. To see why, let $\hat{\boldsymbol{\Lambda}}$ denote an estimator that may be inconsistent for $\boldsymbol{\Omega}$. Nevertheless, $\hat{\boldsymbol{\Lambda}}$ usually has a well-defined, nonsingular probability limit: $\boldsymbol{\Lambda} \equiv \operatorname{plim} \hat{\boldsymbol{\Lambda}}$. Then, the FGLS estimator of $\boldsymbol{\beta}$ using $\hat{\boldsymbol{\Lambda}}$ as the variance matrix estimator is consistent if
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Lambda}^{-1} \mathbf{u}_{i}\right)=\mathbf{0} \tag{7.55}
+\end{equation*}
+
+
+(along with the modification of the rank condition SGLS. 2 that inserts $\boldsymbol{\Lambda}$ in place of $\boldsymbol{\Omega}$ ). Condition (7.55) always holds if Assumption SGLS. 1 holds. Therefore, exogeneity of each element of $\mathbf{X}_{i}$ in each equation (time period) ensures that using an inconsistent estimator of $\boldsymbol{\Omega}$ does not result in inconsistency of FGLS.
+
+The $\sqrt{N}$-asymptotic equivalence between the estimators that use $\hat{\boldsymbol{\Lambda}}$ and $\boldsymbol{\Lambda}$ continues to hold under Assumption SGLS.1, and so we can conduct asymptotic inference ignoring the first stage estimation of $\boldsymbol{\Lambda}$. Nevertheless, the analogue of Assumption SGLS.3, $\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Lambda}^{-1} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \boldsymbol{\Lambda}^{-1} \mathbf{X}_{i}\right)=\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Lambda}^{-1} \mathbf{X}_{i}\right)$, generally fails, even under the system homoskedasticity assumption (7.53). (In fact, it is easy to show $\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Lambda}^{-1} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \boldsymbol{\Lambda}^{-1} \mathbf{X}_{i}\right)$\\
+$=\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Lambda}^{-1} \boldsymbol{\Omega} \boldsymbol{\Lambda}^{-1} \mathbf{X}_{i}\right)$ when (7.53) holds.) Therefore, if we entertain the possibility that the restrictions imposed in obtaining $\hat{\boldsymbol{\Lambda}}$ are incorrect-as we probably should-the fully robust variance matrix in (7.52) should be used (with the slight notational change of replacing $\hat{\boldsymbol{\Omega}}$ with $\hat{\boldsymbol{\Lambda}}$ ).
+
+We will use the findings in this section in Chapter 10, and we will extend the points made here to estimation of systems of nonlinear equations in Chapter 12. Problem 7.14 asks you to show that using a consistent estimator of $\boldsymbol{\Omega}$ always leads to an estimator at least as efficient as using an inconsistent estimator, provided the appropriate system homoskedasticity assumption holds.
+
+Before leaving this section, it is useful to point out a case where one should use a restricted estimator of $\boldsymbol{\Omega}$ even if $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$ does not satisfy the restrictions. A leading case is a panel data model where the regressors are contemporaneously exogenous but not strictly exogenous, so that Assumption SOLS. 1 holds but Assumption SGLS. 1 does not. In this case, using an unrestricted estimator of $\boldsymbol{\Omega}$ generally results in inconsistency of FGLS if $\boldsymbol{\Omega}$ is not diagonal. Of course, we can always apply pooled OLS in such cases, but POLS ignores the different error variances in the different time periods. We might want to exploit those different variances in estimation whether or not we think $\boldsymbol{\Omega}$ is diagonal.
+
+If $\hat{\boldsymbol{\Lambda}}$ is a diagonal matrix containing consistent estimators of the error variances down the diagonals, then $\hat{\boldsymbol{\Lambda}} \rightarrow \boldsymbol{\Lambda}$, where $\boldsymbol{\Lambda}=\operatorname{diag}\left(\sigma_{1}^{2}, \ldots, \sigma_{T}^{2}\right)$. It is easily seen that (7.55) holds under $\mathrm{E}\left(\mathbf{x}_{i t}^{\prime} u_{i t}\right)=\mathbf{0}, t=1, \ldots, T$ regardless of the actual structure of $\boldsymbol{\Omega}$. In other words, contemporaneous exogeneity is sufficient. As shown in Problem 7.7, the resulting FGLS estimator can be computed from weighted least squares where the weights for different time periods are the inverses of the estimated variances.
+
+Under contemporaneous exogeneity, the FGLS estimator based on diagonal $\hat{\boldsymbol{\Lambda}}$ can be shown to be $\sqrt{N}$-asymptotically equivalent to the (infeasible) estimator that uses $\boldsymbol{\Lambda}$, and so asymptotic inference is still straightforward. Of course, without more assumptions, the FGLS estimator that uses $\hat{\boldsymbol{\Lambda}}$ is not necessarily more efficient than the pooled OLS estimator. Under some additional assumptions given in Problem 7.7 that imply $\boldsymbol{\Omega}$ is diagonal, and therefore is the same as $\boldsymbol{\Lambda}$, the FGLS estimator that uses $\boldsymbol{\Lambda}$ can be shown to be asymptotically more efficient than the POLS estimator.
+
+\subsection*{7.6 Testing the Use of Feasible Generalized Least Squares}
+Asymptotic standard errors are obtained in the usual fashion from the asymptotic variance estimates. We can use the nonrobust version in equation (7.54) or, even\\
+better, the robust version in equation (7.52), to construct $t$ statistics and confidence intervals. Testing multiple restrictions is fairly easy using the Wald test, which always has the same general form. The important consideration lies in choosing the asymptotic variance estimate, $\hat{\mathbf{V}}$. Standard Wald statistics use equation (7.54), and this approach produces limiting chi-square statistics under the homoskedasticity assumption SGLS.3. Completely robust Wald statistics are obtained by choosing $\hat{\mathbf{V}}$ as in equation (7.52).
+
+If Assumption SGLS. 3 holds under $\mathrm{H}_{0}$, we can define a statistic based on the weighted sums of squared residuals. To obtain the statistic, we estimate the model with and without the restrictions imposed on $\boldsymbol{\beta}$, where the same estimator of $\boldsymbol{\Omega}$, usually based on the unrestricted SOLS residuals, is used in obtaining the restricted and unrestricted FGLS estimators. Let $\tilde{\mathbf{u}}_{i}$ denote the residuals from constrained FGLS (with $Q$ restrictions imposed on $\tilde{\boldsymbol{\beta}}$ ) using variance matrix $\hat{\boldsymbol{\Omega}}$. It can be shown that, under $\mathrm{H}_{0}$ and Assumptions SGLS.1-SGLS.3,
+
+
+\begin{equation*}
+\left(\sum_{i=1}^{N} \tilde{\mathbf{u}}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \tilde{\mathbf{u}}_{i}-\sum_{i=1}^{N} \hat{\mathbf{u}}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \hat{\mathbf{u}}_{i}\right) \stackrel{a}{\sim} \chi_{Q}^{2} . \tag{7.56}
+\end{equation*}
+
+
+Gallant (1987) shows expression (7.56) for nonlinear models with fixed regressors; essentially the same proof works here under Assumptions SGLS.1-SGLS.3, as we will show more generally in Chapter 12.
+
+The statistic in expression (7.56) is the difference between the transformed sum of squared residuals from the restricted and unrestricted models, but it is just as easy to calculate expression (7.56) directly. Gallant (1987, Chap. 5) has found that an $F$ statistic has better finite sample properties. The $F$ statistic in this context is defined as
+
+
+\begin{equation*}
+F=\left[\left(\sum_{i=1}^{N} \tilde{\mathbf{u}}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \tilde{\mathbf{u}}_{i}-\sum_{i=1}^{N} \hat{\mathbf{u}}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \hat{\mathbf{u}}_{i}\right) /\left(\sum_{i=1}^{N} \hat{\mathbf{u}}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \hat{\mathbf{u}}_{i}\right)\right][(N G-K)] / Q \tag{7.57}
+\end{equation*}
+
+
+Why can we treat this equation as having an approximate $F$ distribution? First, for $N G-K$ large, $\mathscr{F}_{Q, N G-K} \stackrel{a}{\sim} \chi_{Q}^{2} / Q$. Therefore, dividing expression (7.56) by $Q$ gives us an approximate $\mathscr{F}_{Q, N G-K}$ distribution. The presence of the other two terms in equation (7.57) is to improve the $F$-approximation. Since $\mathrm{E}\left(\mathbf{u}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right)= \operatorname{tr}\left\{\mathrm{E}\left(\boldsymbol{\Omega}^{-1} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)\right\}=\operatorname{tr}\left\{\mathrm{E}\left(\boldsymbol{\Omega}^{-1} \boldsymbol{\Omega}\right)\right\}=G$, it follows that $(N G)^{-1} \sum_{i=1}^{N} \mathbf{u}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i} \xrightarrow{p} 1$; replacing $\mathbf{u}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}$ with $\hat{\mathbf{u}}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \hat{\mathbf{u}}_{i}$ does not affect this consistency result. Subtracting off $K$ as a degrees-of-freedom adjustment changes nothing asymptotically, and so $(N G-K)^{-1} \sum_{i=1}^{N} \hat{\mathbf{u}}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \hat{\mathbf{u}}_{i} \xrightarrow{p} 1$. Multiplying expression (7.56) by the inverse of this quantity does not affect its asymptotic distribution.
+
+\subsection*{7.7 Seemingly Unrelated Regressions, Revisited}
+We now return to the SUR system in assumption (7.2). We saw in Section 7.3 how to write this system in the form (7.11) if there are no cross equation restrictions on the $\boldsymbol{\beta}_{g}$. We also showed that the system OLS estimator corresponds to estimating each equation separately by OLS.
+
+As mentioned earlier, in most applications of SUR it is reasonable to assume that $\mathrm{E}\left(\mathbf{x}_{i g}^{\prime} u_{i h}\right)=\mathbf{0}, g, h=1,2, \ldots, G$, which is just Assumption SGLS. 1 for the SUR structure. Under this assumption, FGLS will consistently estimate the $\boldsymbol{\beta}_{g}$.
+
+OLS equation by equation is simple to use and leads to standard inference for each $\boldsymbol{\beta}_{g}$ under the OLS homoskedasticity assumption $\mathrm{E}\left(u_{i g}^{2} \mid \mathbf{x}_{i g}\right)=\sigma_{g}^{2}$, which is standard in SUR contexts. So why bother using FGLS in such applications? There are two answers. First, as mentioned in Section 7.5.2, if we can maintain assumption (7.53) in addition to Assumption SGLS. 1 (and SGLS.2), FGLS is asymptotically at least as efficient as system OLS. Second, while OLS equation by equation allows us to easily test hypotheses about the coefficients within an equation, it does not provide a convenient way for testing cross equation restrictions. It is possible to use OLS for testing cross equation restrictions by using the variance matrix (7.26), but if we are willing to go through that much trouble, we should just use FGLS.
+
+\subsection*{7.7.1 Comparison between Ordinary Least Squares and Feasible Generalized Least Squares for Seemingly Unrelated Regressions Systems}
+There are two cases where OLS equation by equation is algebraically equivalent to FGLS. The first case is fairly straightforward to analyze in our setting.\\
+theorem 7.5 (Equivalence of FGLS and OLS, I): If $\hat{\boldsymbol{\Omega}}$ is a diagonal matrix, then OLS equation by equation is identical to FGLS.
+
+Proof: If $\hat{\boldsymbol{\Omega}}$ is diagonal, then $\hat{\boldsymbol{\Omega}}^{-1}=\operatorname{diag}\left(\hat{\sigma}_{1}^{-2}, \ldots, \hat{\sigma}_{G}^{-2}\right)$. With $\mathbf{X}_{i}$ defined as in the matrix (7.10), straightforward algebra shows that\\
+$\mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}=\hat{\boldsymbol{\Psi}}^{-1} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i} \quad$ and $\quad \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{y}_{i}=\hat{\boldsymbol{\Psi}}^{-1} \mathbf{X}_{i}^{\prime} \mathbf{y}_{i}$,\\
+where $\hat{\boldsymbol{\Psi}}$ is the block diagonal matrix with $\hat{\sigma}_{g}^{2} \mathbf{I}_{k_{g}}$ as its $g$ th block. It follows that the FGLS estimator can be written as\\
+$\hat{\boldsymbol{\beta}}=\left(\sum_{i=1}^{N} \hat{\boldsymbol{\Psi}}^{-1} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \hat{\boldsymbol{\Psi}}^{-1} \mathbf{X}_{i}^{\prime} \mathbf{y}_{i}\right)=\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{y}_{i}\right)$,\\
+which is the system OLS estimator.
+
+In applications, $\hat{\boldsymbol{\Omega}}$ would not be diagonal unless we impose a diagonal structure. Nevertheless, we can use Theorem 7.5 to obtain an asymptotic equivalance result when $\boldsymbol{\Omega}$ is diagonal. If $\boldsymbol{\Omega}$ is diagonal, then the GLS and OLS are algebraically identical (because GLS uses $\boldsymbol{\Omega}$ ). We know that FGLS and GLS are $\sqrt{N}$-asymptotically equivalent for any $\boldsymbol{\Omega}$. Therefore, OLS and FGLS are $\sqrt{N}$-asymptotically equivalent if $\boldsymbol{\Omega}$ is diagonal, even though they are not algebraically equivalent (because $\hat{\boldsymbol{\Omega}}$ is not diagonal).
+
+The second algebraic equivalence result holds without any restrictions on $\hat{\boldsymbol{\Omega}}$. It is special in that it assumes that the same regressors appear in each equation.\\
+theorem 7.6 (Equivalence of FGLS and OLS, II): If $\mathbf{x}_{i 1}=\mathbf{x}_{i 2}=\cdots=\mathbf{x}_{i G}$ for all $i$, that is, if the same regressors show up in each equation (for all observations), then OLS equation by equation and FGLS are identical.
+
+In practice, Theorem 7.6 holds when the population model has the same explanatory variables in each equation. The usual proof of this result groups all $N$ observations for the first equation followed by the $N$ observations for the second equation, and so on (see, for example, Greene (1997, Chap. 17)). Problem 7.5 asks you to prove Theorem 7.6 in the current setup, where we have ordered the observations to be amenable to asymptotic analysis.
+
+It is important to know that when every equation contains the same regressors in an SUR system, there is still a good reason to use a SUR software routine in obtaining the estimates: we may be interested in testing joint hypotheses involving parameters in different equations. In order to do so we need to estimate the variance matrix of $\hat{\boldsymbol{\beta}}$ (not just the variance matrix of each $\hat{\boldsymbol{\beta}}_{g}$, which only allows tests of the coefficients within an equation). Estimating each equation by OLS does not directly yield the covariances between the estimators from different equations. Any SUR routine will perform this operation automatically, then compute $F$ statistics as in equation (7.57) (or the chi-square alternative, the Wald statistic).
+
+Example 7.3 (SUR System for Wages and Fringe Benefits): We use the data on wages and fringe benefits in FRINGE.RAW to estimate a two-equation system for hourly wage and hourly benefits. There are 616 workers in the data set. The FGLS estimates are given in Table 7.1, with asymptotic standard errors in parentheses below estimated coefficients.
+
+The estimated coefficients generally have the signs we expect. Other things equal, people with more education have higher hourly wage and benefits, males have higher predicted wages and benefits ( $\$ 1.79$ and 27 cents higher, respectively), and people with more tenure have higher earnings and benefits, although the effect is diminishing in both cases. (The turning point for hrearn is at about 10.8 years, while for hrbens it
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 7.1\\
+An Estimated SUR Model for Hourly Wages and Hourly Benefits}
+\begin{tabular}{|l|l|l|}
+\hline
+Explanatory Variables & hrearn & hrbens \\
+\hline
+educ & . 459 (.069) & . 077 (.008) \\
+\hline
+exper & -. 076 (.057) & . 023 (.007) \\
+\hline
+exper ${ }^{2}$ & . 0040 (.0012) & -. 0005 (.0001) \\
+\hline
+tenure & . 110 (.084) & . 054 (.010) \\
+\hline
+tenure ${ }^{2}$ & -. 0051 (.0033) & -. 0012 (.0004) \\
+\hline
+union & . 808 (.408) & . 366 (.049) \\
+\hline
+south & -. 457 (.552) & -. 023 (.066) \\
+\hline
+nrtheast & -1.151 (0.606) & -. 057 (.072) \\
+\hline
+nrthcen & -. 636 (.556) & -. 038 (.066) \\
+\hline
+married & . 642 (.418) & . 058 (.050) \\
+\hline
+white & 1.141 (0.612) & . 090 (.073) \\
+\hline
+male & 1.785 (0.398) & . 268 (.048) \\
+\hline
+intercept & -2.632 (1.228) & -. 890 (.147) \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+is 22.5 years.) The coefficients on experience are interesting. Experience is estimated to have a dimininshing effect for benefits but an increasing effect for earnings, although the estimated upturn for earnings is not until 9.5 years.
+
+Belonging to a union implies higher wages and benefits, with the benefits coefficient being especially statistically significant ( $t \approx 7.5$ ).
+
+The errors across the two equations appear to be positively correlated, with an estimated correlation of about .32. This result is not surprising: the same unobservables, such as ability, that lead to higher earnings, also lead to higher benefits.
+
+Clearly, there are significant differences between males and females in both earnings and benefits. But what about between whites and nonwhites, and married and unmarried people? The $F$-type statistic for joint significance of married and white in both equations is $F=1.83$. We are testing four restrictions $(Q=4), N=616, G=2$,\\
+and $K=2(13)=26$, so the degrees of freedom in the $F$ distribution are 4 and 1,206. The $p$-value is about .121, so these variables are jointly insignificant at the 10 percent level.
+
+If the regressors are different in different equations, $\boldsymbol{\Omega}$ is not diagonal, and the conditions in Section 7.5.2 hold, then FGLS is generally asymptotically more efficient than OLS equation by equation. One thing to remember is that the efficiency of FGLS comes at the price of assuming that the regressors in each equation are uncorrelated with the errors in each equation. For SOLS and FGLS to be different, the $\mathbf{x}_{g}$ must vary across $g$. If $\mathbf{x}_{g}$ varies across $g$, certain explanatory variables have been intentionally omitted from some equations. If we are interested in, say, the first equation, but we make a mistake in specifying the second equation, FGLS will generally produce inconsistent estimators of the parameters in all equations. However, OLS estimation of the first equation is consistent if $\mathrm{E}\left(\mathbf{x}_{1}^{\prime} u_{1}\right)=\mathbf{0}$.
+
+The previous discussion reflects the trade-off between efficiency and robustness that we often encounter in estimation problems.
+
+\subsection*{7.7.2 Systems with Cross Equation Restrictions}
+So far we have studied SUR under the assumption that the $\boldsymbol{\beta}_{g}$ are unrelated across equations. When systems of equations are used in economics, especially for modeling consumer and producer theory, there are often cross equation restrictions on the parameters. Such models can still be written in the general form we have covered, and so they can be estimated by system OLS and FGLS. We still refer to such systems as SUR systems, even though the equations are now obviously related, and system OLS is no longer OLS equation by equation.
+
+Example 7.4 (SUR with Cross Equation Restrictions): Consider the two-equation population model
+
+
+\begin{align*}
+& y_{1}=\gamma_{10}+\gamma_{11} x_{11}+\gamma_{12} x_{12}+\alpha_{1} x_{13}+\alpha_{2} x_{14}+u_{1}  \tag{7.58}\\
+& y_{2}=\gamma_{20}+\gamma_{21} x_{21}+\alpha_{1} x_{22}+\alpha_{2} x_{23}+\gamma_{24} x_{24}+u_{2} \tag{7.59}
+\end{align*}
+
+
+where we have imposed cross equation restrictions on the parameters in the two equations because $\alpha_{1}$ and $\alpha_{2}$ show up in each equation. We can put this model into the form of equation (7.11) by appropriately defining $\mathbf{X}_{i}$ and $\boldsymbol{\beta}$. For example, define $\boldsymbol{\beta}=\left(\gamma_{10}, \gamma_{11}, \gamma_{12}, \alpha_{1}, \alpha_{2}, \gamma_{20}, \gamma_{21}, \gamma_{24}\right)^{\prime}$, which we know must be an $8 \times 1$ vector because there are eight parameters in this system. The order in which these elements appear in $\boldsymbol{\beta}$ is up to us, but once $\boldsymbol{\beta}$ is defined, $\mathbf{X}_{i}$ must be chosen accordingly. For each observation $i$, define the $2 \times 8$ matrix
+
+$$
+\mathbf{X}_{i}=\left(\begin{array}{cccccccc}
+1 & x_{i 11} & x_{i 12} & x_{i 13} & x_{i 14} & 0 & 0 & 0 \\
+0 & 0 & 0 & x_{i 22} & x_{i 23} & 1 & x_{i 21} & x_{i 24}
+\end{array}\right) .
+$$
+
+Multiplying $\mathbf{X}_{i}$ by $\boldsymbol{\beta}$ gives the equations (7.58) and (7.59).\\
+In applications such as the previous example, it is fairly straightforward to test the cross equation restrictions, especially using the sum of squared residuals statistics (equation (7.56) or (7.57)). The unrestricted model simply allows each explanatory variable in each equation to have its own coefficient. We would use the unrestricted estimates to obtain $\hat{\boldsymbol{\Omega}}$, and then obtain the restricted estimates using $\hat{\boldsymbol{\Omega}}$.
+
+\subsection*{7.7.3 Singular Variance Matrices in Seemingly Unrelated Regressions Systems}
+In our treatment so far we have assumed that the variance matrix $\boldsymbol{\Omega}$ of $\mathbf{u}_{i}$ is nonsingular. In consumer and producer theory applications this assumption is not always true in the original structural equations, because of additivity constraints.
+
+Example 7.5 (Cost Share Equations): Suppose that, for a given year, each firm in a particular industry uses three inputs, capital ( $K$ ), labor ( $L$ ), and materials ( $M$ ). Because of regional variation and differential tax concessions, firms across the United States face possibly different prices for these inputs: let $p_{i K}$ denote the price of capital to firm $i, p_{i L}$ be the price of labor for firm $i$, and $s_{i M}$ denote the price of materials for firm $i$. For each firm $i$, let $s_{i K}$ be the cost share for capital, let $s_{i L}$ be the cost share for labor, and let $s_{i M}$ be the cost share for materials. By definition, $s_{i K}+s_{i L}+s_{i M}=1$.
+
+One popular set of cost share equations is
+
+
+\begin{align*}
+& s_{i K}=\gamma_{10}+\gamma_{11} \log \left(p_{i K}\right)+\gamma_{12} \log \left(p_{i L}\right)+\gamma_{13} \log \left(p_{i M}\right)+u_{i K}  \tag{7.60}\\
+& s_{i L}=\gamma_{20}+\gamma_{12} \log \left(p_{i K}\right)+\gamma_{22} \log \left(p_{i L}\right)+\gamma_{23} \log \left(p_{i M}\right)+u_{i L}  \tag{7.61}\\
+& s_{i M}=\gamma_{30}+\gamma_{13} \log \left(p_{i K}\right)+\gamma_{23} \log \left(p_{i L}\right)+\gamma_{33} \log \left(p_{i M}\right)+u_{i M} \tag{7.62}
+\end{align*}
+
+
+where the symmetry restrictions from production theory have been imposed. The errors $u_{i g}$ can be viewed as unobservables affecting production that the economist cannot observe. For an SUR analysis we would assume that
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{u}_{i} \mid \mathbf{p}_{i}\right)=\mathbf{0} \tag{7.63}
+\end{equation*}
+
+
+where $\mathbf{u}_{i} \equiv\left(u_{i K}, u_{i L}, u_{i M}\right)^{\prime}$ and $\mathbf{p}_{i} \equiv\left(p_{i K}, p_{i L}, p_{i M}\right)$. Because the cost shares must sum to unity for each $i, \gamma_{10}+\gamma_{20}+\gamma_{30}=1, \gamma_{11}+\gamma_{12}+\gamma_{13}=0, \gamma_{12}+\gamma_{22}+\gamma_{23}=0, \gamma_{13}+ \gamma_{23}+\gamma_{33}=0$, and $u_{i K}+u_{i L}+u_{i M}=0$. This last restriction implies that $\boldsymbol{\Omega} \equiv \operatorname{Var}\left(\mathbf{u}_{i}\right)$ has rank two. Therefore, we can drop one of the equations-say, the equation for materials-and analyze the equations for labor and capital. We can express the\\
+restrictions on the gammas in these first two equations as
+
+
+\begin{equation*}
+\gamma_{13}=-\gamma_{11}-\gamma_{12} \tag{7.64}
+\end{equation*}
+
+
+$\gamma_{23}=-\gamma_{12}-\gamma_{22}$.
+
+Using the fact that $\log (a / b)=\log (a)-\log (b)$, we can plug equations (7.64) and (7.65) into equations (7.60) and (7.61) to get\\
+$s_{i K}=\gamma_{10}+\gamma_{11} \log \left(p_{i K} / p_{i M}\right)+\gamma_{12} \log \left(p_{i L} / p_{i M}\right)+u_{i K}$\\
+$s_{i L}=\gamma_{20}+\gamma_{12} \log \left(p_{i K} / p_{i M}\right)+\gamma_{22} \log \left(p_{i L} / p_{i M}\right)+u_{i L}$.\\
+We now have a two-equation system with variance matrix of full rank, with unknown parameters $\gamma_{10}, \gamma_{20}, \gamma_{11}, \gamma_{12}$, and $\gamma_{22}$. To write this in the form (7.11), redefine $\mathbf{u}_{i}= \left(u_{i K}, u_{i L}\right)^{\prime}$ and $\mathbf{y}_{i} \equiv\left(s_{i K}, s_{i L}\right)^{\prime}$. Take $\boldsymbol{\beta} \equiv\left(\gamma_{10}, \gamma_{11}, \gamma_{12}, \gamma_{20}, \gamma_{22}\right)^{\prime}$ and then $\mathbf{X}_{i}$ must be
+
+\[
+\mathbf{X}_{i} \equiv\left(\begin{array}{ccccc}
+1 & \log \left(p_{i K} / p_{i M}\right) & \log \left(p_{i L} / p_{i M}\right) & 0 & 0  \tag{7.66}\\
+0 & 0 & \log \left(p_{i K} / p_{i M}\right) & 1 & \log \left(p_{i L} / p_{i M}\right)
+\end{array}\right) .
+\]
+
+This formulation imposes all the conditions implied by production theory.\\
+This model could be extended in several ways. The simplest would be to allow the intercepts to depend on firm characteristics. For each firm $i$, let $\mathbf{z}_{i}$ be a $1 \times J$ vector of observable firm characteristics, where $\mathbf{z}_{i 1} \equiv 1$. Then we can extend the model to
+
+
+\begin{equation*}
+s_{i K}=\mathbf{z}_{i} \boldsymbol{\delta}_{1}+\gamma_{11} \log \left(p_{i K} / p_{i M}\right)+\gamma_{12} \log \left(p_{i L} / p_{i M}\right)+u_{i K} \tag{7.67}
+\end{equation*}
+
+
+
+\begin{equation*}
+s_{i L}=\mathbf{z}_{i} \boldsymbol{\delta}_{2}+\gamma_{12} \log \left(p_{i K} / p_{i M}\right)+\gamma_{22} \log \left(p_{i L} / p_{i M}\right)+u_{i L} \tag{7.68}
+\end{equation*}
+
+
+where\\
+$\mathrm{E}\left(u_{i g} \mid \mathbf{z}_{i}, p_{i K}, p_{i L}, p_{i M}\right)=0, \quad g=K, L$.
+
+Because we have already reduced the system to two equations, theory implies no restrictions on $\boldsymbol{\delta}_{1}$ and $\boldsymbol{\delta}_{2}$. As an exercise, you should write this system in the form (7.11). For example, if $\boldsymbol{\beta} \equiv\left(\boldsymbol{\delta}_{1}^{\prime}, \gamma_{11}, \gamma_{12}, \boldsymbol{\delta}_{2}^{\prime}, \gamma_{22}\right)^{\prime}$ is $(2 J+3) \times 1$, how should $\mathbf{X}_{i}$ be defined?
+
+Under condition (7.69), system OLS and FGLS estimators are both consistent. (In this setup system OLS is not OLS equation by equation because $\gamma_{12}$ shows up in both equations). FGLS is asymptotically efficient if $\operatorname{Var}\left(\mathbf{u}_{i} \mid \mathbf{z}_{i}, \mathbf{p}_{i}\right)$ is constant. If $\operatorname{Var}\left(\mathbf{u}_{i} \mid \mathbf{z}_{i}, \mathbf{p}_{i}\right)$ depends on ( $\mathbf{z}_{i}, \mathbf{p}_{i}$ )-see Brown and Walker (1995) for a discussion of why we should expect it to-then we should at least use the robust variance matrix estimator for FGLS. In Chapter 12 we will discuss multivariate weighted least squares estimators that can be more efficient.
+
+We can easily test the symmetry assumption imposed in equations (7.67) and (7.68). One approach is to first estimate the system without any restrictions on the parameters, in which case FGLS reduces to OLS estimation of each equation. Then, compute the $t$ statistic of the difference in the estimates on $\log \left(p_{i L} / p_{i M}\right)$ in equation (7.67) and $\log \left(p_{i K} / p_{i M}\right)$ in equation (7.68). Or, the $F$ statistic from equation (7.57) can be used; $\hat{\boldsymbol{\Omega}}$ would be obtained from the unrestricted OLS estimation of each equation.
+
+System OLS has no robustness advantages over FGLS in this setup because we cannot relax assumption (7.69) in any useful way.
+
+\subsection*{7.8 Linear Panel Data Model, Revisited}
+We now study the linear panel data model in more detail. Having data over time for the same cross section units is useful for several reasons. For one, it allows us to look at dynamic relationships, something we cannot do with a single cross section. A panel data set also allows us to control for unobserved cross section heterogeneity, but we will not exploit this feature of panel data until Chapter 10.
+
+\subsection*{7.8.1 Assumptions for Pooled Ordinary Least Squares}
+We now summarize the properties of pooled OLS and feasible GLS for the linear panel data model\\
+$y_{t}=\mathbf{x}_{t} \boldsymbol{\beta}+u_{t}, \quad t=1,2, \ldots, T$.
+
+As always, when we need to indicate a particular cross section observation we include an $i$ subscript, such as $y_{i t}$.
+
+This model may appear overly restrictive because $\boldsymbol{\beta}$ is the same in each time period. However, by appropriately choosing $\mathbf{x}_{i t}$, we can allow for parameters changing over time. Also, even though we write $\mathbf{x}_{i t}$, some of the elements of $\mathbf{x}_{i t}$ may not be timevarying, such as gender dummies when $i$ indexes individuals, or industry dummies when $i$ indexes firms, or state dummies when $i$ indexes cities.
+
+Example 7.6 (Wage Equation with Panel Data): Suppose we have data for the years 1990, 1991, and 1992 on a cross section of individuals, and we would like to estimate the effect of computer usage on individual wages. One possible static model is
+
+
+\begin{align*}
+\log \left(\text { wage }_{i t}\right)= & \theta_{0}+\theta_{1} d 91_{t}+\theta_{2} d 92_{t}+\delta_{1} \text { computer }_{i t}+\delta_{2} \text { educ }_{i t} \\
+& +\delta_{3} \text { exper }_{i t}+\delta_{4} \text { female }_{i}+u_{i t} \tag{7.71}
+\end{align*}
+
+
+where $d 91_{t}$ and $d 92_{t}$ are dummy indicators for the years 1991 and 1992 and computer $_{i t}$ is a measure of how much person $i$ used a computer during year $t$. The inclusion of the year dummies allows for aggregate time effects of the kind discussed in the Section 7.2 examples. This equation contains a variable that is constant across $t$, female $_{i}$, as well as variables that can change across $i$ and $t$, such as educ ${ }_{i t}$ and exper ${ }_{i t}$. The variable $e d u c_{i t}$ is given a $t$ subscript, which indicates that years of education could change from year to year for at least some people. It could also be the case that $e d u c_{i t}$ is the same for all three years for every person in the sample, in which case we could remove the time subscript. The distinction between variables that are timeconstant is not very important here; it becomes much more important in Chapter 10.
+
+As a general rule, with large $N$ and small $T$ it is a good idea to allow for separate intercepts for each time period. Doing so allows for aggregate time effects that have the same influence on $y_{i t}$ for all $i$.
+
+Anything that can be done in a cross section context can also be done in a panel data setting. For example, in equation (7.71) we can interact female ${ }_{i}$ with the time dummy variables to see whether the gender wage gap has changed over time, or we can interact $e d u c_{i t}$ and computer ${ }_{i t}$ to allow the return to computer usage to depend on level of education.
+
+The two assumptions sufficient for pooled OLS to consistently estimate $\boldsymbol{\beta}$ are as follows:
+
+ASSUMPTION POLS.1: $\quad \mathrm{E}\left(\mathbf{x}_{t}^{\prime} u_{t}\right)=0, t=1,2, \ldots, T$.\\
+ASSUMPTION POLS.2: $\quad \operatorname{rank}\left[\sum_{t=1}^{T} \mathrm{E}\left(\mathbf{x}_{t}^{\prime} \mathbf{x}_{t}\right)\right]=K$.\\
+Remember, Assumption POLS. 1 says nothing about the relationship between $\mathbf{x}_{s}$ and $u_{t}$ for $s \neq t$. Assumption POLS. 2 essentially rules out perfect linear dependencies among the explanatory variables.
+
+To apply the usual OLS statistics from the pooled OLS regression across $i$ and $t$, we need to add homoskedasticity and no serial correlation assumptions. The weakest forms of these assumptions are the following:
+
+ASSUMPTION POLS.3: (a) $\mathrm{E}\left(u_{t}^{2} \mathbf{x}_{t}^{\prime} \mathbf{x}_{t}\right)=\sigma^{2} \mathrm{E}\left(\mathbf{x}_{t}^{\prime} \mathbf{x}_{t}\right), t=1,2, \ldots, T$, where $\sigma^{2}=\mathrm{E}\left(u_{t}^{2}\right)$ for all $t$;(b) $\mathrm{E}\left(u_{t} u_{s} \mathbf{x}_{t}^{\prime} \mathbf{x}_{s}\right)=\mathbf{0}, t \neq s, t, s=1, \ldots, T$.
+
+The first part of Assumption POLS. 3 is a fairly strong homoskedasticity assumption; sufficient is $\mathrm{E}\left(u_{t}^{2} \mid \mathbf{x}_{t}\right)=\sigma^{2}$ for all $t$. This means not only that the conditional variance does not depend on $\mathbf{x}_{t}$, but also that the unconditional variance is the same in every time period. Assumption POLS.3b essentially restricts the conditional covariances of\\
+the errors across different time periods to be zero. In fact, since $\mathbf{x}_{t}$ almost always contains a constant, POLS.3b requires at a minimum that $\mathrm{E}\left(u_{t} u_{s}\right)=0, t \neq s$. Sufficient for POLS.3b is $\mathrm{E}\left(u_{t} u_{s} \mid \mathbf{x}_{t}, \mathbf{x}_{s}\right)=0, t \neq s, t, s=1, \ldots, T$.
+
+It is important to remember that Assumption POLS. 3 implies more than just a certain form of the unconditional variance matrix of $\mathbf{u} \equiv\left(u_{1}, \ldots, u_{T}\right)^{\prime}$. Assumption POLS. 3 implies $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)=\sigma^{2} \mathbf{I}_{T}$, which means that the unconditional variances are constant and the unconditional covariances are zero, but it also effectively restricts the conditional variances and covariances.\\
+theorem 7.7 (Large-Sample Properties of Pooled OLS): Under Assumptions POLS. 1 and POLS.2, the pooled OLS estimator is consistent and asymptotically normal. If Assumption POLS. 3 holds in addition, then $\operatorname{Avar}(\hat{\boldsymbol{\beta}})=\sigma^{2}\left[\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)\right]^{-1} / N$, so that the appropriate estimator of $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$ is\\
+$\hat{\sigma}^{2}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}=\hat{\sigma}^{2}\left(\sum_{i=1}^{N} \sum_{t=1}^{T} \mathbf{x}_{i t}^{\prime} \mathbf{x}_{i t}\right)^{-1}$,\\
+where $\hat{\sigma}^{2}$ is the usual OLS variance estimator from the pooled regression\\
+$y_{i t}$ on $\mathbf{x}_{i t}, \quad t=1,2, \ldots, T, i=1, \ldots, N$.
+
+It follows that the usual $t$ statistics and $F$ statistics from regression (7.73) are approximately valid. Therefore, the $F$ statistic for testing $Q$ linear restrictions on the $K \times 1$ vector $\boldsymbol{\beta}$ is\\
+$F=\frac{\left(\mathrm{SSR}_{r}-\mathrm{SSR}_{u r}\right)}{\mathrm{SSR}_{u r}} \cdot \frac{(N T-K)}{Q}$,\\
+where $\mathrm{SSR}_{u r}$ is the sum of squared residuals from regression (7.73), and $\mathrm{SSR}_{r}$ is the regression using the $N T$ observations with the restrictions imposed.
+
+Why is a simple pooled OLS analysis valid under Assumption POLS.3? It is easy to show that Assumption POLS. 3 implies that $\mathbf{B}=\sigma^{2} \mathbf{A}$, where $\mathbf{B} \equiv \sum_{t=1}^{T} \sum_{s=1}^{T} \mathrm{E}\left(u_{t} u_{s} \mathbf{x}_{t}^{\prime} \mathbf{x}_{s}\right)$, and $\mathbf{A} \equiv \sum_{t=1}^{T} \mathrm{E}\left(\mathbf{x}_{t}^{\prime} \mathbf{x}_{t}\right)$. For the panel data case, these are the matrices that appear in expression (7.23).
+
+For computing the pooled OLS estimates and standard statistics, it does not matter how the data are ordered. However, if we put lags of any variables in the equation, it is easiest to order the data in the same way as is natural for studying asymptotic properties: the first $T$ observations should be for the first cross section unit (ordered chronologically), the next $T$ observations are for the next cross section unit, and so on. This procedure gives $N T$ rows in the data set ordered in a very specific way.
+
+Example 7.7 (Effects of Job Training Grants on Firm Scrap Rates): Using the data from JTRAIN1.RAW (Holzer, Block, Cheatham, and Knott, 1993), we estimate a model explaining the firm scrap rate in terms of grant receipt. We can estimate the equation for 54 firms and three years of data (1987, 1988, and 1989). The first grants were given in 1988. Some firms in the sample in 1989 received a grant only in 1988, so we allow for a one-year-lagged effect:
+
+$$
+\begin{aligned}
+& \left.\log \widehat{(s c r a p}_{i t}\right)=\underset{(.203)}{.597} \underset{(.311)}{.239} d 88_{t}-\underset{(.338)}{.497} d 89_{t}+\underset{(.338)}{.200} \text { grant }_{i t}+\underset{(.436)}{.049} \text { grant }_{i, t-1}, \\
+& N=54, \quad T=3, \quad R^{2}=.0173
+\end{aligned}
+$$
+
+where we have put $i$ and $t$ subscripts on the variables to emphasize which ones change across firm or time. The $R$-squared is just the usual one computed from the pooled OLS regression.
+
+In this equation, the estimated grant effect has the wrong sign, and neither the current nor the lagged grant variable is statistically significant. When a lag of $\log \left(\operatorname{scrap}_{i t}\right)$ is added to the equation, the estimates are notably different. See Problem 7.9.
+
+\subsection*{7.8.2 Dynamic Completeness}
+While the homoskedasticity assumption, Assumption POLS.3a, can never be guaranteed to hold, there is one important case where Assumption POLS.3b must hold. Suppose that the explanatory variables $\mathbf{x}_{t}$ are such that, for all $t$,
+
+
+\begin{equation*}
+\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, y_{t-1}, \mathbf{x}_{t-1}, \ldots, y_{1}, \mathbf{x}_{1}\right)=\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right) . \tag{7.75}
+\end{equation*}
+
+
+This assumption means that $\mathbf{x}_{t}$ contains sufficient lags of all variables such that additional lagged values have no partial effect on $y_{t}$. The inclusion of lagged $y$ in equation (7.75) is important. For example, if $\mathbf{z}_{t}$ is a vector of contemporaneous variables such that
+
+$$
+\mathrm{E}\left(y_{t} \mid \mathbf{z}_{t}, \mathbf{z}_{t-1}, \ldots, \mathbf{z}_{1}\right)=\mathrm{E}\left(y_{t} \mid \mathbf{z}_{t}, \mathbf{z}_{t-1}, \ldots, \mathbf{z}_{t-L}\right)
+$$
+
+and we choose $\mathbf{x}_{t}=\left(\mathbf{z}_{t}, \mathbf{z}_{t-1}, \ldots, \mathbf{z}_{t-L}\right)$, then $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, \mathbf{x}_{t-1}, \ldots, \mathbf{x}_{1}\right)=\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right)$, that is, the sequential exogenecity assumption holds. But equation (7.75) need not hold. Generally, in static and FDL models, there is no reason to expect equation (7.75) to hold, even in the absence of specification problems such as omitted variables.
+
+We call equation (7.75) dynamic completeness of the conditional mean, which clearly implies sequential exogenecity. Often, we can ensure that equation (7.75) is at least approximately true by putting sufficient lags of $\mathbf{z}_{t}$ and $y_{t}$ into $\mathbf{x}_{t}$.
+
+In terms of the disturbances, equation (7.75) is equivalent to\\
+$\mathrm{E}\left(u_{t} \mid \mathbf{x}_{t}, u_{t-1}, \mathbf{x}_{t-1}, \ldots, u_{1}, \mathbf{x}_{1}\right)=0$,\\
+and, by iterated expectations, equation (7.76) implies $\mathrm{E}\left(u_{t} u_{s} \mid \mathbf{x}_{t}, \mathbf{x}_{s}\right)=0, s \neq t$. Therefore, equation (7.75) implies Assumption POLS.3b as well as Assumption POLS.1. If equation (7.75) holds along with the homoskedasticity assumption $\operatorname{Var}\left(y_{t} \mid \mathbf{x}_{t}\right)=\sigma^{2}$, then Assumptions POLS. 1 and POLS. 3 both hold, and standard OLS statistics can be used for inference.
+
+The following example is similar in spirit to an analysis of Maloney and McCormick (1993), who use a large random sample of students (including nonathletes) from Clemson University in a cross section analysis.
+
+Example 7.8 (Effect of Being in Season on Grade Point Average): The data in GPA.RAW are on 366 student-athletes at a large university. There are two semesters of data (fall and spring) for each student. Of primary interest is the "in-season" effect on athletes' GPAs. The model-with $i, t$ subscripts-is
+
+$$
+\begin{aligned}
+\text { trmgpa }_{i t}= & \beta_{0}+\beta_{1} \text { spring }_{t}+\beta_{2} \text { cumgpa }_{i t}+\beta_{3} \text { crsgpa }_{i t}+\beta_{4} \text { frstsem }_{i t}+\beta_{5} \text { season }_{i t}+\beta_{6} \text { SAT }_{i} \\
+& +\beta_{7} \text { verbmath }_{i}+\beta_{8} \text { hsperc }_{i}+\beta_{9} \text { hssize }_{i}+\beta_{10} \text { black }_{i}+\beta_{11} \text { female }_{i}+u_{i t} .
+\end{aligned}
+$$
+
+The variable cumgpa it is cumulative GPA at the beginning of the term, and this clearly depends on past-term GPAs. In other words, this model has something akin to a lagged dependent variable. In addition, it contains other variables that change over time (such as $\operatorname{season}_{i t}$ ) and several variables that do not (such as $S A T_{i}$ ). We assume that the right-hand side (without $u_{i t}$ ) represents a conditional expectation, so that $u_{i t}$ is necessarily uncorrelated with all explanatory variables and any functions of them. It may or may not be that the model is also dynamically complete in the sense of equation (7.75); we will show one way to test this assumption in Section 7.8.5. The estimated equation is
+
+$$
+\begin{aligned}
+\text { trmgpa }_{i t}= & \underset{(0.34)}{-2.07} \underset{(.046)}{.012} \text { spring }_{t}+\underset{(.040)}{.315} \text { cumgpa }_{i t}+\underset{(.096)}{.984} \text { crsgpa }_{i t} \\
+& +\underset{(.120)}{.769} \text { frstsem }_{i t}-\underset{(.047)}{.046 \text { season }_{i t}}+\underset{(.00015)}{.00141} \text { SAT }_{i}-\underset{(.131)}{.113} \text { verbmath }_{i} \\
+& \underset{(.0010)}{.0066 \text { hsperc }_{i}-\underset{(.000099)}{.000058 \text { hssize }_{i}-\underset{(.054)}{.231} \text { black }_{i}}+\underset{(.051)}{.286} \text { female }_{i}} \\
+N=366, \quad & T=2, \quad R^{2}=.519
+\end{aligned}
+$$
+
+The in-season effect is small-an athlete's GPA is estimated to be .046 points lower when the sport is in season-and it is statistically insignificant as well. The other coefficients have reasonable signs and magnitudes.
+
+Often, once we start putting any lagged values of $y_{t}$ into $\mathbf{x}_{t}$, then equation (7.75) is an intended assumption. But this generalization is not always true. In the previous example, we can think of the variable cumgpa as another control we are using to hold other factors fixed when looking at an in-season effect on GPA for college athletes: cumgpa can proxy for omitted factors that make someone successful in college. We may not care that serial correlation is still present in the error, except that, if equation (7.75) fails, we need to estimate the asymptotic variance of the pooled OLS estimator to be robust to serial correlation (and perhaps heteroskedasticity as well).
+
+In introductory econometrics, students are often warned that having serial correlation in a model with a lagged dependent variable causes the OLS estimators to be inconsistent. While this statement is true in the context of a specific model of serial correlation, it is not true in general, and therefore it is very misleading. (See Wooldridge (2009a, Chap. 12) for more discussion in the context of the AR(1) model.) Our analysis shows that, whatever is included in $\mathbf{x}_{t}$, pooled OLS provides consistent estimators of $\boldsymbol{\beta}$ whenever $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right)=\mathbf{x}_{t} \boldsymbol{\beta}$; it does not matter that the $u_{t}$ might be serially correlated.
+
+\subsection*{7.8.3 Note on Time Series Persistence}
+Theorem 7.7 imposes no restrictions on the time series persistence in the data $\left\{\left(\mathbf{x}_{i t}, y_{i t}\right): t=1,2, \ldots, T\right\}$. In light of the explosion of work in time series econometrics on asymptotic theory with persistent processes [often called unit root processessee, for example, Hamilton (1994)], it may appear that we have not been careful in stating our assumptions. However, we do not need to restrict the dynamic behavior of our data in any way because we are doing fixed- $T$, large- $N$ asymptotics. It is for this reason that the mechanics of the asymptotic analysis is the same for the SUR case and the panel data case. If $T$ is large relative to $N$, the asymptotics here may be misleading. Fixing $N$ while $T$ grows or letting $N$ and $T$ both grow takes us into the realm of multiple time series analysis: we would have to know about the temporal dependence in the data, and, to have a general treatment, we would have to assume some form of weak dependence (see Wooldridge, 1994a, for a discussion of weak dependence). Recently, progress has been made on asymptotics in panel data with large $T$ and $N$ when the data have unit roots; see, for example, Pesaran and Smith (1995), Moon and Phillips (2000), and Phillips and Moon (2000).
+
+As an example, consider the simple AR(1) model\\
+$y_{t}=\beta_{0}+\beta_{1} y_{t-1}+u_{t}, \quad \mathrm{E}\left(u_{t} \mid y_{t-1}, \ldots, y_{0}\right)=0$.\\
+Assumption POLS. 1 holds (provided the appropriate moments exist). Also, Assumption POLS. 2 can be maintained. Since this model is dynamically complete, the only potential nuisance is heteroskedasticity in $u_{t}$ that changes over time or depends on $y_{t-1}$. In any case, the pooled OLS estimator from the regression $y_{i t}$ on $1, y_{i, t-1}$, $t=1, \ldots, T, i=1, \ldots, N$, produces consistent, $\sqrt{N}$-asymptotically normal estimators for fixed $T$ as $N \rightarrow \infty$, for any values of $\beta_{0}$ and $\beta_{1}$.
+
+In a pure time series case, or in a panel data case with $T \rightarrow \infty$ and $N$ fixed, we would have to assume $\left|\beta_{1}\right|<1$, which is the stability condition for an $\operatorname{AR}(1)$ model. Cases where $\left|\beta_{1}\right| \geq 1$ cause considerable complications when the asymptotics is done along the time series dimension (see Hamilton, 1994, Chapter 19). Here, a large cross section and relatively short time series allow us to be agnostic about the amount of temporal persistence.
+
+\subsection*{7.8.4 Robust Asymptotic Variance Matrix}
+Because Assumption POLS. 3 can be restrictive, it is often useful to obtain a robust estimate of $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$ that is valid without Assumption POLS.3. We have already seen the general form of the estimator, given in matrix (7.28). In the case of panel data, this estimator is fully robust to arbitrary heteroskedasticity-conditional or unconditional-and arbitrary serial correlation across time (again, conditional or unconditional). The residuals $\hat{\mathbf{u}}_{i}$ are the $T \times 1$ pooled OLS residuals for cross section observation $i$. The fully robust variance matrix estimator can be expressed in the sandwich form as\\
+$\widehat{\operatorname{Avar}(\hat{\boldsymbol{\beta}})}=\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \sum_{t=1}^{T} \sum_{s=1}^{T} \hat{u}_{i t} \hat{u}_{i s} \mathbf{x}_{i t}^{\prime} \mathbf{x}_{i s}\right)\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)^{-1}$,\\
+where the middle matrix can also be written as
+
+
+\begin{equation*}
+\sum_{i=1}^{N} \sum_{t=1}^{T} \hat{u}_{i t}^{2} \mathbf{x}_{i t}^{\prime} \mathbf{x}_{i t}+\sum_{i=1}^{N} \sum_{t=1}^{T} \sum_{s \neq t}^{T} \hat{u}_{i t} \hat{u}_{i s} \mathbf{x}_{i t}^{\prime} \mathbf{x}_{i s} . \tag{7.78}
+\end{equation*}
+
+
+This last expression makes it clear that the estimator is robust to arbitrary heteroskedasticity and arbitrary serial correlation. Some statistical packages compute equation (7.77) very easily, although the command may be disguised. (For example,\\
+in Stata, equation (7.77) is computed using a cluster sampling option. We cover cluster sampling in Chapter 21.) Whether a software package has this capability or whether it must be programmed by you, the data must be stored as described earlier: The $\left(\mathbf{y}_{i}, \mathbf{X}_{i}\right)$ should be stacked on top of one another for $i=1, \ldots, N$.
+
+\subsection*{7.8.5 Testing for Serial Correlation and Heteroskedasticity after Pooled Ordinary Least Squares}
+Testing for Serial Correlation It is often useful to have a simple way to detect serial correlation after estimation by pooled OLS. One reason to test for serial correlation is that it should not be present if the model is supposed to be dynamically complete in the conditional mean. A second reason to test for serial correlation is to see whether we should compute a robust variance matrix estimator for the pooled OLS estimator.
+
+One interpretation of serial correlation in the errors of a panel data model is that the error in each time period contains a time-constant omitted factor, a case we cover explicitly in Chapter 10. For now, we are simply interested in knowing whether or not the errors are serially correlated.
+
+We focus on the alternative that the error is a first-order autoregressive process; this will have power against fairly general kinds of serial correlation. Write the AR(1) model as
+
+
+\begin{equation*}
+u_{t}=\rho_{1} u_{t-1}+e_{t} \tag{7.79}
+\end{equation*}
+
+
+where
+
+
+\begin{equation*}
+\mathrm{E}\left(e_{t} \mid \mathbf{x}_{t}, u_{t-1}, \mathbf{x}_{t-1}, u_{t-2}, \ldots\right)=0 . \tag{7.80}
+\end{equation*}
+
+
+Under the null hypothesis of no serial correlation, $\rho_{1}=0$.\\
+One way to proceed is to write the dynamic model under $\operatorname{AR}(1)$ serial correlation as
+
+
+\begin{equation*}
+y_{t}=\mathbf{x}_{t} \boldsymbol{\beta}+\rho_{1} u_{t-1}+e_{t}, \quad t=2, \ldots, T, \tag{7.81}
+\end{equation*}
+
+
+where we lose the first time period due to the presence of $u_{t-1}$. If we can observe the $u_{t}$, it is clear how we should proceed: simply estimate equation (7.75) by pooled OLS (losing the first time period) and perform a $t$ test on $\hat{\rho}_{1}$. To operationalize this procedure, we replace the $u_{t}$ with the pooled OLS residuals. Therefore, we run the regression
+
+
+\begin{equation*}
+y_{i t} \text { on } \mathbf{x}_{i t}, \hat{u}_{i, t-1}, \quad t=2, \ldots, T, i=1, \ldots, N, \tag{7.82}
+\end{equation*}
+
+
+and do a standard $t$ test on the coefficient of $\hat{u}_{i, t-1}$. A statistic that is robust to arbitrary heteroskedasticity in $\operatorname{Var}\left(y_{t} \mid \mathbf{x}_{t}, u_{t-1}\right)$ is obtained by the usual heteroskedasticityrobust $t$ statistic in the pooled regression. This includes Engle's (1982) ARCH model and any other form of static or dynamic heteroskedasticity.
+
+Why is a $t$ test from regression (7.82) valid? Under dynamic completeness, equation (7.81) satisfies Assumptions POLS.1-POLS. 3 if we also assume that $\operatorname{Var}\left(y_{t} \mid \mathbf{x}_{t}, u_{t-1}\right)$ is constant. Further, the presence of the generated regressor $\hat{u}_{i, t-1}$ does not affect the limiting distribution of $\hat{\rho}_{1}$ under the null because $\rho_{1}=0$. Verifying this claim is similar to the pure cross section case in Section 6.1.1.
+
+A nice feature of the statistic computed from regression (7.82) is that it works whether or not $\mathbf{x}_{t}$ is strictly exogenous. A different form of the test is valid if we assume strict exogeneity: use the $t$ statistic on $\hat{u}_{i, t-1}$ in the regression\\
+$\hat{u}_{i t}$ on $\hat{u}_{i, t-1}, \quad t=2, \ldots, T, i=1, \ldots, N$\\
+or its heteroskedasticity-robust form. That this test is valid follows by applying Problem 7.4 and the assumptions for pooled OLS with a lagged dependent variable.
+
+Example 7.9 (Athletes' Grade Point Averages, continued): We apply the test from regression (7.82) because cumgpa cannot be strictly exogenous (GPA this term affects cumulative GPA after this term). We drop the variables spring and frstsem from regression (7.82), since these are identically unity and zero, respectively, in the spring semester. We obtain $\hat{\rho}_{1}=.194$ and $t_{\hat{\rho}_{1}}=3.18$, and so the null hypothesis is rejected. Thus there is still some work to do to capture the full dynamics. But, if we assume that we are interested in the conditional expectation implicit in the estimation, we are getting consistent estimators. This result is useful to know because we are primarily interested in the in-season effect, and the other variables are simply acting as controls. The presence of serial correlation means that we should compute standard errors robust to arbitrary serial correlation (and heteroskedasticity); see Problem 7.10.
+
+Testing for Heteroskedasticity The primary reason to test for heteroskedasticity after running pooled OLS is to detect violation of Assumption POLS.3a, which is one of the assumptions needed for the usual statistics accompanying a pooled OLS regression to be valid. We assume throughout this section that $\mathrm{E}\left(u_{t} \mid \mathbf{x}_{t}\right)=0, t= 1,2, \ldots, T$, which strengthens Assumption POLS. 1 but does not require strict exogeneity. Then the null hypothesis of homoskedasticity can be stated as $\mathrm{E}\left(u_{t}^{2} \mid \mathbf{x}_{t}\right)=\sigma^{2}$, $t=1,2, \ldots, T$.
+
+Under $\mathrm{H}_{0}, u_{i t}^{2}$ is uncorrelated with any function of $\mathbf{x}_{i t}$; let $\mathbf{h}_{i t}$ denote a $1 \times Q$ vector of nonconstant functions of $\mathbf{x}_{i t}$. In particular, $\mathbf{h}_{i t}$ can, and often should, contain dummy variables for the different time periods.
+
+From the tests for heteroskedasticity in Section 6.3.4. the following procedure is natural. Let $\hat{u}_{i t}^{2}$ denote the squared pooled OLS residuals. Then obtain the usual $R$ squared, $R_{c}^{2}$, from the regression\\
+$\hat{u}_{i t}^{2}$ on $1, \mathbf{h}_{i t}, \quad t=1, \ldots, T, i=1, \ldots, N$
+
+The test statistic is $N T R_{c}^{2}$, which is treated as asymptotically $\chi_{Q}^{2}$ under $\mathrm{H}_{0}$. (Alternatively, we can use the usual $F$ test of joint significance of $\mathbf{h}_{i t}$ from the pooled OLS regression. The degrees of freedom are $Q$ and $N T-K$.) When is this procedure valid?
+
+Using arguments very similar to the cross sectional tests from Chapter 6, it can be shown that the statistic has the same distribution if $u_{i t}^{2}$ replaces $\hat{u}_{i t}^{2}$; this fact is very convenient because it allows us to focus on the other features of the test. Effectively, we are performing a standard LM test of $\mathrm{H}_{0}: \boldsymbol{\delta}=\mathbf{0}$ in the model\\
+$u_{i t}^{2}=\delta_{0}+\mathbf{h}_{i t} \boldsymbol{\delta}+a_{i t}, \quad t=1,2, \ldots, T$.
+
+This test requires that the errors $\left\{a_{i t}\right\}$ be appropriately serially uncorrelated and requires homoskedasticity; that is, Assumption POLS. 3 must hold in equation (7.85). Therefore, the tests based on nonrobust statistics from regression (7.84) essentially require that $\mathrm{E}\left(a_{i t}^{2} \mid \mathbf{x}_{i t}\right)$ be constant-meaning that $\mathrm{E}\left(u_{i t}^{4} \mid \mathbf{x}_{i t}\right)$ must be constant under $\mathrm{H}_{0}$. We also need a stronger homoskedasticity assumption; $\mathrm{E}\left(u_{i t}^{2} \mid \mathbf{x}_{i t}, u_{i, t-1}, \mathbf{x}_{i, t-1}, \ldots\right)= \sigma^{2}$ is sufficient for the $\left\{a_{i t}\right\}$ in equation (7.85) to be appropriately serially uncorrelated.
+
+A fully robust test for heteroskedasticity can be computed from the pooled regression (7.84) by obtaining a fully robust variance matrix estimator for $\hat{\boldsymbol{\delta}}$ [see equation (7.28)]; this can be used to form a robust Wald statistic.
+
+Since violation of Assumption POLS.3a is of primary interest, it makes sense to include elements of $\mathbf{x}_{i t}$ in $\mathbf{h}_{i t}$, and possibly squares and cross products of elements of $\mathbf{x}_{i t}$. Another useful choice, covered in Chapter 6, is $\hat{\mathbf{h}}_{i t}=\left(\hat{y}_{i t}, \hat{y}_{i t}^{2}\right)$, the pooled OLS fitted values and their squares. Also, Assumption POLS.3a requires the unconditional variances $\mathrm{E}\left(u_{i t}^{2}\right)$ to be the same across $t$. Whether they are can be tested directly by choosing $\mathbf{h}_{i t}$ to have $T-1$ time dummies.
+
+If heteroskedasticity is detected but serial correlation is not, then the usual heteroskedasticity-robust standard errors and test statistics from the pooled OLS regression (7.73) can be used.
+
+\subsection*{7.8.6 Feasible Generalized Least Squares Estimation under Strict Exogeneity}
+When $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right) \neq \sigma^{2} \mathbf{I}_{T}$, it is reasonable to consider a feasible GLS analysis rather than a pooled OLS analysis. In Chapter 10 we will cover a particular FGLS analysis after we introduce unobserved components panel data models. With large $N$ and small $T$, nothing precludes an FGLS analysis in the current setting. However, we must remember that FGLS is not even guaranteed to produce consistent, let alone efficient,\\
+estimators under Assumptions POLS. 1 and POLS.2. Unless $\boldsymbol{\Omega}=\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$ is a diagonal matrix, Assumption POLS. 1 should be replaced with the strict exogeneity assumption (7.8). (Problem 7.7 covers the case when $\boldsymbol{\Omega}$ is diagonal.) Sometimes we are willing to assume strict exogeneity in static and finite distributed lag models. As we saw earlier, it cannot hold in models with lagged $y_{i t}$, and it can fail in static models or distributed lag models if there is feedback from $y_{i t}$ to future $\mathbf{z}_{i t}$.
+
+If we are comfortable with the strict exogeneity assumption, a useful FGLS analysis is obtained when $\left\{u_{i t}: t=1,2, \ldots, T\right\}$ is assumed to follow an AR(1) process, $u_{i t}=\rho u_{i, t-1}+e_{i t}$. In this case, it is easy to transform the variables and compute the FGLS estimator from a pooled OLS regression. Let $\left\{\check{u}_{i t}: t=1, \ldots, T ; i=1, \ldots, N\right\}$ denote the POLS residuals and obtain $\hat{\rho}$ as the coefficient from the regression $\check{u}_{i t}$ on $\check{u}_{i, t-1}, t=2, \ldots, T, i=1, \ldots, N$ (where we must be sure to omit the first time period for each $i$ ). We can modify the Prais-Winsten approach (for example, Wooldridge, 2009a, Section 12.3) to be applicable on panel data. If the $\operatorname{AR}(1)$ process is stablethat is, $|\rho|<1$-and we assume stationary innovations $\left\{e_{i t}\right\}$, then $\sigma_{u}^{2}=\sigma_{e}^{2} /\left(1-\rho^{2}\right)$. Therefore, for all $t=1$ observations, we define $\tilde{y}_{i 1}=\sqrt{\left(1-\hat{\rho}^{2}\right)} y_{i 1}$ and $\tilde{\mathbf{x}}_{i 1}= \sqrt{\left(1-\hat{\rho}^{2}\right)} \mathbf{x}_{i 1}$. For $t=2, \ldots, T, \tilde{y}_{i t}=y_{i t}-\hat{\rho} y_{i, t-1}$ and $\tilde{\mathbf{x}}_{i t}=\mathbf{x}_{i t}-\hat{\rho} \mathbf{x}_{i, t-1}$. Then, the FGLS estimator is obtained from the pooled OLS regression\\
+$\tilde{y}_{i t}$ on $\tilde{\mathbf{x}}_{i t}, \quad t=1, \ldots, T, i=1, \ldots, N$.
+
+If $\boldsymbol{\Omega}$ truly has the AR(1) form and Assumption SGLS. 3 holds, then the usual standard errors and test statistics from (7.79) are asymptotically valid. If we have any doubts about the homoskedasticity assumption, or whether the AR(1) assumption sufficiently captures the serial dependence, we can just apply the usual fully robust variance matrix (7.77) and associated statistics to pooled OLS on the transformed variables. This allows us to probably obtain an estimator more efficient than POLS (on the original data) but also guards against the rather simple structure we imposed on $\boldsymbol{\Omega}$. Of course, failure of strict exogeneity generally causes the Prais-Winsten estimator of $\boldsymbol{\beta}$ to be inconsistent.
+
+Notice that the Prais-Winsten approach allows us to use all $t=1$ observations. With panel data, it is simply too costly to drop the first time period, as in a CochraneOrcutt approach. (Indeed, the Cochrane-Orcutt estimator is asymptotically less efficient in the panel data case with fixed $T, N \rightarrow \infty$ asymptotics because it drops $N$ observations relative to Prais-Winsten.)
+
+Some statistical packages, including Stata, allow FGLS estimation with a misspecified variance matrix, but often this is under the guise of "generalized estimating equations," a topic we will treat in Chapter 12.
+
+\section*{Problems}
+7.1. Provide the details for a proof of Theorem 7.1.\\
+7.2. In model (7.11), maintain Assumptions SOLS. 1 and SOLS.2, and assume $\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{X}_{i}\right)=\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega} \mathbf{X}_{i}\right)$, where $\boldsymbol{\Omega} \equiv \mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$. (The last assumption is a different way of stating the homoskedasticity assumption for systems of equations; it always holds if assumption (7.53) holds.) Let $\hat{\boldsymbol{\beta}}_{\text {SOLS }}$ denote the system OLS estimator.\\
+a. Show that $\operatorname{Avar}\left(\hat{\boldsymbol{\beta}}_{\text {SOLS }}\right)=\left[\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)\right]^{-1}\left[\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega} \mathbf{X}_{i}\right)\right]\left[\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)\right]^{-1} / N$.\\
+b. How would you estimate the asymptotic variance in part a?\\
+c. Now add Assumptions SGLS.1-SGLS.3. Show that $\operatorname{Avar}\left(\hat{\boldsymbol{\beta}}_{\text {SOLS }}\right)-\operatorname{Avar}\left(\hat{\boldsymbol{\beta}}_{\text {FGLS }}\right)$ is positive semidefinite. (Hint: Show that $\left[\operatorname{Avar}\left(\hat{\boldsymbol{\beta}}_{\text {FGLS }}\right)\right]^{-1}-\left[\operatorname{Avar}\left(\hat{\boldsymbol{\beta}}_{\text {SOLS }}\right)\right]^{-1}$ is p.s.d.)\\
+d. If, in addition to the previous assumptions, $\boldsymbol{\Omega}=\sigma^{2} \mathbf{I}_{G}$, show that SOLS and FGLS have the same asymptotic variance.\\
+e. Evaluate the following statement: "Under the assumptions of part c, FGLS is never asymptotically worse than SOLS, even if $\boldsymbol{\Omega}=\sigma^{2} \mathbf{I}_{G}$."\\
+7.3. Consider the SUR model (7.2) under Assumptions SOLS.1, SOLS.2, and SGLS.3, with $\boldsymbol{\Omega} \equiv \operatorname{diag}\left(\sigma_{1}^{2}, \ldots, \sigma_{G}^{2}\right)$; thus, GLS and OLS estimation equation by equation are the same. (In the SUR model with diagonal $\boldsymbol{\Omega}$, Assumption SOLS. 1 is the same as Assumption SGLS.1, and Assumption SOLS. 2 is the same as Assumption SGLS.2.)\\
+a. Show that single-equation OLS estimators from any two equations, say, $\hat{\boldsymbol{\beta}}_{g}$ and $\hat{\boldsymbol{\beta}}_{h}$, are asymptotically uncorrelated. (That is, show that the asymptotic variance of the system OLS estimator $\hat{\boldsymbol{\beta}}$ is block diagonal.)\\
+b. Under the conditions of part a, assume that $\boldsymbol{\beta}_{1}$ and $\boldsymbol{\beta}_{2}$ (the parameter vectors in the first two equations) have the same dimension. Explain how you would test $\mathrm{H}_{0}: \boldsymbol{\beta}_{1}=\boldsymbol{\beta}_{2}$ against $\mathrm{H}_{1}: \boldsymbol{\beta}_{1} \neq \boldsymbol{\beta}_{2}$.\\
+c. Now drop Assumption SGLS.3, maintaining Assumptions SOLS. 1 and SOLS. 2 and diagonality of $\boldsymbol{\Omega}$. Suppose that $\hat{\boldsymbol{\Omega}}$ is estimated in an unrestricted manner, so that FGLS and OLS are not algebraically equivalent. Show that OLS and FGLS are $\sqrt{N}$-asymptotically equivalent, that is, $\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{\text {SOLS }}-\hat{\boldsymbol{\beta}}_{\text {FGLS }}\right)=\mathrm{o}_{p}(1)$. This is one case where FGLS is consistent under Assumption SOLS.1.\\
+7.4. Using the $\sqrt{N}$-consistency of the system OLS estimator $\hat{\hat{\boldsymbol{\beta}}}$ for $\boldsymbol{\beta}$, for $\hat{\boldsymbol{\Omega}}$ in equation (7.40) show that\\
+$\operatorname{vec}[\sqrt{N}(\hat{\boldsymbol{\Omega}}-\boldsymbol{\Omega})]=\operatorname{vec}\left[N^{-1 / 2} \sum_{i=1}^{N}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}-\boldsymbol{\Omega}\right)\right]+\mathrm{o}_{p}(1)$\\
+under Assumptions SGLS. 1 and SOLS.2. (Note: This result does not hold when Assumption SGLS. 1 is replaced with the weaker Assumption SOLS.1.) Assume that all moment conditions needed to apply the WLLN and CLT are satisfied. The important conclusion is that the asymptotic distribution of vec $\sqrt{N}(\hat{\boldsymbol{\Omega}}-\boldsymbol{\Omega})$ does not depend on that of $\sqrt{N}(\check{\boldsymbol{\beta}}-\boldsymbol{\beta})$, and so any asymptotic tests on the elements of $\boldsymbol{\Omega}$ can ignore the estimation of $\boldsymbol{\beta}$. [Hint: Start from equation (7.42) and use the fact that $\left.\sqrt{N}(\check{\boldsymbol{\beta}}-\boldsymbol{\beta})=\mathrm{O}_{p}(1).\right]$\\
+7.5. Prove Theorem 7.6, using the fact that when $\mathbf{X}_{i}=\mathbf{I}_{G} \otimes \mathbf{x}_{i}$,\\
+$\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}=\hat{\boldsymbol{\Omega}}^{-1} \otimes\left(\sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right) \quad$ and $\quad \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{y}_{i}=\left(\hat{\boldsymbol{\Omega}}^{-1} \otimes \mathbf{I}_{K}\right)\left(\begin{array}{c}\sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} y_{i 1} \\ \vdots \\ \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} y_{i G}\end{array}\right)$.\\
+7.6. Start with model (7.11). Suppose you wish to impose $Q$ linear restrictions of the form $\mathbf{R} \boldsymbol{\beta}=\mathbf{r}$, where $\mathbf{R}$ is a $Q \times K$ matrix and $\mathbf{r}$ is a $Q \times 1$ vector. Assume that $\mathbf{R}$ is partitioned as $\mathbf{R} \equiv\left[\mathbf{R}_{1} \mid \mathbf{R}_{2}\right]$, where $\mathbf{R}_{1}$ is a $Q \times Q$ nonsingular matrix and $\mathbf{R}_{2}$ is a $Q \times(K-Q)$ matrix. Partition $\mathbf{X}_{i}$ as $\mathbf{X}_{i} \equiv\left[\mathbf{X}_{i 1} \mid \mathbf{X}_{i 2}\right]$, where $\mathbf{X}_{i 1}$ is $G \times Q$ and $\mathbf{X}_{i 2}$ is $G \times(K-Q)$, and partition $\boldsymbol{\beta}$ as $\boldsymbol{\beta} \equiv\left(\boldsymbol{\beta}_{1}^{\prime}, \boldsymbol{\beta}_{2}^{\prime}\right)^{\prime}$. The restrictions $\mathbf{R} \boldsymbol{\beta}=\mathbf{r}$ can be expressed as $\mathbf{R}_{1} \boldsymbol{\beta}_{1}+\mathbf{R}_{2} \boldsymbol{\beta}_{2}=\mathbf{r}$, or $\boldsymbol{\beta}_{1}=\mathbf{R}_{1}^{-1}\left(\mathbf{r}-\mathbf{R}_{2} \boldsymbol{\beta}_{2}\right)$. Show that the restricted model can be written as\\
+$\tilde{\mathbf{y}}_{i}=\tilde{\mathbf{X}}_{i 2} \boldsymbol{\beta}_{2}+\mathbf{u}_{i}$,\\
+where $\tilde{\mathbf{y}}_{i}=\mathbf{y}_{i}-\mathbf{X}_{i 1} \mathbf{R}_{1}^{-1} \mathbf{r}$ and $\tilde{\mathbf{X}}_{i 2}=\mathbf{X}_{i 2}-\mathbf{X}_{i 1} \mathbf{R}_{1}^{-1} \mathbf{R}_{2}$.\\
+7.7. Consider the panel data model\\
+$y_{i t}=\mathbf{x}_{i t} \boldsymbol{\beta}+u_{i t}, \quad t=1,2, \ldots, T$,\\
+$\mathrm{E}\left(u_{i t} \mid \mathbf{x}_{i t}, u_{i, t-1}, \mathbf{x}_{i, t-1}, \ldots,\right)=0$,\\
+$\mathrm{E}\left(u_{i t}^{2} \mid \mathbf{x}_{i t}\right)=\mathrm{E}\left(u_{i t}^{2}\right)=\sigma_{t}^{2}, \quad t=1, \ldots, T$.\\
+(Note that $\mathrm{E}\left(u_{i t}^{2} \mid \mathbf{x}_{i t}\right)$ does not depend on $\mathbf{x}_{i t}$, but it is allowed to be a different constant in each time period.)\\
+a. Show that $\boldsymbol{\Omega}=\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$ is a diagonal matrix.\\
+b. Write down the GLS estimator assuming that $\boldsymbol{\Omega}$ is known.\\
+c. Argue that Assumption SGLS. 1 does not necessarily hold under the assumptions made. (Setting $\mathbf{x}_{i t}=y_{i, t-1}$ might help in answering this part.) Nevertheless, show that the GLS estimator from part b is consistent for $\boldsymbol{\beta}$ by showing that $\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right)=\mathbf{0}$.\\
+(This proof shows that Assumption SGLS. 1 is sufficient, but not necessary, for consistency. Sometimes E $\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right)=\mathbf{0}$ even though Assumption SGLS. 1 does not hold.)\\
+d. Show that Assumption SGLS. 3 holds under the given assumptions.\\
+e. Explain how to consistently estimate each $\sigma_{t}^{2}$ (as $N \rightarrow \infty$ ).\\
+f. Argue that, under the assumptions made, valid inference is obtained by weighting each observation $\left(y_{i t}, \mathbf{x}_{i t}\right)$ by $1 / \hat{\sigma}_{t}$ and then running pooled OLS.\\
+g . What happens if we assume that $\sigma_{t}^{2}=\sigma^{2}$ for all $t=1, \ldots, T$ ?\\
+7.8. Redo Example 7.3, disaggregating the benefits categories into value of vacation days, value of sick leave, value of employer-provided insurance, and value of pension. Use hourly measures of these along with hrearn, and estimate an SUR model. Does marital status appear to affect any form of compensation? Test whether another year of education increases expected pension value and expected insurance by the same amount.\\
+7.9. Redo Example 7.7 but include a single lag of $\log$ (scrap) in the equation to proxy for omitted variables that may determine grant receipt. Test for AR(1) serial correlation. If you find it, you should also compute the fully robust standard errors that allow for abitrary serial correlation across time and heteroskedasticity.\\
+7.10. In Example 7.9, compute standard errors fully robust to serial correlation and heteroskedasticity. Discuss any important differences between the robust standard errors and the usual standard errors.\\
+7.11. Use the data in CORNWELL.RAW for this question; see Problem 4.13.\\
+a. Using the data for all seven years, and using the logarithms of all variables, estimate a model relating the crime rate to prbarr, prbconv, prbpris, avgsen, and polpc. Use pooled OLS and include a full set of year dummies. Test for serial correlation assuming that the explanatory variables are strictly exogenous. If there is serial correlation, obtain the fully robust standard errors.\\
+b. Add a one-year lag of $\log ($ crmrte $)$ to the equation from part a, and compare with the estimates from part a.\\
+c. Test for first-order serial correlation in the errors in the model from part b. If serial correlation is present, compute the fully robust standard errors.\\
+d. Add all of the wage variables (in logarithmic form) to the equation from part c. Which ones are statistically and economically significant? Are they jointly significant? Test for joint significance of the wage variables allowing arbitrary serial correlation and heteroskedasticity.\\
+7.12. If you add wealth at the beginning of year $t$ to the saving equation in Example 7.2, is the strict exogeneity assumption likely to hold? Explain.\\
+7.13. Use the data in NBASAL.RAW to answer this question.\\
+a. Estimate an SUR model for the three response variables points, rebounds, and assists. The explanatory variables in each equation should be age, exper, exper ${ }^{2}$, coll, guard, forward, black, and marr. Does marital status have a positive or negative affect on each variable? Is it statistically significant in the assists equation?\\
+b. Test the hypothesis that marital status can be excluded entirely from the system. You may use the test that maintains Assumption SGLS.3.\\
+c. What do you make of the negative, statistically significant coefficients on coll in the three equations?\\
+7.14. Consider the system of equations $\mathbf{y}_{i}=\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{u}_{i}$ under $\mathrm{E}\left(\mathbf{X}_{i} \otimes \mathbf{u}_{i}\right)=\mathbf{0}$ and $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{X}_{i}\right)=\boldsymbol{\Omega}$. Consider the FGLS estimator with $\hat{\boldsymbol{\Omega}}$ consistent for $\boldsymbol{\Omega}$ and another FGLS estimator using $\hat{\boldsymbol{\Lambda}} \xrightarrow{p} \boldsymbol{\Lambda} \neq \boldsymbol{\Omega}$. Show that the former is at least as asymptotically efficient as the latter.\\
+7.15. In the system of equations $\mathbf{y}_{i}=\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{Z}_{i} \boldsymbol{\gamma}+\mathbf{u}_{i}$ under $\mathrm{E}\left(\mathbf{u}_{i} \mid \mathbf{X}_{i}, \mathbf{Z}_{i}\right)=\mathbf{0}$ and $\operatorname{Var}\left(\mathbf{u}_{i} \mid \mathbf{X}_{i}, \mathbf{Z}_{i}\right)=\boldsymbol{\Omega}$, suppose in addition that each element of $\mathbf{Z}_{i}$ is uncorrelated with each element of $\mathbf{X}_{i}, \mathrm{E}\left(\mathbf{X}_{i} \otimes \mathbf{Z}_{i}\right)=\mathbf{0}$. (We are thinking of cases where $\mathbf{X}_{i}$ includes unity and so $\mathbf{Z}_{i}$ is standardized to have a zero mean.) Let $\hat{\boldsymbol{\beta}}$ be the FGLS estimator from the full model (obtained along with $\hat{\gamma}$ ) using a consistent estimator $\hat{\boldsymbol{\Omega}}$ for $\boldsymbol{\Omega}$. Let $\tilde{\boldsymbol{\beta}}$ be the FLGS estimator on the restricted model $\mathbf{y}_{i}=\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{v}_{i}$ using a consistent estimator of $\mathrm{E}\left(\mathbf{v}_{i} \mathbf{v}_{i}^{\prime}\right)$. Show that $\operatorname{Avar}[\sqrt{N}(\tilde{\boldsymbol{\beta}}-\boldsymbol{\beta})]-\operatorname{Avar}[\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})]$ is a least positive semidefinite.
+
+\section*{8 System Estimation by Instrumental Variables}
+
+\end{document}

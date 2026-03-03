@@ -1,0 +1,840 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 14: GMM and Minimum Distance Estimation}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+In Chapter 8 we saw how the generalized method of moments (GMM) approach to estimation can be applied to multiple-equation linear models, including systems of equations, with exogenous or endogenous explanatory variables, and to panel data models. In this chapter we extend GMM to nonlinear estimation problems. This setup allows us to treat various efficiency issues that we have glossed over until now. We also cover the related method of minimum distance estimation. Because the asymptotic analysis has many features in common with Chapters 8 and 12, the analysis is not quite as detailed here as in previous chapters. A good reference for this material, which fills in most of the gaps left here, is Newey and McFadden (1994).
+
+\subsection*{14.1 Asymptotic Properties of Generalized Method of Moments}
+Let $\left\{\mathbf{w}_{i} \in \mathbb{R}^{M}: i=1,2, \ldots\right\}$ denote a set of independent, identically distributed random vectors, where some feature of the distribution of $\mathbf{w}_{i}$ is indexed by the $P \times 1$ parameter vector $\boldsymbol{\theta}$. The assumption of identical distribution is mostly for notational convenience; the following methods apply to independently pooled cross sections without modification.
+
+We assume that for some function $\mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right) \in \mathbb{R}^{L}$, the parameter $\boldsymbol{\theta}_{\mathrm{o}} \in \boldsymbol{\Theta} \subset \mathbb{R}^{P}$ satisfies the moment assumptions\\
+$\mathrm{E}\left[\mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right)\right]=0$.
+
+As we saw in the linear case, where $\mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)$ was of the form $\mathbf{Z}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \boldsymbol{\theta}\right)$, a minimal requirement for these moment conditions to identify $\boldsymbol{\theta}_{\mathrm{o}}$ is $L \geq P$. If $L=P$, then the analogy principle suggests estimating $\boldsymbol{\theta}_{\mathrm{o}}$ by setting the sample counterpart, $N^{-1} \sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)$, to zero. In the linear case, this step leads to the instrumental variables estimator (see equation (8.22)). When $L>P$, we can choose $\hat{\boldsymbol{\theta}}$ to make the sample average close to zero in an appropriate metric. A GMM estimator, $\hat{\boldsymbol{\theta}}$, minimizes a quadratic form in $\sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)$ :\\
+$\min _{\boldsymbol{\theta} \in \boldsymbol{\Theta}}\left[\sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right]^{\prime} \hat{\boldsymbol{\Xi}}\left[\sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right]$,\\
+where $\hat{\boldsymbol{\Xi}}$ is an $L \times L$ symmetric, positive semidefinite (p.s.d.) weighting matrix.\\
+Consistency of the GMM estimator follows along the lines of consistency of the M-estimator in Chapter 12. Under standard moment conditions, $N^{-1} \sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)$ satisfies the uniform law of large numbers (see Theorem 12.1). If $\hat{\boldsymbol{\Xi}} \xrightarrow{p} \boldsymbol{\Xi}_{\mathrm{o}}$, where $\boldsymbol{\Xi}_{\mathrm{o}}$ is an $L \times L$ positive definite matrix, then the random function
+
+
+\begin{equation*}
+Q_{N}(\boldsymbol{\theta}) \equiv\left[N^{-1} \sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right]^{\prime} \hat{\boldsymbol{\Xi}}\left[N^{-1} \sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right] \tag{14.3}
+\end{equation*}
+
+
+converges uniformly in probability to
+
+
+\begin{equation*}
+\left\{\mathrm{E}\left[\mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right]\right\}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}\left\{\mathrm{E}\left[\mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right]\right\} . \tag{14.4}
+\end{equation*}
+
+
+Because $\boldsymbol{\Xi}_{\mathrm{o}}$ is positive definite, $\boldsymbol{\theta}_{\mathrm{o}}$ uniquely minimizes expression (14.4). For completeness, we summarize with a theorem containing regularity conditions:\\
+theorem 14.1 (Consistency of GMM): Assume that (a) $\boldsymbol{\Theta}$ is compact; (b) for each $\boldsymbol{\theta} \in \boldsymbol{\Theta}, \mathbf{g}(\cdot, \boldsymbol{\theta})$ is Borel measurable on $\mathscr{W}$; (c) for each $\mathbf{w} \in \mathscr{W}, \mathbf{g}(\mathbf{w}, \cdot)$ is continuous on $\boldsymbol{\Theta} ;(\mathrm{d})\left|g_{j}(\mathbf{w}, \boldsymbol{\theta})\right| \leq b(\mathbf{w})$ for all $\boldsymbol{\theta} \in \boldsymbol{\Theta}$ and $j=1, \ldots, L$, where $b(\cdot)$ is a nonnegative function on $\mathscr{W}$ such that $\mathrm{E}[b(\mathbf{w})]<\infty$; (e) $\hat{\boldsymbol{\varepsilon}} \xrightarrow{p} \boldsymbol{\Xi}_{\mathrm{o}}$, an $L \times L$ positive definite matrix; and (f) $\boldsymbol{\theta}_{\mathrm{o}}$ is the unique solution to equation (14.1). Then a random vector $\hat{\boldsymbol{\theta}}$ exists that solves problem (14.2), and $\hat{\boldsymbol{\theta}} \xrightarrow{p} \boldsymbol{\theta}_{\mathrm{o}}$.
+
+If we assume only that $\boldsymbol{\Xi}_{\mathrm{o}}$ is p.s.d., then we must directly assume that $\boldsymbol{\theta}_{\mathrm{o}}$ is the unique minimizer of expression (14.4). Occasionally this generality is useful, but we will not need it.
+
+Under the assumption that $\mathbf{g}(\mathbf{w}, \cdot)$ is continuously differentiable on $\operatorname{int}(\boldsymbol{\Theta}), \boldsymbol{\theta}_{\mathrm{o}} \in \operatorname{int}(\boldsymbol{\Theta})$, and other standard regularity conditions, we can easily derive the limiting distribution of the GMM estimator. The first-order condition for $\hat{\boldsymbol{\theta}}$ can be written as
+
+
+\begin{equation*}
+\left[\sum_{i=1}^{N} \nabla_{\theta} \mathbf{g}\left(\mathbf{w}_{i}, \hat{\boldsymbol{\theta}}\right)\right]^{\prime} \hat{\boldsymbol{\Xi}}\left[\sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \hat{\boldsymbol{\theta}}\right)\right] \equiv \mathbf{0} . \tag{14.5}
+\end{equation*}
+
+
+Define the $L \times P$ matrix
+
+
+\begin{equation*}
+\mathbf{G}_{\mathrm{o}} \equiv \mathrm{E}\left[\nabla_{\theta} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right)\right] \tag{14.6}
+\end{equation*}
+
+
+which we assume to have full rank $P$. This assumption essentially means that the moment conditions (14.1) are nonredundant. Then, by the weak law of large numbers (WLLN) and central limit theorem (CLT),
+
+
+\begin{equation*}
+N^{-1} \sum_{i=1}^{N} \nabla_{\theta} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right) \xrightarrow{p} \mathbf{G}_{\mathrm{o}} \quad \text { and } \quad N^{-1 / 2} \sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right)=\mathrm{O}_{p}(1), \tag{14.7}
+\end{equation*}
+
+
+respectively. Let $\mathbf{g}_{i}(\boldsymbol{\theta}) \equiv \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)$. A mean value expansion of $\sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \hat{\boldsymbol{\theta}}\right)$ about $\boldsymbol{\theta}_{\mathrm{o}}$, appropriate standardizations by the sample size, and replacing random averages with their plims gives
+
+
+\begin{equation*}
+\mathbf{0}=\mathbf{G}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}} N^{-1 / 2} \sum_{i=1}^{N} \mathbf{g}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)+\mathbf{A}_{\mathrm{o}} \sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)+\mathrm{o}_{p}(1) \tag{14.8}
+\end{equation*}
+
+
+where
+
+
+\begin{equation*}
+\mathbf{A}_{\mathrm{o}} \equiv \mathbf{G}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}} \mathbf{G}_{\mathrm{o}} \tag{14.9}
+\end{equation*}
+
+
+Since $\mathbf{A}_{\mathrm{o}}$ is positive definite under the given assumptions, we have
+
+
+\begin{equation*}
+\sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)=-\mathbf{A}_{\mathrm{o}}^{-1} \mathbf{G}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}} N^{-1 / 2} \sum_{i=1}^{N} \mathbf{g}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)+\mathrm{o}_{p}(1) \xrightarrow{d} \operatorname{Normal}\left(\mathbf{0}, \mathbf{A}_{\mathrm{o}}^{-1} \mathbf{B}_{\mathrm{o}} \mathbf{A}_{\mathrm{o}}^{-1}\right), \tag{14.10}
+\end{equation*}
+
+
+where
+
+
+\begin{equation*}
+\mathbf{B}_{\mathrm{o}} \equiv \mathbf{G}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}} \boldsymbol{\Lambda}_{\mathrm{o}} \boldsymbol{\Xi}_{\mathrm{o}} \mathbf{G}_{\mathrm{o}} \tag{14.11}
+\end{equation*}
+
+
+and
+
+
+\begin{equation*}
+\boldsymbol{\Lambda}_{\mathrm{o}} \equiv \mathrm{E}\left[\mathbf{g}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{g}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime}\right]=\operatorname{Var}\left[\mathbf{g}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)\right] \tag{14.12}
+\end{equation*}
+
+
+Expression (14.10) gives the influence function representation for the GMM estimator, and it also gives the limiting distribution of the GMM estimator. We summarize with a theorem, which is essentially given by Newey and McFadden (1994, Theorem 3.4):\\
+theorem 14.2 (Asymptotic Normality of GMM): In addition to the assumptions in Theorem 14.1, assume that (a) $\boldsymbol{\theta}_{\mathrm{o}}$ is in the interior of $\boldsymbol{\Theta}$;(b) $\mathbf{g}(\mathbf{w}, \cdot)$ is continuously differentiable on the interior of $\boldsymbol{\Theta}$ for all $\mathbf{w} \in \mathscr{W}$; (c) each element of $\mathbf{g}\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right)$ has finite second moment; (d) each element of $\nabla_{\theta} \mathbf{g}(\mathbf{w}, \boldsymbol{\theta})$ is bounded in absolute value by a function $b(\mathbf{w})$, where $\mathrm{E}[b(\mathbf{w})]<\infty$; and (e) $\mathbf{G}_{\mathrm{o}}$ in expression (14.6) has rank $P$. Then expression (14.10) holds, and so $\operatorname{Avar}(\hat{\boldsymbol{\theta}})=\mathbf{A}_{\mathrm{o}}^{-1} \mathbf{B}_{\mathrm{o}} \mathbf{A}_{\mathrm{o}}^{-1} / N$.
+
+Estimating the asymptotic variance of the GMM estimator is easy once $\hat{\boldsymbol{\theta}}$ has been obtained. A consistent estimator of $\boldsymbol{\Lambda}_{\mathrm{O}}$ is given by
+
+
+\begin{equation*}
+\hat{\boldsymbol{\Lambda}} \equiv N^{-1} \sum_{i=1}^{N} \mathbf{g}_{i}(\hat{\boldsymbol{\theta}}) \mathbf{g}_{i}(\hat{\boldsymbol{\theta}})^{\prime} \tag{14.13}
+\end{equation*}
+
+
+and $\operatorname{Avar}(\hat{\boldsymbol{\theta}})$ is estimated as $\hat{\mathbf{A}}^{-1} \hat{\mathbf{B}} \hat{\mathbf{A}}^{-1} / N$, where
+
+
+\begin{equation*}
+\hat{\mathbf{A}} \equiv \hat{\mathbf{G}}^{\prime} \hat{\mathbf{I}} \hat{\mathbf{G}}, \quad \hat{\mathbf{B}} \equiv \hat{\mathbf{G}}^{\prime} \hat{\mathbf{\Xi}} \hat{\mathbf{\Lambda}} \hat{\mathbf{\Xi}} \hat{\mathbf{G}} \tag{14.14}
+\end{equation*}
+
+
+and
+
+
+\begin{equation*}
+\hat{\mathbf{G}} \equiv N^{-1} \sum_{i=1}^{N} \nabla_{\theta} \mathbf{g}_{i}(\hat{\boldsymbol{\theta}}) . \tag{14.15}
+\end{equation*}
+
+
+As in the linear case in Section 8.3.3, an optimal weighting matrix exists for the given moment conditions: $\hat{\boldsymbol{\Xi}}$ should be a consistent estimator of $\boldsymbol{\Lambda}_{\mathrm{o}}^{-1}$. When $\boldsymbol{\Xi}_{\mathrm{o}}=\boldsymbol{\Lambda}_{\mathrm{o}}^{-1}$, $\mathbf{B}_{\mathrm{o}}=\mathbf{A}_{\mathrm{o}}$ and $\mathrm{Avar} \sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)=\left(\mathbf{G}_{\mathrm{o}}^{\prime} \boldsymbol{\Lambda}_{\mathrm{o}}^{-1} \mathbf{G}_{\mathrm{o}}\right)^{-1}$. Thus the difference in asymptotic variances between the general GMM estimator and the estimator with plim $\hat{\boldsymbol{\Xi}}= \Lambda_{\mathrm{o}}^{-1}$ is
+
+
+\begin{equation*}
+\left(\mathbf{G}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}} \mathbf{G}_{\mathrm{o}}\right)^{-1}\left(\mathbf{G}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}} \boldsymbol{\Lambda}_{\mathrm{o}} \boldsymbol{\Xi}_{\mathrm{o}} \mathbf{G}_{\mathrm{o}}\right)\left(\mathbf{G}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}} \mathbf{G}_{\mathrm{o}}\right)^{-1}-\left(\mathbf{G}_{\mathrm{o}}^{\prime} \boldsymbol{\Lambda}_{\mathrm{o}}^{-1} \mathbf{G}_{\mathrm{o}}\right)^{-1} . \tag{14.16}
+\end{equation*}
+
+
+This expression can be shown to be p.s.d. using the same argument as in Chapter 8 (see Problem 8.5).
+
+To obtain an asymptotically efficient GMM estimator we need a preliminary estimator of $\boldsymbol{\theta}_{\mathrm{o}}$ in order to obtain $\hat{\boldsymbol{\Lambda}}$. Let $\hat{\boldsymbol{\theta}}$ be such an estimator, and define $\hat{\boldsymbol{\Lambda}}$ as in expression (14.13) but with $\hat{\boldsymbol{\theta}}$ in place of $\hat{\boldsymbol{\theta}}$. Then, an efficient GMM estimator (given the function $\mathbf{g}(\mathbf{w}, \boldsymbol{\theta}))$ solves
+
+
+\begin{equation*}
+\min _{\boldsymbol{\theta} \in \boldsymbol{\Theta}}\left[\sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right]^{\prime} \hat{\boldsymbol{\Lambda}}^{-1}\left[\sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right], \tag{14.17}
+\end{equation*}
+
+
+and its asymptotic variance is estimated as
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}} \widehat{\boldsymbol{\theta}})=\left(\hat{\mathbf{G}}^{\prime} \hat{\boldsymbol{\Lambda}}^{-1} \hat{\mathbf{G}}\right)^{-1} / N . \tag{14.18}
+\end{equation*}
+
+
+As in the linear case, an optimal GMM estimator is called the minimum chi-square estimator because
+
+
+\begin{equation*}
+\left[N^{-1 / 2} \sum_{i=1}^{N} \mathbf{g}_{i}(\hat{\boldsymbol{\theta}})\right]^{\prime} \hat{\boldsymbol{\Lambda}}^{-1}\left[\sum_{i=1}^{N} N^{-1 / 2} \mathbf{g}_{i}(\hat{\boldsymbol{\theta}})\right] \tag{14.19}
+\end{equation*}
+
+
+has a limiting chi-square distribution with $L-P$ degrees of freedom under the conditions of Theorem 14.2. Therefore, the value of the objective function (properly standardized by the sample size) can be used as a test of any overidentifying restrictions in equation (14.1) when $L>P$. If statistic (14.19) exceeds the relevant critical value in a $\chi_{L-P}^{2}$ distribution, then equation (14.1) must be rejected: at least some of the moment conditions are not supported by the data. For the linear model, this is the same statistic given in equation (8.49).
+
+As always, we can test hypotheses of the form $\mathrm{H}_{0}: \mathbf{c}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)=\mathbf{0}$, where $\mathbf{c}(\boldsymbol{\theta})$ is a $Q \times 1$ vector, $Q \leq P$, by using the Wald approach and the appropriate variance ma-\\
+trix estimator. A statistic based on the difference in objective functions is also available if the minimum chi-square estimator is used so that $\mathbf{B}_{\mathrm{o}}=\mathbf{A}_{\mathrm{o}}$. Let $\tilde{\boldsymbol{\theta}}$ denote the solution to problem (14.17) subject to the restrictions $\mathbf{c}(\boldsymbol{\theta})=\mathbf{0}$, and let $\hat{\boldsymbol{\theta}}$ denote the unrestricted estimator-solving problem (14.17); importantly, these both use the same weighting matrix $\hat{\boldsymbol{\Lambda}}^{-1}$. Typically, $\hat{\boldsymbol{\Lambda}}$ is obtained from a first-stage, unrestricted estimator. Assuming that the constraints can be written in implicit form and satisfy the conditions discussed in Section 12.6.2, the GMM distance statistic (or GMM criterion function statistic) has a limiting $\chi_{Q}^{2}$ distribution:
+
+
+\begin{equation*}
+\left\{\left[\sum_{i=1}^{N} \mathbf{g}_{i}(\tilde{\boldsymbol{\theta}})\right]^{\prime} \hat{\boldsymbol{\Lambda}}^{-1}\left[\sum_{i=1}^{N} \mathbf{g}_{i}(\tilde{\boldsymbol{\theta}})\right]-\left[\sum_{i=1}^{N} \mathbf{g}_{i}(\hat{\boldsymbol{\theta}})\right]^{\prime} \hat{\boldsymbol{\Lambda}}^{-1}\left[\sum_{i=1}^{N} \mathbf{g}_{i}(\hat{\boldsymbol{\theta}})\right]\right\} / N \xrightarrow{d} \chi_{Q}^{2} \tag{14.20}
+\end{equation*}
+
+
+When applied to linear GMM problems, we obtain the statistic in equation (8.45). One nice feature of expression (14.20) is that it is invariant to reparameterization of the null hypothesis, just as the quasi-likelihood ratio (QLR) statistic is invariant for M-estimation. Therefore, we might prefer statistic (14.20) over the Wald statistic (8.48) for testing nonlinear restrictions in linear models. Of course, the computation of expression (14.20) is more difficult because we would actually need to carry out estimation subject to nonlinear restrictions.
+
+A nice application of the GMM methods discussed in this section is two-step estimation procedures, which arose in Chapters 6, 12, and 13. Suppose that the estimator $\hat{\boldsymbol{\theta}}$-it could be an M-estimator or a GMM estimator-depends on a first-stage estimator, $\hat{\boldsymbol{\gamma}}$. A unified approach to obtaining the asymptotic variance of $\hat{\boldsymbol{\theta}}$ is to stack the first-order conditions for $\hat{\boldsymbol{\theta}}$ and $\hat{\gamma}$ into the same function $\mathbf{g}(\cdot)$. This is always possible for the estimators encountered in this book. For example, if $\hat{\gamma}$ is an M-estimator solving $\sum_{i=1}^{N} \mathbf{d}\left(\mathbf{w}_{i}, \hat{\gamma}\right)=\mathbf{0}$, and $\hat{\boldsymbol{\theta}}$ is a two-step M-estimator solving\\
+$\sum_{i=1}^{N} \mathbf{s}\left(\mathbf{w}_{i}, \hat{\boldsymbol{\theta}} ; \hat{\gamma}\right)=\mathbf{0}$,\\
+then we can obtain the asymptotic variance of $\hat{\boldsymbol{\theta}}$ by defining\\
+$\mathbf{g}(\mathbf{w}, \boldsymbol{\theta}, \boldsymbol{\gamma})=\left[\begin{array}{c}\mathbf{s}(\mathbf{w}, \boldsymbol{\theta} ; \boldsymbol{\gamma}) \\ \mathbf{d}(\mathbf{w}, \boldsymbol{\gamma})\end{array}\right]$\\
+and applying the GMM formulas. The first-order condition for the full GMM problem reproduces the first-order conditions for each estimator separately.
+
+In general, either $\hat{\gamma}, \hat{\boldsymbol{\theta}}$, or both might themselves be GMM estimators. Then, stacking the orthogonality conditions into one vector can simplify the derivation of\\
+the asymptotic variance of the second-step estimator $\hat{\boldsymbol{\theta}}$ while also ensuring efficient estimation when the optimal weighting matrix is used.
+
+Finally, sometimes we want to know whether adding additional moment conditions does not improve the efficiency of the minimum chi-square estimator. (Adding additional moment conditions can never reduce asymptotic efficiency, provided an efficient weighting matrix is used.) In other words, if we start with equation (14.1) but add new moments of the form $\mathrm{E}\left[\mathbf{h}\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right)\right]=0$, when does using the extra moment conditions yield the same asymptotic variance as the original moment conditions? Breusch, Qian, Schmidt, and Wyhowski (1999) prove some general redundancy results for the minimum chi-square estimator. Qian and Schmidt (1999) study the problem of adding moment conditions that do not depend on unknown parameters, and they characterize when such moment conditions improve efficiency.
+
+\subsection*{14.2 Estimation under Orthogonality Conditions}
+In Chapter 8 we saw how linear systems of equations can be estimated by GMM under certain orthogonality conditions. In general applications, the moment conditions (14.1) almost always arise from assumptions that disturbances are uncorrelated with exogenous variables. For a $G \times 1$ vector $\mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)$ and a $G \times L$ matrix $\mathbf{Z}_{i}$, assume that $\boldsymbol{\theta}_{\mathrm{o}}$ satisfies\\
+$\mathrm{E}\left[\mathbf{Z}_{i}^{\prime} \mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right)\right]=\mathbf{0}$.
+
+The vector function $\mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)$ can be thought of as a generalized residual function. The matrix $\mathbf{Z}_{i}$ is usually called the matrix of instruments. Equation (14.22) is a special case of equation (14.1) with $\mathbf{g}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right) \equiv \boldsymbol{Z}_{i}^{\prime} \mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)$. In what follows, write $\mathbf{r}_{i}(\boldsymbol{\theta}) \equiv \mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)$.
+
+Identification requires that $\boldsymbol{\theta}_{\mathrm{o}}$ be the only $\boldsymbol{\theta} \in \boldsymbol{\Theta}$ such that equation (14.22) holds. Condition e of the asymptotic normality result Theorem 14.2 requires that rank $\mathrm{E}\left[\mathbf{Z}_{i}^{\prime} \nabla_{\theta} \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)\right]=P$ (necessary is $L \geq P$ ). Thus, while $\mathbf{Z}_{i}$ must be orthogonal to $\mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)$, $\mathbf{Z}_{i}$ must be sufficiently correlated with the $G \times P$ Jacobian, $\nabla_{\theta} \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)$. In the linear case where $\mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)=\mathbf{y}_{i}-\mathbf{X}_{i} \boldsymbol{\theta}$, this requirement reduces to $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}\right)$ having full column rank, which is simply Assumption SIV. 2 in Chapter 8.
+
+Given the instruments $\mathbf{Z}_{i}$, the efficient estimator can be obtained as in Section 14.1. A preliminary estimator $\hat{\boldsymbol{\theta}}$ is usually obtained with
+
+
+\begin{equation*}
+\hat{\boldsymbol{E}} \equiv\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)^{-1} \tag{14.23}
+\end{equation*}
+
+
+so that $\hat{\hat{\boldsymbol{\theta}}}$ solves
+
+
+\begin{equation*}
+\min _{\boldsymbol{\theta} \in \boldsymbol{\Theta}}\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{r}_{i}(\boldsymbol{\theta})\right]^{\prime}\left[N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right]^{-1}\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{r}_{i}(\boldsymbol{\theta})\right] \tag{14.24}
+\end{equation*}
+
+
+The solution to problem (14.24) is called the nonlinear system 2SLS estimator; it is an example of a nonlinear instrumental variables estimator.
+
+From Section 14.1, we know that the nonlinear system 2SLS estimator is guaranteed to be the efficient GMM estimator if for some $\sigma_{\mathrm{o}}^{2}>0$,\\
+$\mathrm{E}\left[\mathbf{Z}_{i}^{\prime} \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \mathbf{Z}_{i}\right]=\sigma_{\mathrm{o}}^{2} \mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)$.\\
+Generally, this is a strong assumption. Instead, we can obtain the minimum chi-square estimator by obtaining
+
+
+\begin{equation*}
+\hat{\boldsymbol{\Lambda}}=N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{r}_{i}(\hat{\hat{\boldsymbol{\theta}}}) \mathbf{r}_{i}(\hat{\hat{\boldsymbol{\theta}}})^{\prime} \mathbf{Z}_{i} \tag{14.25}
+\end{equation*}
+
+
+and using this in expression (14.17).\\
+In some cases more structure is available that leads to a three-stage least squares estimator. In particular, suppose that\\
+$\mathrm{E}\left[\mathbf{Z}_{i}^{\prime} \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \mathbf{Z}_{i}\right]=\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}_{\mathrm{o}} \mathbf{Z}_{i}\right)$,\\
+where $\boldsymbol{\Omega}_{\mathrm{o}}$ is the $G \times G$ matrix\\
+$\boldsymbol{\Omega}_{\mathrm{o}}=\mathrm{E}\left[\mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime}\right]$.
+
+When $\mathrm{E}\left[\mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)\right]=\mathbf{0}$, as is almost always the case under assumption (14.22), $\boldsymbol{\Omega}_{\mathrm{o}}$ is the variance matrix of $\mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)$. As in Chapter 8, assumption (14.26) is a kind of system homoskedasticity assumption.
+
+By iterated expectations, a sufficient condition for assumption (14.26) is\\
+$\mathrm{E}\left[\mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \mid \mathbf{Z}_{i}\right]=\boldsymbol{\Omega}_{\mathrm{o}}$.
+
+However, assumption (14.26) can hold in cases where assumption (14.28) does not.\\
+If assumption (14.26) holds, then $\boldsymbol{\Lambda}_{\mathrm{o}}$ can be estimated as
+
+
+\begin{equation*}
+\hat{\boldsymbol{\Lambda}}=N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\boldsymbol{\Omega}} \mathbf{Z}_{i} \tag{14.29}
+\end{equation*}
+
+
+where
+
+
+\begin{equation*}
+\hat{\boldsymbol{\Omega}}=N^{-1} \sum_{i=1}^{N} \mathbf{r}_{i}(\hat{\hat{\boldsymbol{\theta}}}) \mathbf{r}_{i}(\hat{\hat{\boldsymbol{\theta}}}) \tag{14.30}
+\end{equation*}
+
+
+and $\hat{\hat{\boldsymbol{\theta}}}$ is a preliminary estimator. The resulting GMM estimator is usually called the nonlinear 3SLS (N3SLS) estimator. The name is a holdover from the traditional 3SLS estimator in linear systems of equations; there are not really three estimation steps. We should remember that nonlinear 3SLS is generally inefficient when assumption (14.26) fails.
+
+The Wald statistic and the QLR statistic can be computed as in Section 14.1. In addition, a score statistic is sometimes useful. Let $\boldsymbol{\tilde { \boldsymbol { \sigma } }}$ - be a preliminary inefficient estimator with $Q$ restrictions imposed. The estimator $\tilde{\tilde{\boldsymbol{\theta}}}$ would usually come from problem (14.24) subject to the restrictions $\mathbf{c}(\boldsymbol{\theta})=\mathbf{0}$. Let $\underset{\sim}{\tilde{\boldsymbol{\Lambda}}}$ be the estimated weighting matrix from equation (14.25) or (14.29), based on $\tilde{\tilde{\boldsymbol{\theta}}}$. Let $\tilde{\boldsymbol{\theta}}$ be the minimum chisquare estimator using weighting matrix $\tilde{\boldsymbol{\Lambda}}^{-1}$. Then the score statistic is based on the limiting distribution of the score of the unrestricted objective function evaluated at the restricted estimates, properly standardized:\\
+$\left[N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \nabla_{\theta} \mathbf{r}_{i}(\tilde{\boldsymbol{\theta}})\right]^{\prime} \tilde{\boldsymbol{\Lambda}}^{-1}\left[N^{-1 / 2} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{r}_{i}(\tilde{\boldsymbol{\theta}})\right]$.
+
+Let $\tilde{\mathbf{s}}_{i} \equiv \tilde{\mathbf{G}}^{\prime} \tilde{\boldsymbol{\Lambda}}^{-1} \mathbf{Z}_{i}^{\prime} \tilde{\mathbf{r}}_{i}$, where $\tilde{\mathbf{G}}$ is the first matrix in expression (14.31), and let $\mathbf{s}_{i}^{\mathrm{o}} \equiv \mathbf{G}_{\mathrm{o}}^{\prime} \boldsymbol{\Lambda}_{\mathrm{o}}^{-1} \mathbf{Z}_{i}^{\prime} \mathbf{r}_{i}^{\mathrm{o}}$. Then, following the proof in Section 12.6.2, it can be shown that equation (12.67) holds with $\mathbf{A}_{\mathrm{o}} \equiv \mathbf{G}_{\mathrm{o}}^{\prime} \boldsymbol{\Lambda}_{\mathrm{o}}^{-1} \mathbf{G}_{\mathrm{o}}$. Further, since $\mathbf{B}_{\mathrm{o}}=\mathbf{A}_{\mathrm{o}}$ for the minimum chisquare estimator, we obtain\\
+$L M=\left(\sum_{i=1}^{N} \tilde{\mathbf{s}}_{i}\right)^{\prime} \tilde{\mathbf{A}}^{-1}\left(\sum_{i=1}^{N} \tilde{\mathbf{s}}_{i}\right) / N$,\\
+where $\tilde{\mathbf{A}}=\tilde{\mathbf{G}}^{\prime} \tilde{\boldsymbol{\Lambda}}^{-1} \tilde{\mathbf{G}}$. Under $\mathrm{H}_{0}$ and the usual regularity conditions, $L M$ has a limiting $\chi_{Q}^{2}$ distribution.
+
+\subsection*{14.3 Systems of Nonlinear Equations}
+A leading application of the results in Section 14.2 is to estimation of the parameters in an implicit set of nonlinear equations, such as a nonlinear simultaneous equations model. Partition $\mathbf{w}_{i}$ as $\mathbf{y}_{i} \in \mathbb{R}^{J}, \mathbf{x}_{i} \in \mathbb{R}^{K}$ and, for $h=1, \ldots, G$, suppose we have $q_{1}\left(\mathbf{y}_{i}, \mathbf{x}_{i}, \boldsymbol{\theta}_{\mathrm{ol}}\right)=u_{i 1}$,\\
+⋮
+
+
+\begin{equation*}
+q_{G}\left(\mathbf{y}_{i}, \mathbf{x}_{i}, \boldsymbol{\theta}_{\mathrm{o} G}\right)=u_{i G} \tag{14.33}
+\end{equation*}
+
+
+where $\boldsymbol{\theta}_{\mathrm{o} h}$ is a $P_{h} \times 1$ vector of parameters. As an example, write a two-equation SEM in the population as\\
+$y_{1}=\mathbf{x}_{1} \boldsymbol{\delta}_{1}+\gamma_{1} y_{2}^{\gamma_{2}}+u_{1}$,
+
+
+\begin{equation*}
+y_{2}=\mathbf{x}_{2} \boldsymbol{\delta}_{2}+\gamma_{3} y_{1}+u_{2} \tag{14.34}
+\end{equation*}
+
+
+(where we drop "o" to index the parameters). This model, unlike those covered in Section 9.5, is nonlinear in the parameters as well as the endogenous variables. Nevertheless, assuming that $\mathrm{E}\left(u_{g} \mid \mathbf{x}\right)=0, g=1,2$, the parameters in the system can be estimated by GMM by defining $q_{1}\left(\mathbf{y}, \mathbf{x}, \boldsymbol{\theta}_{1}\right)=y_{1}-\mathbf{x}_{1} \boldsymbol{\delta}_{1}-\gamma_{1} y_{2}^{\gamma_{2}}$ and $q_{2}\left(\mathbf{y}, \mathbf{x}, \boldsymbol{\theta}_{2}\right)= y_{2}-\mathbf{x}_{2} \boldsymbol{\delta}_{2}-\gamma_{3} y_{1}$.
+
+Generally, the equation (14.33) need not actually determine $\mathbf{y}_{i}$ given the exogenous variables and disturbances; in fact, nothing requires $J=G$. Sometimes equations (14.33) represent a system of orthogonality conditions of the form $\mathrm{E}\left[q_{g}\left(\mathbf{y}, \mathbf{x}, \boldsymbol{\theta}_{\mathrm{og}}\right) \mid \mathbf{x}\right]= 0, g=1, \ldots, G$. We will see an example later.
+
+Denote the $P \times 1$ vector of all parameters by $\boldsymbol{\theta}_{\mathrm{o}}$, and the parameter space by $\boldsymbol{\Theta} \subset \mathbb{R}^{P}$. To identify the parameters, we need the errors $u_{i h}$ to satisfy some orthogonality conditions. A general assumption is, for some subvector $\mathbf{x}_{i h}$ of $\mathbf{x}_{i}$,\\
+$\mathrm{E}\left(u_{i h} \mid \mathbf{x}_{i h}\right)=\mathbf{0}, \quad h=1,2, \ldots, G$.
+
+This allows elements of $\mathbf{x}_{i}$ to be correlated with some errors, a situation that sometimes arises in practice (see, for example, Chapter 9 and Wooldridge, 1996). Under assumption (14.36), let $\mathbf{z}_{i h} \equiv \mathbf{f}_{h}\left(\mathbf{x}_{i h}\right)$ be a $1 \times L_{h}$ vector of possibly nonlinear functions of $\mathbf{x}_{i}$. If there are no restrictions on the $\boldsymbol{\theta}_{\mathrm{o} h}$ across equations, we should have $L_{h} \geq P_{h}$ so that each $\boldsymbol{\theta}_{\mathrm{o} h}$ is identified. By iterated expectations, for all $h=1, \ldots, G$,\\
+$\mathrm{E}\left(\mathbf{z}_{i h}^{\prime} u_{i h}\right)=\mathbf{0}$,\\
+provided appropriate moments exist. Therefore, we obtain a set of orthogonality conditions by defining the $G \times L$ matrix $\mathbf{Z}_{i}$ as the block diagonal matrix with $\mathbf{z}_{i g}$ in the $g$ th block:\\
+$\mathbf{Z}_{i} \equiv\left[\begin{array}{ccccc}\mathbf{z}_{i 1} & \mathbf{0} & \mathbf{0} & \cdots & \mathbf{0} \\ \mathbf{0} & \mathbf{z}_{i 2} & \mathbf{0} & \cdots & \mathbf{0} \\ \vdots & & & & \vdots \\ \mathbf{0} & \mathbf{0} & \mathbf{0} & \cdots & \mathbf{z}_{i G}\end{array}\right]$,\\
+where $L \equiv L_{1}+L_{2}+\cdots+L_{G}$. Letting $\mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right) \equiv \mathbf{q}\left(\mathbf{y}_{i}, \mathbf{x}_{i}, \boldsymbol{\theta}\right) \equiv\left[q_{i 1}\left(\boldsymbol{\theta}_{1}\right), \ldots, q_{i G}\left(\boldsymbol{\theta}_{G}\right)\right]^{\prime}$, equation (14.22) holds under assumption (14.36).
+
+When there are no restrictions on the $\boldsymbol{\theta}_{g}$ across equations and $\mathbf{Z}_{i}$ is chosen as in matrix (14.38), the system 2SLS estimator reduces to the nonlinear 2SLS (N2SLS) estimator (Amemiya, 1974) equation by equation. That is, for each $h$, the N2SLS estimator solves
+
+
+\begin{equation*}
+\min _{\boldsymbol{\theta}_{h}}\left[\sum_{i=1}^{N} \mathbf{z}_{i h}^{\prime} q_{i h}\left(\boldsymbol{\theta}_{h}\right)\right]^{\prime}\left(N^{-1} \sum_{i=1}^{N} \mathbf{z}_{i h}^{\prime} \mathbf{z}_{i h}\right)^{-1}\left[\sum_{i=1}^{N} \mathbf{z}_{i h}^{\prime} q_{i h}\left(\boldsymbol{\theta}_{h}\right)\right] . \tag{14.39}
+\end{equation*}
+
+
+Given only the orthogonality conditions (14.37), the N2SLS estimator is the efficient estimator of $\boldsymbol{\theta}_{\mathrm{o} h}$ if
+
+
+\begin{equation*}
+\mathrm{E}\left(u_{i h}^{2} \mathbf{z}_{i h}^{\prime} \mathbf{z}_{i h}\right)=\sigma_{\mathrm{oh}}^{2} \mathrm{E}\left(\mathbf{z}_{i h}^{\prime} \mathbf{z}_{i h}\right), \tag{14.40}
+\end{equation*}
+
+
+where $\sigma_{\mathrm{oh}}^{2} \equiv \mathrm{E}\left(u_{i h}^{2}\right)$; sufficient for condition (14.40) is $\mathrm{E}\left(u_{i h}^{2} \mid \mathbf{z}_{i h}\right)=\sigma_{\mathrm{oh}}^{2}$. Let $\hat{\hat{\boldsymbol{\theta}}}_{h}$ denote the N2SLS estimator. Then a consistent estimator of $\sigma_{\mathrm{oh}}^{2}$ is
+
+
+\begin{equation*}
+\hat{\sigma}_{h}^{2} \equiv N^{-1} \sum_{i=1}^{N} \hat{\hat{u}}_{i h}^{2} \tag{14.41}
+\end{equation*}
+
+
+where $\hat{\hat{u}}_{i h} \equiv q_{h}\left(\mathbf{y}_{i}, \mathbf{x}_{i}, \hat{\hat{\boldsymbol{\theta}}}_{h}\right)$ are the N2SLS residuals. Under assumptions (14.37) and (14.40), the asymptotic variance of $\hat{\hat{\boldsymbol{\theta}}}_{h}$ is estimated as
+
+
+\begin{equation*}
+\hat{\sigma}_{h}^{2}\left\{\left[\sum_{i=1}^{N} \mathbf{z}_{i h}^{\prime} \nabla_{\theta_{h}} q_{i h}\left(\hat{\hat{\boldsymbol{\theta}}}_{h}\right)\right]^{\prime}\left(\sum_{i=1}^{N} \mathbf{z}_{i h}^{\prime} \mathbf{z}_{i h}\right)^{-1}\left[\sum_{i=1}^{N} \mathbf{z}_{i h}^{\prime} \nabla_{\theta_{h}} q_{i h}\left(\hat{\hat{\boldsymbol{\theta}}}_{h}\right)\right]\right\}^{-1}, \tag{14.42}
+\end{equation*}
+
+
+where $\nabla_{\theta_{h}} q_{i h}\left(\hat{\hat{\boldsymbol{\theta}}}_{h}\right)$ is the $1 \times P_{h}$ gradient.\\
+If assumption (14.37) holds but assumption (14.40) does not, the N2SLS estimator is still $\sqrt{N}$-consistent, but it is not the efficient estimator that uses the orthogonality condition (14.37) whenever $L_{h}>P_{h}$ (and expression (14.42) is no longer valid). A more efficient estimator is obtained by solving
+
+$$
+\min _{\boldsymbol{\theta}_{h}}\left[\sum_{i=1}^{N} \mathbf{z}_{i h}^{\prime} q_{i h}\left(\boldsymbol{\theta}_{h}\right)\right]^{\prime}\left(N^{-1} \sum_{i=1}^{N} \hat{\hat{u}}_{i h}^{2} \mathbf{z}_{i h}^{\prime} \mathbf{z}_{i h}\right)^{-1}\left[\sum_{i=1}^{N} \mathbf{z}_{i h}^{\prime} q_{i h}\left(\boldsymbol{\theta}_{h}\right)\right]
+$$
+
+with asymptotic variance estimated as
+
+$$
+\left\{\left[\sum_{i=1}^{N} \mathbf{z}_{i h}^{\prime} \nabla_{\theta_{h}} q_{i h}\left(\hat{\hat{\boldsymbol{\theta}}}_{h}\right)\right]^{\prime}\left(\sum_{i=1}^{N} \hat{\hat{u}}_{i h}^{2} \mathbf{z}_{i h}^{\prime} \mathbf{z}_{i h}\right)^{-1}\left[\sum_{i=1}^{N} \mathbf{z}_{i h}^{\prime} \nabla_{\theta_{h}} q_{i h}\left(\hat{\hat{\boldsymbol{\theta}}}_{h}\right)\right]\right\}^{-1} .
+$$
+
+This estimator is asymptotically equivalent to the N2SLS estimator if assumption (14.40) happens to hold.
+
+Rather than focus on one equation at a time, we can increase efficiency if we estimate the equations simultaneously. One reason for doing so is to impose cross equation restrictions on the $\boldsymbol{\theta}_{\mathrm{o} h}$. The system 2SLS estimator can be used for these purposes, where $\mathbf{Z}_{i}$ generally has the form (14.38). But this estimator does not exploit correlation in the errors $u_{i g}$ and $u_{i h}$ in different equations.
+
+The efficient estimator that uses all orthogonality conditions in equation (14.37) is just the GMM estimator with $\hat{\boldsymbol{\Lambda}}$ given by equation (14.25), where $\mathbf{r}_{i}(\hat{\hat{\boldsymbol{\theta}}})$ is the $G \times 1$ vector system 2SLS residuals, $\hat{\hat{\mathbf{u}}}_{i}$. In other words, the efficient GMM estimator solves
+
+
+\begin{equation*}
+\min _{\boldsymbol{\theta} \in \boldsymbol{\Theta}}\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{q}_{i}(\boldsymbol{\theta})\right]^{\prime}\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{u}}_{i} \hat{\mathbf{u}}_{i}^{\prime} \mathbf{Z}_{i}\right)^{-1}\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{q}_{i}(\boldsymbol{\theta})\right] . \tag{14.43}
+\end{equation*}
+
+
+The asymptotic variance of $\hat{\boldsymbol{\theta}}$ is estimated as
+
+$$
+\left\{\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \nabla_{\theta} \mathbf{q}_{i}(\hat{\boldsymbol{\theta}})\right]^{\prime}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\hat{\mathbf{u}}_{i}} \hat{\hat{\mathbf{u}}_{i}^{\prime}} \mathbf{Z}_{i}\right)^{-1}\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \nabla_{\theta} \mathbf{q}_{i}(\hat{\boldsymbol{\theta}})\right]\right\}^{-1}
+$$
+
+Because this is the efficient GMM estimator, the QLR statistic can be used to test hypotheses about $\boldsymbol{\theta}_{\mathrm{o}}$. The Wald statistic can also be applied.
+
+Under the homoskedasticity assumption (14.26) with $\mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)=\mathbf{u}_{i}$, the nonlinear 3SLS estimator, which solves
+
+$$
+\min _{\boldsymbol{\theta} \in \boldsymbol{\Theta}}\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{q}_{i}(\boldsymbol{\theta})\right]^{\prime}\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\boldsymbol{\Omega}} \mathbf{Z}_{i}\right)^{-1}\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{q}_{i}(\boldsymbol{\theta})\right],
+$$
+
+is efficient, and its asymptotic variance is estimated as
+
+$$
+\left\{\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \nabla_{\theta} \mathbf{r}_{i}(\hat{\boldsymbol{\theta}})\right]^{\prime}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{\Omega}} \mathbf{Z}_{i}\right)^{-1}\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \nabla_{\theta} \mathbf{r}_{i}(\hat{\boldsymbol{\theta}})\right]\right\}^{-1}
+$$
+
+The N3SLS estimator is used widely for systems of the form (14.33), but, as we discussed in Section 9.6, there are many cases where assumption (14.26) must fail when different instruments are needed for different equations.
+
+As an example, we show how a hedonic price system fits into this framework. Consider a linear demand and supply system for $G$ attributes of a good or service (see
+
+Epple, 1987; Kahn and Lang, 1988; and Wooldridge, 1996). The demand and supply system is written as\\
+demand $_{g}=\eta_{1 g}+\mathbf{w} \boldsymbol{\alpha}_{1 g}+\mathbf{x}_{1} \boldsymbol{\beta}_{1 g}+u_{1 g}, \quad g=1, \ldots, G$,\\
+supply $_{g}=\eta_{2 g}+\mathbf{w} \boldsymbol{\alpha}_{2 g}+\mathbf{x}_{2} \boldsymbol{\beta}_{2 g}+u_{2 g}, \quad g=1, \ldots, G$,\\
+where $\mathbf{w}=\left(w_{1}, \ldots, w_{G}\right)$ is the $1 \times G$ vector of attribute prices. The demand equations usually represent an individual or household; the supply equations can represent an individual, firm, or employer.
+
+There are several tricky issues in estimating either the demand or supply function for a particular $g$. First, the attribute prices $w_{g}$ are not directly observed. What is usually observed are the equilibrium quantities for each attribute and each cross section unit $i$; call these $q_{i g}, g=1, \ldots, G$. (In the hedonic systems literature these are often denoted $z_{i g}$, but we use $q_{i g}$ here because they are endogenous variables, and we have been using $\mathbf{z}_{i}$ to denote exogenous variables.) For example, the $q_{i g}$ can be features of a house, such as size, number of bathrooms, and so on. Along with these features we observe the equilibrium price of the good, $p_{i}$, which we assume follows a quadratic hedonic price function:\\
+$p_{i}=\gamma+\mathbf{q}_{i} \boldsymbol{\psi}+\mathbf{q}_{i} \boldsymbol{\Pi} \mathbf{q}_{i}^{\prime} / 2+\mathbf{x}_{i 3} \boldsymbol{\delta}+\mathbf{x}_{i 3} \boldsymbol{\Gamma} \mathbf{q}_{i}^{\prime}+u_{i 3}$,\\
+where $\mathbf{x}_{i 3}$ is a vector of variables that affect $p_{i}, \boldsymbol{\Pi}$ is a $G \times G$ symmetric matrix, and $\boldsymbol{\Gamma}$ is a $G \times G$ matrix.
+
+A key point for identifying the demand and supply functions is that $\mathbf{w}_{i}=\partial p_{i} / \partial \mathbf{q}_{i}$, which, under equation (14.44), becomes $\mathbf{w}_{i}=\mathbf{q}_{i} \boldsymbol{\Pi}+\mathbf{x}_{i 3} \boldsymbol{\Gamma}$, or $w_{i g}=\mathbf{q}_{i} \boldsymbol{\pi}_{g}+\mathbf{x}_{i 3} \gamma_{g}$ for each $g$. By substitution, the equilibrium estimating equations can be written as equation (14.44) plus
+
+\[
+\begin{array}{ll}
+q_{i g}=\eta_{1 g}+\left(\mathbf{q}_{i} \boldsymbol{\Pi}+\mathbf{x}_{i 3} \boldsymbol{\Gamma}\right) \boldsymbol{\alpha}_{1 g}+\mathbf{x}_{i 1} \boldsymbol{\beta}_{1 g}+u_{i 1 g}, & g=1, \ldots, G, \\
+q_{i g}=\eta_{2 g}+\left(\mathbf{q}_{i} \boldsymbol{\Pi}+\mathbf{x}_{i 3} \boldsymbol{\Gamma}\right) \boldsymbol{\alpha}_{2 g}+\mathbf{x}_{i 2} \boldsymbol{\beta}_{2 g}+u_{i 2 g}, & g=1, \ldots, G \tag{14.46}
+\end{array}
+\]
+
+These two equations are linear in $\mathbf{q}_{i}, \mathbf{x}_{i 1}, \mathbf{x}_{i 2}$, and $\mathbf{x}_{i 3}$ but nonlinear in the parameters.\\
+Let $\mathbf{u}_{i 1}$ be the $G \times 1$ vector of attribute demand disturbances and $\mathbf{u}_{i 2}$ the $G \times 1$ vector of attribute supply disturbances. What are reasonable assumptions about $\mathbf{u}_{i 1}, \mathbf{u}_{i 2}$, and $u_{i 3}$ ? It is almost always assumed that equation (14.44) represents a conditional expectation with no important unobserved factors; this assumption means $\mathrm{E}\left(u_{i 3} \mid \mathbf{q}_{i}, \mathbf{x}_{i}\right)=0$, where $\mathbf{x}_{i}$ contains all elements in $\mathbf{x}_{i 1}, \mathbf{x}_{i 2}$, and $\mathbf{x}_{i 3}$. The properties of $\mathbf{u}_{i 1}$ and $\mathbf{u}_{i 2}$ are more subtle. It is clear that these cannot be uncorrelated with $\mathbf{q}_{i}$, and so equations (14.45) and (14.46) contain endogenous explanatory variables if $\boldsymbol{\Pi} \neq \mathbf{0}$.
+
+But there is another problem, pointed out by Bartik (1987), Epple (1987), and Kahn and Lang (1988): because of matching that happens between individual buyers and sellers, $\mathbf{x}_{i 2}$ is correlated with $u_{i 1}$, and $\mathbf{x}_{i 1}$ is correlated with $u_{i 2}$. Consequently, what would seem to be the obvious IVs for the demand equations (14.45)-the factors shifting the supply curve-are endogenous to equation (14.45). Fortunately, all is not lost: if $\mathbf{x}_{i 3}$ contains exogenous factors that affect $p_{i}$ but do not appear in the structural demand and supply functions, we can use these as instruments in both the demand and supply equations. Specifically, we assume\\
+$\mathrm{E}\left(\mathbf{u}_{i 1} \mid \mathbf{x}_{i 1}, \mathbf{x}_{i 3}\right)=\mathbf{0}, \quad \mathrm{E}\left(\mathbf{u}_{i 2} \mid \mathbf{x}_{i 2}, \mathbf{x}_{i 3}\right)=\mathbf{0}, \quad \mathrm{E}\left(u_{i 3} \mid \mathbf{q}_{i}, \mathbf{x}_{i}\right)=0$.
+
+Common choices for $\mathbf{x}_{i 3}$ are geographical or industry dummy indicators (for example, Montgomery, Shaw, and Benedict, 1992; Hagy, 1998), where the assumption is that the demand and supply functions do not change across region or industry but the type of matching does, and therefore $p_{i}$ can differ systematically across region or industry. Bartik (1987) discusses how a randomized experiment can be used to create the elements of $\mathbf{x}_{i 3}$.
+
+For concreteness, let us focus on estimating the set of demand functions. If $\boldsymbol{\Pi}=\mathbf{0}$, so that the quadratic in $\mathbf{q}_{i}$ does not appear in equation (14.44), a simple two-step procedure is available: (1) estimate equation (14.44) by OLS, and obtain $\hat{w}_{i g}= \hat{\psi}_{g}+\mathbf{x}_{i 3} \hat{\gamma}_{g}$ for each $i$ and $g$; (2) run the regression $q_{i g}$ on $1, \hat{\mathbf{w}}_{i}, \mathbf{x}_{i 1}, i=1, \ldots, N$. Under assumptions (14.47) and identification assumptions, this method produces $\sqrt{N}$ consistent, asymptotically normal estimators of the parameters in demand equation $g$. Because the second regression involves generated regressors, the standard errors and test statistics should be adjusted.
+
+It is clear that, without restrictions on $\boldsymbol{\alpha}_{1 g}$, the order condition necessary for identifying the demand parameters is that the dimension of $\mathbf{x}_{i 3}$, say $K_{3}$, must exceed $G$. If $K_{3}<G$, then $\mathrm{E}\left[\left(\mathbf{w}_{i}, \mathbf{x}_{i 1}\right)^{\prime}\left(\mathbf{w}_{i}, \mathbf{x}_{i 1}\right)\right]$ has less than full rank, and the OLS rank condition fails. If we make exclusion restrictions on $\boldsymbol{\alpha}_{1 g}$, fewer elements are needed in $\mathbf{x}_{i 3}$. In the case that only $w_{i g}$ appears in the demand equation for attribute $g, \mathbf{x}_{i 3}$ can be a scalar, provided its interaction with $q_{i g}$ in the hedonic price system is significant ( $\gamma_{g g} \neq 0$ ). Checking the analogue of the rank condition in general is somewhat complicated; see Epple (1987) for discussion.
+
+When $\mathbf{w}_{i}=\mathbf{q}_{i} \boldsymbol{\Pi}+\mathbf{x}_{i 3} \boldsymbol{\Gamma}, \mathbf{w}_{i}$ is correlated with $u_{i 1 g}$, so we must modify the two-step procedure. In the second step, we can use instruments for $\hat{\mathbf{w}}_{i}$ and perform 2SLS rather than OLS. Assuming that $\mathbf{x}_{i 3}$ has enough elements, the demand equations are still identified. If only $w_{i g}$ appears in demand ${ }_{i g}$, sufficient for identification is that an element of $\mathbf{x}_{i 3}$ appears in the linear projection of $w_{i g}$ on $\mathbf{x}_{i 1}, \mathbf{x}_{i 3}$. This assumption can\\
+hold even if $\mathbf{x}_{i 3}$ has only a single element. For the matching reasons we discussed previously, $\mathbf{x}_{i 2}$ cannot be used as instruments for $\hat{\mathbf{w}}_{i}$ in the demand equation.
+
+Whether $\boldsymbol{\Pi}=\mathbf{0}$ or not, more efficient estimators are obtained from the full demand system and the hedonic price function. Write\\
+$\mathbf{q}_{i}^{\prime}=\boldsymbol{\eta}_{1}+\left(\mathbf{q}_{i} \boldsymbol{\Pi}+\mathbf{x}_{i 3} \boldsymbol{\Gamma}\right) \mathbf{A}_{1}+\mathbf{x}_{i 1} \mathbf{B}_{1}+\mathbf{u}_{i 1}$\\
+along with equation (14.44). Then $\left(\mathbf{x}_{i 1}, \mathbf{x}_{i 3}\right)$ (and functions of these) can be used as instruments in any of the $G$ demand equations, and $\left(\mathbf{q}_{i}, \mathbf{x}_{i}\right)$ act as IVs in equation (14.44). (It may be that the supply function is not even specified, in which case $\mathbf{x}_{i}$ contains only $\mathbf{x}_{i 1}$ and $\mathbf{x}_{i 3}$.) A first-stage estimator is the nonlinear system 2SLS estimator. Then the system can be estimated by the minimum chi-square estimator that solves problem (14.43). When restricting attention to demand equations plus the hedonic price equation, or supply equations plus the hedonic price equation, nonlinear 3SLS is efficient under certain assumptions. If the demand and supply equations are estimated together, the key assumption (14.26) that makes nonlinear 3SLS asymptotically efficient cannot be expected to hold; see Wooldridge (1996) for discussion.
+
+If one of the demand functions is of primary interest, it may make sense to estimate it along with equation (14.44), by GMM or nonlinear 3SLS. If the demand functions are written in inverse form, the resulting system is linear in the parameters, as shown in Wooldridge (1996).
+
+\subsection*{14.4 Efficient Estimation}
+In Chapter 8 we obtained the efficient weighting matrix for GMM estimation of linear models, and we extended that to nonlinear models in Section 14.1. In Chapter 13 we asserted that maximum likelihood estimation has some important efficiency properties. We are now in a position to study a framework that allows us to show the efficiency of an estimator within a particular class of estimators, and also to find efficient estimators within a stated class. Our approach is essentially that in Newey and McFadden (1994, Sect. 5.3), although we will not use the weakest possible assumptions. Bates and White (1993) proposed a very similar framework and also considered time series problems.
+
+\subsection*{14.4.1 General Efficiency Framework}
+Most estimators in econometrics-and all of the ones we have studied-are $\sqrt{N}$ asymptotically normal, with variance matrices of the form
+
+
+\begin{equation*}
+\mathbf{V}=\mathbf{A}^{-1} \mathrm{E}\left[\mathbf{s}(\mathbf{w}) \mathbf{s}(\mathbf{w})^{\prime}\right]\left(\mathbf{A}^{\prime}\right)^{-1} \tag{14.48}
+\end{equation*}
+
+
+where, in most cases, $\mathbf{s}(\mathbf{w})$ is the score of an objective function (evaluated at $\boldsymbol{\theta}_{\mathrm{o}}$ ) and $\mathbf{A}$ is the expected value of the Jacobian of the score, again evaluated at $\boldsymbol{\theta}_{\mathrm{o}}$. (We suppress an "o" subscript here, as the value of the true parameter is irrelevant.) All M-estimators with twice continuously differentiable objective functions (and even some without) have variance matrices of this form, as do GMM estimators. The following lemma is a useful sufficient condition for showing that one estimator is more efficient than another.\\
+lemma 14.1 (Relative Efficiency): Let $\hat{\boldsymbol{\theta}}_{1}$ and $\hat{\boldsymbol{\theta}}_{2}$ be two $\sqrt{N}$-asymptotically normal estimators of the $P \times 1$ parameter vector $\boldsymbol{\theta}_{\mathrm{o}}$, with asymptotic variances of the form (14.48) (with appropriate subscripts on $\mathbf{A}, \mathbf{s}$, and $\mathbf{V}$ ). If for some $\rho>0$,\\
+$\mathrm{E}\left[\mathbf{s}_{1}(\mathbf{w}) \mathbf{s}_{1}(\mathbf{w})^{\prime}\right]=\rho \mathbf{A}_{1}$,\\
+$\mathrm{E}\left[\mathbf{s}_{2}(\mathbf{w}) \mathbf{s}_{1}(\mathbf{w})^{\prime}\right]=\rho \mathbf{A}_{2}$,\\
+then $\mathbf{V}_{2}-\mathbf{V}_{1}$ is p.s.d.\\
+The proof of Lemma 14.1 is given in the chapter appendix.\\
+Condition (14.49) is essentially the generalized information matrix equality (GIME) we introduced in Section 12.5.1 for the estimator $\hat{\boldsymbol{\theta}}_{1}$. Notice that $\mathbf{A}_{1}$ is necessarily symmetric and positive definite under condition (14.49). Condition (14.50) is new. In most cases, it says that the expected outer product of the scores $\mathbf{s}_{2}$ and $\mathbf{s}_{1}$ equals the expected Jacobian of $\mathbf{s}_{2}$ (evaluated at $\boldsymbol{\theta}_{\mathrm{o}}$ ). In Section 12.5.1 we claimed that the GIME plays a role in efficiency, and Lemma 14.1 shows that it does so.
+
+Verifying the conditions of Lemma 14.1 is also very convenient for constructing simple forms of the Hausman (1978) statistic in a variety of contexts. Provided that the two estimators are jointly asymptotically normally distributed-something that is almost always true when each is $\sqrt{N}$-asymptotically normal, and that can be verified by stacking the first-order representations of the estimators-assumptions (14.49) and (14.50) imply that the asymptotic covariance between $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{2}-\boldsymbol{\theta}_{0}\right)$ and $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{1}-\boldsymbol{\theta}_{\mathrm{o}}\right) \quad$ is $\quad \mathbf{A}_{2}^{-1} \mathrm{E}\left(\mathbf{s}_{2} \mathbf{s}_{1}^{\prime}\right) \mathbf{A}_{1}^{-1}=\mathbf{A}_{2}^{-1}\left(\rho \mathbf{A}_{2}\right) \mathbf{A}_{1}^{-1}=\rho \mathbf{A}_{1}^{-1}=\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{1}-\boldsymbol{\theta}_{\mathrm{o}}\right)\right]$. In other words, the asymptotic covariance between the ( $\sqrt{N}$-scaled) estimators is equal to the asymptotic variance of the efficient estimator. This equality implies that $\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{2}-\hat{\boldsymbol{\theta}}_{1}\right)\right]=\mathbf{V}_{2}+\mathbf{V}_{1}-\mathbf{C}-\mathbf{C}^{\prime}=\mathbf{V}_{2}+\mathbf{V}_{1}-2 \mathbf{V}_{1}=\mathbf{V}_{2}-\mathbf{V}_{1}$, where $\mathbf{C}$ is the asymptotic covariance. If $\mathbf{V}_{2}-\mathbf{V}_{1}$ is actually positive definite (rather than just p.s.d.), then $\left[\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{2}-\hat{\boldsymbol{\theta}}_{1}\right)\right]^{\prime}\left(\hat{\mathbf{V}}_{2}-\hat{\mathbf{V}}_{1}\right)^{-1}\left[\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{2}-\hat{\boldsymbol{\theta}}_{1}\right)\right] \stackrel{a}{\sim} \chi_{P}^{2}$ under the assumptions of Lemma 14.1, where $\hat{\mathbf{V}}_{g}$ is a consistent estimator of $\mathbf{V}_{g}, g=1,2$. Statistically significant differences between $\hat{\boldsymbol{\theta}}_{2}$ and $\hat{\boldsymbol{\theta}}_{1}$ signal some sort of model misspecification. (See Section 6.2.1, where we discussed this form of the Hausman test for comparing
+
+2SLS and OLS to test whether the explanatory variables are exogenous.) If assumptions (14.49) and (14.50) do not hold, this standard form of the Hausman statistic is invalid.
+
+Given Lemma 14.1, we can state a condition that implies efficiency of an estimator in an entire class of estimators. It is useful to be somewhat formal in defining the relevant class of estimators. We do so by introducing an index, $\tau$. For each $\tau$ in an index set, say, $\mathscr{T}$, the estimator $\hat{\boldsymbol{\theta}}_{\tau}$ has an associated $\mathbf{s}_{\tau}$ and $\mathbf{A}_{\tau}$ such that the asymptotic variance of $\sqrt{N}\left(\hat{\boldsymbol{\theta}}_{\tau}-\boldsymbol{\theta}_{\mathrm{o}}\right)$ has the form (14.48). The index can be very abstract; it simply serves to distinguish different $\sqrt{N}$-asymptotically normal estimators of $\boldsymbol{\theta}_{\mathrm{o}}$. For example, in the class of M-estimators, the set $\mathscr{T}$ consists of objective functions $q(\cdot, \cdot)$ such that $\boldsymbol{\theta}_{\mathrm{o}}$ uniquely minimizes $\mathrm{E}[q(\mathbf{w}, \boldsymbol{\theta})]$ over $\boldsymbol{\Theta}$, and $q$ satisfies the twice continuously differentiable and bounded moment assumptions imposed for asymptotic normality. For GMM with given moment conditions, $\mathscr{T}$ is the set of all $L \times L$ positive definite matrices. We will see another example in Section 14.4.3. Lemma 14.1 immediately implies the following theorem.\\
+theorem 14.3 (Efficiency in a Class of Estimators): Let $\left\{\hat{\boldsymbol{\theta}}_{\tau}: \tau \in \mathscr{T}\right\}$ be a class of $\sqrt{N}$-asymptotically normal estimators with variance matrices of the form (14.48). If for some $\tau^{*} \in \mathscr{T}$ and $\rho>0$
+
+
+\begin{equation*}
+\mathrm{E}\left[\mathbf{s}_{\tau}(\mathbf{w}) \mathbf{s}_{\tau^{*}}(\mathbf{w})^{\prime}\right]=\rho \mathbf{A}_{\tau}, \quad \text { all } \tau \in \mathscr{T}, \tag{14.51}
+\end{equation*}
+
+
+then $\hat{\boldsymbol{\theta}}_{\tau^{*}}$ is asymptotically relatively efficient in the class $\left\{\hat{\boldsymbol{\theta}}_{\tau}: \tau \in \mathscr{T}\right\}$.\\
+This theorem has many applications. If we specify a class of estimators by defining the index set $\mathscr{T}$, then the estimator $\hat{\boldsymbol{\theta}}_{\tau^{*}}$ is more efficient than all other estimators in the class if we can show condition (14.51). (A partial converse to Theorem 14.3 also holds; see Newey and McFadden (1994, Section 5.3).) This is not to say that $\hat{\boldsymbol{\theta}}_{\tau^{*}}$ is necessarily more efficient than all possible $\sqrt{N}$-asymptotically normal estimators. If there is an estimator that falls outside the specified class, then Theorem 14.3 does not help us to compare it with $\hat{\boldsymbol{\theta}}_{\tau^{*}}$. In this sense, Theorem 14.3 is a more general (and asymptotic) version of the Gauss-Markov theorem from linear regression analysis: while the Gauss-Markov theorem states that OLS has the smallest variance in the class of linear, unbiased estimators, it does not allow us to compare OLS to unbiased estimators that are not linear in the vector of observations on the dependent variable.
+
+\subsection*{14.4.2 Efficiency of Maximum Likelihood Estimator}
+Students of econometrics are often told that the maximum likelihood estimator is "efficient." Unfortunately, in the context of conditional MLE (CMLE) from Chapter 13, the statement of efficiency is usually ambiguous; Manski (1988, Chap. 8) is a no-\\
+table exception. Theorem 14.3 allows us to state precisely the class of estimators in which the CMLE is relatively efficient. As in Chapter 13, we let $\mathrm{E}_{\theta}(\cdot \mid \mathbf{x})$ denote the expectation with respect to the conditional density $f(\mathbf{y} \mid \mathbf{x} ; \boldsymbol{\theta})$.
+
+Consider the class of estimators solving the first-order condition\\
+$N^{-1} \sum_{i=1}^{N} \mathbf{g}\left(\mathbf{w}_{i}, \hat{\boldsymbol{\theta}}\right) \equiv \mathbf{0}$,\\
+where the $P \times 1$ function $\mathbf{g}(\mathbf{w}, \boldsymbol{\theta})$ such that\\
+$\mathrm{E}_{\theta}[\mathbf{g}(\mathbf{w}, \boldsymbol{\theta}) \mid \mathbf{x}]=\mathbf{0}, \quad$ all $\mathbf{x} \in \mathscr{X}, \quad$ all $\boldsymbol{\theta} \in \boldsymbol{\Theta}$.
+
+In other words, the class of estimators is indexed by functions $\mathbf{g}$ satisfying a zero conditional moment restriction. We assume the standard regularity conditions from Chapter 12; in particular, $\mathbf{g}(\mathbf{w}, \cdot)$ is continuously differentiable on the interior of $\boldsymbol{\Theta}$.
+
+As we showed in Section 13.7, functions $\mathbf{g}$ satisfying condition (14.53) generally have the property\\
+$-\mathrm{E}\left[\nabla_{\theta} \mathbf{g}\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right) \mid \mathbf{x}\right]=\mathrm{E}\left[\mathbf{g}\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{s}\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \mid \mathbf{x}\right]$,\\
+where $\mathbf{s}(\mathbf{w}, \boldsymbol{\theta})$ is the score of $\log f(\mathbf{y} \mid \mathbf{x} ; \boldsymbol{\theta})$ (as always, we must impose certain regularity conditions on $\mathbf{g}$ and $\log f$ ). If we take the expectation of both sides with respect to $\mathbf{x}$, we obtain condition (14.51) with $\rho=1, \mathbf{A}_{\tau}=\mathrm{E}\left[\nabla_{\theta} \mathbf{g}\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right)\right]$, and $\mathbf{s}_{\tau^{*}}(\mathbf{w})= -\mathbf{s}\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right)$. It follows from Theorem 14.3 that the conditional MLE is efficient in the class of estimators solving equation (14.52), where $\mathbf{g}(\cdot)$ satisfies condition (14.59) and appropriate regularity conditions. Recall from Section 13.5.1 that the asymptotic variance of the (centered and standardized) CMLE is $\left\{\mathrm{E}\left[\mathbf{s}\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{s}\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime}\right]\right\}^{-1}$. This is an example of an efficiency bound because no estimator of the form (14.52) under condition (14.53) can have an asymptotic variance smaller than $\left\{\mathrm{E}\left[\mathbf{s}\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{s}\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime}\right]\right\}^{-1}$ (in the matrix sense). When an estimator from this class has the same asymptotic variance as the CMLE, we say it achieves the efficiency bound.
+
+It is important to see that the efficiency of the CMLE in the class of estimators solving equation (14.52) under condition (14.53) does not require $\mathbf{x}$ to be ancillary for $\boldsymbol{\theta}_{\mathrm{o}}$ : except for regularity conditions, the distribution of $\mathbf{x}$ is essentially unrestricted, and could depend on $\boldsymbol{\theta}_{\mathrm{o}}$. CMLE simply ignores information on $\boldsymbol{\theta}_{\mathrm{o}}$ that might be contained in the distribution of $\mathbf{x}$, but so do all other estimators that are based on condition (14.53).
+
+By choosing $\mathbf{x}$ to be empty, we conclude that the unconditional MLE is efficient in the class of estimators based on equation (14.52) with $\mathrm{E}_{\theta}[\mathbf{g}(\mathbf{w}, \boldsymbol{\theta})]=\mathbf{0}$, all $\boldsymbol{\theta} \in \boldsymbol{\Theta}$. This is a very broad class of estimators, including all of the estimators requiring condition\\
+(14.53): if a function $\mathbf{g}$ satisfies condition (14.53), it has zero unconditional mean, too. Consequently, the unconditional MLE is generally more efficient than the conditional MLE. This efficiency comes at the price of having to model the joint density of $(\mathbf{y}, \mathbf{x})$, rather than just the conditional density of $\mathbf{y}$ given $\mathbf{x}$. And, if our model for the density of $\mathbf{x}$ is incorrect, the unconditional MLE generally would be inconsistent.
+
+When is CMLE as efficient as unconditional MLE for estimating $\boldsymbol{\theta}_{\mathrm{o}}$ ? Assume that the model for the joint density of $(\mathbf{x}, \mathbf{y})$ can be expressed as $f(\mathbf{y} \mid \mathbf{x} ; \boldsymbol{\theta}) h(\mathbf{x} ; \boldsymbol{\delta})$, where $\boldsymbol{\theta}$ is the parameter vector of interest, and $h\left(\mathbf{x}, \boldsymbol{\delta}_{\mathrm{o}}\right)$ is the marginal density of $\mathbf{x}$ for some vector $\boldsymbol{\delta}_{\mathrm{o}}$. Then, if $\boldsymbol{\delta}$ does not depend on $\boldsymbol{\theta}$ in the sense that $\nabla_{\theta} h(\mathbf{x} ; \boldsymbol{\delta})=\mathbf{0}$ for all $\mathbf{x}$ and $\boldsymbol{\delta}, \mathbf{x}$ is ancillary for $\boldsymbol{\theta}_{\mathrm{o}}$. In fact, the CMLE is identical to the unconditional MLE. If $\boldsymbol{\delta}$ depends on $\boldsymbol{\theta}$, the term $\nabla_{\theta} \log [h(\mathbf{x} ; \boldsymbol{\delta})]$ generally contains information for estimating $\boldsymbol{\theta}_{\mathrm{o}}$, and unconditional MLE will be more efficient than CMLE.
+
+\subsection*{14.4.3 Efficient Choice of Instruments under Conditional Moment Restrictions}
+We can also apply Theorem 14.3 to find the optimal set of instrumental variables under general conditional moment restrictions. For a $G \times 1$ vector $\mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)$, where $\mathbf{w}_{i} \in \mathbb{R}^{M}, \boldsymbol{\theta}_{\mathrm{o}}$ is said to satisfy conditional moment restrictions if\\
+$\mathrm{E}\left[\mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right) \mid \mathbf{x}_{i}\right]=\mathbf{0}$,\\
+where $\mathbf{x}_{i} \in \mathbb{R}^{K}$ is a subvector of $\mathbf{w}_{i}$. Under assumption (14.54), the matrix $\mathbf{Z}_{i}$ appearing in equation (14.22) can be any function of $\mathbf{x}_{i}$. For a given matrix $\mathbf{Z}_{i}$, we obtain the efficient GMM estimator by using the efficient weighting matrix. However, unless $\mathbf{Z}_{i}$ is the optimal set of instruments, we can generally obtain a more efficient estimator by adding any nonlinear function of $\mathbf{x}_{i}$ to $\mathbf{Z}_{i}$. Because the list of potential IVs is endless, it is useful to characterize the optimal choice of $\mathbf{Z}_{i}$.
+
+The solution to this problem is now pretty well known, and it can be obtained by applying Theorem 14.3. Let
+
+
+\begin{equation*}
+\boldsymbol{\Omega}_{\mathrm{o}}\left(\mathbf{x}_{i}\right) \equiv \operatorname{Var}\left[\mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right) \mid \mathbf{x}_{i}\right] \tag{14.55}
+\end{equation*}
+
+
+be the $G \times G$ conditional variance of $\mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)$ given $\mathbf{x}_{i}$, and define\\
+$\mathbf{R}_{\mathrm{o}}\left(\mathbf{x}_{i}\right) \equiv \mathrm{E}\left[\nabla_{\theta} \mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right) \mid \mathbf{x}_{i}\right]$.
+
+Problem 14.3 asks you to verify that the optimal choice of instruments is\\
+$\mathbf{Z}^{*}\left(\mathbf{x}_{i}\right) \equiv \boldsymbol{\Omega}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)^{-1} \mathbf{R}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)$.
+
+The optimal instrument matrix is always $G \times P$, and so the efficient method of moments estimator solves\\
+$\sum_{i=1}^{N} \mathbf{Z}^{*}\left(\mathbf{x}_{i}\right)^{\prime} \mathbf{r}_{i}(\hat{\boldsymbol{\theta}})=\mathbf{0}$.\\
+There is no need to use a weighting matrix. Incidentally, by taking $\mathbf{g}(\mathbf{w}, \boldsymbol{\theta}) \equiv \mathbf{Z}^{*}(\mathbf{x})^{\prime} \mathbf{r}(\mathbf{w}, \boldsymbol{\theta})$, we obtain a function $\mathbf{g}$ satisfying condition (14.53). From our discussion in Section 14.4.2, it follows immediately that the CMLE is no less efficient than the optimal IV estimator.
+
+In practice, $\mathbf{Z}^{*}\left(\mathbf{x}_{i}\right)$ is never a known function of $\mathbf{x}_{i}$. In some cases the function $\mathbf{R}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)$ is a known function of $\mathbf{x}_{i}$ and $\boldsymbol{\theta}_{\mathrm{o}}$ and can be easily estimated; this statement is true of linear SEMs under conditional mean assumptions (see Chapters 8 and 9) and of multivariate nonlinear regression, which we cover later in this subsection. Rarely do moment conditions imply a parametric form for $\boldsymbol{\Omega}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)$, but sometimes homoskedasticity is assumed:
+
+
+\begin{equation*}
+\mathrm{E}\left[\mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mid \mathbf{x}_{i}\right]=\boldsymbol{\Omega}_{\mathrm{o}} \tag{14.58}
+\end{equation*}
+
+
+and $\boldsymbol{\Omega}_{\mathrm{o}}$ is easily estimated as in equation (14.30), given a preliminary estimate of $\boldsymbol{\theta}_{\mathrm{o}}$.\\
+Since both $\boldsymbol{\Omega}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)$ and $\mathbf{R}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)$ must be estimated, we must know the asymptotic properties of GMM with generated instruments. Under conditional moment restrictions, generated instruments have no effect on the asymptotic variance of the GMM estimator. Thus, if the matrix of instruments is $\mathbf{Z}\left(\mathbf{x}_{i}, \boldsymbol{\gamma}_{\mathrm{o}}\right)$ for some unknown parameter vector $\gamma_{\mathrm{o}}$, and $\hat{\gamma}$ is an estimator such that $\sqrt{N}\left(\hat{\gamma}-\gamma_{\mathrm{o}}\right)=\mathrm{O}_{p}(1)$, then the GMM estimator using the generated instruments $\hat{\mathbf{Z}}_{i} \equiv \mathbf{Z}\left(\mathbf{x}_{i}, \hat{\gamma}\right)$ has the same limiting distribution as the GMM estimator using instruments $\mathbf{Z}\left(\mathbf{x}_{i}, \gamma_{\mathrm{o}}\right)$ (using any weighting matrix). This result follows from a mean value expansion, using the fact that the derivative of each element of $\mathbf{Z}\left(\mathbf{x}_{i}, \boldsymbol{\gamma}\right)$ with respect to $\boldsymbol{\gamma}$ is orthogonal to $\mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)$ under condition (14.54):
+
+
+\begin{align*}
+N^{-1 / 2} \sum_{i=1}^{N} \hat{\mathbf{Z}}_{i}^{\prime} \mathbf{r}_{i}(\hat{\boldsymbol{\theta}})= & N^{-1 / 2} \sum_{i=1}^{N} \mathbf{Z}_{i}\left(\boldsymbol{\gamma}_{\mathrm{o}}\right)^{\prime} \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \\
+& +\mathrm{E}\left[\mathbf{Z}_{i}\left(\boldsymbol{\gamma}_{\mathrm{o}}\right)^{\prime} \mathbf{R}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)\right] \sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)+\mathrm{o}_{p}(1) \tag{14.59}
+\end{align*}
+
+
+The right-hand side of equation (14.59) is identical to the expansion with $\hat{\mathbf{Z}}_{i}$ replaced with $\mathbf{Z}_{i}\left(\boldsymbol{\gamma}_{\mathrm{o}}\right)$.
+
+Assuming now that $\mathbf{Z}_{i}\left(\gamma_{\mathrm{o}}\right)$ is the matrix of efficient instruments, the asymptotic variance of the efficient estimator is\\
+$\operatorname{Avar} \sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)=\left\{\mathrm{E}\left[\mathbf{R}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)^{\prime} \boldsymbol{\Omega}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)^{-1} \mathbf{R}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)\right]\right\}^{-1}$,\\
+as can be seen from Section 14.1 by noting that $\mathbf{G}_{\mathrm{o}}=\mathrm{E}\left[\mathbf{R}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)^{\prime} \boldsymbol{\Omega}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)^{-1} \mathbf{R}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)\right]$ and $\boldsymbol{\Lambda}_{\mathrm{o}}=\mathbf{G}_{\mathrm{o}}^{-1}$ when the instruments are given by equation (14.57).
+
+Equation (14.60) is another example of an efficiency bound, this time under the conditional moment restrictions (14.48). What we have shown is that any GMM estimator has variance matrix that differs from equation (14.60) by a p.s.d. matrix. Chamberlain (1987) has shown more: any estimator that uses only condition (14.54) and satisfies regularity conditions has variance matrix no smaller than equation (14.60).
+
+Estimation of $\mathbf{R}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)$ generally requires nonparametric methods. Newey (1990) describes one approach. Essentially, regress the elements of $\nabla_{\theta} \mathbf{r}_{i}(\hat{\boldsymbol{\theta}})$ on polynomial functions of $\mathbf{x}_{i}$ (or other functions with good approximating properties), where $\hat{\boldsymbol{\theta}}$ is an initial estimate of $\boldsymbol{\theta}_{\mathrm{o}}$. The fitted values from these regressions can be used as the elements of $\hat{\mathbf{R}}_{i}$. Other nonparametric approaches are available. See Newey (1990, 1993) for details. Unfortunately, we need a fairly large sample size in order to apply such methods effectively.
+
+As an example of finding the optimal instruments, consider the problem of estimating a conditional mean for a vector $\mathbf{y}_{i}$ :\\
+$\mathrm{E}\left(\mathbf{y}_{i} \mid \mathbf{x}_{i}\right)=\mathbf{m}\left(\mathbf{x}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right)$.
+
+Then the residual function is $\mathbf{r}\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right) \equiv \mathbf{y}_{i}-\mathbf{m}\left(\mathbf{x}_{i}, \boldsymbol{\theta}\right)$ and $\boldsymbol{\Omega}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)=\operatorname{Var}\left(\mathbf{y}_{i} \mid \mathbf{x}_{i}\right)$; therefore, the optimal instruments are $\mathbf{Z}_{\mathrm{o}}\left(\mathbf{x}_{i}\right) \equiv \boldsymbol{\Omega}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)^{-1} \nabla_{\theta} \mathbf{m}\left(\mathbf{x}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right)$. This is an important example where $\mathbf{R}_{\mathrm{o}}\left(\mathbf{x}_{i}\right)=-\nabla_{\theta} \mathbf{m}\left(\mathbf{x}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right)$ is a known function of $\mathbf{x}_{i}$ and $\boldsymbol{\theta}_{\mathrm{o}}$. If the homoskedasticity assumption
+
+
+\begin{equation*}
+\operatorname{Var}\left(\mathbf{y}_{i} \mid \mathbf{x}_{i}\right)=\boldsymbol{\Omega}_{\mathrm{o}} \tag{14.62}
+\end{equation*}
+
+
+holds, then the efficient estimator is easy to obtain. First, let $\hat{\hat{\boldsymbol{\theta}}}$ be the multivariate nonlinear least squares (MNLS) estimator, which solves $\min _{\boldsymbol{\theta} \in \boldsymbol{\Theta}} \sum_{i=1}^{N}\left[\mathbf{y}_{i}-\mathbf{m}\left(\mathbf{x}_{i}, \boldsymbol{\theta}\right)\right]^{\prime}$. $\left[\mathbf{y}_{i}-\mathbf{m}\left(\mathbf{x}_{i}, \boldsymbol{\theta}\right)\right]$. As discussed in Section 12.9, the MNLS estimator is generally consistent and $\sqrt{N}$-asymptotic normal. Define the residuals $\hat{\hat{\mathbf{u}}}_{i} \equiv \mathbf{y}_{i}-\mathbf{m}\left(\mathbf{x}_{i}, \hat{\boldsymbol{\theta}}\right)$, and define a consistent estimator of $\boldsymbol{\Omega}_{\mathrm{o}}$ by $\hat{\boldsymbol{\Omega}}=N^{-1} \sum_{i=1}^{N} \hat{\mathbf{u}} \hat{\mathbf{u}}_{i}^{\prime}$. An efficient estimator, $\hat{\boldsymbol{\theta}}$, solves\\
+$\sum_{i=1}^{N} \nabla_{\theta} \mathbf{m}\left(\mathbf{x}_{i}, \hat{\hat{\boldsymbol{\theta}}}^{\prime}\right)^{\prime} \hat{\boldsymbol{\Omega}}^{-1}\left[\mathbf{y}_{i}-\mathbf{m}\left(\mathbf{x}_{i}, \hat{\boldsymbol{\theta}}\right)\right]=\mathbf{0}$\\
+and the asymptotic variance of $\sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)$ is $\left\{\mathrm{E}\left[\nabla_{\theta} \mathbf{m}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \boldsymbol{\Omega}_{\mathrm{o}}^{-1} \nabla_{\theta} \mathbf{m}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)\right]\right\}^{-1}$. An asymptotically equivalent estimator is the nonlinear SUR estimator described in Section 12.9. In either case, the estimator of $\operatorname{Avar}(\hat{\boldsymbol{\theta}})$ under assumption (14.62) is\\
+$\widehat{\operatorname{Avar}(\hat{\boldsymbol{\theta}})}=\left[\sum_{i=1}^{N} \nabla_{\theta} \mathbf{m}_{i}(\hat{\boldsymbol{\theta}})^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \nabla_{\theta} \mathbf{m}_{i}(\hat{\boldsymbol{\theta}})\right]^{-1}$.\\
+Because the nonlinear SUR estimator is a two-step M-estimator and $\mathbf{B}_{\mathrm{o}}=\mathbf{A}_{\mathrm{o}}$ (in the notation of Chapter 12), the simplest forms of test statistics are valid. If assumption (14.62) fails, the nonlinear SUR estimator is consistent, but robust inference should be used because $\mathbf{A}_{\mathrm{o}} \neq \mathbf{B}_{\mathrm{o}}$. And, the estimator is no longer efficient.
+
+\subsection*{14.5 Classical Minimum Distance Estimation}
+A method that has features in common with GMM and often is a convenient substitute, is classical minimum distance (CMD) estimation.
+
+Suppose that the $P \times 1$ parameter vector of interest, $\boldsymbol{\theta}_{\mathrm{o}}$, which often consists of parameters from a structural model, is known to be related to an $S \times 1$ vector of reduced-form parameters, $\boldsymbol{\pi}_{\mathrm{o}}$, where $S>P$. In particular, $\boldsymbol{\pi}_{\mathrm{o}}=\mathbf{h}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)$ for a known, continuously differentiable function $\mathbf{h}: \mathbb{R}^{P} \rightarrow \mathbb{R}^{S}$, so that $\mathbf{h}$ maps the structural parameters into the reduced-form parameters.
+
+CMD estimation of $\boldsymbol{\theta}_{\mathrm{o}}$ entails first estimating $\boldsymbol{\pi}_{\mathrm{o}}$ by $\hat{\boldsymbol{\pi}}$, and then choosing an estimator $\hat{\boldsymbol{\theta}}$ of $\boldsymbol{\theta}_{\mathrm{o}}$ by making the distance between $\hat{\boldsymbol{\pi}}$ and $\mathbf{h}(\hat{\boldsymbol{\theta}})$ as small as possible. As with GMM estimation, we use a weighted Euclidean measure of distance. While a CMD estimator can be defined for any p.s.d. weighting matrix, we consider only the efficient CMD estimator given our choice of $\hat{\boldsymbol{\pi}}$. As with efficient GMM, the CMD estimator that uses the efficient weighting matrix is also called the minimum chisquare estimator.
+
+Assuming that for an $S \times S$ p.s.d. matrix $\boldsymbol{\Xi}_{\mathrm{o}}$
+
+
+\begin{equation*}
+\sqrt{N}\left(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right) \stackrel{a}{\sim} \operatorname{Normal}\left(\mathbf{0}, \boldsymbol{\Xi}_{\mathrm{o}}\right) \tag{14.63}
+\end{equation*}
+
+
+it turns out that an efficient CMD estimator solves
+
+
+\begin{equation*}
+\min _{\boldsymbol{\theta} \in \boldsymbol{\Theta}}\{\hat{\boldsymbol{\pi}}-\mathbf{h}(\boldsymbol{\theta})\}^{\prime} \hat{\boldsymbol{\Xi}}^{-1}\{\hat{\boldsymbol{\pi}}-\mathbf{h}(\boldsymbol{\theta})\}, \tag{14.64}
+\end{equation*}
+
+
+where $\operatorname{plim}_{N \rightarrow \infty} \hat{\boldsymbol{\Xi}}=\boldsymbol{\Xi}_{\mathrm{O}}$. In other words, an efficient weighting matrix is the inverse of any consistent estimator of $\mathrm{A} \operatorname{var} \sqrt{N}\left(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right)$.
+
+We can easily derive the asymptotic variance of $\sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)$. The first-order condition for $\hat{\boldsymbol{\theta}}$ is
+
+
+\begin{equation*}
+\mathbf{H}(\hat{\boldsymbol{\theta}})^{\prime} \hat{\boldsymbol{\Xi}}^{-1}\{\hat{\boldsymbol{\pi}}-\mathbf{h}(\hat{\boldsymbol{\theta}})\} \equiv \mathbf{0} \tag{14.65}
+\end{equation*}
+
+
+where $\mathbf{H}(\boldsymbol{\theta}) \equiv \nabla_{\theta} \mathbf{h}(\boldsymbol{\theta})$ is the $S \times P$ Jacobian of $\mathbf{h}(\boldsymbol{\theta})$. Since $\mathbf{h}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)=\boldsymbol{\pi}_{\mathrm{o}}$ and\\
+$\sqrt{N}\left\{\mathbf{h}(\hat{\boldsymbol{\theta}})-\mathbf{h}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)\right\}=\mathbf{H}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)+\mathrm{o}_{p}(1)$,\\
+by a standard mean value expansion about $\boldsymbol{\theta}_{\mathrm{o}}$, we have\\
+$\mathbf{0}=\mathbf{H}(\hat{\boldsymbol{\theta}})^{\prime} \hat{\boldsymbol{\Xi}}^{-1}\left\{\sqrt{N}\left(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right)-\mathbf{H}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)\right\}+\mathrm{o}_{p}(1)$.
+
+Because $\mathbf{H}(\cdot)$ is continuous and $\hat{\boldsymbol{\theta}} \xrightarrow{p} \boldsymbol{\theta}_{\mathrm{o}}, \mathbf{H}(\hat{\boldsymbol{\theta}})=\mathbf{H}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)+\mathrm{o}_{p}(1)$; by assumption $\hat{\boldsymbol{\Xi}}= \boldsymbol{\Xi}_{\mathrm{o}}+\mathrm{o}_{p}(1)$. Therefore,\\
+$\mathbf{H}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1} \mathbf{H}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)=\mathbf{H}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1} \sqrt{N}\left(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right)+\mathrm{o}_{p}(1)$.\\
+By assumption (14.63) and the asymptotic equivalence lemma,\\
+$\mathbf{H}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1} \mathbf{H}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right) \stackrel{a}{\sim} \operatorname{Normal}\left[\mathbf{0}, \mathbf{H}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1} \mathbf{H}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)\right]$,\\
+and so\\
+$\sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right) \stackrel{a}{\sim} \operatorname{Normal}\left[\mathbf{0},\left(\mathbf{H}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1} \mathbf{H}_{\mathrm{o}}\right)^{-1}\right]$,\\
+provided that $\mathbf{H}_{\mathrm{o}} \equiv \mathbf{H}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)$ has full-column rank $P$, as will generally be the case when $\boldsymbol{\theta}_{\mathrm{o}}$ is identified and $\mathbf{h}(\cdot)$ contains no redundancies. The appropriate estimator of $\operatorname{Avar}(\hat{\boldsymbol{\theta}})$ is\\
+$\widehat{\operatorname{Avar}(\hat{\boldsymbol{\theta}})} \equiv\left(\hat{\mathbf{H}}^{\prime} \hat{\boldsymbol{\Xi}}^{-1} \hat{\mathbf{H}}\right)^{-1} / N=\left(\hat{\mathbf{H}}^{\prime}[\widehat{\operatorname{var}(\hat{\boldsymbol{\pi}})}]^{-1} \hat{\mathbf{H}}\right)^{-1}$.
+
+The proof that $\hat{\boldsymbol{\Xi}}^{-1}$ is the optimal weighting matrix in expression (14.64) is very similar to the derivation of the optimal weighting matrix for GMM. (It can also be shown by applying Theorem 14.3.) We will simply call the efficient estimator the CMD estimator, where it is understood that we are using the efficient weighting matrix.
+
+There is another efficiency issue that arises when more than one $\sqrt{N}$-asymptotically normal estimator for $\boldsymbol{\pi}_{\mathrm{o}}$ is available: Which estimator of $\boldsymbol{\pi}_{\mathrm{o}}$ should be used? Let $\hat{\boldsymbol{\theta}}$ be the estimator based on $\hat{\boldsymbol{\pi}}$, and let $\tilde{\boldsymbol{\theta}}$ be the estimator based on another estimator, $\tilde{\boldsymbol{\pi}}$. You are asked to show in Problem 14.6 that Avar $\sqrt{N}\left(\tilde{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)-\mathrm{Avar} \sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)$ is p.s.d. whenever $\mathrm{Avar} \sqrt{N}\left(\tilde{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right)-\operatorname{Avar} \sqrt{N}\left(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right)$ is p.s.d. In other words, we should use the most efficient estimator of $\boldsymbol{\pi}_{\mathrm{o}}$ to obtain the most efficient estimator of $\boldsymbol{\theta}_{\mathrm{o}}$.
+
+A test of overidentifying restrictions is immediately available after estimation, because, under the null hypothesis $\boldsymbol{\pi}_{\mathrm{o}}=\mathbf{h}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)$,\\
+$N[\hat{\boldsymbol{\pi}}-\mathbf{h}(\hat{\boldsymbol{\theta}})]^{\prime} \hat{\boldsymbol{\Xi}}^{-1}[\hat{\boldsymbol{\pi}}-\mathbf{h}(\hat{\boldsymbol{\theta}})] \stackrel{a}{\sim} \chi_{S-P}^{2}$.
+
+To show this result, we use
+
+$$
+\begin{aligned}
+\sqrt{N}[\hat{\boldsymbol{\pi}}-\mathbf{h}(\hat{\boldsymbol{\theta}})] & =\sqrt{N}\left(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right)-\mathbf{H}_{\mathrm{o}} \sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)+\mathrm{o}_{p}(1) \\
+& =\sqrt{N}\left(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right)-\mathbf{H}_{\mathrm{o}}\left(\mathbf{H}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1} \mathbf{H}_{\mathrm{o}}\right)^{-1} \mathbf{H}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1} \sqrt{N}\left(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right)+\mathrm{o}_{p}(1) \\
+& =\left[\mathbf{I}_{S}-\mathbf{H}_{\mathrm{o}}\left(\mathbf{H}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1} \mathbf{H}_{\mathrm{o}}\right)^{-1} \mathbf{H}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1}\right] \sqrt{N}\left(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right)+\mathrm{o}_{p}(1)
+\end{aligned}
+$$
+
+Therefore, up to $\mathrm{o}_{p}(1)$,\\
+$\boldsymbol{\Xi}_{\mathrm{o}}^{-1 / 2} \sqrt{N}\{\hat{\boldsymbol{\pi}}-\mathbf{h}(\hat{\boldsymbol{\theta}})\}=\left[\mathbf{I}_{S}-\boldsymbol{\Xi}_{\mathrm{o}}^{-1 / 2} \mathbf{H}_{\mathrm{o}}\left(\mathbf{H}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1} \mathbf{H}_{\mathrm{o}}\right)^{-1} \mathbf{H}_{\mathrm{o}}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1 / 2}\right] \mathscr{Z} \equiv \mathbf{M}_{\mathrm{o}} \mathscr{Z}$, where $\mathscr{Z} \equiv \boldsymbol{\Xi}_{\mathrm{o}}^{-1 / 2} \sqrt{N}\left(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right) \xrightarrow{d} \operatorname{Normal}\left(\mathbf{0}, \mathbf{I}_{S}\right)$. But $\mathbf{M}_{\mathrm{o}}$ is a symmetric idempotent matrix with rank $S-P$, so $\{\sqrt{N}[\hat{\boldsymbol{\pi}}-\mathbf{h}(\hat{\boldsymbol{\theta}})]\}^{\prime} \boldsymbol{\Xi}_{\mathrm{o}}^{-1}\{\sqrt{N}[\hat{\boldsymbol{\pi}}-\mathbf{h}(\hat{\boldsymbol{\theta}})]\} \stackrel{a}{\sim} \chi_{S-P}^{2}$. Because $\hat{\boldsymbol{\Xi}}$ is consistent for $\boldsymbol{\Xi}_{\mathrm{o}}$, expression (14.69) follows from the asymptotic equivalence lemma. The statistic can also be expressed as\\
+$\{\hat{\boldsymbol{\pi}}-\mathbf{h}(\hat{\boldsymbol{\theta}})\}^{\prime}[\widehat{\operatorname{var}}(\hat{\boldsymbol{\pi}})]^{-1}\{\hat{\boldsymbol{\pi}}-\mathbf{h}(\hat{\boldsymbol{\theta}})\}$.
+
+Testing restrictions on $\boldsymbol{\theta}_{\mathrm{o}}$ is also straightforward, assuming that we can express the restrictions as $\boldsymbol{\theta}_{\mathrm{o}}=\mathbf{d}\left(\boldsymbol{\alpha}_{\mathrm{o}}\right)$ for an $R \times 1$ vector $\boldsymbol{\alpha}_{\mathrm{o}}, R<P$. Under these restrictions, $\boldsymbol{\pi}_{\mathrm{o}}=\mathbf{h}\left[\mathbf{d}\left(\boldsymbol{\alpha}_{\mathrm{o}}\right)\right] \equiv \mathbf{g}\left(\boldsymbol{\alpha}_{\mathrm{o}}\right)$. Thus, $\boldsymbol{\alpha}_{\mathrm{o}}$ can be estimated by minimum distance by solving problem (14.64) with $\boldsymbol{\alpha}$ in place of $\boldsymbol{\theta}$ and $\mathbf{g}(\boldsymbol{\alpha})$ in place of $\mathbf{h}(\boldsymbol{\theta})$. The same estimator $\hat{\boldsymbol{\Xi}}$ should be used in both minimization problems. Then it can be shown (under interiority and differentiability) that\\
+$N[\hat{\boldsymbol{\pi}}-\mathbf{g}(\hat{\boldsymbol{\alpha}})]^{\prime} \hat{\boldsymbol{\Xi}}^{-1}[\hat{\boldsymbol{\pi}}-\mathbf{g}(\hat{\boldsymbol{\alpha}})]-N[\hat{\boldsymbol{\pi}}-\mathbf{h}(\hat{\boldsymbol{\theta}})]^{\prime} \hat{\boldsymbol{\Xi}}^{-1}[\hat{\boldsymbol{\pi}}-\mathbf{h}(\hat{\boldsymbol{\theta}})] \stackrel{a}{\sim} \chi_{P-R}^{2}$,\\
+when the restrictions on $\boldsymbol{\theta}_{\mathrm{o}}$ are true.
+
+\subsection*{14.6 Panel Data Applications}
+We now cover several panel data applications of GMM and CMD. The models in Sections 14.6.1 and 14.6.3 are nonlinear in parameters.
+
+\subsection*{14.6.1 Nonlinear Dynamic Models}
+One increasingly popular use of panel data is to test rationality in economic models of individual, family, or firm behavior (see, for example, Shapiro, 1984; Zeldes, 1989; Keane and Runkle, 1992; Shea, 1995). For a random draw from the population we assume that $T$ time periods are available. Suppose that an economic theory implies that\\
+$\mathrm{E}\left[r_{t}\left(\mathbf{w}_{t}, \boldsymbol{\theta}_{\mathrm{o}}\right) \mid \mathbf{w}_{t-1}, \ldots, \mathbf{w}_{1}\right)=0, \quad t=1, \ldots, T$,\\
+where, for simplicity, $r_{t}$ is a scalar. These conditional moment restrictions are often implied by rational expectations, under the assumption that the decision horizon is the same length as the sampling period. For example, consider a standard life-cycle model of consumption. Let $c_{i t}$ denote consumption of family $i$ at time $t$, let $\mathbf{h}_{i t}$ denote taste shifters, let $\delta_{\mathrm{o}}$ denote the common rate of time preference, and let $a_{i t}^{j}$ denote the return for family $i$ from holding asset $j$ from period $t-1$ to $t$. Under the assumption that utility is given by\\
+$\mathrm{u}\left(c_{i t}, \theta_{i t}\right)=\exp \left(\mathbf{h}_{i t} \boldsymbol{\beta}_{\mathrm{o}}\right) c_{i t}^{1-\lambda_{\mathrm{o}}} /\left(1-\lambda_{\mathrm{o}}\right)$,\\
+the Euler equation is\\
+$\mathrm{E}\left[\left(1+a_{i t}^{j}\right)\left(c_{i t} / c_{i, t-1}\right)^{-\lambda_{\mathrm{o}}} \mid \mathscr{I}_{i, t-1}\right]=\left(1+\delta_{\mathrm{o}}\right)^{-1} \exp \left(\mathbf{x}_{i t} \boldsymbol{\beta}_{\mathrm{o}}\right)$,\\
+where $\mathscr{I}_{i t}$ is family $i$ 's information set at time $t$ and $\mathbf{x}_{i t} \equiv \mathbf{h}_{i, t-1}-\mathbf{h}_{i t}$, equation (14.74) assumes that $\mathbf{h}_{i t}-\mathbf{h}_{i, t-1} \in \mathscr{I}_{i, t-1}$, an assumption which is often reasonable. Given equation (14.74), we can define a residual function for each $t$ :\\
+$r_{i t}(\boldsymbol{\theta})=\left(1+a_{i t}^{j}\right)\left(c_{i t} / c_{i, t-1}\right)^{-\lambda}-\exp \left(\mathbf{x}_{i t} \boldsymbol{\beta}\right)$,\\
+where $(1+\delta)^{-1}$ is absorbed in an intercept in $\mathbf{x}_{i t}$. Let $\mathbf{w}_{i t}$ contain $c_{i t}, c_{i, t-1}, a_{i t}$, and $\mathbf{x}_{i t}$. Then condition (14.72) holds, and $\lambda_{\mathrm{o}}$ and $\boldsymbol{\beta}_{\mathrm{o}}$ can be estimated by GMM.
+
+Returning to condition (14.72), valid instruments at time $t$ are functions of information known at time $t-1$ :\\
+$\mathbf{z}_{t}=\mathbf{f}_{t}\left(\mathbf{w}_{t-1}, \ldots, \mathbf{w}_{1}\right)$.
+
+The $T \times 1$ residual vector is $\mathbf{r}(\mathbf{w}, \boldsymbol{\theta})=\left[r_{1}\left(\mathbf{w}_{1}, \boldsymbol{\theta}\right), \ldots, r_{T}\left(\mathbf{w}_{T}, \boldsymbol{\theta}\right)\right]^{\prime}$, and the matrix of instruments has the same form as matrix (14.38) for each $i$ (with $G=T$ ). Then, the minimum chi-square estimator can be obtained after using the system 2SLS estimator, although the choice of instruments is a nontrivial matter. A common choice is linear and quadratic functions of variables lagged one or two time periods.
+
+Estimation of the optimal weighting matrix is somewhat simplified under the conditional moment restrictions (14.72). Recall from Section 14.2 that the optimal estimator uses the inverse of a consistent estimator of $\boldsymbol{\Lambda}_{\mathrm{o}}=\mathrm{E}\left[\mathbf{Z}_{i}^{\prime} \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \mathbf{Z}_{i}\right]$. Under condition (14.72), this matrix is block diagonal. Dropping the $i$ subscript, the $(s, t)$ block is $\mathrm{E}\left[r_{s}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) r_{t}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{z}_{s}^{\prime} \mathbf{z}_{t}\right]$. For concreteness, assume that $s<t$. Then $\mathbf{z}_{t}, \mathbf{z}_{s}$, and $r_{s}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)$ are all functions of $\mathbf{w}_{t-1}, \mathbf{w}_{t-2}, \ldots, \mathbf{w}_{1}$. By iterated expectations it follows that\\
+$\mathrm{E}\left[r_{s}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) r_{t}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{z}_{s}^{\prime} \mathbf{z}_{t}\right]=\mathrm{E}\left\{r_{s}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{z}_{s}^{\prime} \mathbf{z}_{t} \mathrm{E}\left[r_{t}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mid \mathbf{w}_{t-1}, \ldots, \mathbf{w}_{1}\right]\right\}=0$,\\
+and so we only need to estimate the diagonal blocks of $\mathrm{E}\left[\mathbf{Z}_{i}^{\prime} \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right) \mathbf{r}_{i}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \mathbf{Z}_{i}\right]$ :
+
+
+\begin{equation*}
+N^{-1} \sum_{i=1}^{N} \hat{\hat{r}}_{i t}^{2} \mathbf{z}_{i t}^{\prime} \mathbf{z}_{i t} \tag{14.77}
+\end{equation*}
+
+
+is a consistent estimator of the $t$ th block, where the $\hat{\hat{r}}_{i t}$ are obtained from an inefficient GMM estimator.
+
+In cases where the data frequency does not match the horizon relevant for decision making, the optimal matrix does not have the block diagonal form: some off-diagonal blocks will be nonzero. See Hansen (1982) for the pure time series case.
+
+The previous model does not allow for unobserved heterogeneity, a feature that can be important in rational expectations types of applications. For example, in addition to having unobserved tastes in the utility function, individuals, families, and firms may have different discount rates. Wooldridge (1997a) shows how to obtain orthogonality conditions when the previous framework allows for unobserved heterogeneity in particular ways. GMM can be applied to the resulting nonlinear moment conditions.
+
+There are many other kinds of dynamic panel data models that result in moment conditions that are nonlinear in parameters, even if the underlying model is linear. For example, for the linear, unobserved effects AR(1) model, Ahn and Schmidt (1995) add to the moment conditions used in the Arellano and Bond (1991) procedure that we covered in Section 11.6.2. Some of these moment conditions are nonlinear in the parameters and can be exploited using nonlinear GMM.
+
+Recently, Wooldridge (2009b) showed how to implement parametric versions of Olley and Pakes (1996) and Levinsohn and Petrin (2003) for estimating firm-level production functions with panel data. The general approach is to replace unobserved productivity with functions of state variables and proxy variables. When the unknown functions are approximated using polynomials, Wooldridge (2009b) shows that the estimation problem can be structured as two equations (for each time period) with different instruments available for the different equations.
+
+\subsection*{14.6.2 Minimum Distance Approach to the Unobserved Effects Model}
+In Section 11.1.2 we discussed Chamberlain's $(1982,1984)$ approach to estimating the unobserved effects model $y_{i t}=\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}$ (where we do not index the true value by " $o$ " in this subsection). Rather than eliminate $c_{i}$ from the equation, Chamberlain replaced it with a linear projection on the entire history of the explanatory variables. In Section 11.1.2, we showed how to estimate the parameters in a GMM framework. It is also useful to see Chamberlain's original suggestion, which was to estimate the parameters using CMD estimation.
+
+Recall that the key equations, after we substitute in the linear projection, are\\
+$y_{i t}=\psi+\mathbf{x}_{i 1} \lambda_{1}+\cdots+\mathbf{x}_{i t}\left(\boldsymbol{\beta}+\lambda_{t}\right)+\cdots+\mathbf{x}_{i T} \lambda_{T}+v_{i t}$,\\
+where\\
+$\mathrm{E}\left(v_{i t}\right)=0, \quad \mathrm{E}\left(\mathbf{x}_{i}^{\prime} v_{i t}\right)=\mathbf{0}, \quad t=1,2, \ldots, T$.\\
+(For notational simplicity we do not index the true parameters by "o".) Equation (14.78) embodies the restrictions on the "structural" parameters $\boldsymbol{\theta} \equiv\left(\psi, \lambda_{1}^{\prime}, \ldots\right.$, $\left.\lambda_{T}^{\prime}, \boldsymbol{\beta}^{\prime}\right)^{\prime}$, a $(1+T K+K) \times 1$ vector. To apply CMD, write\\
+$y_{i t}=\pi_{t 0}+\mathbf{x}_{i} \boldsymbol{\pi}_{t}+v_{i t}, \quad t=1, \ldots, T$,\\
+so that the vector $\boldsymbol{\pi}$ is $T(1+T K) \times 1$. When we impose the restrictions,\\
+$\boldsymbol{\pi}_{t 0}=\psi, \boldsymbol{\pi}_{t}=\left[\boldsymbol{\lambda}_{1}^{\prime}, \lambda_{2}^{\prime}, \ldots,\left(\boldsymbol{\beta}+\boldsymbol{\lambda}_{t}\right)^{\prime}, \ldots, \lambda_{T}^{\prime}\right]^{\prime}, \quad t=1, \ldots, T$.\\
+Therefore, we can write $\boldsymbol{\pi}=\mathbf{H} \boldsymbol{\theta}$ for a $\left(T+T^{2} K\right) \times(1+T K+K)$ matrix $\mathbf{H}$. When $T=2, \boldsymbol{\pi}$ can be written with restrictions imposed as $\boldsymbol{\pi}=\left(\psi, \boldsymbol{\beta}^{\prime}+\boldsymbol{\lambda}_{1}^{\prime}, \boldsymbol{\lambda}_{2}^{\prime}, \psi, \boldsymbol{\lambda}_{1}^{\prime}, \boldsymbol{\beta}^{\prime}+\right. \left.\lambda_{2}^{\prime}\right)^{\prime}$, and so\\
+$\mathbf{H}=\left[\begin{array}{llll}1 & \mathbf{0} & \mathbf{0} & \mathbf{0} \\ \mathbf{0} & \mathbf{I}_{K} & \mathbf{0} & \mathbf{I}_{K} \\ \mathbf{0} & \mathbf{0} & \mathbf{I}_{K} & \mathbf{0} \\ 1 & \mathbf{0} & \mathbf{0} & \mathbf{0} \\ \mathbf{0} & \mathbf{I}_{K} & \mathbf{0} & \mathbf{0} \\ \mathbf{0} & \mathbf{0} & \mathbf{I}_{K} & \mathbf{I}_{K}\end{array}\right]$.\\
+The CMD estimator can be obtained in closed form, once we have $\hat{\boldsymbol{\pi}}$; see Problem 14.7 for the general case.
+
+How should we obtain $\hat{\boldsymbol{\pi}}$, the vector of estimates without the restrictions imposed? There is really only one way, and that is OLS for each time period. Condition (14.79) ensures that OLS is consistent and $\sqrt{N}$-asymptotically normal. Why not use system method, in particular, SUR? For one thing, we cannot generally assume that $\mathbf{v}_{i}$ satisfies the requisite homoskedasticity assumption that ensures that SUR is more efficient than OLS equation by equation; see Section 11.1.2. Anyway, because the same regressors appear in each equation and no restrictions are imposed on the $\boldsymbol{\pi}_{t}$, OLS and SUR are identical. Procedures that might use nonlinear functions of $\mathbf{x}_{i}$ as instruments are not allowed under condition (14.79).
+
+The estimator $\hat{\boldsymbol{\Xi}}$ of Avar $\sqrt{N}(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi})$ is the robust asymptotic variance for system OLS from Chapter 7.\\
+$\hat{\boldsymbol{\Xi}} \equiv\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\mathbf{v}}_{i} \hat{\mathbf{v}}_{i}^{\prime} \mathbf{X}_{i}\right)\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{X}_{i}\right)^{-1}$,\\
+where $\mathbf{X}_{i}=\mathbf{I}_{T} \otimes\left(1, \mathbf{x}_{i}\right)$ is $T \times\left(T+T^{2} K\right)$ and $\hat{\mathbf{v}}_{i}$ is the vector of OLS residuals; see also equation (7.26).
+
+Given the linear model with an additive unobserved effect, the overidentification test statistic (14.69) in Chamberlain's setup is a test of the strict exogeneity assumption. Essentially, it is a test of whether the leads and lags of $\mathbf{x}_{t}$ appearing in each time period are due to a time-constant unobserved effect $c_{i}$. The number of overidentifying restrictions is $\left(T+T^{2} K\right)-(1+T K+K)$. Perhaps not surprisingly, the minimum distance approach to estimating $\boldsymbol{\theta}$ is asymptotically equivalent to the GMM procedure we described in Section 11.1.2, as can be reasoned from the work of Angrist and Newey (1991).
+
+One hypothesis of interest concerning $\boldsymbol{\theta}$ is that $\lambda_{t}=0, t=1, \ldots, T$. Under this hypothesis, the random effects assumption that the unobserved effect $c_{i}$ is uncorrelated with $\mathbf{x}_{i t}$ for all $t$ holds. We discussed a test of this assumption in Chapter 10. A more general test is available in the minimum distance setting. First, estimate $\boldsymbol{\alpha} \equiv\left(\psi, \boldsymbol{\beta}^{\prime}\right)^{\prime}$ by minimum distance, using $\hat{\boldsymbol{\pi}}$ and $\hat{\boldsymbol{\Xi}}$ in equation (14.80). Second, compute the test statistic (14.71). Chamberlain (1984) gives an empirical example.
+
+Minimum distance methods can be applied to more complicated panel data models, including some of the duration models that we cover in Chapter 22. (See Han and Hausman, 1990.) Van der Klaauw (1996) uses minimum distance estimation in a complicated dynamic model of labor force participation and marital status.
+
+\subsection*{14.6.3 Models with Time-Varying Coefficients on the Unobserved Effects}
+Now we extend the usual linear model to allow the unobserved heterogeneity to have time-varying coefficients:\\
+$y_{i t}=\mathbf{x}_{i t} \boldsymbol{\beta}+\eta_{t} c_{i}+u_{i t}, \quad t=1, \ldots, T$,\\
+where, with small $T$ and large $N$, it makes sense to treat $\left\{\eta_{t}: t=1, \ldots, T\right\}$ as parameters, like $\boldsymbol{\beta}$. We still view $c_{i}$ as a random draw that comes with the observed variables for unit $i$. This model has many applications. Labor economists sometimes think the return to unobserved "talent" might change over time. Those who estimate, say, firm-level production functions like to allow the importance of unobserved factors, such as managerial skill, to change over time.
+
+Because $c_{i}$ is unobserved, we cannot identify $T$ separate coefficients in (14.81). A convenient normalization is to set the coefficient for $t=1$ to unity: $\eta_{1} \equiv 1$, and\\
+we will use this in what follows. Thus, if we seek to estimate the time-varying coefficients-sometimes called the factor loads-then we only estimate $\eta_{2}, \ldots, \eta_{T}$. Unless otherwise stated, we make the strict exogeneity assumption conditional on $c_{i}$ :\\
+$\mathrm{E}\left(u_{i t} \mid \mathbf{x}_{i 1}, \mathbf{x}_{2}, \ldots, \mathbf{x}_{i T}, c_{i}\right)=0, \quad t=1,2, \ldots, T$,\\
+an assumption we used frequently in Chapter 10 for random effects, fixed effects, and first differencing estimation.
+
+Before we discuss estimation of $\boldsymbol{\beta}$ along with the $\eta_{t}$, we can ask how estimators that ignore the time-varying coefficients fare in estimating $\boldsymbol{\beta}$. After all, in some applications we might be primarily interested in $\boldsymbol{\beta}$, but we are concerned that ignoring the time-varying loads causes inconsistency of traditional methods. If we take a random effects approach and assume that $c_{i}$ is uncorrelated with $\mathbf{x}_{i t}$ for all $t$, what happens if we just apply the usual RE estimator from Chapter 10? Let $\mu_{c}=\mathrm{E}\left(c_{i}\right)$ and write (14.81) as\\
+$y_{i t}=\alpha_{t}+\mathbf{x}_{i t} \boldsymbol{\beta}+\eta_{t} d_{i}+u_{i t}, \quad t=1, \ldots, T$,\\
+where $\alpha_{t}=\eta_{t} \mu_{c}$ and $d_{i}=c_{i}-\mu_{c}$ has zero mean. In addition, the composite error, $v_{i t} \equiv \eta_{t} d_{i}+u_{i t}$, is uncorrelated with $\left(\mathbf{x}_{i l}, \mathbf{x}_{2}, \ldots, \mathbf{x}_{i T}\right)$ (as well as having a zero mean). Of course, $v_{i t}$ generally has a time-varying variance as well as serial correlation that is not of the standard RE form found in Assumption RE. 3 from Chapter 10. Nevertheless, as we learned there and in Chapter 7, applying feasible GLS to a linear panel data equation is consistent provided $v_{i t}$, the error term, is uncorrelated with $\mathbf{x}_{i}$, the explanatory variables, across all time periods. The bottom line is, applying the usual RE estimator to (14.83) produces a consistent estimator of $\boldsymbol{\beta}$ even though we have ignored the $\eta_{t}$. Of course, the usual RE variance matrix estimator is inconsistent, so robust inference is needed, but that is straightforward. Further, the usual RE estimator is inefficient relative to the FGLS estimator that does not restrict the variance matrix of the composite error. If we made the standard homoskedasticity and serial independence assumptions on $\left\{u_{i t}\right\}$ (conditional on $\mathbf{x}_{i}$, as usual), we could derive the variance matrix of the $T \times 1$ vector $\mathbf{v}_{i}$ and obtain the appropriate, but restricted, variance matrix. Incidentally, in saying we estimate (14.83) by RE, it is imperative that we include a full set of year intercepts-that is, an overall constant and then $T-1$ time dummies-to account for the first term. Here we find yet another reason to allow for a different intercept in each time period.
+
+We can also evaluate the usual fixed effects (FE) estimator when we allow correlation between $c_{i}$ and $\mathbf{x}_{i}$. The standard FE estimator is consistent provided $\ddot{\mathbf{x}}_{i t}$ is uncorrelated with $v_{i t}$. But $u_{i t}$ is uncorrelated with $\ddot{\mathbf{x}}_{i t}$ by (14.82), and so the key condition is\\
+$\operatorname{Cov}\left(\ddot{\mathbf{x}}_{i t}, c_{i}\right)=\mathbf{0}, \quad t=1, \ldots, T$.
+
+In other words, the unobserved effect is uncorrelated with the deviations $\ddot{\mathbf{x}}_{i t}= \mathbf{x}_{i t}-\overline{\mathbf{x}}_{i}$. We encountered a similar condition in Section 11.7.3 when we studied the assumptions when the usual FE estimator consistency estimates the population average slope in a model with random slopes.
+
+Because (14.84) allows for correlation between $\overline{\mathbf{x}}_{i}$ and $c_{i}$, we can conclude that the usual FE estimator has some robustness to the presence of $\eta_{t}$ for estimating $\boldsymbol{\beta}$. Further, if we use the extended FE estimators for random trend models-see Section 11.7.3-then we can replace $\ddot{\mathbf{x}}_{i t}$ with detrended covariates. Then, $c_{i}$ can be correlated with underlying levels and trends in $\mathbf{x}_{i t}$ (provided we have a sufficient number of time periods).
+
+Using the usual RE or FE estimators (with full time period dummies) does not allow us to estimate the $\eta_{t}$, or even determine whether the $\eta_{t}$ change over time. Even if we are interested only in $\boldsymbol{\beta}$ when $c_{i}$ and $\mathbf{x}_{i t}$ are allowed to be correlated, being able to detect time-varying factor loads is important because (14.84) is not completely general. It would be very useful to have a simple test of $\mathrm{H}_{0}: \eta_{2}=\eta_{3}=\cdots=\eta_{T}=1$ with some power against the alternative of time-varying coefficients. Then we can determine whether a more sophisticated estimation method might be needed.
+
+We can obtain a simple variable addition test that can be computed using linear estimation methods if we specify a particular relationship between $c_{i}$ and $\mathbf{x}_{i}$. We use the Mundlak (1978) assumption that we introduced in Chapter 10:\\
+$c_{i}=\psi+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}$.
+
+Then\\
+$y_{i t}=\eta_{t} \psi+\mathbf{x}_{i t} \boldsymbol{\beta}+\eta_{t} \overline{\mathbf{x}}_{i} \boldsymbol{\xi}+\eta_{t} a_{i}+u_{i t}=\alpha_{t}+\mathbf{x}_{i t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+\lambda_{t} \overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}+\lambda_{t} a_{i}+u_{i t}$,\\
+where $\lambda_{t}=\eta_{t}-1$ for all $t$. Under the null hypothesis, $\lambda_{t}=0, t=2, \ldots, T$. Note that if we impose the null hypothesis, the resulting model is linear, and we can estimate it by pooled OLS of $y_{i t}$ on $1, d 2_{t}, \ldots, d T_{t}, \mathbf{x}_{i t}, \overline{\mathbf{x}}_{i}$ across $t$ and $i$, where the $d r_{t}$ are time dummies. As we discussed in Section 10.7.2, the estimate of $\boldsymbol{\beta}$ is the usual FE estimator. More important for our current purposes, we obtain an estimate of $\boldsymbol{\xi}$, which we call $\hat{\boldsymbol{\xi}}$. The following variable addition test can be derived from the score principle in the context of nonlinear regression; we can use an informal derivation directly from equation (14.86). If $\lambda_{t}$ is different from zero, then the coefficient on $\overline{\mathbf{x}}_{i} \boldsymbol{\xi}$ at time $t$ is different from unity, the coefficient on $\overline{\mathbf{x}}_{i} \boldsymbol{\xi}$ at $t=1$. Therefore, we add the interaction terms $d r_{t}\left(\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}\right)$ for $r=2, \ldots, T$ to the FE estimation. That is, we construct the auxiliary equation\\
+$y_{i t}=\alpha_{1}+\alpha_{2} d 2_{t}+\cdots+\alpha_{T} d T_{t}+\mathbf{x}_{i t} \boldsymbol{\beta}+\lambda_{2} d 2_{t}\left(\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}\right)+\cdots+\lambda_{T} d T_{t}\left(\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}\right)+\operatorname{error}_{i t}$,\\
+estimate this equation by standard FE, and test the joint significance of the $T-1$ terms $d 2_{t}\left(\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}\right), \ldots, d T_{t}\left(\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}\right)$. (The term $\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}$ would drop out of an FE estimation, so we just omit it.) Note that $\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}$ is a scalar, and so the test has $T-1$ degrees of freedom. As always, it is prudent to use a fully robust test (even though, under the null, $\lambda_{t} a_{i}$ disappears from the error term).
+
+A few comments about this test are in order. First, although we used the Mundlak device (14.85) to obtain the test, it does not have to represent the actual linear projection because we are simply adding terms to an FE estimation. Under the null, we do not need to restrict the relationshp between $c_{i}$ and $\mathbf{x}_{i}$. Of course, the power of the test may be affected by this choice. Second, the test only makes sense if $\boldsymbol{\xi} \neq 0$; in particular, it cannot be used in an RE environment. Third, a rejection of the null does not necessarily mean that the usual FE estimator is inconsistent for $\boldsymbol{\beta}$ : assumption (14.84) could still hold. In fact, the change in the estimate of $\boldsymbol{\beta}$ when the interaction terms are added can be indicative of whether accounting for time-varying $\eta_{t}$ is likely to be important.
+
+Unfortunately, when we reject constant $\eta_{t}$-that is, $\lambda_{t} \neq 0$-we cannot simply use the estimate of $\boldsymbol{\beta}$ from (14.87), even under (14.85). The reason is that $\hat{\boldsymbol{\xi}}$ has been estimated under the null, and so $\hat{\boldsymbol{\xi}}$ would not be generally consistent for $\boldsymbol{\xi}$ under the alternative. If we feel comfortable imposing (14.85), then we could estimate (14.86) using minimum distance estimation. The first-stage estimation is linear and estimates, along with separate intercepts and $\boldsymbol{\beta}, T$ separate coefficient vectors, say $\boldsymbol{\xi}_{t}$, on the time average $\overline{\mathbf{x}}_{i}$. After pooled OLS estimation, we can impose the restrictions $\boldsymbol{\xi}_{t}= \eta_{t} \xi, t=1, \ldots, T$. We can also apply GMM. This becomes a nonlinear GMM problem because the equation is nonlinear in the parameters $\lambda_{t}$ and $\boldsymbol{\xi}$, but the GMM theory we developed in Section 14.1 can be used. If we do not want to use overidentifying restrictions (that would come from the assumption that $\mathbf{x}_{i r}$ is uncorrelated with the error $\left(1+\lambda_{t}\right) a_{i}+u_{i t}$ for all $r$ and $t$ ), we could simply estimate (14.86) by NLS. Alternatively, we could use the Chamberlain device and replace $\overline{\mathbf{x}}_{i} \boldsymbol{\xi}$ with $\mathbf{x}_{i} \boldsymbol{\zeta}$, where $\zeta$ is $T K \times 1$. This would impose no restrictions on the relationship between $c_{i}$ and $\mathbf{x}_{i}$.
+
+Typically, when we want to allow arbitrary correlation between $c_{i}$ and $\mathbf{x}_{i}$, we work directly from (14.81) and eliminate the $c_{i}$. There are several ways to do this. If we maintain that all $\eta_{t}$ are different from zero, then we can use a quasi-differencing method to eliminate $c_{i}$. In particular, for $t \geq 2$ we can multiply the $t-1$ equation by $\eta_{t} / \eta_{t-1}$ and subtract the result from the time $t$ equation:
+
+$$
+\begin{aligned}
+y_{i t}-\left(\eta_{t} / \eta_{t-1}\right) y_{i, t-1}= & {\left[\mathbf{x}_{i t}-\left(\eta_{t} / \eta_{t-1}\right) \mathbf{x}_{i, t-1}\right] \boldsymbol{\beta}+\left[\eta_{t} c_{i}-\left(\eta_{t} / \eta_{t-1}\right) \eta_{t-1} c_{i}\right] } \\
+& +\left[u_{i t}-\left(\eta_{t} / \eta_{t-1}\right) u_{i, t-1}\right] \\
+= & {\left[\mathbf{x}_{i t}-\left(\eta_{t} / \eta_{t-1}\right) \mathbf{x}_{i, t-1}\right] \boldsymbol{\beta}+\left[u_{i t}-\left(\eta_{t} / \eta_{t-1}\right) u_{i, t-1}\right], \quad t \geq 2 . }
+\end{aligned}
+$$
+
+We define $\theta_{t}=\eta_{t} / \eta_{t-1}$ and write\\
+$y_{i t}-\theta_{t} y_{i, t-1}=\left(\mathbf{x}_{i t}-\theta_{t} \mathbf{x}_{i, t-1}\right) \boldsymbol{\beta}+e_{i t}, \quad t=2, \ldots, T$,\\
+where $e_{i t} \equiv u_{i t}-\theta_{t} u_{i, t-1}$. Under the strict exogeneity assumption, $e_{i t}$ is uncorrelated with every element of $\mathbf{x}_{i}$, and so we can apply GMM to (14.88) to estimate $\boldsymbol{\beta}$ and $\left(\theta_{2}, \ldots, \theta_{T}\right)$. Again, this requires using nonlinear GMM methods, and the $e_{i t}$ would typically be serially correlated. If we do not impose restrictions on the second moment matrix of $\mathbf{u}_{i}$, then we would not use any information on the second moments of $\mathbf{e}_{i}$; we would (eventually) use an unrestricted weighting matrix after an initial estimation.
+
+Using all of $\mathbf{x}_{i}$ in each time period can result in too many overidentifying restrictions. At time $t$ we might use, say, $\mathbf{z}_{i t}=\left(\mathbf{x}_{i t}, \mathbf{x}_{i, t-1}\right)$, and then the instrument matrix $\mathbf{Z}_{i}$ (with $T-1$ rows) would be $\operatorname{diag}\left(\mathbf{z}_{i 2}, \ldots, \mathbf{z}_{i T}\right)$. An initial consistent estimator can be gotten by choosing weighting matrix $\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)^{-1}$, just as with the system 2SLS estimator in Chapter 8. Then the optimal weighting matrix can be estimated. Ahn, Lee, and Schmidt (2002) provide further discussion.
+
+If $\mathbf{x}_{i t}$ contains sequentially but not strictly exogenous explanatory variables-such as a lagged dependent variable-the instruments at time $t$ can only be chosen from $\left(\mathbf{x}_{i, t-1}, \ldots, \mathbf{x}_{i 1}\right)$, just as in Section 11.6.1. Holtz-Eakin, Newey, and Rosen (1988) explicitly consider models with lagged dependent variables.
+
+Other transformations can be used. For example, at time $t \geq 2$ we can use the equation\\
+$\eta_{t-1} y_{i t}-\eta_{t} y_{i, t-1}=\left(\eta_{t-1} \mathbf{x}_{i t}-\eta_{t} \mathbf{x}_{i, t-1}\right) \boldsymbol{\beta}+e_{i t}, \quad t=2, \ldots, T$,\\
+where now $e_{i t}=\eta_{t-1} u_{i t}-\eta_{t} u_{i, t-1}$. This equation has the advantage of allowing $\eta_{t}=0$ for some $t$. The same choices of instruments are available depending on whether $\left\{\mathbf{x}_{i t}\right\}$ are strictly or sequentially exogenous.
+
+\section*{Problems}
+14.1. Consider the system in equations (14.34) and (14.35).\\
+a. How would you estimate equation (14.35) using single-equation methods? Give a few possibilities, ranging from simple to more complicated. State any additional\\
+assumptions relevant for estimating asymptotic variances or for efficiency of the various estimators.\\
+b. Is equation (14.34) identified if $\gamma_{1}=0$ ?\\
+c. Now suppose that $\gamma_{3}=0$, so that the parameters in equation (14.35) can be consistently estimated by OLS. Let $\hat{y}_{2}$ be the OLS fitted values. Explain why NLS estimation of\\
+$y_{1}=\mathbf{x}_{1} \boldsymbol{\delta}_{1}+\gamma_{1} \hat{y}_{2}^{\gamma_{2}}+$ error\\
+does not consistently estimate $\boldsymbol{\delta}_{1}, \gamma_{1}$, and $\gamma_{2}$ when $\gamma_{1} \neq 0$ and $\gamma_{2} \neq 1$.\\
+14.2. Consider the following labor supply function nonlinear in parameters:\\
+hours $=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\gamma_{1}\left(\right.$ wage $\left.^{\rho_{1}}-1\right) / \rho_{1}+u_{1}, \quad \mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=0$,\\
+where $\mathbf{z}_{1}$ contains unity and $\mathbf{z}$ is the full set of exogenous variables.\\
+a. Show that this model contains the level-level and level-log models as special cases.\\
+(Hint: For $w>0,\left(w^{\rho}-1\right) / \rho \rightarrow \log (w)$ as $\rho \rightarrow 0$.)\\
+b. How would you test $\mathrm{H}_{0}: \gamma_{1}=0$ ? (Be careful here; $\rho_{1}$ cannot be consistently estimated under $\mathrm{H}_{0}$.)\\
+c. Assuming that $\gamma_{1} \neq 0$, how would you estimate this equation if $\operatorname{Var}\left(u_{1} \mid \mathbf{z}\right)=\sigma_{1}^{2}$ ? What if $\operatorname{Var}\left(u_{1} \mid \mathbf{z}\right)$ is not constant?\\
+d. Find the gradient of the residual function with respect to $\boldsymbol{\delta}_{1}, \gamma_{1}$, and $\rho_{1}$. (Hint: Recall that the derivative of $w^{\rho}$ with respect to $\rho$ is $w^{\rho} \log (w)$.)\\
+e. Explain how to obtain the score test of $\mathrm{H}_{0}: \rho_{1}=1$.\\
+14.3. Use Theorem 14.3 to show that the optimal instrumental variables based on the conditional moment restrictions (14.60) are given by equation (14.63).\\
+14.4. a. Show that, under Assumptions WNLS.1-WNLS. 3 in Chapter 12, the weighted NLS estimator has asymptotic variance equal to that of the efficient IV estimator based on the orthogonality condition $\mathrm{E}\left[\left(y_{i}-m\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right)\right) \mid \mathbf{x}_{i}\right]=0$.\\
+b. When does the NLS estimator of $\boldsymbol{\beta}_{\mathrm{o}}$ achieve the efficiency bound derived in part a?\\
+c. Suppose that, in addition to $\mathrm{E}(y \mid \mathbf{x})=m\left(\mathbf{x}, \boldsymbol{\beta}_{\mathrm{o}}\right)$, you use the restriction $\operatorname{Var}(y \mid \mathbf{x}) =\sigma_{\mathrm{o}}^{2}$ for some $\sigma_{\mathrm{o}}^{2}>0$. Write down the two conditional moment restrictions for estimating $\boldsymbol{\beta}_{\mathrm{o}}$ and $\sigma_{\mathrm{o}}^{2}$. What are the efficient instrumental variables?\\
+14.5. Write down $\boldsymbol{\theta}, \boldsymbol{\pi}$, and the matrix $\mathbf{H}$ such that $\boldsymbol{\pi}=\mathbf{H} \boldsymbol{\theta}$ in Chamberlain's approach to unobserved effects panel data models when $T=3$.\\
+14.6. Let $\hat{\boldsymbol{\pi}}$ and $\tilde{\boldsymbol{\pi}}$ be two consistent estimators of $\boldsymbol{\pi}_{\mathrm{o}}$, with Avar $\sqrt{N}\left(\hat{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right)=\boldsymbol{\Xi}_{\mathrm{o}}$ and Avar $\sqrt{N}\left(\tilde{\boldsymbol{\pi}}-\boldsymbol{\pi}_{\mathrm{o}}\right)=\boldsymbol{\Lambda}_{\mathrm{o}}$. Let $\hat{\boldsymbol{\theta}}$ be the CMD estimator based on $\hat{\boldsymbol{\pi}}$, and let $\tilde{\boldsymbol{\theta}}$ be the CMD estimator based on $\tilde{\boldsymbol{\pi}}$, where $\boldsymbol{\pi}_{\mathrm{o}}=\mathbf{h}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)$. Show that, if $\boldsymbol{\Lambda}_{\mathrm{o}}-\boldsymbol{\Xi}_{\mathrm{o}}$ is p.s.d., then so is $\mathrm{Avar} \sqrt{N}\left(\tilde{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)-\mathrm{Avar} \sqrt{N}\left(\hat{\boldsymbol{\theta}}-\boldsymbol{\theta}_{\mathrm{o}}\right)$. (Hint: Twice use the fact that, for two positive definite matrices $\mathbf{A}$ and $\mathbf{B}, \mathbf{A}-\mathbf{B}$ is p.s.d. if and only if $\mathbf{B}^{-1}-\mathbf{A}^{-1}$ is p.s.d.)\\
+14.7. Show that when the mapping from $\boldsymbol{\theta}_{\mathrm{o}}$ to $\boldsymbol{\pi}_{\mathrm{o}}$ is linear, $\boldsymbol{\pi}_{\mathrm{o}}=\mathbf{H} \boldsymbol{\theta}_{\mathrm{o}}$ for a known $S \times P$ matrix $\mathbf{H}$ with $\operatorname{rank}(\mathbf{H})=P$, the CMD estimator $\hat{\boldsymbol{\theta}}$ is
+
+
+\begin{equation*}
+\hat{\boldsymbol{\theta}}=\left(\mathbf{H}^{\prime} \hat{\boldsymbol{\Xi}}^{-1} \mathbf{H}\right)^{-1} \mathbf{H}^{\prime} \hat{\boldsymbol{\Xi}}^{-1} \hat{\boldsymbol{\pi}} \tag{14.89}
+\end{equation*}
+
+
+Equation (14.89) looks like a generalized least squares (GLS) estimator of $\hat{\boldsymbol{\pi}}$ on H using variance matrix $\hat{\boldsymbol{\Xi}}$, and this apparent similarity has prompted some to call the minimum chi-square estimator a "generalized least squares" (GLS) estimator. Unfortunately, the association between CMD and GLS is misleading because $\hat{\boldsymbol{\pi}}$ and $\mathbf{H}$ are not data vectors whose row dimension, $S$, grows with $N$. The asymptotic properties of the minimum chi-square estimator do not follow from those of GLS.\\
+14.8. In Problem 13.9, suppose you model the unconditional distribution of $y_{0}$ as $f_{0}\left(y_{0} ; \boldsymbol{\theta}\right)$, which depends on at least some elements of $\boldsymbol{\theta}$ appearing in $f_{t}\left(y_{t} \mid y_{t-1} ; \boldsymbol{\theta}\right)$. Discuss the pros and cons of using $f_{0}\left(y_{0} ; \boldsymbol{\theta}\right)$ in a maximum likelihood analysis along with $f_{t}\left(y_{t} \mid y_{t-1} ; \boldsymbol{\theta}\right), t=1,2, \ldots, T$.\\
+14.9. Verify that, for the linear unobserved effects model under Assumptions RE.1RE.3, the conditions of Lemma 14.1 hold for the fixed effects $\left(\hat{\boldsymbol{\theta}}_{2}\right)$ and the random effects $\left(\hat{\boldsymbol{\theta}}_{1}\right)$ estimators, with $\rho=\sigma_{u}^{2}$. (Hint: For clarity, it helps to introduce a cross section subscript, $i$. Then $\mathbf{A}_{1}=\mathrm{E}\left(\check{\mathbf{X}}_{i}^{\prime} \check{\mathbf{X}}_{i}\right)$, where $\check{\mathbf{X}}_{i}=\mathbf{X}_{i}-\lambda \mathbf{j}_{T} \overline{\mathbf{x}}_{i} ; \mathbf{A}_{2}=\mathrm{E}\left(\ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}\right)$, where $\ddot{\mathbf{X}}_{i}=\mathbf{X}_{i}-\mathbf{j}_{T} \overline{\mathbf{x}}_{i} ; \mathbf{s}_{i 1}=\check{\mathbf{X}}_{i}^{\prime} \mathbf{r}_{i}$, where $\mathbf{r}_{i}=\mathbf{v}_{i}-\lambda \mathbf{j}_{T} \bar{v}_{i}$; and $\mathbf{s}_{i 2}=\ddot{\mathbf{X}}_{i}^{\prime} \mathbf{u}_{i}$; see Chapter 10 for further notation. You should show that $\ddot{\mathbf{X}}_{i}^{\prime} \mathbf{u}_{i}=\ddot{\mathbf{X}}_{i}^{\prime} \mathbf{r}_{i}$ and then $\ddot{\mathbf{X}}_{i}^{\prime} \check{\mathbf{X}}_{i}=\ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}$.)\\
+14.10. Consider the model in (14.81) under the strict exogeneity condition (14.82). In addition, assume that $\mathrm{E}\left(c_{i} \mid \mathbf{x}_{i}\right)=0$ (and so $\mathbf{x}_{i t}$ should contain a full set of time dummies, but we do not show them explicitly).\\
+a. If $v_{i t}=\eta_{t} c_{i}+u_{i t}$, show that $\mathrm{E}\left(v_{i t} \mid \mathbf{x}_{i}\right)=0, t=1, \ldots, T$.\\
+b. Assume that $\operatorname{Var}\left(\mathbf{u}_{i} \mid \mathbf{x}_{i}, c_{i}\right)=\sigma_{u}^{2} \mathbf{I}_{T}$ and $\operatorname{Var}\left(c_{i} \mid \mathbf{x}_{i}\right)=\sigma_{c}^{2}$. Find $\operatorname{Var}\left(v_{i t}\right)$ and $\operatorname{Cov}\left(v_{i t}, v_{i s}\right), t \neq s$.\\
+c. Under parts a and b , propose an estimator that is symptotically more efficient than the usual RE estimator.\\
+14.11. Consider a multivariate regression model nonlinear in the parameters, $\mathbf{y}_{i}=\mathbf{X}_{i} \mathbf{g}\left(\boldsymbol{\theta}_{\mathrm{o}}\right)+\mathbf{u}_{i}, \quad \mathrm{E}\left(\mathbf{u}_{i} \mid \mathbf{X}_{i}\right)=\mathbf{0}$, where $\mathbf{y}_{i}$ is $G \times 1, \mathbf{X}_{i}$ is $G \times K$, and $\mathbf{g}: \mathbb{R}^{P} \rightarrow \mathbb{R}^{K}$ is continuously differentiable. Explain how to estimate $\boldsymbol{\theta}_{\mathrm{o}}$ using CMD.
+
+\section*{Appendix 14A}
+Proof of Lemma 14.1: Given condition (14.49), $\mathbf{A}_{1}=(1 / \rho) \mathrm{E}\left(\mathbf{s}_{1} \mathbf{s}_{1}^{\prime}\right)$, a $P \times P$ symmetric matrix, and\\
+$\mathbf{V}_{1}=\mathbf{A}_{1}^{-1} \mathrm{E}\left(\mathbf{s}_{1} \mathbf{s}_{1}^{\prime}\right) \mathbf{A}_{1}^{-1}=\rho^{2}\left[\mathrm{E}\left(\mathbf{s}_{1} \mathbf{s}_{1}^{\prime}\right)\right]^{-1}$,\\
+where we drop the argument $\mathbf{w}$ for notational simplicity. Next, under condition (14.56), $\mathbf{A}_{2}=(1 / \rho) \mathrm{E}\left(\mathbf{s}_{2}^{\prime} \mathbf{s}_{1}\right)$, and so\\
+$\mathbf{V}_{2}=\mathbf{A}_{2}^{-1} \mathrm{E}\left(\mathbf{s}_{2} \mathbf{s}_{2}^{\prime}\right)\left(\mathbf{A}_{2}^{\prime}\right)^{-1}=\rho^{2}\left[\mathrm{E}\left(\mathbf{s}_{2} \mathbf{s}_{1}^{\prime}\right)\right]^{-1} \mathrm{E}\left(\mathbf{s}_{2} \mathbf{s}_{2}^{\prime}\right)\left[\mathrm{E}\left(\mathbf{s}_{1} \mathbf{s}_{2}^{\prime}\right)\right]^{-1}$.\\
+Now we use the standard result that $\mathbf{V}_{2}-\mathbf{V}_{1}$ is positive semidefinite if and only if $\mathbf{V}_{1}^{-1}-\mathbf{V}_{2}^{-1}$ is p.s.d. But, dropping the term $\rho^{2}$ (which is simply a positive constant), we have\\
+$\mathbf{V}_{1}^{-1}-\mathbf{V}_{2}^{-1}=\mathrm{E}\left(\mathbf{s}_{1} \mathbf{s}_{1}^{\prime}\right)-\mathrm{E}\left(\mathbf{s}_{1} \mathbf{s}_{2}^{\prime}\right)\left[\mathrm{E}\left(\mathbf{s}_{2} \mathbf{s}_{2}^{\prime}\right)\right]^{-1} \mathrm{E}\left(\mathbf{s}_{2} \mathbf{s}_{1}^{\prime}\right) \equiv \mathrm{E}\left(\mathbf{r}_{1} \mathbf{r}_{1}^{\prime}\right)$,\\
+where $\mathbf{r}_{1}$ is the $P \times 1$ population residual from the population regression $\mathbf{s}_{1}$ on $\mathbf{s}_{2}$. As $\mathrm{E}\left(\mathbf{r}_{1} \mathbf{r}_{1}^{\prime}\right)$ is necessarily p.s.d., this step completes the proof.
+
+\section*{IV NONLINEAR MODELS AND RELATED TOPICS}
+We now apply the general methods of Part III to study specific nonlinear models that often arise in applications. Many nonlinear econometric models are intended to explain limited dependent variables. Roughly, a limited dependent variable is a variable whose range is restricted in some important way. Most variables encountered in economics are limited in range, but not all require special treatment. For example, many variables-wage, population, and food consumption, to name just a few-can only take on positive values. If a strictly positive variable takes on numerous values, we can avoid special econometric tools by taking the log of the variable and then using a linear model.
+
+When the variable to be explained, $y$, is discrete and takes on a finite number of values, it makes little sense to treat it as an approximately continuous variable. Discreteness of $y$ does not in itself mean that a linear model for $\mathrm{E}(y \mid \mathbf{x})$ is inappropriate. However, in Chapter 15 we will see that linear models have certain drawbacks for modeling binary responses, and we will treat nonlinear models such as probit and logit. We cover basic multinomial response models in Chapter 16, including the case when the response has a natural ordering.
+
+Other kinds of limited dependent variables arise in econometric analysis, especially when modeling choices by individuals, families, or firms. Optimizing behavior often leads to corner solutions for some nontrivial fraction of the population. For example, during any given time, a fairly large fraction of the working age population does not work outside the home. Annual hours worked has a population distribution spread out over a range of values, but with a pileup at the value zero. While it could be that a linear model is appropriate for modeling expected hours worked, a linear model will likely lead to negative predicted hours worked for some people. Taking the natural $\log$ is not possible because of the corner solution at zero. In Chapter 17 we discuss econometric models that are better suited for describing these kinds of limited dependent variables.
+
+In Chapter 18 we cover count, fractional, and other nonnegative response variables. Our emphasis is on estimating the conditional mean, and therefore we focus on estimation methods that do not require specific distributional assumptions (although they may nominally specify a distribution in a quasi-maximum likelihood analysis).
+
+In Chapter 19 we shift gears and study several problems concerning missing data, including data censoring, sample selection, and attrition. This is the first chapter where we confront the possibility that the sample we have to work with is not necessarily a random sample on all variables appearing in the underlying population model. Chapter 20 treats additional sampling issues, including stratified sampling and cluster sampling.
+
+Chapter 21 considers estimation of treatment effects, where we explicitly introduce a counterfactual setting that is fundamental to the contemporary literature. This chapter shows how switching regression models and random coefficient models (with endogenous explanatory variables) fits into the treatment effect framework. Chapter 22 concludes with an introduction to modern duration analysis.
+
+\section*{15 Binary Response Models}
+
+\end{document}

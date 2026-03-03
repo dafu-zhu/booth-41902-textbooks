@@ -1,0 +1,1082 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 11: More Topics in Linear Unobserved Effects Models}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+This chapter continues our treatment of linear, unobserved effects panel data models. In Section 11.1 we briefly treat the GMM approach to estimating the standard, additive effect model from Chapter 10, emphasizing some equivalences between the standard estimators and GMM 3SLS estimators. In Section 11.2, we cover estimation of models where, at a minimum, the assumption of strict exogeneity conditional on the unobserved heterogeneity (Assumption FE.1) fails. Instead, we assume we have available instrumental variables (IVs) that are uncorrelated with the idiosyncratic errors in all time periods. Depending on whether these instruments are also uncorrelated with the unobserved effect, we are led to random effects or fixed effects IV methods. Section 11.3 shows how these methods apply to Hausman and Taylor (1981) models, where a subset of explanatory variables is allowed to be endogenous but enough explanatory variables are exogenous so that IV methods can be applied.
+
+Section 11.4 combines first differencing with IV methods. In Section 11.5 we study the properties of fixed effects and first differencing estimators in the presence of measurement error, and propose some IV solutions. We explicitly cover unobserved effects models with sequentially exogenous explanatory variables, including models with lagged dependent variables, in Section 11.6. In Section 11.7, we turn to models with unit-specific slopes, including the important special case of unit-specific time trends.
+
+\subsection*{11.1 Generalized Method of Moments Approaches to the Standard Linear Unobserved Effects Model}
+\subsection*{11.1.1 Equivalance between GMM 3SLS and Standard Estimators}
+In Chapter 10, we extensively covered estimation of the unobserved effects model
+
+
+\begin{equation*}
+y_{i t}=\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}+u_{i t}, \quad t=1, \ldots, T, \tag{11.1}
+\end{equation*}
+
+
+which we can write for all $T$ time periods as
+
+
+\begin{equation*}
+\mathbf{y}_{i}=\mathbf{X}_{i} \boldsymbol{\beta}+c_{i} \mathbf{j}_{T}+\mathbf{u}_{i}=\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{v}_{i}, \tag{11.2}
+\end{equation*}
+
+
+where $\mathbf{j}_{T}$ is the $T \times 1$ vector of ones, $\mathbf{u}_{i}$ is the $T \times 1$ vector of idiosyncratic errors, and $\mathbf{v}_{i}=c_{i} \mathbf{j}_{T}+\mathbf{u}_{i}$ is the $T \times 1$ vector of composite errors. Random effects (RE), fixed effects (FE), and first differencing (FD) are still the most popular approaches to estimating $\boldsymbol{\beta}$ in equation (11.1) with strictly exogenous explanatory variables. As we saw in Chapter 10, each of these estimators is consistent without restrictions on the variance-covariance matrix of the composite $\left(\mathbf{v}_{i}\right)$ or idiosyncratic $\left(\mathbf{u}_{i}\right)$ errors. We also saw that each estimator is asymptotically efficient under a particular set of assumptions on the conditional second moment matrix of $\mathbf{v}_{i}$ in the RE case, $\mathbf{u}_{i}$ in the FE\\
+case, and $\Delta \mathbf{u}_{i}$ in the FD case. Recall that there are two aspects to the second moment assumptions that imply asymptotic efficiency. First, the unconditional variancecovariance matrix is assumed to have a special structure. Second, system homoskedasticity is assumed in all cases. (Loosely, conditional variances and covariances do not depend on the explanatory variables.)
+
+We have already seen how to allow for an unrestricted unconditional variancecovariance matrix in the context of RE, FE, and FD: we simply apply unrestricted FGLS to the appropriately transformed equations. Nevertheless, efficiency of, say, the FEGLS estimator hinges on the system homoskedasticity assumption $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{x}_{i}, c_{i}\right)=\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$. Under RE.1, efficiency of the FGLS estimator with unrestricted $\operatorname{Var}\left(\mathbf{v}_{i}\right)$ is ensured only if $\mathrm{E}\left(\mathbf{v}_{i} \mathbf{v}_{i}^{\prime} \mid \mathbf{x}_{i}\right)=\mathrm{E}\left(\mathbf{v}_{i} \mathbf{v}_{i}^{\prime}\right)$. If this assumption fails, GMM with an optimal weighting matrix is generally more efficient, and so it may be worthwhile to apply GMM methods to (11.2) (or, in the case of FE, a suitably transformed set of equations.)
+
+We first suppose that Assumption RE. 1 holds, so that $\mathbf{x}_{i s}$ is uncorrelated with the composite error $v_{i t}$ for all $s$ and $t$. (In fact, the zero conditional mean assumptions in Assumption RE. 1 imply that $\mathrm{E}\left(\mathbf{v}_{i} \mid \mathbf{x}_{i}\right)=\mathbf{0}$, and so any function of $\mathbf{x}_{i}= \left(\mathbf{x}_{i 1}, \mathbf{x}_{i 2}, \ldots, \mathbf{x}_{i T}\right)$ is uncorrelated with $v_{i t}$. Here, we limit ourselves to linear functions.)
+
+Let $\mathbf{x}_{i}^{o}$ denote the row vector of nonredundant elements of $\mathbf{x}_{i}$, so that any timeconstant elements and aggregate time effects appear only once in $\mathbf{x}_{i}^{o}$. Then $\mathrm{E}\left(\mathbf{x}_{i}^{o \prime} v_{i t}\right)= \mathbf{0}, t=1,2, \ldots, T$. This orthogonality condition suggests a system IV procedure, with matrix of instruments\\
+$\mathbf{Z}_{i} \equiv \mathbf{I}_{T} \otimes \mathbf{x}_{i}^{o}$.
+
+In other words, use instruments $\mathbf{Z}_{i}$ to estimate equation (11.2) by 3SLS or, more generally, by minimum chi-square.
+
+The matrix (11.3) can contain many instruments. If $\mathbf{x}_{i t}$ contains only variables that change across both $i$ and $t$, then $\mathbf{Z}_{i}$ is $T \times T^{2} K$. With only $K$ parameters to estimate, this choice of instruments implies many overidentifying restrictions even for moderately sized $T$. Even if computation is not an issue, using many overidentifying restrictions can result in poor finite sample properties.
+
+In some cases, we can reduce the number of moment conditions without sacrificing efficiency. Im, Ahn, Schmidt, and Wooldridge (1999; IASW) show the following result. If $\hat{\boldsymbol{\Omega}}$ has the random effects structure-which means we impose the RE structure in estimating $\boldsymbol{\Omega}$-then GMM 3SLS applied to equation (11.2), using instruments
+
+
+\begin{equation*}
+\mathbf{Z}_{i} \equiv\left(\mathbf{P}_{T} \mathbf{X}_{i}, \mathbf{Q}_{T} \mathbf{W}_{i}\right) \tag{11.4}
+\end{equation*}
+
+
+where $\mathbf{P}_{T}=\mathbf{j}_{T}\left(\mathbf{j}_{T}^{\prime} \mathbf{j}_{T}\right)^{-1} \mathbf{j}_{T}^{\prime}, \mathbf{Q}_{T} \equiv \mathbf{I}_{T}-\mathbf{P}_{T}, \mathbf{j}_{T} \equiv(1,1, \ldots, 1)^{\prime}$, and $\mathbf{W}_{i}$ is the $T \times M$ submatrix of $\mathbf{X}_{i}$ obtained by removing the time-constant variables, is identical to the RE estimator. The column dimension of matrix (11.4) is only $K+M$, so there are only $M$ overidentifying restrictions in using the 3SLS estimator.
+
+The algebraic equivalence between 3SLS and RE estimation has some useful applications. First, it provides a different way of testing the orthogonality between $c_{i}$ and $\mathbf{x}_{i t}$ for all $t$ : after 3SLS estimation, we simply apply the GMM overidentification statistic from Chapter 8. (We discussed regression-based tests in Section 10.7.3.) Second, it provides a way to obtain a more efficient estimator when Assumption RE. 3 does not hold. If $\boldsymbol{\Omega}$ does not have the RE structure (see equation (10.30)), then the 3SLS estimator that imposes this structure is inefficient; an unrestricted estimator of $\boldsymbol{\Omega}$ should be used instead. Because an unrestricted estimator of $\boldsymbol{\Omega}$ is consistent with or without the RE structure, 3SLS with unrestricted $\hat{\boldsymbol{\Omega}}$ and IVs in matrix (11.4) is no less efficient than the RE estimator. Further, if $\mathrm{E}\left(\mathbf{v}_{i} \mathbf{v}_{i}^{\prime} \mid \mathbf{x}_{i}\right) \neq \mathrm{E}\left(\mathbf{v}_{i} \mathbf{v}_{i}^{\prime}\right)$, any 3SLS estimator is inefficient relative to GMM with the optimal weighting matrix. Therefore, if Assumption RE. 3 fails, minimum chi-square estimation with IVs in matrix (11.4) generally improves on the random effects estimator. In other words, we can gain asymptotic efficiency by using only $M \leq K$ additional moment conditions.
+
+A different 3SLS estimator can be shown to be equivalent to the FE estimator. In particular, IASW (1999, Theorem 4.1) verify an assertion of Arellano and Bover (1995): when $\hat{\boldsymbol{\Omega}}$ has the random effects form, the GMM 3SLS estimator applied to equation (11.2) using instruments $\mathbf{L}_{T} \otimes \mathbf{x}_{i}^{o}$-where $\mathbf{L}_{T}$ is the $T \times(T-1)$ differencing matrix defined in IASW (1999, eq. (4.1))-is identical to the FE estimator. Therefore, if we intend to use an RE structure for $\hat{\boldsymbol{\Omega}}$ in a GMM 3SLS analysis with instruments $\mathbf{L}_{T} \otimes \mathbf{x}_{i}^{o}$, we might as well just use the usual FE estimator applied to (11.2). But if we use an unrestricted form of $\hat{\boldsymbol{\Omega}}$-presumably because we think $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right) \neq \sigma_{u}^{2} \mathbf{I}_{T}$-the GMM 3SLS estimator that uses instruments $\mathbf{L}_{T} \otimes \mathbf{x}_{i}^{o}$ is generally more efficient than FE if $\boldsymbol{\Omega}$ does not have the RE form. Further, if the system homoskedasticity assumption $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{x}_{i}, c_{i}\right)=\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$ fails, GMM with the general optimal weighting matrix would usually increase efficiency over the GMM 3SLS estimator.
+
+\subsection*{11.1.2 Chamberlain's Approach to Unobserved Effects Models}
+We now study an approach to estimating the linear unobserved effects model (11.1) due to Chamberlain $(1982,1984)$ and related to Mundlak (1978). We maintain the strict exogeneity assumption on $\mathbf{x}_{i t}$ conditional on $c_{i}$ (see Assumption FE.1), but we allow arbitrary correlation between $c_{i}$ and $\mathbf{x}_{i t}$. Thus we are in the FE environment, and $\mathbf{x}_{i t}$ contains only time-varying explanatory variables.
+
+In Chapter 10 we saw that the FE and FD transformations eliminate $c_{i}$ and produce consistent estimators under strict exogeneity. Chamberlain's approach is to replace the unobserved effect $c_{i}$ with its linear projection onto the explanatory variables in all time periods (plus the projection error). Assuming $c_{i}$ and all elements of $\mathbf{x}_{i}$ have finite second moments, we can always write
+
+
+\begin{equation*}
+c_{i}=\psi+\mathbf{x}_{i 1} \lambda_{1}+\mathbf{x}_{i 2} \lambda_{2}+\cdots+\mathbf{x}_{i T} \lambda_{T}+a_{i}, \tag{11.5}
+\end{equation*}
+
+
+where $\psi$ is a scalar and $\lambda_{1}, \ldots, \lambda_{T}$ are $1 \times K$ vectors. The projection error $a_{i}$, by definition, has zero mean and is uncorrelated with $\mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}$. This equation assumes nothing about the conditional distribution of $c_{i}$ given $\mathbf{x}_{i}$. In particular, $\mathrm{E}\left(c_{i} \mid \mathbf{x}_{i}\right)$ is unrestricted, as in the usual FE analysis. Therefore, although equation (11.5) has the flavor of a correlated random effects specification, it does not restrict the dependence between $c_{i}$ and $\mathbf{x}_{i}$ in any way.
+
+Plugging equation (11.5) into equation (11.1) gives, for each $t$,
+
+
+\begin{equation*}
+y_{i t}=\psi+\mathbf{x}_{i 1} \lambda_{1}+\cdots+\mathbf{x}_{i t}\left(\boldsymbol{\beta}+\lambda_{t}\right)+\cdots+\mathbf{x}_{i T} \lambda_{T}+r_{i t}, \tag{11.6}
+\end{equation*}
+
+
+where, under Assumption FE.1, the errors $r_{i t} \equiv a_{i}+u_{i t}$ satisfy
+
+
+\begin{equation*}
+\mathrm{E}\left(r_{i t}\right)=0, \mathrm{E}\left(\mathbf{x}_{i}^{\prime} r_{i t}\right)=\mathbf{0}, \quad t=1,2, \ldots, T . \tag{11.7}
+\end{equation*}
+
+
+However, unless we assume that $\mathrm{E}\left(c_{i} \mid \mathbf{x}_{i}\right)$ is linear, it is not the case that $\mathrm{E}\left(r_{i t} \mid \mathbf{x}_{i}\right)=$ 0 . Nevertheless, assumption (11.7) suggests a variety of methods for estimating $\boldsymbol{\beta}$ (along with $\psi, \lambda_{1}, \ldots, \lambda_{T}$ ).
+
+Write the system (11.6) for all time periods $t$ as
+
+\[
+\left(\begin{array}{c}
+y_{i 1}  \tag{11.8}\\
+y_{i 2} \\
+\vdots \\
+y_{i T}
+\end{array}\right)=\left(\begin{array}{cccccc}
+1 & \mathbf{x}_{i 1} & \mathbf{x}_{i 2} & \cdots & \mathbf{x}_{i T} & \mathbf{x}_{i 1} \\
+1 & \mathbf{x}_{i 1} & \mathbf{x}_{i 2} & \cdots & \mathbf{x}_{i T} & \mathbf{x}_{i 2} \\
+& & & \vdots & & \\
+1 & \mathbf{x}_{i 1} & \mathbf{x}_{i 2} & \cdots & \mathbf{x}_{i T} & \mathbf{x}_{i T}
+\end{array}\right)\left(\begin{array}{c}
+\psi \\
+\boldsymbol{\lambda}_{1} \\
+\boldsymbol{\lambda}_{2} \\
+\vdots \\
+\boldsymbol{\lambda}_{T} \\
+\boldsymbol{\beta}
+\end{array}\right)+\left(\begin{array}{c}
+r_{i 1} \\
+r_{i 2} \\
+\vdots \\
+r_{i T}
+\end{array}\right),
+\]
+
+or\\
+$\mathbf{y}_{i}=\mathbf{W}_{i} \boldsymbol{\theta}+\mathbf{r}_{i}$,\\
+where $\mathbf{W}_{i}$ is $T \times(1+T K+K)$ and $\boldsymbol{\theta}$ is $(1+T K+K) \times 1$. From equation (11.7), $\mathrm{E}\left(\mathbf{W}_{i}^{\prime} \mathbf{r}_{i}\right)=\mathbf{0}$, and so system OLS is one way to consistently estimate $\boldsymbol{\theta}$. The rank condition requires that rank $\mathrm{E}\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)=1+T K+K$; essentially, it suffices that the\\
+elements of $\mathbf{x}_{i t}$ are not collinear and that they vary sufficiently over time. While system OLS is consistent, it is very unlikely to be the most efficient estimator. Not only is the scalar variance assumption $\mathrm{E}\left(\mathbf{r}_{i} \mathbf{r}_{i}^{\prime}\right)=\sigma_{r}^{2} \mathbf{I}_{T}$ highly unlikely, but also the homoskedasticity assumption
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{r}_{i} \mathbf{r}_{i}^{\prime} \mid \mathbf{x}_{i}\right)=\mathrm{E}\left(\mathbf{r}_{i} \mathbf{r}_{i}^{\prime}\right) \tag{11.10}
+\end{equation*}
+
+
+fails unless we impose further assumptions. Generally, assumption (11.10) is violated if $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid c_{i}, \mathbf{x}_{i}\right) \neq \mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$, if $\mathrm{E}\left(c_{i} \mid \mathbf{x}_{i}\right)$ is not linear in $\mathbf{x}_{i}$, or if $\operatorname{Var}\left(c_{i} \mid \mathbf{x}_{i}\right)$ is not constant.
+
+If assumption (11.10) does happen to hold, feasible GLS is a natural approach. The matrix $\boldsymbol{\Omega}=\mathrm{E}\left(\mathbf{r}_{i} \mathbf{r}_{i}^{\prime}\right)$ can be consistently estimated by first estimating $\boldsymbol{\theta}$ by system OLS, and then proceeding with FGLS as in Section 7.5.
+
+If assumption (11.10) fails, a more efficient estimator is obtained by applying GMM to equation (11.9) with the optimal weighting matrix. Because $r_{i t}$ is orthogonal to $\mathbf{x}_{i}^{o}=\left(1, \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}\right), \mathbf{x}_{i}^{o}$ can be used as instruments for each time period, and so we choose the matrix of instruments (11.3). Interestingly, the 3SLS estimator, which uses $\left[\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \hat{\boldsymbol{\Omega}}\right) \mathbf{Z} / N\right]^{-1}$ as the weighting matrix-see Section 8.3.4-is numerically identical to FGLS with the same $\hat{\boldsymbol{\Omega}}$. Arellano and Bover (1995) showed this result in the special case that $\hat{\boldsymbol{\Omega}}$ has the random effects structure, and IASW (1999, Theorem 3.1) obtained the general case.
+
+In expression (11.9) there are $1+T K+K$ parameters, and the matrix of instruments is $T \times T(1+T K)$; there are $T(1+T K)-(1+T K+K)=(T-1)(1+T K) -K$ overidentifying restrictions. Testing these restrictions is precisely a test of the strict exogeneity Assumption FE.1, and it is a fully robust test when full GMM is used because no additional assumptions are used.
+
+Chamberlain (1982) works from the system (11.8) under assumption (11.7), but he uses a different estimation approach, known as minimum distance estimation. We cover this approach to estimation in Chapter 14.
+
+\subsection*{11.2 Random and Fixed Effects Instrumental Variables Methods}
+In this section we study estimation methods when some of the explanatory variables are not strictly exogenous. RE and FE estimations assume strict exogeneity of the instruments conditional on the unobserved effect, and RE estimation adds the assumption that the IVs are actually uncorrelated with the unobserved effect.
+
+We again start with the model (11.1). In Chapter 10 and in Section 11.1, we covered methods that assume, at a minimum,\\
+$\mathrm{E}\left(\mathbf{x}_{i s}^{\prime} u_{i t}\right)=\mathbf{0}, \quad s, t=1, \ldots, T$.\\
+(The one exception was pooled OLS, but POLS assumes $\mathbf{x}_{i t}$ is uncorrelated with $c_{i}$.) If we are willing to assume (11.11), but no more, then, as we saw in Chapter 10 and Section 11.1, we can consistently estimate the coefficients on the time-varying elements of $\mathbf{x}_{i t}$ by FE, FD, GLS versions of these, or GMM. The next goal is to relax assumption (11.11).
+
+Without assumption (11.11), we generally require IVs in order to consistently estimate the parameters. Let $\left\{\mathbf{z}_{i t}: t=1, \ldots, T\right\}$ be a sequence of $1 \times L$ IV candidates, where $L \geq K$. As we discussed in Chapter 8, a simple estimator is the pooled 2SLS estimator (P2SLS). With an unobserved effect explicitly in the error term, consistency of P2SLS essentially relies on
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{z}_{i t}^{\prime} c_{i}\right)=\mathbf{0}, \quad t=1, \ldots, T \tag{11.12}
+\end{equation*}
+
+
+and
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{z}_{i t}^{\prime} u_{i t}\right)=\mathbf{0}, \quad t=1, \ldots, T \tag{11.13}
+\end{equation*}
+
+
+along with a suitable rank condition (which you are invited to supply). Pooled 2SLS estimation is simple, and it is straightforward to make inference robust to arbitrary heteroskedasticity and serial correlation in the composite errors, $\left\{v_{i t}=c_{i}+u_{i t}: t=1, \ldots, T\right\}$. But if we are willing to assume (11.12) along with (11.13), we probably are willing to assume that the instruments are actually strictly exogenous (after removing $c_{i}$ ), that is,\\
+$\mathrm{E}\left(\mathbf{z}_{i s}^{\prime} u_{i t}\right)=\mathbf{0}, \quad s, t=1, \ldots, T$.
+
+Assumptions (11.12) and (11.14) suggest that, under certain assumptions, an RE approach can be more efficient than a pooled 2SLS analysis. The random effects instrumental variables (REIV) estimator is simply a generalized IV (GIV) estimator applied to\\
+$\mathbf{y}_{i}=\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{v}_{i}$,\\
+where $\mathbf{X}_{i}$ is $T \times K$, as usual, and the matrix of instruments $\mathbf{Z}_{i} \equiv\left(\mathbf{z}_{i 1}^{\prime}, \mathbf{z}_{i 2}^{\prime}, \ldots, \mathbf{z}_{i T}^{\prime}\right)^{\prime}$ is $T \times L$. What makes the REIV estimator special in the class of GIV estimators is that $\boldsymbol{\Omega} \equiv \mathrm{E}\left(\mathbf{v}_{i} \mathbf{v}_{i}^{\prime}\right)$ is assumed to have the RE form, just as in equation (10.30).
+
+Assuming, for the moment, that $\boldsymbol{\Omega}$ is known, the REIV estimator can be obtained as the system 2SLS estimator (see Chapter 8) of
+
+
+\begin{equation*}
+\boldsymbol{\Omega}^{-1 / 2} \mathbf{y}_{i}=\boldsymbol{\Omega}^{-1 / 2} \mathbf{X}_{i} \boldsymbol{\beta}+\boldsymbol{\Omega}^{-1 / 2} \mathbf{v}_{i} \tag{11.16}
+\end{equation*}
+
+
+using transformed instruments $\boldsymbol{\Omega}^{-1 / 2} \mathbf{Z}_{i}$. The form of the estimator is given in equation (8.47).
+
+As we discussed in Chapter 8, consistency of the GIV estimator when $\boldsymbol{\Omega}$ is not di-agonal-as expected in the current framework because of the presence of $c_{i}$, not to mention possible serial correlation in $\left\{u_{i t}: t=1, \ldots, T\right\}$-hinges critically on the strict exogeneity of the instruments: $\mathrm{E}\left(\mathbf{z}_{i s}^{\prime} v_{i t}\right)=\mathbf{0}$ for all $s, t=1, \ldots, T$. Without this assumption the REIV estimator is inconsistent.
+
+Naturally, we have to estimate $\boldsymbol{\Omega}$-imposing the RE form-but this follows our treatment for the usual RE estimator. The first-stage estimator is pooled 2SLS. Given the P2SLS residuals, we can estimate $\sigma_{v}^{2}$ and $\sigma_{c}^{2}$ just as in equations (10.35) and (10.37).
+
+We summarize with a set of assumptions, which are somewhat stronger than necessary for consistency (because we can always get by with zero covariances) but have the advantage of simplifying inference under the full set of assumptions.
+
+ASSUMPTION REIV.1: (a) $\mathrm{E}\left(u_{i t} \mid \mathbf{z}_{i}, c_{i}\right)=0, t=1, \ldots, T$; (b) $\mathrm{E}\left(c_{i} \mid \mathbf{z}_{i}\right)=\mathrm{E}\left(c_{i}\right)=0$, where $\mathbf{z}_{i} \equiv\left(\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i T}\right)$.
+
+As usual, the assumption that $c_{i}$ has a zero mean is without loss of generality provided we include an intercept in the model, which we always assume here.
+
+The rank condition is\\
+assumption REIV.2: (a) rank $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{Z}_{i}\right)=L$; (b) rank $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)=K$.\\
+Because Assumption RE. 1 implies Assumption GIV. 1 and Assumption RE. 2 is Assumption GIV.2, the REIV estimator is consistent under these two assumptions. Without further assumptions, a valid asymptotic variance estimator of $\hat{\boldsymbol{\beta}}_{\text {REIV }}$ should be fully robust to heteroskedasticity and any pattern of serial correlation in $\left\{v_{i t}\right\}$. The formula is long but standard; see Problem 11.18.
+
+Typically, the default is to add an assumption that simplifies inference:\\
+assumption REIV.3: (a) $\mathrm{E}\left(\mathbf{u}_{i}^{\prime} \mathbf{u}_{i} \mid \mathbf{Z}_{i}, c_{i}\right)=\sigma_{u}^{2} \mathbf{I}_{T}$; (b) $\mathrm{E}\left(c_{i}^{2} \mid \mathbf{Z}_{i}\right)=\sigma_{c}^{2}$.\\
+As in the case of standard RE, the particular form of $\boldsymbol{\Omega}$ is motivated by Assumption REIV. 3 and the estimator is the asymptotically efficient IV estimator under the full set of assumptions. The simplified (nonrobust) form of the asymptotic variance estimator can be expressed as\\
+$\operatorname{Avar}\left(\widehat{\hat{\boldsymbol{\beta}}}_{\text {REIV }}\right)=\left[\left(\sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{Z}_{i}\right)\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{Z}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}\right)\right]^{-1}$.
+
+This matrix can be used to construct asymptotic standard errors and Wald tests, but it does rely on Assumption REIV.3.
+
+Given that the usual RE estimator can be obtained from a pooled OLS regression on quasi-time-demeaned data, it comes as no surprise that a similar result holds for the REIV estimator. Let $\breve{y}_{i t}=y_{i t}-\hat{\lambda} \bar{y}_{i}, \breve{\mathbf{x}}_{i t}=\mathbf{x}_{i t}-\hat{\lambda} \overline{\mathbf{x}}_{i}$, and $\breve{\mathbf{z}}_{i t}=\mathbf{z}_{i t}-\hat{\lambda} \overline{\mathbf{z}}_{i}$ be the transform-dependent variable, regressors, and IVs, respectively, where $\hat{\lambda}$ is given as in equation (10.81) (but where the P2SLS residuals, rather than the POLS residuals, are used to obtain $\hat{\sigma}_{c}^{2}$ and $\hat{\sigma}_{u}^{2}$ ). Then the REIV estimator can be obtained as the P2SLS estimator on\\
+$\breve{y}_{i t}=\breve{\mathbf{x}}_{i t} \boldsymbol{\beta}+$ error $_{i t}, \quad t=1, \ldots, T ; i=1, \ldots, N$,\\
+using IVs $\breve{\mathbf{z}}_{i t}$. This formulation makes fully robust inference especially easy using any econometrics packages that compute heteroskedasticity and serial correlation robust standard errors and test statistics for pooled 2SLS estimation. Because of its interpretation as a pooled 2SLS estimator on transformed data, the REIV estimator is sometimes called the random effects 2SLS estimator. Baltagi (1981) calls it the error components 2SLS estimator.
+
+It is straightforward to adapt standard specification tests to the REIV framework. For example, we can test the null hypothesis that a set of explanatory variables is exogenous by modifying the control function approach from Chapter 6. Suppose we write an unobserved effects model as\\
+$y_{i t 1}=\mathbf{z}_{i t 1} \boldsymbol{\delta}_{1}+\mathbf{y}_{i t 2} \boldsymbol{\alpha}_{1}+\mathbf{y}_{i t 3} \gamma_{1}+c_{i 1}+u_{i t 1}$,\\
+where $v_{i t 1} \equiv c_{i 1}+u_{i t 1}$ is the composite error, and we want to test $\mathrm{H}_{0}: \mathrm{E}\left(\mathbf{y}_{i t 3}^{\prime} v_{i t 1}\right)=\mathbf{0}$. Actually, in an RE environment, it only makes sense to maintain strict exogeneity of the $1 \times J_{1}$ vector $\mathbf{y}_{i t 3}$ under the null. The variables $\mathbf{y}_{i t 2}$ are allowed to be endogenous under the null-provided, of course, that we have sufficient instruments excluded from (11.19) that are uncorrelated with the composite errors in every time period. We can write a reduced form for $\mathbf{y}_{i t 3}$ as\\
+$\mathbf{y}_{i t 3}=\mathbf{z}_{i t} \boldsymbol{\Pi}_{3}+\mathbf{v}_{i t 3}$,\\
+and then we augment (11.19) by including $\mathbf{v}_{i t 3} \boldsymbol{\rho}$. Of course, we must decide how to estimate (11.20) to obtain residuals, $\hat{\mathbf{v}}_{i t 3}=\mathbf{y}_{i t 3}-\mathbf{z}_{i t} \hat{\boldsymbol{\Pi}}_{3}$, where the columns of $\hat{\boldsymbol{\Pi}}_{3}$ can be pooled OLS or standard RE estimates. That is, we can estimate the $J_{1}$ equations in (11.20) separately by pooled OLS or by RE. Either way, to obtain the test, we simply estimate\\
+$y_{i t 1}=\mathbf{z}_{i t 1} \boldsymbol{\delta}_{1}+\mathbf{y}_{i t 2} \boldsymbol{\alpha}_{1}+\mathbf{y}_{i t 3} \gamma_{1}+\hat{\mathbf{v}}_{i t 3} \boldsymbol{\rho}_{1}+$ error $_{i t 1}$\\
+by REIV, using instruments $\left(\mathbf{z}_{i t}, \mathbf{y}_{i t 3}, \hat{\mathbf{v}}_{i t 3}\right)$, and test $\mathrm{H}_{0}: \boldsymbol{\rho}_{1}=\mathbf{0}$ using a Wald test. Under the null hypothesis that $\mathbf{y}_{i s 3}$ is strictly exogenous (with respect to $\left\{v_{i t 1}\right\}$ ), we\\
+can ignore the first-stage estimation. (Actually, if we use the usual, nonrobust test, then the null is Assumptions RE.1-RE. 3 but with the instruments for time period $t$ given by $\left(\mathbf{z}_{i t}, \mathbf{y}_{i t 3}\right)$.) We might, of course, want to make the test robust to violation of the RE variance structure as well as to system heteroskedasticity.
+
+Testing overidentifying restrictions is also straightforward. Now write the equation as\\
+$y_{i t 1}=\mathbf{z}_{i t 1} \boldsymbol{\delta}_{1}+\mathbf{y}_{i t 2} \boldsymbol{\alpha}_{1}+c_{i 1}+u_{i t 1}$,\\
+where $\mathbf{z}_{i t 2}$ is the $1 \times L_{2}$ vector of exogenous variables excluded from (11.19). We assume $L_{2}>G_{1}=\operatorname{dim}\left(\mathbf{y}_{i t 2}\right)$, and write $\mathbf{z}_{i t 2}=\left(\mathbf{g}_{i t 2}, \mathbf{h}_{i t 2}\right)$, where $\mathbf{g}_{i t 2}$ is $1 \times G_{1}$-the same dimension as $\mathbf{y}_{i t 2}$-and $\mathbf{h}_{i t 2}$ is $1 \times Q_{1}$-the number of overidentifying restrictions. As discussed in Section 6.3.1, it does not matter how we choose $\mathbf{h}_{i t 2}$ provided it has $Q_{1}$ elements. (In the case where the model contains separate time period intercepts, these would be included in $\mathbf{z}_{i t 1}$ and then act as their own instruments. Therefore, $\mathbf{h}_{i t 2}$ never includes aggregate time effects.)
+
+The test is obtained as follows. Obtain the quasi-time-demeaned RE residuals, $\hat{\breve{u}}_{i t 1}=\hat{u}_{i t}-\hat{\lambda} \overline{\hat{u}}_{i}$, where $\hat{u}_{i t}=y_{i t 1}-\mathbf{x}_{i t 1} \hat{\boldsymbol{\beta}}_{1}$ are the RE residuals (with $\mathbf{x}_{i t 1}=\left(\mathbf{z}_{i t 1}, \mathbf{y}_{i t 2}\right)$ ), along with the quasi-time-demeaned explanatory variables and instruments, $\breve{\mathbf{x}}_{i t 1}=\mathbf{x}_{i t 1}-\hat{\lambda} \overline{\mathbf{x}}_{i 1}$ and $\breve{\mathbf{z}}_{i t}=\mathbf{z}_{i t}-\hat{\lambda} \overline{\mathbf{z}}_{i}$. Let $\hat{\mathbf{y}}_{i t 2}$ be the fitted values from the first stage pooled regression $\breve{\mathbf{y}}_{i t 2}$ on $\breve{\mathbf{z}}_{i t}$. Next, use pooled OLS of $\breve{\mathbf{h}}_{i t 2}$ on $\breve{\mathbf{z}}_{i t 1}, \stackrel{\hat{\mathbf{y}}}{i t 2}$ and obtain the $1 \times Q_{1}$ residuals, $\stackrel{\hat{\mathbf{r}}}{i t 2}$. Finally, use the augmented equation\\
+$\breve{u}_{i t 1}=\stackrel{\hat{\mathbf{r}}}{i t 2} \boldsymbol{\eta}_{1}+$ error $_{i t 1}$\\
+to test $\mathrm{H}_{0}: \boldsymbol{\eta}_{1}=\mathbf{0}$ by computing a Wald statistic that is robust to both heteroskedasticity and serial correlation. If Assumption REIV. 3 is maintained under $\mathrm{H}_{0}$, the usual $F$ test from the pooled OLS regression in equation (11.23) is asymptotically valid.
+
+As is clear from the preceding analysis, a random effects approach allows some regressors to be correlated with $c_{i}$ and $u_{i t}$ in (11.1), but the instruments are assumed to be strictly exogenous with respect to the idiosyncratic errors and to be uncorrelated with $c_{i}$. In many applications, instruments are arguably uncorrelated with idiosyncratic shocks in all time periods but might be correlated with historical or immutable factors contained in $c_{i 1}$. In such cases, a fixed effects approach is preferred.
+
+As in the case with regressors satisfying (11.2), we use the within transformation to eliminate $c_{i}$ from (11.1):\\
+$y_{i t}-\bar{y}_{i}=\left(\mathbf{x}_{i t}-\overline{\mathbf{x}}_{i}\right) \boldsymbol{\beta}+u_{i t}-\bar{u}_{i}, \quad t=1, \ldots, T$,\\
+which makes it clear that time-constant explanatory variables are eliminated, as in standard FE analysis. If we estimate equation (11.24) by P2SLS using instruments $\ddot{\mathbf{z}}_{i t} \equiv \mathbf{z}_{i t}-\overline{\mathbf{z}}_{i}(1 \times L$ with $L \geq K)$, we obtain the fixed effects instrumental variables (FEIV) estimator or the fixed effects 2SLS (FE2SLS) estimator. Because for each $i$ we have $\sum_{t=1}^{T} \mathbf{z}_{i t}^{\prime}\left(\mathbf{x}_{i t}-\overline{\mathbf{x}}_{i}\right)=\sum_{t=1}^{T}\left(\mathbf{z}_{i t}-\overline{\mathbf{z}}_{i}\right)^{\prime}\left(\mathbf{x}_{i t}-\overline{\mathbf{x}}_{i}\right)$ and $\sum_{t=1}^{T} \mathbf{z}_{i t}^{\prime}\left(y_{i t}-\bar{y}_{i}\right)= \sum_{t=1}^{T}\left(\mathbf{z}_{i t}-\overline{\mathbf{z}}_{i}\right)^{\prime}\left(y_{i t}-\bar{y}_{i}\right)$, it does not matter whether or not we time demean the instruments. But using $\ddot{\mathbf{z}}_{i t}$ emphasizes that FEIV works only when the instruments vary over time. (For an REIV analysis, instruments can be constant over time provided they satisfy Assumptions REIV. 1 and REIV.2.)
+
+Sufficient conditions for consistency of the FE2SLS estimator are immediate. Not surprisingly, a sufficient exogeneity condition for consistency of FEIV is simply the first part of the exogeneity assumption for REIV:
+
+ASSUMPTION FEIV.1: $\mathrm{E}\left(u_{i t} \mid \mathbf{z}_{i}, c_{i}\right)=0, t=1, \ldots, T$.\\
+In practice, it is important to remember that Assumption FEIV. 1 is strict exogeneity of the instruments conditional on $c_{i}$; it allows arbitrary correlation between $\mathbf{z}_{i t}$ and $c_{i}$ for all $t$. The rank condition is
+
+ASSUMPTION FEIV.2: (a) rank $\sum_{t=1}^{T} \mathrm{E}\left(\ddot{\mathbf{z}}_{i t}^{\prime} \ddot{\mathbf{z}}_{i t}\right)=L$; (b) rank $\sum_{t=1}^{T} \mathrm{E}\left(\ddot{\mathbf{z}}_{i t}^{\prime} \ddot{\mathbf{x}}_{i t}\right)=K$.\\
+As usual, we can relax FEIV. 1 to just assuming $\mathbf{z}_{i s}$ and $u_{i t}$ are uncorrelated for all $s$ and $t$. But if we impose Assumptions FEIV.1, FEIV.2, and\\
+assumption FEIV.3: $\quad \mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{z}_{i}, c_{i}\right)=\sigma_{u}^{2} \mathbf{I}_{T}$,\\
+then we can apply standard pooled 2SLS inference on the time-demeaned data, provided we take care in estimating $\sigma_{u}^{2}$. As in Section 10.5, we must use a degrees-offreedom adjustment for the sum of squared residuals (effectively for the lost time period for each $i$ ). See equation (10.56), where we now use the FE2SLS residuals, $\hat{\ddot{u}}_{i t}=\ddot{y}_{i t}-\ddot{\mathbf{x}}_{i t} \hat{\boldsymbol{\beta}}_{\text {FE2SLS }}$, in place of the usual FE residuals. Problem 11.9 asks you to work through some of the details.
+
+As with REIV methods, testing a subset of variables for endogeneity and testing overidentification restrictions are immediate. Rather than estimate equation (11.21) by REIV, we use FEIV, where $\hat{\mathbf{v}}_{i t 3}$ is conveniently replaced with $\hat{\ddot{\mathbf{v}}}_{i t 3}$, the FE residuals from estimating the reduced form of each element of $\mathbf{y}_{i t 3}$ by fixed effects. (So, in the scalar case, we estimate $y_{i t 3}=\mathbf{z}_{i t} \boldsymbol{\pi}_{3}+a_{i 3}+v_{i t 3}$ by fixed effects and then compute $\hat{\ddot{v}}_{i t 3}=\ddot{y}_{i t 3}-\ddot{\mathbf{z}}_{i t} \hat{\boldsymbol{\pi}}_{3}$.) It is important to remember that, unlike the test in the REIV case, the FEIV test does not maintain Assumption REIV.1b under the null. That is, for FE, exogeneity of $\mathbf{y}_{i t 3}$ does not include that it is uncorrelated with $c_{i 1}$, something we know well from Chapter 10.
+
+To test overidentifying restrictions, we let $\hat{\ddot{u}}_{i t 1}$ be the FEIV residuals, let $\ddot{\mathbf{z}}_{i t}$ denote the time-demeaned instruments, and let $\hat{\ddot{\mathbf{y}}}_{i t 2}$ be the fitted values from the first-stage pooled OLS regression $\ddot{\mathbf{y}}_{i t 2}$ on $\ddot{\mathbf{z}}_{i t}$. Then, the $1 \times Q_{1}$ residuals $\hat{\dot{\mathbf{r}}}_{i t 2}$ are obtained from the pooled OLS regression $\ddot{\mathbf{h}}_{i t 2}$ on $\ddot{\mathbf{z}}_{i t 1}, \hat{\ddot{\mathbf{y}}}_{i t 2}$. To obtain a valid test statistic, we use $\hat{\ddot{u}}_{i t 1}$ and $\hat{\mathbf{r}}_{i t 2}$ in place of $\hat{\breve{u}}_{i t 1}$ and $\hat{\breve{\mathbf{r}}}_{i t 2}$, respectively, in equation (11.23). Again, a fully robust test of $\mathrm{H}_{0}: \boldsymbol{\eta}_{1}=\mathbf{0}$ is preferred. If one maintains Assumption FEIV. 3 under the null, some care is needed in estimating $\operatorname{Var}\left(u_{i t 1}\right)=\sigma_{1}^{2}$. Implicitly, the variance estimator obtained by using the pooled regression $\hat{\ddot{u}}_{i t 1}$ on $\hat{\dot{\mathbf{r}}}_{i t 2}, t=1, \ldots T, i=1, \ldots, N$ uses the sum of squared residuals divided by $N T-Q_{1}$, whereas the correct factor is $N(T-1)-Q_{1}$. Therefore, the nonrobust Wald statistic from pooled OLS should be multiplied by $\left[N(T-1)-Q_{1}\right] /\left(N T-Q_{1}\right)$.
+
+With FEIV, we are testing whether the time-demeaned extra instruments, $\ddot{\mathbf{h}}_{i t 2}$, are uncorrelated with the idiosyncratic errors, and not that they are also uncorrelated with the unobserved effect. This is as it should be, as consistency of the FEIV estimator does not hinge on $\mathrm{E}\left(\mathbf{z}_{i t}^{\prime} c_{i}\right)=\mathbf{0}$. Now, of course, all instruments-including those in $\mathbf{h}_{i t 2}$-must vary over time (and the elements of $\mathbf{h}_{i t 2}$ must vary across $i$, too).
+
+If $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right) \neq \sigma_{u}^{2} \mathbf{I}_{T}$ but we nominally think $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{z}_{i}, c_{i}\right)=\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$, we can obtain a more efficient estimator by applying GIV to the set of equations\\
+$\ddot{\mathbf{y}}_{i}=\ddot{\mathbf{X}}_{i} \boldsymbol{\beta}+\ddot{\mathbf{u}}_{i}$,\\
+where we drop one time period to avoid singularity of the error variance matrix. We apply the GIV estimator to (11.25) using instruments $\ddot{\mathbf{Z}}_{i}$. The formula is given by equation (8.47) but with the time-demeaned matrices (minus one time period). Naturally, we would use the FE2SLS estimator in the first stage to estimate $\boldsymbol{\Omega}$. We may want to use a fully robust variance matrix in case system homoskedasticity fails.
+
+The Hausman principle can be applied for comparing the FEIV and REIV estimators, at least for the coefficients on the variables that change across $i$ and $t$. As in Section 10.7.3, a regression-based test is easiest to carry out (but one should always compare the magnitudes of the FEIV and REIV estimates to see whether they are different in practically important ways). If we maintain Assumption RE.1a-which underlies consistency of both estimators-then we can view the Hausman test as a test of $\mathrm{E}\left(c_{i} \mid \mathbf{z}_{i}\right)=\mathrm{E}\left(c_{i}\right)$, and this is the usual interpretation of the test. As before, we specify as an alternative a correlated random effects structure, using the subset $\mathbf{w}_{i t}$ of $\mathbf{z}_{i t}$ that varies across $i$ and $t, c_{i}=\xi_{0}+\overline{\mathbf{z}}_{i} \boldsymbol{\xi}+a_{i}$, and then augment the orginal equation (absorbing $\xi_{0}$ into the intercept):\\
+$y_{i t}=\mathbf{x}_{i t} \boldsymbol{\beta}+\overline{\mathbf{W}}_{i} \boldsymbol{\xi}+a_{i}+u_{i t}$.
+
+Now, estimate (11.26) by REIV using instruments $\left(\mathbf{z}_{i t}, \overline{\mathbf{w}}_{i}\right)$ and test $\boldsymbol{\xi}=0$. If we make the test robust, then we are not maintaining Assumption REIV. 3 under $\mathrm{H}_{0}$. We can also estimate (11.26) by pooled 2SLS and obtain a fully robust test.
+
+REIV and FEIV methods can be applied to simultaneous equations models for panel data, models with time-varying omitted variables, and panel data models with measurement error. The following example uses airline route concentration ratios to estimate a passenger demand equation.
+
+Example 11.1 (Demand for Air Travel): The data set AIRFARE.RAW contains information on passengers, airfare, and route concentration ratios for 1,149 routes within the United States for the years 1997 through 2000. We estimate a simple demand model\\
+$\log \left(\right.$ passen $\left._{i t}\right)=\theta_{t 1}+\alpha_{1} \log \left(\right.$ fare $\left._{i t}\right)+\delta_{1} \log \left(\right.$ dist $\left._{i}\right)+\delta_{2}\left[\log \left(\text { dist }_{i}\right)\right]^{2}+c_{i 1}+u_{i t 1}$,\\
+where we allow for separate year intercepts. The variable dist $_{i}$ is the route distance, in miles; naturally, it does not change over time.
+
+We estimate this equation using four different methods: RE, FE, REIV, and FEIV, where the variable $\log \left(\right.$ fare $\left._{i t}\right)$ is treated as endogenous in the latter two cases. The IV for $\log \left(\right.$ fare $\left._{i t}\right)$ is concen $_{i t}$, the fraction of route traffic accounted for by the largest carrier. For the REIV estimation, the distance variables are treated as exogenous controls. Of course, they drop out of the FE and FEIV estimation.
+
+For the IV estimation, we can think of the reduced form as being\\
+$\log \left(\right.$ fare $\left._{i t}\right)=\theta_{t 2}+\pi_{21}$ concen $_{i t}+\pi_{22} \log \left(\right.$ dist $\left._{i}\right)+\pi_{23}\left[\log \left(\text { dist }_{i}\right)\right]^{2}+c_{i 2}+u_{i t 2}$,\\
+which is (implicitly) estimated by RE or FE , depending on whether (11.27) is estimated by REIV or FEIV. The results of the estimation are given in Table 11.1.
+
+The RE and FE estimated elasticities of passenger demand with respect to airfare are very similar (about -1.1 and -1.2 , respectively), and neither is statistically different from -1 . The closeness of these estimates is, perhaps, not too surprising, given that $\hat{\lambda}=.915$ for the RE estimation. This indicates that most of the variation in the composite error is estimated to be due to $c_{i 1}$, but, as we remember, that calculation assumes that $\left\{u_{i t 1}\right\}$ is serially uncorrelated.
+
+The large increase in standard errors when we allow for arbitary serial correlation (and, less importantly, heteroskedasticity) suggests the idiosyncratic errors are not serially uncorrelated. The robust standard error for RE, .102, is almost five times as large as the nonrobust standard error, .022 . The increase for FE is not quite as dramatic but is still substantial. In either case, the 95 percent confidence intervals are
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 11.1\\
+Passenger Demand Model, United States Domestic Routes, 1997-2000}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Dependent Variable & \multicolumn{4}{|l|}{$\log$ (passen)} \\
+\hline
+ & (1) & (2) & (3) & (4) \\
+\hline
+Explanatory Variable & Random Effects & Fixed Effects & REIV & FEIV \\
+\hline
+\multirow[t]{3}{*}{log(fare)} & -1.102 & -1.155 & -. 508 & -. 302 \\
+\hline
+ & (.022) & (.023) & (.230) & (.277) \\
+\hline
+ & [.102] & [.083] & [.498] & [.613] \\
+\hline
+\multirow[t]{3}{*}{$\log$ (dist)} & -1.971 & - & -1.505 & - \\
+\hline
+ & (.647) &  & (.693) &  \\
+\hline
+ & [.704] &  & [.784] &  \\
+\hline
+\multirow[t]{3}{*}{$[\log (\text { dist })]^{2}$} & . 171 & - & . 118 & - \\
+\hline
+ & (.049) &  & (.055) &  \\
+\hline
+ & [.054] &  & [.067] &  \\
+\hline
+$\hat{\lambda}$ & . 915 &  & . 911 &  \\
+\hline
+$N$ & 1,149 & 1,149 & 1,149 & 1,149 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+All estimation methods include year dummies for 1998, 1999, and 2000 (not reported).\\
+The usual, nonrobust standard errors are in parentheses below the estimated coefficients. Standard errors robust to arbitrary heteroskedasticity and serial correlation are in brackets.\\
+All standard errors for RE and FE were obtained using the xtreg command in Stata 9.0. The nonrobust standard errors for REIV and FEIV were obtained using the command xtivreg. The fully robust standard errors were obtained using P2SLS on the quasi-time-demeaned and time-demeaned data, respectively.\\
+much wider when we use the more reliable robust standard errors. Clearly, given the closeness of the elasticity estimates, there is no point formally comparing RE and FE via a Hausman test.
+
+Of course, even the FE estimator assumes that $\log \left(\right.$ fare $\left._{i t}\right)$ is uncorrelated with $\left\{u_{i t 1}: t=1, \ldots, T\right\}$, and this assumption could easily fail. Columns (3) and (4) use concen as an IV for $\log$ (fare). (The reduced form for $\log$ (fare) depends positively and in a statistically significant way on concen, whether we use RE or FE, and using fully robust standard errors.) The REIV estimator assumes that the concentration ratio is uncorrelated with the idiosyncratic errors as well as the route heterogeneity, $c_{i 1}$. Even so, the estimated elasticity, -.508 , is about half the size of the RE estimate. Based on the nonrobust standard error, this elasticity is statistically different from zero (as well as -1 ) at the 5 percent significance level. But when we use the more realistic robust standard error, the elasticity becomes statistically insignificant; its robust $t$ statistic is about -1.02 . Therefore, once we instrument for $\log ($ fare $)$ and use robust inference, we can say very little about the true elasticity.
+
+The estimated elasticity for FEIV is even smaller in magnitude and even less precisely estimated. The estimated elasticity, -.302 , is not even statistically different from zero when we use the overly optimistic nonrobust standard error. The fully robust $t$ statistic is less than .5 in magnitude.
+
+We can use the Hausman test-which is a simple $t$ statistic in this example-to compare the models a few different ways. We consider only two. First, because the FEIV and FE estimates are practically different, we might want to know whether there is statistically significant evidence that $\log \left(\right.$ fare $\left._{i t}\right)$ is endogenous (correlated with the idiosyncratic errors). Of course, we must maintain strict exogeneity of $\operatorname{concen}_{i t}$, but only in the sense that it is uncorrelated with $\left\{u_{i t 1}\right\}$. We obtain the FE residuals, $\hat{\ddot{v}}_{i t 2}$ from the reduced form estimation. Then we add $\hat{\ddot{v}}_{i t 2}$ to equation (11.27), estimate it by standard FE, and obtain the $t$ statistic on $\hat{\ddot{v}}_{i t 2}$. Its nonrobust $t$ statistic is -3.68 , but the fully robust statistic is only -1.63 , which implies a marginal statistical rejection. Given the large differences in elasticity estimates between FE and FEIV, one would not feel comfortable relying on the FE estimates.
+
+We can also check for statistical significance between REIV and FEIV. In this case, the easiest way to implement the test is to estimate the original equation, augmented by the time average $\overline{\text { concen }}_{i}$, by REIV and use the usual $t$ statistic on $\overline{\text { concen }}_{i}$ or the robust form. (A simpler procedure works for obtaining the fully robust statistic: just estimate the augmented equation by pooled IV and use the fully robust $t$ statistic on $\overline{\text { concen }}_{i}$.) The nonrobust $t$ statistic on $\overline{\text { concen }}_{i}$ is -3.08 while the robust $t$ statistic is -2.00 . Interestingly, neither estimate is statistically different from zero, but they are statistically different from each other, at least marginally.
+
+Panel data methods combined with IVs have many applications to models with simultaneity or omitted time-varying variables. For example, Foster and Rosenzweig (1995) use the FEIV approach to the effects of adoption of high-yielding seed varieties on household-level profits in rural India. Ayers and Levitt (1998) apply FE2SLS to estimate the effect of Lojack electronic theft prevention devices on city car-theft rates. Papke (2005) applies FE2SLS to building-level panel data on test pass rates and per-student spending. In each of these cases, unit-specific heterogeneity is eliminated, and then IVs are used for the suspected endogenous explanatory variable.
+
+\subsection*{11.3 Hausman and Taylor-Type Models}
+The results of Section 11.2 apply to a class of unobserved effects models studied by Hausman and Taylor (1981) (HT). The key feature of these models is that the assumptions imply the availability of instrumental variables from within the model; one need not look outside the model for exogenous variables.
+
+The HT model can be written as
+
+
+\begin{equation*}
+y_{i t}=\mathbf{w}_{i} \gamma+\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}+u_{i t}, \quad t=1,2, \ldots, T, \tag{11.29}
+\end{equation*}
+
+
+where all elements of $\mathbf{x}_{i t}$ display some time variation, and it is convenient to include unity in $\mathbf{w}_{i}$ and assume that $\mathrm{E}\left(c_{i}\right)=0$. We assume strict exogeneity conditional on $c_{i}$ :\\
+$\mathrm{E}\left(u_{i t} \mid \mathbf{w}_{i}, \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}, c_{i}\right)=0, \quad t=1, \ldots, T$.
+
+Estimation of $\boldsymbol{\beta}$ can proceed by FE: the FE transformation eliminates $\mathbf{w}_{i} \boldsymbol{\gamma}$ and $c_{i}$. As usual, this approach places no restrictions on the correlation between $c_{i}$ and $\left(\mathbf{w}_{i}, \mathbf{x}_{i t}\right)$.
+
+What about estimation of $\gamma$ ? If in addition to assumption (11.30) we assume\\
+$\mathrm{E}\left(\mathbf{w}_{i}^{\prime} c_{i}\right)=\mathbf{0}$,\\
+then a $\sqrt{N}$-consistent estimator is easy to obtain: average equation (11.29) across $t$, premultiply by $\mathbf{w}_{i}^{\prime}$, take expectations, use the fact that $\mathrm{E}\left[\mathbf{w}_{i}^{\prime}\left(c_{i}+\bar{u}_{i}\right)\right]=\mathbf{0}$, and rearrange to get\\
+$\mathrm{E}\left(\mathbf{w}_{i}^{\prime} \mathbf{w}_{i}\right) \boldsymbol{\gamma}=\mathrm{E}\left[\mathbf{w}_{i}^{\prime}\left(\bar{y}_{i}-\overline{\mathbf{x}}_{i} \boldsymbol{\beta}\right)\right]$.\\
+Now, making the standard assumption that $\mathrm{E}\left(\mathbf{w}_{i}^{\prime} \mathbf{w}_{i}\right)$ is nonsingular, it follows by the usual analogy principle argument that\\
+$\hat{\boldsymbol{\gamma}}=\left(N^{-1} \sum_{i=1}^{N} \mathbf{w}_{i}^{\prime} \mathbf{w}_{i}\right)^{-1}\left[N^{-1} \sum_{i=1}^{N} \mathbf{w}_{i}^{\prime}\left(\bar{y}_{i}-\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\beta}}_{F E}\right)\right]$\\
+is consistent for $\gamma$. The asymptotic variance of $\sqrt{N}(\hat{\gamma}-\gamma)$ can be obtained by standard arguments for two-step estimators. Rather than derive this asymptotic variance, we turn to more general assumptions.
+
+Hausman and Taylor (1981) partition $\mathbf{w}_{i}$ and $\mathbf{x}_{i t}$ as $\mathbf{w}_{i}=\left(\mathbf{w}_{i 1}, \mathbf{w}_{i 2}\right)$, $\mathbf{x}_{i t}= \left(\mathbf{x}_{i t 1}, \mathbf{x}_{i t 2}\right)$, where $\mathbf{w}_{i 1}$ is $1 \times J_{1}, \mathbf{w}_{i 2}$ is $1 \times J_{2}, \mathbf{x}_{i t 1}$ is $1 \times K_{1}, \mathbf{x}_{i t 2}$ is $1 \times K_{2}$, and assume that\\
+$\mathrm{E}\left(\mathbf{w}_{i 1}^{\prime} c_{i}\right)=\mathbf{0} \quad$ and $\quad \mathrm{E}\left(\mathbf{x}_{i t 1}^{\prime} c_{i}\right)=\mathbf{0}, \quad$ all $t$.
+
+We still maintain assumption (11.30), so that $\mathbf{w}_{i}$ and $\mathbf{x}_{i s}$ are uncorrelated with $u_{i t}$ for all $t$ and $s$.
+
+Assumptions (11.30) and (11.32) provide orthogonality conditions that can be used in a method of moments procedure. Hausman and Taylor actually imposed enough assumptions so that the variance matrix $\boldsymbol{\Omega}$ of the composite error $\mathbf{v}_{i}=c_{i} \mathbf{j}_{T}+\mathbf{u}_{i}$ has the random effects structure and Assumption SIV. 5 from Section 8.3.4 holds for the relevant matrix of instruments. Neither of these is necessary, but together they afford some simplifications.
+
+Write equation (11.29) for all $T$ time periods as\\
+$\mathbf{y}_{i}=\mathbf{W}_{i} \boldsymbol{\gamma}+\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{v}_{i}$.
+
+Since $\mathbf{x}_{i t}$ is strictly exogenous and $\mathbf{Q}_{T} \mathbf{v}_{i}=\mathbf{Q}_{T} \mathbf{u}_{i}\left[\right.$ where $\mathbf{Q}_{T} \equiv \mathbf{I}_{T}-\mathbf{j}_{T}\left(\mathbf{j}_{T}^{\prime} \mathbf{j}_{T}\right)^{-1} \mathbf{j}_{T}^{\prime}$ is again the $T \times T$ time-demeaning matrix $]$, it follows that $\mathrm{E}\left[\left(\mathbf{Q}_{T} \mathbf{X}_{i}\right)^{\prime} \mathbf{v}_{i}\right]=\mathbf{0}$. Thus, the $T \times K$ matrix $\mathbf{Q}_{T} \mathbf{X}_{i}$ can be used as instruments in estimating equation (11.33). If these were the only instruments available, then we would be back to FE estimation of $\boldsymbol{\beta}$ without being able to estimate $\boldsymbol{\gamma}$.
+
+Additional instruments come from assumption (11.32). In particular, $\mathbf{w}_{i 1}$ is orthogonal to $v_{i t}$ for all $t$, and so is $\mathbf{x}_{i 1}^{o}$, the $1 \times T K_{1}$ vector containing $\mathbf{x}_{i t 1}$ for all $t=1, \ldots, T$. Thus, define a set of instruments for equation (11.33) by\\
+$\left[\mathbf{Q}_{T} \mathbf{X}_{i}, \mathbf{j}_{T} \otimes\left(\mathbf{w}_{i 1}, \mathbf{x}_{i 1}^{o}\right)\right]$,\\
+which is a $T \times\left(K+J_{1}+T K_{1}\right)$ matrix. Simply put, the vector of IVs for time period $t$ is $\left(\ddot{\mathbf{x}}_{i t}, \mathbf{w}_{i 1}, \mathbf{x}_{i 1}^{o}\right)$. With this set of instruments, the order condition for identification of $(\gamma, \boldsymbol{\beta})$ is that $K+J_{1}+T K_{1} \geq J+K$, or $T K_{1} \geq J_{2}$. In effect, we must have a sufficient number of elements in $\mathbf{x}_{i 1}^{o}$ to act as instruments for $\mathbf{w}_{i 2}$. $\left(\ddot{\mathbf{x}}_{i t}\right.$ are the IVs for $\mathbf{x}_{i t}$, and $\mathbf{w}_{i 1}$ act as their own IVs.) Whether we do depends on the number of time periods, as well as on $K_{1}$.
+
+Actually, matrix (11.34) does not include all possible instruments under assumptions (11.30) and (11.32), even when we focus only on zero covariances. However, under the full set of Hausman-Taylor assumptions mentioned earlier-including the assumption that $\boldsymbol{\Omega}$ has the random effects structure-it can be shown that all instruments other than those in matrix (11.34) are redundant in the sense of Section 8.6; see IASW (1999, Theorem 4.4) for details.
+
+Hausman and Taylor (1981) suggested estimating $\boldsymbol{\gamma}$ and $\boldsymbol{\beta}$ by REIV. As described in Section 11.2, REIV can be implemented as a P2SLS estimator on transformed data. For the particular choice of instruments in equation (11.34), we first estimate the equation by P2SLS using instruments $\mathbf{z}_{i t} \equiv\left(\ddot{\mathbf{x}}_{i t}, \mathbf{w}_{i 1}, \mathbf{x}_{i 1}^{o}\right)$ for time period $t$. From the P2SLS residuals, the quasi-time-demeaning parameter, $\hat{\lambda}$, is obtained as in equation (10.81), where $\hat{\sigma}_{c}^{2}$ and $\hat{\sigma}_{u}^{2}$ are gotten from the P2SLS residuals, say $\check{v}_{i t}= y_{i t}-\mathbf{w}_{i} \check{\boldsymbol{\gamma}}-\mathbf{x}_{i t} \check{\boldsymbol{\beta}}$, rather than the POLS residuals. The quasi-time-demeaning operation is then carried out as in equation (11.18). Some software packages contain specific commands for estimating HT models, but not all allow for fully robust inference (that is, violation of Assumption REIV.3). The P2SLS estimation on the quasi-timedemeaned data makes it easy to obtain fully robust inference for any statistical package that computes heteroskedasticity and serial correlation robust standard errors and test statistics for P2SLS.
+
+If $\boldsymbol{\Omega}$ is not of the random effects form, or if Assumption SIV. 5 fails, many more instruments than are in matrix (11.34) can help improve efficiency. Unfortunately, the value of these additional IVs is unclear. For practical purposes, 3SLS with $\hat{\boldsymbol{\Omega}}$ of the
+
+RE form, 3SLS with $\hat{\boldsymbol{\Omega}}$ unrestricted, or GMM with optimal weighting matrix-using the instruments in matrix (11.34)-should be sufficient, with the latter being the most efficient in the presence of conditional heteroskedasticity. The first-stage estimator can be the system 2SLS estimator using matrix (11.34) as instruments. The GMM overidentification test statistic can be used to test the $T K_{1}-J_{2}$ overidentifying restrictions.
+
+In cases where $K_{1} \geq J_{2}$, we can reduce the instrument list even further and still achieve identification: we use $\overline{\mathbf{x}}_{i 1}$, rather than $\mathbf{x}_{i 1}^{o}$, as the instruments for $\mathbf{w}_{i 2}$. Then, the IVs at time $t$ are $\left(\ddot{\mathbf{x}}_{i t}, \mathbf{w}_{i 1}, \overline{\mathbf{x}}_{i 1}\right)$. We can then use the GIV estimator with this new set of IVs. Quasi-demeaning leads to an especially simple analysis. Although it generally reduces asymptotic efficiency, replacing $\mathbf{x}_{i 1}^{o}$ with $\overline{\mathbf{x}}_{i 1}$ is a reasonable way to reduce the instrument list because much of the partial correlation between $\mathbf{w}_{i 2}$ and $\mathbf{x}_{i 1}^{o}$ is likely to be through the time average, $\overline{\mathbf{x}}_{i 1}$. Some econometrics packages implement this version of the HT estimator.
+
+HT provide an application of their model to estimating the return to education, where education levels do not vary over the two years in their sample. Initially, HT include as the elements of $\mathbf{x}_{i t 1}$ all time-varying explanatory variables: experience, an indicator for bad health, and a previous-year unemployment indicator. Race and union status are assumed to be uncorrelated with $c_{i}$, and, because these do not change over time, they comprise $\mathbf{w}_{i 1}$. The only element of $z_{i 2}$ is years of schooling. HT apply the GIV estimator and obtain a return to schooling that is almost twice as large as the pooled OLS estimate. When they allow some of the time-varying explanatory variables to be correlated with $c_{i}$, the estimated return to schooling gets even larger. It is difficult to know what to conclude, as the identifying assumptions are not especially convincing. For example, assuming that experience and union status are uncorrelated with the unobserved effect and then using this information to identify the return to schooling seems tenuous.
+
+Breusch, Mizon, and Schmidt (1989) studied the Hausman-Taylor model under the additional assumption that $\mathrm{E}\left(\mathbf{x}_{i t 2}^{\prime} c_{i}\right)$ is constant across $t$. This adds more orthogonality conditions that can be exploited in estimation. See IASW (1999) for a recent analysis.
+
+\subsection*{11.4 First Differencing Instrumental Variables Methods}
+We now turn to first differencing methods combined with IVs. The model is as in (11.1), but now we remove the unobserved effect by taking the first difference:\\
+$\Delta y_{i t}=\Delta \mathbf{x}_{i t} \boldsymbol{\beta}+\Delta u_{i t}, \quad t=2, \ldots, T$,\\
+or, in matrix form,\\
+$\Delta \mathbf{y}_{i}=\Delta \mathbf{X}_{i} \boldsymbol{\beta}+\Delta \mathbf{u}_{i}$.
+
+If we have instruments $\mathbf{z}_{i t}$ satisfying Assumption FEIV.1, and if the IVs have the same dimension $L$ for all $t$, then we can apply, say, P2SLS to (11.35) using instruments $\Delta \mathbf{z}_{i t}$. Analogous to FD and FE estimation with strictly exogenous $\mathbf{x}_{i t}$, we could adopt Assumption FEIV. 1 as our first assumption for the first difference instrumental variables (FDIV) estimator. But here we are interested in more general cases. Rather than necessarily differencing underlying instruments, we now let $\mathbf{w}_{i t}$ denote a $1 \times L_{t}$ vector of instrumental variables that are contemporaneously exogenous in the FD equation:\\
+assumption FDIV.1: For $t=2, \ldots, T, \mathrm{E}\left(\mathbf{w}_{i t}^{\prime} \Delta u_{i t}\right)=\mathbf{0}$.\\
+The important point about Assumption FDIV. 1 is that we can choose the elements of $\mathbf{w}_{i t}$ that are not required to be strictly exogenous (conditional on $c_{i}$ ) in the original mode (11.1). We allow the dimension of the instruments to change-usually, growas $t$ increases. When the dimension of $\mathbf{w}_{i t}$ changes with $t$, we choose the instrument matrix as the $(T-1) \times L$ matrix\\
+$\mathbf{W}_{i}=\operatorname{diag}\left(\mathbf{w}_{i 2}, \mathbf{w}_{i 3}, \ldots, \mathbf{w}_{i T}\right)$,\\
+where $L=L_{2}+L_{3}+\cdots+L_{T}$; see also equation (8.15). Sometimes, when $\mathbf{w}_{i t}$ has dimension $L$ for all $t$, we prefer to choose\\
+$\mathbf{W}_{i}=\left(\mathbf{w}_{i 2}^{\prime}, \ldots, \mathbf{w}_{i T}^{\prime}\right)^{\prime}$.\\
+In any case, the rank condition for the system IV estimator on the FD equation is\\
+assumption FDIV.2: (a) rank $\mathrm{E}\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)=L$; (b) rank $\mathrm{E}\left(\mathbf{W}_{i}^{\prime} \Delta \mathbf{X}_{i}\right)=K$.\\
+Under FDIV. 1 and FDIV.2, we can consistently estimate $\boldsymbol{\beta}$ using the system 2SLS estimator, as described in Section 8.3.2. As discussed there, the S2SLS estimator in the panel data context can be computed rather easily, but its characterization depends on the structure of $\mathbf{W}_{i}$. The first step is to run separate $T-1$ first-stage regressions,\\
+$\Delta \mathbf{x}_{i t}$ on $\mathbf{w}_{i t}, \quad i=1,2, \ldots, N$,\\
+and obtain the fitted values, say $\widehat{\Delta \mathbf{x}}_{i t}$ (a $1 \times K$ vector for all $i$ and $t$ ). Then, estimate (11.35) by pooled IV using instruments $\widehat{\Delta \mathbf{x}}_{i t}$ for $\Delta \mathbf{x}_{i t}$. Inference is standard because one can compute a variance matrix estimator robust to arbitrary heteroskedasticity and serial correlation in $\left\{e_{i t} \equiv \Delta u_{i t}: t=2, \ldots, T\right\}$. It is left as an exercise to state the
+
+FD version of FEIV. 3 that ensures we can use the standard pooled 2SLS variance matrix.
+
+In many applications of FDIV, the errors in the FD equation (11.35) are necessarily serially correlated, often because the errors in equation (11.1) start off being serially uncorrelated; we cover the leading case in the next section. In such cases, we might wish to apply GMM with an optimal weighting matrix (which could, in some cases, be GMM 3SLS). In a first stage we need to obtain $(T-1) \times 1$ residuals, say $\check{\mathbf{e}}_{i}=\Delta \mathbf{y}_{i}-\Delta \mathbf{X}_{i} \check{\boldsymbol{\beta}}$, where $\check{\boldsymbol{\beta}}$ is probably the system 2SLS estimator described earlier. An optimal weighting matrix is\\
+$\left(N^{-1} \sum_{i=1}^{N} \mathbf{W}_{i}^{\prime} \check{\mathbf{e}}_{i} \check{\mathbf{e}}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1}$.
+
+If $\mathrm{E}\left(\mathbf{W}_{i}^{\prime} \mathbf{e}_{i} \mathbf{e}_{i}^{\prime} \mathbf{W}_{i}\right)=\mathrm{E}\left(\mathbf{W}_{i}^{\prime} \boldsymbol{\Omega} \mathbf{W}_{i}\right)$, where $\boldsymbol{\Omega}=\mathrm{E}\left(\mathbf{e}_{i} \mathbf{e}_{i}^{\prime}\right)$, then we can replace $\check{\mathbf{e}}_{i} \check{\mathbf{e}}_{i}^{\prime}($ for all $i)$ in equation (11.38) with the $(T-1) \times(T-1)$ estimator $\check{\boldsymbol{\Omega}}=N^{-1} \sum_{i=1}^{N} \check{\mathbf{e}}_{i} \check{\mathbf{e}}_{i}^{\prime}$. All of the GMM theory we discussed in Chapter 8 applies directly.
+
+For a model with a single endogenous explanatory variable along with some strictly exogenous regressors, a general FD equation is\\
+$\Delta y_{i t 1}=\eta_{t 1}+\alpha_{1} \Delta y_{i t 2}+\Delta \mathbf{z}_{i t 1} \boldsymbol{\delta}_{1}+\Delta u_{i t 1}$\\
+with instruments $\mathbf{w}_{i t}=\left(\Delta \mathbf{z}_{i t 1}, \mathbf{w}_{i t 2}\right)$, where $\mathbf{w}_{i t 2}$ is a set of exogenous variables omitted from the structural equation. These could be differences themselves, that is, $\mathbf{w}_{i t 2}= \Delta \mathbf{z}_{i t 2}$, where we may think of the reduced form for $y_{i t 2}$ being $y_{i t 2}=\mathbf{z}_{i t} \boldsymbol{\pi}_{2}+c_{i 2}+u_{i t 2}$ and then we difference to remove $c_{i 2}$. In the next example, from Levitt (1996), the instruments for the endogenous explanatory variable are not obtained by differencing.
+
+Example 11.2 (Effects of Prison Population on Crime Rates): In order to estimate the causal effects of prison population increases on crime rates at the state level, Levitt (1996) uses episodes of prison overcrowding litigation as instruments for the growth in the prison population. Underlying Levitt's FD equation is an unobserved effects model,\\
+$\log \left(\right.$ crime $\left._{i t}\right)=\theta_{t 1}+\alpha_{1} \log \left(\right.$ prison $\left._{i t}\right)+\mathbf{z}_{i t 1} \boldsymbol{\delta}_{1}+c_{i 1}+u_{i t 1}$,\\
+where $\theta_{t 1}$ represents different time intercepts and both crime and prison are measured per 100,000 people. (The prison population variable is measured on the last day of the previous year.) The vector $\mathbf{z}_{i t 1}$ contains the log of police per capita, log of per capita income, proportions of the population in four age categories (with omitted\\
+group 35 and older), the unemployment rate (as a proportion), proportion of the population that is black, and proportion of the population living in metropolitan areas. The differenced equation is\\
+$\Delta \log \left(\right.$ crime $\left._{i t}\right)=\eta_{t 1}+\alpha_{1} \Delta \log \left(\right.$ prison $\left._{i t}\right)+\Delta \mathbf{z}_{i t 1} \boldsymbol{\delta}_{1}+\Delta u_{i t 1}$,\\
+and the instruments are ( $\Delta \mathbf{z}_{i t 1}$, final $1_{i t}$, final $2_{i t}$ ); the last two variables are binary indicators for whether final decisions were reached on prison overcrowding legislation in the previous year and previous two years, respectively. We estimate this equation using the data in PRISON.RAW.
+
+The first-stage regression POLS regression of $\Delta \log \left(\right.$ prison $\left._{i t}\right)$ on $\Delta \mathbf{z}_{i t 1}$, final $1_{i t}$, final $2_{i t}$, and a full set of year dummies yields fully robust $t$ statistics for final $1_{i t}$ and final $2_{i t}$ of -4.71 and -3.30 , respectively. The robust test of joint significance of the two instruments gives $F=18.81$ and a $p$-value of zero to four decimal places. Therefore, assuming the litigation variables are uncorrelated with the idiosyncratic changes $\Delta u_{i t 1}$, a P2SLS estimation on the FD equation is justified. The 2SLS estimate of $\alpha_{1}$ is -1.032 (fully robust se $=.213$ ). This is a large elasticity. By comparison, the POLS estimates on the FD equation gives a coefficient much smaller in magnitude, -.181 (fully robust se $=.049$ ). Not surprisingly, the 2SLS estimate is less precise. Levitt (1996) found similar results using a somewhat longer time period (with missing years for some states) and more instruments.
+
+Can we formally reject exogeneity of $\Delta \log \left(\right.$ prison $\left._{i t}\right)$ in the FD equation? When we estimate the reduced form for $\Delta \log \left(\right.$ prison $\left._{i t}\right)$, add the reduced-form residual to equation (11.40), and estimate the augmented model by POLS, the fully robust $t$ statistic on the residual is 3.05 . Therefore, we strongly reject exogeneity of $\Delta \log \left(\right.$ prison $\left._{i t}\right)$ in (11.40).
+
+Because it is difficult to find a truly exogenous instrument-even once we remove unobserved heterogeneity by FD or FE-it is prudent to study the properties of panel data IV methods when the instruments might be correlated with the idiosyncrate errors, just as we did with the explanatory variables themselves in Section 10.7.1. Under weak assumptions on the time series dependence, very similar calculations show that the FEIV estimator has inconsistency on the order of $T^{-1}$ if the instruments $\mathbf{z}_{i t}$ are contemporaneously exogenous, that is, $\mathrm{E}\left(\mathbf{z}_{i t}^{\prime} u_{i t}\right)=\mathbf{0}$. By contrast, the inconsistency in the FDIV estimator does not shrink to zero as $T$ grows under contemporaneous exogeneity if either $\mathbf{z}_{i, t-1}$ or $\mathbf{z}_{i, t+1}$ is correlated with $u_{i t}$. Unfortunately, because the inconsistencies in FEIV and FDIV depend on the distribution of $\left\{\mathbf{z}_{i t}\right\}$, we cannot know for sure which estimator has less inconsistency. Further, as we discussed in Section 10.7.1, there is an important caveat to the $O\left(T^{-1}\right)$ bias cal-\\
+culation in the FEIV case: it assumes that the idiosyncratic errors $\left\{u_{i t}\right\}$ are weakly dependent, that is, $\mathrm{I}(0)$ (integrated of order zero). By contrast, the differencing transformation eliminates a unit root in $\left\{u_{i t}\right\}$, and may be preferred when $\left\{u_{i t}\right\}$ is a persistent process. More research needs to be done on this practically important issue.
+
+\subsection*{11.5 Unobserved Effects Models with Measurement Error}
+One pitfall in using either FD or FE to eliminate unobserved heterogeneity is that the reduced variation in the explanatory variables can cause severe biases in the presence of measurement error. Measurement error in panel data was studied by Solon (1985) and Griliches and Hausman (1986). It is widely believed in econometrics that the differencing and FE transformations exacerbate measurement error bias (even though they eliminate heterogeneity bias). However, it is important to know that this conclusion rests on the classical errors-in-variables (CEV) model under strict exogeneity, as well as on other assumptions.
+
+To illustrate, consider a model with a single explanatory variable,\\
+$y_{i t}=\beta x_{i t}^{*}+c_{i}+u_{i t}$,\\
+under the strict exogeneity assumption\\
+$\mathrm{E}\left(u_{i t} \mid \mathbf{x}_{i}^{*}, \mathbf{x}_{i}, c_{i}\right)=0, \quad t=1,2, \ldots, T$,\\
+where $x_{i t}$ denotes the observed measure of the unobservable $x_{i t}^{*}$. Condition (11.42) embodies the standard redundancy condition-that $x_{i t}$ does not matter once $x_{i t}^{*}$ is controlled for-in addition to strict exogeneity of the unmeasured and measured regressors. Denote the measurement error as $r_{i t}=x_{i t}-x_{i t}^{*}$. Assuming that $r_{i t}$ is uncorrelated with $x_{i t}^{*}$-the key CEV assumption-and that variances and covariances are all constant across $t$, it is easily shown that, as $N \rightarrow \infty$, the plim of the POLS estimator is
+
+
+\begin{align*}
+\operatorname{plim}_{N \rightarrow \infty} \hat{\beta}_{P O L S} & =\beta+\frac{\operatorname{Cov}\left(x_{i t}, c_{i}+u_{i t}-\beta r_{i t}\right)}{\operatorname{Var}\left(x_{i t}\right)} \\
+& =\beta+\frac{\operatorname{Cov}\left(x_{i t}, c_{i}\right)-\beta \sigma_{r}^{2}}{\operatorname{Var}\left(x_{i t}\right)} \tag{11.43}
+\end{align*}
+
+
+where $\sigma_{r}^{2}=\operatorname{Var}\left(r_{i t}\right)=\operatorname{Cov}\left(x_{i t}, r_{i t}\right)$; this is essentially the formula derived by Solon (1985).
+
+From equation (11.43), we see that there are two sources of asymptotic bias in the POLS estimator: correlation between $x_{i t}$ and the unobserved effect, $c_{i}$, and a measurement error bias term, $-\beta \sigma_{r}^{2}$. If $x_{i t}$ and $c_{i}$ are positively correlated and $\beta>0$, the two sources of bias tend to cancel each other out.
+
+Now assume that $r_{i s}$ is uncorrelated with $x_{i t}^{*}$ for all $t$ and $s$, and for simplicity suppose that $T=2$. If we first difference to remove $c_{i}$ before performing OLS we obtain
+
+
+\begin{align*}
+\operatorname{plim}_{N \rightarrow \infty} \hat{\beta}_{F D} & =\beta+\frac{\operatorname{Cov}\left(\Delta x_{i t}, \Delta u_{i t}-\beta \Delta r_{i t}\right)}{\operatorname{Var}\left(\Delta x_{i t}\right)}=\beta-\beta \frac{\operatorname{Cov}\left(\Delta x_{i t}, \Delta r_{i t}\right)}{\operatorname{Var}\left(\Delta x_{i t}\right)} \\
+& =\beta-2 \beta \frac{\left[\sigma_{r}^{2}-\operatorname{Cov}\left(r_{i t}, r_{i, t-1}\right)\right]}{\operatorname{Var}\left(\Delta x_{i t}\right)} \\
+& =\beta\left(1-\frac{\sigma_{r}^{2}\left(1-\rho_{r}\right)}{\sigma_{x^{*}}^{2}\left(1-\rho_{x^{*}}\right)+\sigma_{r}^{2}\left(1-\rho_{r}\right)}\right), \tag{11.44}
+\end{align*}
+
+
+where $\rho_{x^{*}}=\operatorname{Corr}\left(x_{i t}^{*}, x_{i, t-1}^{*}\right)$ and $\rho_{r}=\operatorname{Corr}\left(r_{i t}, r_{i, t-1}\right)$, where we have used the fact that $\operatorname{Cov}\left(r_{i t}, r_{i, t-1}\right)=\sigma_{r}^{2} \rho_{r}$ and $\operatorname{Var}\left(\Delta x_{i t}\right)=2\left[\sigma_{x^{*}}^{2}\left(1-\rho_{x^{*}}\right)+\sigma_{r}^{2}\left(1-\rho_{r}\right)\right]$; see also Solon (1985) and Hsiao (2003, p. 305). Equation (11.44) shows that, in addition to the ratio $\sigma_{r}^{2} / \sigma_{x^{*}}^{2}$ being important in determining the size of the measurement error bias, the ratio $\left(1-\rho_{r}\right) /\left(1-\rho_{x^{*}}\right)$ is also important. As the autocorrelation in $x_{i t}^{*}$ increases relative to that in $r_{i t}$, the measurement error bias in $\hat{\beta}_{F D}$ increases. In fact, as $\rho_{x^{*}} \rightarrow 1$, the measurement error bias approaches $-\beta$.
+
+Of course, we can never know whether the bias in equation (11.43) is larger than that in equation (11.44), or vice versa. Also, both expressions are based on the CEV assumptions, and then some. If there is little correlation between $\Delta x_{i t}$ and $\Delta r_{i t}$, the measurement error bias from first differencing may be small, but the small correlation is offset by the fact that differencing can considerably reduce the variation in the explanatory variables.
+
+The FE estimator also has an attenuation bias under similar assumptions. You are asked to derive the probability limit of $\hat{\beta}_{F E}$ in Problem 11.3.
+
+Consistent estimation in the presence of measurement error is possible under certain assumptions. Consider the more general model
+
+
+\begin{equation*}
+y_{i t}=\mathbf{z}_{i t} \gamma+\delta w_{i t}^{*}+c_{i}+u_{i t}, \quad t=1,2, \ldots, T, \tag{11.45}
+\end{equation*}
+
+
+where $w_{i t}^{*}$ is measured with error. Write $r_{i t}=w_{i t}-w_{i t}^{*}$, and assume strict exogeneity along with redundancy of $w_{i t}$ :
+
+
+\begin{equation*}
+\mathrm{E}\left(u_{i t} \mid \mathbf{z}_{i}, \mathbf{w}_{i}^{*}, \mathbf{w}_{i}, c_{i}\right)=0, \quad t=1,2, \ldots, T . \tag{11.46}
+\end{equation*}
+
+
+Replacing $w_{i t}^{*}$ with $w_{i t}$ and first differencing gives\\
+$\Delta y_{i t}=\Delta \mathbf{z}_{i t} \gamma+\delta \Delta w_{i t}+\Delta u_{i t}-\delta \Delta r_{i t}$.
+
+The standard CEV assumption in the current context can be stated as\\
+$\mathrm{E}\left(r_{i t} \mid \mathbf{z}_{i}, \mathbf{w}_{i}^{*}, c_{i}\right)=0, \quad t=1,2, \ldots, T$,\\
+which implies that $r_{i t}$ is uncorrelated with $\mathbf{z}_{i s}, w_{i s}^{*}$ for all $t$ and $s$. (As always in the context of linear models, assuming zero correlation is sufficient for consistency, but not for usual standard errors and test statistics to be valid.) Under assumption (11.48) (and other measurement error assumptions), $\Delta r_{i t}$ is correlated with $\Delta w_{i t}$. To apply an IV method to equation (11.47), we need at least one instrument for $\Delta w_{i t}$. As in the omitted variables and simultaneity contexts, we may have additional variables outside the model that can be used as instruments. Analogous to the cross section case (as in Chapter 5), one possibility is to use another measure on $w_{i t}^{*}$, say $h_{i t}$. If the measurement error in $h_{i t}$ is orthogonal to the measurement error in $w_{i s}$, all $t$ and $s$, then $\Delta h_{i t}$ is a natural instrument for $\Delta w_{i t}$ in equation (11.47). Of course, we can use many more instruments in equation (11.47), as any linear combination of $\mathbf{z}_{i}$ and $\mathbf{h}_{i}$ is uncorrelated with the composite error under the given assumptions.
+
+Alternatively, a vector of variables $\mathbf{h}_{i t}$ may exist that are known to be redundant in equation (11.45), strictly exogenous, and uncorrelated with $r_{i s}$ for all $s$. If $\Delta \mathbf{h}_{i t}$ is correlated with $\Delta w_{i t}$, then an IV procedure, such as P2SLS, is easy to apply. It may be that in applying something like P2SLS to equation (11.47) results in asymptotically valid statistics; this imposes serial independence and homoskedasticity assumptions on $\Delta u_{i t}$. Generally, however, it is a good idea to use standard errors and test statistics robust to arbitrary serial correlation and heteroskedasticity, or to use a full GMM approach that efficiently accounts for these. An alternative is to use the FE2SLS method. Ziliak, Wilson, and Stone (1999) find that, for a model explaining cyclicality of real wages, the FD and FE estimates are different in important ways. The differences largely disappear when IV methods are used to account for measurement error in the local unemployment rate.
+
+So far, the solutions to measurement error in the context of panel data have assumed nothing about the serial correlation in $r_{i t}$. Suppose that, in addition to assumption (11.46), we assume that the measurement error is serially uncorrelated:
+
+
+\begin{equation*}
+\mathrm{E}\left(r_{i t} r_{i s}\right)=0, \quad s \neq t \tag{11.49}
+\end{equation*}
+
+
+Assumption (11.49) opens up a solution to the measurement error problem with panel data that is not available with a single cross section or independently pooled\\
+cross sections. Under assumption (11.48), $r_{i t}$ is uncorrelated with $w_{i s}^{*}$ for all $t$ and s. Thus, if we assume that the measurement error $r_{i t}$ is serially uncorrelated, then $r_{i t}$ is uncorrelated with $w_{i s}$ for all $t \neq s$. Since, by the strict exogeneity assumption, $\Delta u_{i t}$ is uncorrelated with all leads and lags of $\mathbf{z}_{i t}$ and $w_{i t}$, we have instruments readily available. For example, $w_{i, t-2}$ and $w_{i, t-3}$ are valid as instruments for $\Delta w_{i t}$ in equation (11.47); so is $w_{i, t+1}$. Again, P2SLS or some other IV procedure can be used once the list of instruments is specified for each time period. However, it is important to remember that this approach requires the $r_{i t}$ to be serially uncorrelated, in addition to the other CEV assumptions.
+
+The methods just covered for solving measurement error problems all assume strict exogeneity of all explanatory variables. Naturally, things get harder when measurement error is combined with models with only sequentially exogenous explanatory variables. Nevertheless, differencing away the unobserved effect and then selecting instruments-based on the maintained assumptions-generally works in models with a variety of problems. We now turn explicitly to models under sequential exogeneity assumptions.
+
+\subsection*{11.6 Estimation under Sequential Exogeneity}
+\subsection*{11.6.1 General Framework}
+We can also apply the FDIV methods in Section 11.4 to estimate the standard model,
+
+
+\begin{equation*}
+y_{i t}=\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}+u_{i t}, \quad t=1, \ldots, T \tag{11.50}
+\end{equation*}
+
+
+under a sequential exogeneity assumption, properly modified for the presence of the unobserved effect, $c_{i}$. Chamberlain (1992b) calls these sequential moment restrictions, which can be written in conditional expectations form as
+
+
+\begin{equation*}
+\mathrm{E}\left(u_{i t} \mid \mathbf{x}_{i t}, \mathbf{x}_{i, t-1}, \ldots, \mathbf{x}_{i 1}, c_{i}\right)=0, \quad t=1, \ldots, T \tag{11.51}
+\end{equation*}
+
+
+When assumption (11.51) holds, we say that $\left\{\mathbf{x}_{i t}\right\}$ is sequentially exogenous conditional on the unobserved effect.
+
+Given equation (11.50), assumption (11.51) is equivalent to
+
+
+\begin{equation*}
+\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i t}, \mathbf{x}_{i, t-1}, \ldots, \mathbf{x}_{i 1}, c_{i}\right)=\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i t}, c_{i}\right)=\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}, \tag{11.52}
+\end{equation*}
+
+
+which provides a simple interpretation of sequential exogeneity conditional on $c_{i}$ : once $\mathbf{x}_{i t}$ and $c_{i}$ have been controlled for, no past values of $\mathbf{x}_{i t}$ affect the expected value of $y_{i t}$. Conditioning on the explanatory variables only up through time $t$ is more\\
+natural than the strict exogeneity assumption, which requires conditioning on future values of $\mathbf{x}_{i t}$ as well. As we proceed, it is important to remember that equation (11.52) is what we should have in mind when interpreting the estimates of $\boldsymbol{\beta}$. Estimating equations in first differences, such as (11.35), do not have natural interpretations when the explanatory variables are only sequentially exogenous.
+
+As we will explicitly show in the next subsection, models with lagged dependent variables are naturally analyzed under sequential exogeneity. Keane and Runkle (1992) argue that panel data models with heterogeneity for testing rational expectations hypotheses do not satisfy the strict exogeneity requirement. But they do satisfy sequential exogeneity; in fact, the conditioning set in assumption (11.51) can include all variables observed at time $t-1$.
+
+As we saw in Section 7.2, in panel data models without unobserved effects, strict exogeneity is sometimes too strong an assumption, even in static and finite distributed lag models. For example, suppose\\
+$y_{i t}=\mathbf{z}_{i t} \boldsymbol{\gamma}+\delta h_{i t}+c_{i}+u_{i t}$,\\
+where $\left\{\mathbf{z}_{i t}\right\}$ is strictly exogenous and $\left\{h_{i t}\right\}$ is sequentially exogenous:\\
+$\mathrm{E}\left(u_{i t} \mid \mathbf{z}_{i}, h_{i t}, \ldots, h_{i 1}, c_{i}\right)=0$.
+
+Further, $h_{i t}$ is influenced by past $y_{i t}$, say\\
+$h_{i t}=\mathbf{z}_{i t} \boldsymbol{\xi}+\eta y_{i, t-1}+\psi c_{i}+r_{i t}$.
+
+For example, let $y_{i t}$ be per capita condom sales in city $i$ during year $t$, and let $h_{i t}$ be the HIV infection rate for city $i$ in year $t$. Model (11.53) can be used to test whether condom usage is influenced by the spread of HIV. The unobserved effect $c_{i}$ contains city-specific unobserved factors that can affect sexual conduct, as well as the incidence of HIV. Equation (11.55) is one way of capturing the fact that the spread of HIV depends on past condom usage. Generally, if $\mathrm{E}\left(r_{i, t+1} u_{i t}\right)=0$, it is easy to show that $\mathrm{E}\left(h_{i, t+1} u_{i t}\right)=\eta \mathrm{E}\left(y_{i t} u_{i t}\right)=\eta \mathrm{E}\left(u_{i t}^{2}\right)>0$ if $\eta>0$ under equations (11.54) and (11.55). Therefore, strict exogeneity fails unless $\eta=0$.
+
+Sometimes in panel data applications one sees variables that are thought to be contemporaneously endogenous appear with a lag, rather than contemporaneously. So, for example, we might use $h_{i, t-1}$ in place of $h_{i t}$ in equation (11.53) because we think $h_{i t}$ and $u_{i t}$ are correlated. As an example, suppose $y_{i t}$ is percentage of flights cancelled by airline $i$ in year $t$, and $h_{i t}$ is profits in the same year. We might specify $y_{i t}=\mathbf{z}_{i t} \gamma+\delta h_{i, t-1}+c_{i}+u_{i t}$ for strictly exogenous $\mathbf{z}_{i t}$. Of course, at $t+1$, the regressors are $\mathbf{x}_{i, t+1}=\left(\mathbf{z}_{i, t+1}, h_{i t}\right)$, which is correlated with $u_{i t}$ if $h_{i t}$ is. As we discussed in
+
+Section 10.7, the FE estimator arguably has inconsistency of order $1 / T$ in this situation. But if we are willing to assume sequential exogeneity, we need not settle for an inconsistent estimator at all.
+
+A general approach to estimation under sequential exogeneity follows in Section 11.4. We take first differences to remove $c_{i}$ and obtain equation (11.35), written in stacked form as equation (11.36). The only issue is where the instruments come from. Under assumption (11.51),\\
+$\mathrm{E}\left(\mathbf{x}_{i s}^{\prime} u_{i t}\right)=\mathbf{0}, \quad s=1, \ldots, t ; t=1, \ldots, T$,\\
+which implies the orthogonality conditions\\
+$\mathrm{E}\left(\mathbf{x}_{i s}^{\prime} \Delta u_{i t}\right)=\mathbf{0}, \quad s=1, \ldots, t-1 ; t=2, \ldots, T$.
+
+Therefore, at time $t$, the available instruments in the FD equation are in the vector $\mathbf{x}_{i, t-1}^{o}$, where\\
+$\mathbf{x}_{i t}^{o} \equiv\left(\mathbf{x}_{i 1}, \mathbf{x}_{i 2}, \ldots, \mathbf{x}_{i t}\right)$.
+
+Therefore, the matrix of instruments is simply\\
+$\mathbf{W}_{i}=\operatorname{diag}\left(\mathbf{x}_{i 1}^{o}, \mathbf{x}_{i 2}^{o}, \ldots, \mathbf{x}_{i, T-1}^{o}\right)$,\\
+which has $T-1$ rows. Because of sequential exogeneity, the number of valid instruments increases with $t$.
+
+Given $\mathbf{W}_{i}$, it is routine to apply GMM estimation. But, as we discussed in Section 11.4, some simpler strategies are available. One useful one is to estimate a reduced form for $\Delta \mathbf{x}_{i t}$ separately for each $t$. So, at time $t$, run the regression $\Delta \mathbf{x}_{i t}$ on $\mathbf{x}_{i, t-1}^{o}$, $i=1, \ldots, N$, and obtain the fitted values, $\widehat{\Delta \mathbf{x}}_{i t}$. Of course, the fitted values are all $1 \times K$ vectors for each $t$. Then, estimate the FD equation (11.35) by pooled IV using instruments $\widehat{\Delta \mathbf{x}}_{i t}$. It is simple to obtain robust standard errors and test statistics from such a procedure because the first stage estimation to obtain the instruments can be ignored (asymptotically, of course). This is the same set or estimates obtained if we choose $\mathbf{W}_{i}$ as in (11.59) and choose as the weighting matrix $\left(\mathbf{W}^{\prime} \mathbf{W} / N\right)^{-1}$, that is, we obtain the system 2SLS estimator.
+
+Given an initial consistent estimator, we can obtain the efficient GMM weighting matrix. In most applications, there is a reasonable set of assumptions under which $\mathrm{E}\left(\mathbf{W}_{i}^{\prime} \mathbf{e}_{i} \mathbf{e}_{i}^{\prime} \mathbf{W}_{i}\right)=\mathrm{E}\left(\mathbf{W}_{i}^{\prime} \boldsymbol{\Omega} \mathbf{W}_{i}\right)$ where $\mathbf{e}_{i}=\Delta \mathbf{u}_{i}$ and $\boldsymbol{\Omega}=\mathrm{E}\left(\mathbf{e}_{i} \mathbf{e}_{i}^{\prime}\right)$, in which case the GMM 3SLS estimator is an efficient GMM estimator. See Wooldridge (1996) and Arellano (2003) for examples.
+
+One potential problem with estimating the FD equation by IVs that are simply lags of $\mathbf{x}_{i t}$ is that changes in variables over time are often difficult to predict. In other\\
+words, $\Delta \mathbf{x}_{i t}$ might have little correlation with $\mathbf{x}_{i, t-1}^{o}$, in which case we face a problem of weak instruments. In one case, we even lose identification: if $\mathbf{x}_{i t}=\lambda_{t}+\mathbf{x}_{i, t-1}+\mathbf{e}_{i t}$ where $\mathrm{E}\left(\mathbf{e}_{i t} \mid \mathbf{x}_{i, t-1}, \ldots, \mathbf{x}_{i 1}\right)=\mathbf{0}$-that is, the elements of $\mathbf{x}_{i t}$ are random walks with drift-then $\mathrm{E}\left(\Delta \mathbf{x}_{i t} \mid \mathbf{x}_{i, t-1}, \ldots, \mathbf{x}_{i 1}\right)=\mathbf{0}$, and the rank condition for IV estimation fails. In the next subsection we will study this problem further in the context of the AR(1) model.
+
+As a practical matter, the column dimension of $\mathbf{W}_{i}$ can be large, especially with large $T$. Using many overidentifying restrictions is known to contribute to poor finite sample properties of GMM, especially if many of the instruments are weak; see, for example, Tauchen (1986), Altonji and Segal (1996), Ziliak (1997), Stock, Wright, and Yogo (2002), and Han and Phillips (2006). It might be better (even though it is asymptotically less efficient, or no more efficient) to use just a couple of lags, say $\mathbf{w}_{i t}=\left(\mathbf{x}_{i, t-1}, \mathbf{x}_{i, t-2}\right)$, as the instruments at time $t \geq 3$, with $\mathbf{w}_{i 2}=\mathbf{x}_{i 1}$.
+
+If the model contains strictly exogenous variables, as in equation (11.53), at a minimum the instruments at time $t$ would include $\Delta \mathbf{z}_{i t}$-that is, $\Delta \mathbf{z}_{i t}$ acts as its own instrument. We can still only include lags of the seqentially exogenous variables. So, at time $t$ in the first difference of (11.53), $\Delta y_{i t}=\Delta \mathbf{z}_{i t} \gamma+\delta \Delta h_{i t}+\Delta u_{i t}, t=2, \ldots, T$, the available IVs would be $\mathbf{w}_{i t}=\left(\Delta \mathbf{z}_{i t}, h_{i, t-1}, h_{i, t-2}, \ldots, h_{i 1}\right)$. Again, either a full GMM procedure or a simple pooled IV procedure (after separate estimation of each reduced form) can be applied, and perhaps only a couple of lags of $h_{i t}$ would be included.
+
+\subsection*{11.6.2 Models with Lagged Dependent Variables}
+A special case of models under sequential exogeneity restrictions are autoregressive models. Here we study the AR(1) model and follow Arellano and Bond (1991). In the model without any other covariates,\\
+$y_{i t}=\rho y_{i, t-1}+c_{i}+u_{i t}, \quad t=1, \ldots, T$,\\
+$\mathrm{E}\left(u_{i t} \mid y_{i, t-1}, y_{i, t-2}, \ldots, y_{i 0}, c_{i}\right)=0$,\\
+so that our first observation on $y$ is at $t=0$. Assumption (11.61) says that we have the dynamics completely specified: once we control for $c_{i}$, only one lag of $y_{i t}$ is necessary. This is an example of a dynamic completeness conditional on the unobserved effect assumption. When we let $x_{i t}=y_{i, t-1}$, we see immediately that the $\mathrm{AR}(1)$ model satisfies the sequential exogeneity assumptions (conditional on $c_{i}$ ).
+
+One application of model (11.60) is to determine whether $\left\{y_{i t}\right\}$ exhibits state dependence: after controlling for systematic, time-constant differences $c_{i}$, does last period's outcome on $y$ help predict this period's outcome? In the $\mathrm{AR}(1)$ model, the answer is yes if $\rho \neq 0$.
+
+At time $t$ in the FD equation $\Delta y_{i t}=\rho \Delta y_{i, t-1}+\Delta u_{i t}, t=2, \ldots, T$, the available instruments are $\mathbf{w}_{i t}=\left(y_{i 0}, \ldots, y_{i, t-2}\right)$. Anderson and Hsiao (1982) proposed pooled IV estimation of the FD equation with instrument $y_{i, t-2}$ (in which case all $T-1$ periods can be used) or $\Delta y_{i, t-2}$ (in which case only $T-2$ periods can be used). Arellano and Bond (1991) suggested full GMM estimation using all of the available instruments. The pooled IV estimator that uses, say, $y_{i 0}$ as the IV at $t=2$ and then $\left(y_{i, t-2}, y_{i t-3}\right)$ for $t=3, \ldots, T$, is easy to implement. It is likely more efficient than the Anderson and Hsiao approach but less efficent than the full GMM approach. In this method, $T-1$ separate reduced forms are estimated for $\Delta y_{i, t-1}$.
+
+As noted by Arellano and Bond (1991), the differenced errors $\Delta u_{i t}$ and $\Delta u_{i, t-1}$ are necessarily correlated under assumption (11.61). Therefore, at a minimum, any estimation method should account for this serial correlation in calculating standard errors and test statistics. GMM handles this serial correlation by using an efficient weighting matrix. Differenced errors two or more periods apart are uncorrelated, and this actually simplifies the optimal weighting matrix. Further, if we add conditional homoskedasticity, $\operatorname{Var}\left(u_{i t} \mid y_{i, t-1}, y_{i, t-2}, \ldots, y_{i 0}, c_{i}\right)=\sigma_{u}^{2}$, then the 3SLS version of the weighting matrix can be used. See Arellano and Bond (1991) and also Wooldridge (1996) for verification. As is usually the case, even after we settle on the instruments, there are a variety of ways to use those instruments.
+
+A more general version of the model is
+
+
+\begin{equation*}
+y_{i t}=\theta_{t}+\rho y_{i, t-1}+\mathbf{z}_{i t} \gamma+c_{i}+u_{i t}, \quad t=1, \ldots, T \tag{11.62}
+\end{equation*}
+
+
+where $\theta_{t}$ denotes different period intercepts and $\left\{\mathbf{z}_{i t}\right\}$ is strictly exogenous. When we difference equation (11.62),
+
+
+\begin{equation*}
+\Delta y_{i t}=\eta_{t}+\rho \Delta y_{i, t-1}+\Delta \mathbf{z}_{i t} \gamma+\Delta u_{i t}, \quad t=1, \ldots, T, \tag{11.63}
+\end{equation*}
+
+
+the available instruments (in addition to time period dummies) are $\left(\mathbf{z}_{i}, y_{i, t-2}, \ldots, y_{i 0}\right)$. We might not want to use all of $\mathbf{z}_{i}$ for every time period. Certainly we would use $\Delta \mathbf{z}_{i t}$, and perhaps a lag, $\Delta \mathbf{z}_{i, t-1}$. If we add sequentially exogenous variables, say $\mathbf{h}_{i t}$, to (11.62) then $\left(\mathbf{h}_{i, t-1}, \ldots, \mathbf{h}_{i 1}\right)$ would be added to the list (and $\Delta \mathbf{h}_{i t}$ would appear in the equation). As always, we might not use the full set of lags in each time period.
+
+Even though our estimating equation is in first differences, it is important to remember that (11.63) is an estimating equation. We should interpret the estimates in light of the original model (11.62). It is equation (11.62) that represents a dynamically complete conditional expectation. Equation (11.63) does not even satisfy $\mathrm{E}\left(\Delta u_{i t} \mid \Delta y_{i, t-1}, \Delta \mathbf{z}_{i t}\right)=0$, which is why POLS estimation of it is inconsistent. Applying IV to the FD equation is simply a way to estimate the parameters on the original model.
+
+Example 11.3 (Estimating a Dynamic Airfare Equation): Consider an AR(1) model for the log of airfare using the data in AIRFARE.RAW:\\
+lfare $_{i t}=\theta_{t}+$ plfare $_{i, t-1}+\gamma$ concen $_{i t}+c_{i}+u_{i t}$,\\
+where we include a full set of year dummies. We assume the concentration ratio is strictly exogenous and that at most one lag of lfare is needed to capture the dynamics. Because we have data for 1997 through 2000, (11.62) is specified for three years. After differencing, we have only two years of data.
+
+The FD equation is\\
+$\Delta$ lfare $_{i t}=\eta_{t}+\rho \Delta$ lfare $_{i, t-1}+\gamma \Delta$ concen $_{i t}+\Delta u_{i t}, \quad t=1999,2000$.\\
+If we estimate this equation by POLS, the estimators are inconsistent because $\Delta$ lfare $_{i, t-1}$ is correlated with $\Delta u_{i t}$; we include the OLS estimates for comparison. We also apply the simple pooled IV procedure, where separate reduced forms are estimated for $\Delta$ lfare $_{i, t-1}$ : one for 1999, with lfare $i_{i, t-2}$ and $\Delta$ concen $_{i t}$ in the reduced form, and one for 2000, with lfare $_{i, t-2}$, $_{\text {lfare }} i_{, t-3}$ and $\Delta c o n c e n_{i t}$ in the reduced form. The fitted values are used in the pooled IV estimation, with robust standard errors. (We only use $\Delta$ concen $_{i t}$ in the IV list at time $t$.) Finally, we apply the Arellano and Bond (1991) GMM procedure. The results are given in Table 11.2.
+
+As is seen from column (1), the POLS estimate of $\rho$ is actually negative and statistically different from zero. By contrast, the two IV methods give positive and statistically significant estimates. The GMM estimate of $p$ is larger, and it also has a smaller standard error (as we would hope for GMM). Compared with the POLS es-
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 11.2\\
+Dynamic Airfare Model, First Differencing IV Estimation}
+\begin{tabular}{|l|l|l|l|}
+\hline
+Dependent Variable & \multicolumn{3}{|l|}{lfare} \\
+\hline
+\multirow[b]{2}{*}{Explanatory Variable} & (1) & (2) & (3) \\
+\hline
+ & Pooled OLS & Pooled IV & Arellano-Bond \\
+\hline
+\multirow[t]{2}{*}{lfare $_{-1}$} & -. 126 & . 219 & . 333 \\
+\hline
+ & (.027) & (.062) & (.055) \\
+\hline
+\multirow[t]{2}{*}{concen} & . 076 & . 126 & . 152 \\
+\hline
+ & (.053) & (.056) & (.040) \\
+\hline
+$N$ & 1,149 & 1,149 & 1,149 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+The pooled IV estimates on the FD equation are obtained by first estimating separate reduced forms for $\Delta$ fare $_{-1}$ for 1999 and 2000, where the IVs for 1999 are lfare $_{-2}$ and $\Delta$ concen and those for 2000 are lfare $_{-2}$, lfare $_{-3}$, and $\Delta$ concen.\\
+The POLS and pooled IV standard errors are robust to heteroskedasticity and serial correlation. The GMM standard errors are obtained from an optimal weighting matrix.\\
+Separate year intercepts were estimated for all procedures (not reported).\\
+The Arellano and Bond estimates were obtained using the xtabond command in Stata 9.0.\\
+timate, the IV estimates of the concen coefficient are larger and, especially for GMM, much more statistically significant.
+
+In Example 11.3, the estimated $\rho$ is quite far from one, and the IV estimates appear to be well behaved. In some applications, $\rho$ is close to unity, and this leads to a weak instrument problem, as discussed briefly in the previous subsection. The problem is that the lagged change, $\Delta y_{i, t-1}$, is not very highly correlated with $\left(y_{i, t-2}, \ldots, y_{i 0}\right)$. In fact, when $\rho=1$, so that $\left\{y_{i t}\right\}$ has a unit root, there is no correlation, and both the pooled IV and Arellano and Bond procedures break down.
+
+Arellano and Bover (1995) and Ahn and Schmidt (1995) suggest adding additional moment conditions that improve the efficiency of the GMM estimator. For example, in the basic model (11.61), Ahn and Schmidt show that assumption (11.62)-and actually weaker versions based on zero correlation-implies the additional set of nonredundant orthogonality conditions\\
+$\mathrm{E}\left(v_{i T} \Delta u_{i, t-1}\right)=0, \quad t=2, \ldots, T-1$,\\
+where $v_{i T}=c_{i}+u_{i T}$ is the composite error in the last time period. Then, we can specify the equations\\
+$\Delta y_{i t}=\rho \Delta y_{i, t-1}+\Delta u_{i t}, \quad t=2, \ldots, T$\\
+$y_{i T}=\rho y_{i, T-1}+v_{i T}$\\
+and combine the original Arellano and Bond orthogonality conditions for the first set of equations with those of Ahn and Schmidt for the latter equation. The resulting moment conditions are nonlinear in $\rho$, which takes us outside the realm of linear GMM. We cover nonlinear GMM methods in Chapter 14. Blundell and Bond (1998) obtained additional linear moment restrictions in the levels equation $y_{i t}=\rho y_{i, t-1}+ v_{i t}$ based on $y_{i 0}$ being drawn from a steady-state distribution. The extra moment conditions are especially helpful for improving the precision (and even reducing the bias) in the GMM estimator when $\rho$ is close to one. See also Hahn (1999). Of course, when $\rho=1$ it makes no sense to assume the existence of a steady-state distribution (although that condition can be weakened somewhat). See Arellano (2003) and Baltagi (2001, Chapter 8) for further discussion of the AR(1) model, with and without strictly exogenous and sequentially exogenous explanatory variables.
+
+\subsection*{11.7 Models with Individual-Specific Slopes}
+The unobserved effects models we have studied up to this point all have an additive unobserved effect that has the same partial effect on $y_{i t}$ in all time periods. This\\
+assumption may be too strong for some applications. We now turn to models that allow for individual-specific slopes.
+
+\subsection*{11.7.1 Random Trend Model}
+Consider the following extension of the standard unobserved effects model:\\
+$y_{i t}=c_{i}+g_{i} t+\mathbf{x}_{i t} \boldsymbol{\beta}+u_{i t}, \quad t=1,2, \ldots, T$.
+
+This is sometimes called a random trend model, as each individual, firm, city, and so on is allowed to have its own time trend. The individual-specific trend is an additional source of heterogeneity. If $y_{i t}$ is the natural $\log$ of a variable, as is often the case in economic studies, then $g_{i}$ is (roughly) the average growth rate over a period (holding the explanatory variables fixed). Then equation (11.64) is referred to a random growth model; see, for example, Heckman and Hotz (1989).
+
+In many applications of equation (11.64) we want to allow $\left(c_{i}, g_{i}\right)$ to be arbitrarily correlated with $\mathbf{x}_{i t}$. (Unfortunately, allowing this correlation makes the name "random trend model" conflict with our previous usage of random versus fixed effects.) For example, if one element of $\mathbf{x}_{i t}$ is an indicator of program participation, equation (11.64) allows program participation to depend on individual-specific trends (or growth rates) in addition to the level effect, $c_{i}$. We proceed without imposing restrictions on correlations among $\left(c_{i}, g_{i}, \mathbf{x}_{i t}\right)$, so that our analysis is of the fixed effects variety. A random effects approach is also possible, but it is more cumbersome; see Problem 11.5.
+
+For the random trend model, the strict exogeneity assumption on the explanatory variables is\\
+$\mathrm{E}\left(u_{i t} \mid \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}, c_{i}, g_{i}\right)=0$,\\
+which follows definitionally from the conditional mean specification\\
+$\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}, c_{i}, g_{i}\right)=\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i t}, c_{i}, g_{i}\right)=c_{i}+g_{i} t+\mathbf{x}_{i t} \boldsymbol{\beta}$.
+
+We are still primarily interested in consistently estimating $\boldsymbol{\beta}$.\\
+One approach to estimating $\boldsymbol{\beta}$ is to difference away $c_{i}$ :\\
+$\Delta y_{i t}=g_{i}+\Delta \mathbf{x}_{i t} \boldsymbol{\beta}+\Delta u_{i t}, \quad t=2,3, \ldots, T$,\\
+where we have used the fact that $g_{i} t-g_{i}(t-1)=g_{i}$. Now equation (11.67) is just the standard unobserved effects model we studied in Chapter 10. The key strict exogeneity assumption, $\mathrm{E}\left(\Delta u_{i t} \mid g_{i}, \Delta \mathbf{x}_{i 2}, \ldots, \Delta \mathbf{x}_{i T}\right)=0, t=2,3, \ldots, T$, holds under assumption (11.65). Therefore, we can apply FE or FD methods to equation (11.67) in order to estimate $\boldsymbol{\beta}$.
+
+In differencing the equation to eliminate $c_{i}$ we lose one time period, so that equation (11.67) applies to $T-1$ time periods. To apply FE or FD methods to equation (11.67) we must have $T-1 \geq 2$, or $T \geq 3$. In other words, $\boldsymbol{\beta}$ can be estimated consistently in the random trend model only if $T \geq 3$.
+
+Whether we prefer FE or FD estimation of equation (11.67) depends on the properties of $\left\{\Delta u_{i t}: t=2,3, \ldots, T\right\}$. As we argued in Section 10.6, in some cases it is reasonable to assume that the FD of $\left\{u_{i t}\right\}$ is serially uncorrelated, in which case the FE method applied to equation (11.67) is attractive. If we make the assumption that the $u_{i t}$ are serially uncorrelated and homoskedastic (conditional on $\mathbf{x}_{i}, c_{i}, g_{i}$ ), then FE applied to equation (11.67) is still consistent and asymptotically normal, but not efficient. The next subsection covers that case explicitly.
+
+Example 11.4 (Random Growth Model for Analyzing Enterprise Zones): Papke (1994) estimates a random growth model to examine the effects of enterprise zones on unemployment claims:\\
+$\log \left(u c \operatorname{lms}_{i t}\right)=\theta_{t}+c_{i}+g_{i} t+\delta_{1} e z_{i t}+u_{i t}$,\\
+so that aggregate time effects are allowed in addition to a jurisdiction-specific growth rate, $g_{i}$. She first differences the equation to eliminate $c_{i}$ and then applies FE estimation to the differences. The data are in EZUNEM.RAW. The estimate of $\delta_{1}$ is $\hat{\delta}_{1}=-.192$ with se $\left(\hat{\delta}_{1}\right)=.085$. Thus, enterprise zone designation is predicted to lower unemployment claims by about 19.2 percent, and the effect is statistically significant at the 5 percent level.
+
+Friedberg (1998) provides an example, using state-level panel data on divorce rates and divorce laws, that shows how important it can be to allow for state-specific trends. Without state-specific trends, she finds no effect of unilateral divorce laws on divorce rates; with state-specific trends, the estimated effect is large and statistically significant. The estimation method Friedberg uses is the one we discuss in the next subsection.
+
+In using the random trend or random growth model for program evaluation, it may make sense to allow the trend or growth rate to depend on program participation: in addition to shifting the level of $y$, program participation may also affect the rate of change. In addition to prog $_{i t}$, we would include prog $_{i t} \cdot t$ in the model:\\
+$y_{i t}=\theta_{t}+c_{i}+g_{i} t+\mathbf{z}_{i t} \gamma+\delta_{1}$ prog $_{i t}+\delta_{2}$ prog $_{i t} \cdot t+u_{i t}$.\\
+Differencing once, as before, removes $c_{i}$,\\
+$\Delta y_{i t}=\xi_{t}+g_{i}+\Delta \mathbf{z}_{i t} \gamma+\delta_{1} \Delta \operatorname{prog}_{i t}+\delta_{2} \Delta\left(\operatorname{prog}_{i t} \cdot t\right)+\Delta u_{i t}$.
+
+We can estimate this differenced equation by FE. An even more flexible specification is to replace prog $_{\text {it }}$ and prog $_{\text {it }} \cdot t$ with a series of program indicators, prog $1_{i t}, \ldots$, prog $M_{i t}$, where prog $j_{i t}$ is one if unit $i$ in time $t$ has been in the program exactly $j$ years, and $M$ is the maximum number of years the program has been around.
+
+If $\left\{u_{i t}\right\}$ contains substantial serial correlation-more than a random walk-then differencing equation (11.67) might be more attractive. Denote the second difference of $y_{i t}$ by\\
+$\Delta^{2} y_{i t} \equiv \Delta y_{i t}-\Delta y_{i, t-1}=y_{i t}-2 y_{i, t-1}+y_{i, t-2}$,\\
+with similar expressions for $\Delta^{2} \mathbf{x}_{i t}$ and $\Delta^{2} u_{i t}$. Then\\
+$\Delta^{2} y_{i t}=\Delta^{2} \mathbf{x}_{i t} \boldsymbol{\beta}+\Delta^{2} u_{i t}, \quad t=3, \ldots, T$.
+
+As with the FE transformation applied to equation (11.67), second differencing also eliminates $g_{i}$. Because $\Delta^{2} u_{i t}$ is uncorrelated with $\Delta^{2} \mathbf{x}_{i s}$, for all $t$ and $s$, we can estimate equation (11.68) by POLS or a GLS procedure.
+
+When $T=3$, second differencing is the same as first differencing and then applying FE. Second differencing results in a single cross section on the second-differenced data, so that if the second-difference error is homoskedastic conditional on $\mathbf{x}_{i}$, the standard OLS analysis on the cross section of second differences is appropriate. Hoxby (1996) uses this method to estimate the effect of teachers' unions on education production using three years of census data.
+
+If $\mathbf{x}_{i t}$ contains a time trend, then $\Delta \mathbf{x}_{i t}$ contains the same constant for $t= 2,3, \ldots, T$, which then gets swept away in the FE or FD transformation applied to equation (11.67). Therefore, $\mathbf{x}_{i t}$ cannot have time-constant variables or variables that have exact linear time trends for all cross section units.
+
+\subsection*{11.7.2 General Models with Individual-Specific Slopes}
+We now consider a more general model with interactions between time-varying explanatory variables and some unobservable, time-constant variables:\\
+$y_{i t}=\mathbf{w}_{i t} \mathbf{a}_{i}+\mathbf{x}_{i t} \boldsymbol{\beta}+u_{i t}, \quad t=1,2, \ldots, T$,\\
+where $\mathbf{w}_{i t}$ is $1 \times J, \mathbf{a}_{i}$ is $J \times 1, \mathbf{x}_{i t}$ is $1 \times K$, and $\boldsymbol{\beta}$ is $K \times 1$. The standard unobserved effects model is a special case with $\mathbf{w}_{i t} \equiv 1$; the random trend model is a special case with $\mathbf{w}_{i t}=\mathbf{w}_{t}=(1, t)$.
+
+Equation (11.69) allows some time-constant unobserved heterogeneity, contained in the vector $\mathbf{a}_{i}$, to interact with some of the observable explanatory variables. For\\
+example, suppose that prog $_{i t}$ is a program participation indicator and $y_{i t}$ is an outcome variable. The model\\
+$y_{i t}=a_{i 1}+a_{i 2} \cdot$ prog $_{i t}+\mathbf{x}_{i t} \boldsymbol{\beta}+u_{i t}$\\
+allows the effect of the program to depend on the unobserved effect $a_{i 2}$ (which may or may not be tied to $a_{i 1}$ ). While we are interested in estimating $\boldsymbol{\beta}$, we are also interested in the average effect of the program, $\alpha_{2}=\mathrm{E}\left(a_{i 2}\right)$. We cannot hope to get good estimators of the $a_{i 2}$ in the usual case of small $T$. Polachek and Kim (1994) study such models, where the return to experience is allowed to be person-specific. Lemieux (1998) estimates a model where unobserved heterogeneity is rewarded differently in the union and nonunion sectors.
+
+In the general model, we initially focus on estimating $\boldsymbol{\beta}$ and then turn to estimation of $\boldsymbol{\alpha}=\mathrm{E}\left(\mathbf{a}_{i}\right)$, which is the vector of average partial effects for the covariates $\mathbf{z}_{i t}$. The strict exogeneity assumption is the natural extension of assumption (11.65):
+
+Assumption FE.1': $\mathrm{E}\left(u_{i t} \mid \mathbf{w}_{i}, \mathbf{x}_{i}, \mathbf{a}_{i}\right)=0, t=1,2, \ldots, T$.\\
+Along with equation (11.69), Assumption FE.1' is equivalent to\\
+$\mathrm{E}\left(y_{i t} \mid \mathbf{w}_{i 1}, \ldots, \mathbf{w}_{i T}, \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}, \mathbf{a}_{i}\right)=\mathrm{E}\left(y_{i t} \mid \mathbf{w}_{i t}, \mathbf{x}_{i t}, \mathbf{a}_{i}\right)=\mathbf{w}_{i t} \mathbf{a}_{i}+\mathbf{x}_{i t} \boldsymbol{\beta}$,\\
+which says that, once $\mathbf{w}_{i t}, \mathbf{x}_{i t}$, and $\mathbf{a}_{i}$ have been controlled for, $\left(\mathbf{w}_{i s}, \mathbf{x}_{i s}\right)$ for $s \neq t$ do not help to explain $y_{i t}$.
+
+Define $\mathbf{W}_{i}$ as the $T \times J$ matrix with $t$ th row $\mathbf{w}_{i t}$, and similarly for the $T \times K$ matrix $\mathbf{X}_{i}$. Then equation (11.69) can be written as\\
+$\mathbf{y}_{i}=\mathbf{W}_{i} \mathbf{a}_{i}+\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{u}_{i}$.
+
+Assuming that $\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}$ is nonsingular (technically, with probability one), define\\
+$\mathbf{M}_{i} \equiv \mathbf{I}_{T}-\mathbf{W}_{i}\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1} \mathbf{W}_{i}^{\prime}$,\\
+the projection matrix onto the null space of $\mathbf{W}_{i}$ (the matrix $\mathbf{W}_{i}\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1} \mathbf{W}_{i}^{\prime}$ is the projection matrix onto the column space of $\mathbf{W}_{i}$ ). In other words, for each cross section observation $i, \mathbf{M}_{i} \mathbf{y}_{i}$ is the $T \times 1$ vector of residuals from the time series regression\\
+$y_{i t}$ on $\mathbf{w}_{i t}, \quad t=1,2, \ldots, T$.
+
+In the basic FE case, regression (11.72) is the regression $y_{i t}$ on $1, t=1,2, \ldots$, $T$, and the residuals are simply the time-demeaned variables. In the random trend case, the regression is $y_{i t}$ on $1, t, t=1,2, \ldots, T$, which linearly detrends $y_{i t}$ for each $i$.
+
+The $T \times K$ matrix $\mathbf{M}_{i} \mathbf{X}_{i}$ contains as its rows the $1 \times K$ vectors of residuals from the regression $\mathbf{x}_{i t}$ on $\mathbf{w}_{i t}, t=1,2, \ldots, T$. The usefulness of premultiplying by $\mathbf{M}_{i}$ is that it allows us to eliminate the unobserved effect $\mathbf{a}_{i}$ by premultiplying equation (11.70) through by $\mathbf{M}_{i}$ and noting that $\mathbf{M}_{i} \mathbf{W}_{i}=\mathbf{0}$ :\\
+$\ddot{\mathbf{y}}_{i}=\ddot{\mathbf{X}}_{i} \boldsymbol{\beta}+\ddot{\mathbf{u}}_{i}$,\\
+where $\ddot{\mathbf{y}}_{i}=\mathbf{M}_{i} \mathbf{y}_{i}, \ddot{\mathbf{X}}_{i}=\mathbf{M}_{i} \mathbf{X}_{i}$, and $\ddot{\mathbf{u}}_{i}=\mathbf{M}_{i} \mathbf{u}_{i}$. This is an extension of the within transformation used in basic FE estimation.
+
+To consistently estimate $\boldsymbol{\beta}$ by system OLS on equation (11.73), we make the following assumption:\\
+assumption FE.2': $\quad \operatorname{rank} \mathrm{E}\left(\ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}\right)=K$, where $\ddot{\mathbf{X}}_{i}=\mathbf{M}_{i} \mathbf{X}_{i}$.\\
+The rank of $\mathbf{M}_{i}$ is $T-J$, so a necessary condition for Assumption FE. $2^{\prime}$ is $J<T$. In other words, we must have at least one more time period than the number of elements in $\mathbf{a}_{i}$. In the basic unobserved effects model, $J=1$, and we know that $T \geq 2$ is needed. In the random trend model, $J=2$, and we need $T \geq 3$ to estimate $\boldsymbol{\beta}$.
+
+The system OLS estimator of equation (11.73) is\\
+$\hat{\boldsymbol{\beta}}_{F E}=\left(\sum_{i=1}^{N} \ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{y}}_{i}\right)=\boldsymbol{\beta}+\left(N^{-1} \sum_{i=1}^{N} \ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}\right)^{-1}\left(N^{-1} \sum_{i=1}^{N} \ddot{\mathbf{X}}_{i}^{\prime} \mathbf{u}_{i}\right)$.\\
+Under Assumption FE.1', $\mathrm{E}\left(\ddot{\mathbf{X}}_{i}^{\prime} \mathbf{u}_{i}\right)=\mathbf{0}$, and under Assumption FE.2', $\operatorname{rank} \mathrm{E}\left(\ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}\right) =K$, and so the usual consistency argument goes through. Generally, it is possible that for some observations, $\ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}$ has rank less than $K$. For example, this result occurs in the standard FE case when $\mathbf{x}_{i t}$ does not vary over time for unit $i$. However, under Assumption FE.2', $\hat{\boldsymbol{\beta}}_{F E}$ should be well defined unless our cross section sample size is small or we are unlucky in obtaining the sample.
+
+Naturally, the FE estimator is $\sqrt{N}$-asymptotically normally distributed. To obtain the simplest expression for its asymptotic variance, we add the assumptions of constant conditional variance and no (conditional) serial correlation on the idiosyncratic errors $\left\{u_{i t}: t=1,2, \ldots, T\right\}$.\\
+assumption FE.3': $\quad \mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{w}_{i}, \mathbf{x}_{i}, \mathbf{a}_{i}\right)=\sigma_{u}^{2} \mathbf{I}_{T}$.\\
+Under Assumption FE.3', iterated expectations implies\\
+$\mathrm{E}\left(\ddot{\mathbf{X}}_{i}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \ddot{\mathbf{X}}_{i}\right)=\mathrm{E}\left[\ddot{\mathbf{X}}_{i}^{\prime} \mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{W}_{i}, \mathbf{X}_{i}\right) \ddot{\mathbf{X}}_{i}\right]=\sigma_{u}^{2} \mathrm{E}\left(\ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}\right)$.
+
+Using essentially the same argument as in Section 10.5.2, under Assumptions FE.1', FE.2', and FE.3', Avar $\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{F E}-\boldsymbol{\beta}\right)=\sigma_{u}^{2}\left[\mathrm{E}\left(\ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}\right)\right]^{-1}$, and so $\operatorname{Avar}\left(\hat{\boldsymbol{\beta}}_{F E}\right)$ is consistently estimated by
+
+
+\begin{equation*}
+\operatorname{Ava\hat {\mathbf {r}}(\hat {\boldsymbol {\beta }}_{FE})=\hat {\sigma }_{u}^{2}(\sum _{i=1}^{N}\ddot {\mathbf {X}}_{i}^{\prime }\ddot {\mathbf {X}}_{i})^{-1},} \tag{11.74}
+\end{equation*}
+
+
+where $\hat{\sigma}_{u}^{2}$ is a consistent estimator for $\sigma_{u}^{2}$. As with the standard FE analysis, we must use some care in obtaining $\hat{\sigma}_{u}^{2}$. We have
+
+
+\begin{align*}
+\sum_{t=1}^{T} \mathrm{E}\left(\ddot{u}_{i t}^{2}\right) & =\mathrm{E}\left(\ddot{\mathbf{u}}_{i}^{\prime} \ddot{\mathbf{u}}_{i}\right)=\mathrm{E}\left[\mathrm{E}\left(\mathbf{u}_{i}^{\prime} \mathbf{M}_{i} \mathbf{u}_{i} \mid \mathbf{W}_{i}, \mathbf{X}_{i}\right)\right]=\mathrm{E}\left\{\operatorname{tr}\left[\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{M}_{i} \mid \mathbf{W}_{i}, \mathbf{X}_{i}\right)\right]\right\} \\
+& =\mathrm{E}\left\{\operatorname{tr}\left[\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{W}_{i}, \mathbf{X}_{i}\right) \mathbf{M}_{i}\right]\right\}=\mathrm{E}\left[\operatorname{tr}\left(\sigma_{u}^{2} \mathbf{M}_{i}\right)\right]=(T-J) \sigma_{u}^{2} \tag{11.75}
+\end{align*}
+
+
+since $\operatorname{tr}\left(\mathbf{M}_{i}\right)=T-J$. Let $\hat{\ddot{u}}_{i t}=\ddot{y}_{i t}-\ddot{\mathbf{x}}_{i t} \hat{\boldsymbol{\beta}}_{F E}$. Then equation (11.75) and standard arguments imply that an unbiased and consistent estimator of $\sigma_{u}^{2}$ is\\
+$\hat{\sigma}_{u}^{2}=[N(T-J)-K]^{-1} \sum_{i=1}^{N} \sum_{t=1}^{T} \hat{\ddot{u}}_{i t}^{2}=\mathrm{SSR} /[N(T-J)-K]$.
+
+The SSR in equation (11.76) is from the pooled regression\\
+$\ddot{y}_{i t}$ on $\ddot{\mathbf{x}}_{i t}, \quad t=1,2, \ldots, T ; i=1,2, \ldots, N$,\\
+which can be used to obtain $\hat{\boldsymbol{\beta}}_{F E}$. Division of the SSR from regression (11.77) by $N(T-J)-K$ produces $\hat{\sigma}_{u}^{2}$. The standard errors reported from regression (11.77) will be off because the SSR is only divided by $N T-K$; the adjustment factor is $\{(N T-K) /[N(T-J)-K]\}^{1 / 2}$.
+
+A standard $F$ statistic for testing hypotheses about $\boldsymbol{\beta}$ is also asymptotically valid. Let $Q$ be the number of restrictions on $\boldsymbol{\beta}$ under $\mathrm{H}_{0}$, and let $\mathrm{SSR}_{r}$ be the restricted sum of squared residuals from a regression like regression (11.77) but with the restrictions on $\boldsymbol{\beta}$ imposed. Let $\mathrm{SSR}_{u r}$ be the unrestricted sum of squared residuals. Then
+
+
+\begin{equation*}
+F=\frac{\left(\mathrm{SSR}_{r}-\mathrm{SSR}_{u r}\right)}{\mathrm{SSR}_{u r}} \cdot \frac{[N(T-J)-K]}{Q} \tag{11.78}
+\end{equation*}
+
+
+can be treated as having an $F$ distribution with $Q$ and $N(T-J)-K$ degrees of freedom. Unless we add a (conditional) normality assumption on $\mathbf{u}_{i}$, equation (11.78) does not have an exact $F$ distribution, but it is asymptotically valid because $Q \cdot F \stackrel{a}{\sim} \chi_{Q}^{2}$.
+
+Without Assumption FE.3', equation (11.74) is no longer valid as the variance estimator and equation (11.78) is not a valid test statistic. But the robust variance matrix\\
+estimator (10.59) can be used with the new definitions for $\ddot{\mathbf{X}}_{i}$ and $\hat{\ddot{\mathbf{u}}}_{i}$. This step leads directly to robust Wald statistics for multiple restrictions.
+
+To obtain a consistent estimator of $\boldsymbol{\alpha}=\mathrm{E}\left(\mathbf{a}_{i}\right)$, premultiply equation (11.72) by $\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1} \mathbf{W}_{i}^{\prime}$ and rearrange to get\\
+$\mathbf{a}_{i}=\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1} \mathbf{W}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \boldsymbol{\beta}\right)-\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1} \mathbf{W}_{i}^{\prime} \mathbf{u}_{i}$.
+
+Under Assumption FE.1', $\mathrm{E}\left(\mathbf{u}_{i} \mid \mathbf{W}_{i}\right)=\mathbf{0}$, and so the second term in equation (11.79) has a zero expected value. Therefore, assuming that the expected value exists,\\
+$\boldsymbol{\alpha}=\mathrm{E}\left[\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1} \mathbf{W}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \boldsymbol{\beta}\right)\right]$.\\
+So a consistent, $\sqrt{N}$-asymptotically normal estimator of $\boldsymbol{\alpha}$ is\\
+$\hat{\boldsymbol{a}}=N^{-1} \sum_{i=1}^{N}\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1} \mathbf{W}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \hat{\boldsymbol{\beta}}_{F E}\right)$.
+
+With fixed $T$ we cannot consistently estimate the $\mathbf{a}_{i}$ when they are viewed as parameters. However, for each $i$, the term in the summand in equation (11.80), call it $\hat{\mathbf{a}}_{i}$, is an unbiased estimator of $\mathbf{a}_{i}$ under Assumptions FE.1' and FE.2'. This conclusion is easy to show: $\mathrm{E}\left(\hat{\mathbf{a}}_{i} \mid \mathbf{W}, \mathbf{X}\right)=\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1} \mathbf{W}_{i}^{\prime}\left[\mathrm{E}\left(\mathbf{y}_{i} \mid \mathbf{W}, \mathbf{X}\right)-\mathbf{X}_{i} \mathrm{E}\left(\hat{\boldsymbol{\beta}}_{F E} \mid \mathbf{W}, \mathbf{X}\right)\right]= \left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1} \mathbf{W}_{i}^{\prime}\left[\mathbf{W}_{i} \mathbf{a}_{i}+\mathbf{X}_{i} \boldsymbol{\beta}-\mathbf{X}_{i} \boldsymbol{\beta}\right]=\mathbf{a}_{i}$, where we have used the fact that $\mathrm{E}\left(\hat{\boldsymbol{\beta}}_{F E} \mid \mathbf{W}, \mathbf{X}\right) =\boldsymbol{\beta}$. The estimator $\hat{\boldsymbol{\alpha}}$ simply averages the $\hat{\mathbf{a}}_{i}$ over all cross section observations.
+
+The asymptotic variance of $\sqrt{N}(\hat{\boldsymbol{\alpha}}-\boldsymbol{\alpha})$ can be obtained by expanding equation (11.80) and plugging in $\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{F E}-\boldsymbol{\beta}\right)=\left[\mathrm{E}\left(\ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}\right)\right]^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \ddot{\mathbf{X}}_{i}^{\prime} \mathbf{u}_{i}\right)+\mathrm{o}_{p}(1)$. A consistent estimator of $\mathrm{Avar} \sqrt{N}(\hat{\boldsymbol{\alpha}}-\boldsymbol{\alpha})$ can be shown to be
+
+
+\begin{equation*}
+N^{-1} \sum_{i=1}^{N}\left[\left(\hat{\mathbf{a}}_{i}-\hat{\boldsymbol{a}}\right)-\hat{\mathbf{C}} \hat{\mathbf{A}}^{-1} \ddot{\mathbf{X}}_{i}^{\prime} \hat{\mathbf{u}}_{i}\right]\left[\left(\hat{\mathbf{a}}_{i}-\hat{\boldsymbol{a}}\right)-\hat{\mathbf{C}} \hat{\mathbf{A}}^{-1} \ddot{\mathbf{X}}_{i}^{\prime} \hat{\mathbf{u}}_{i}\right]^{\prime} \tag{11.81}
+\end{equation*}
+
+
+where $\quad \hat{\mathbf{a}}_{i} \equiv\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1} \mathbf{W}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \hat{\boldsymbol{\beta}}_{F E}\right), \quad \hat{\mathbf{C}} \equiv N^{-1} \sum_{i=1}^{N}\left(\mathbf{W}_{i}^{\prime} \mathbf{W}_{i}\right)^{-1} \mathbf{W}_{i}^{\prime} \mathbf{X}_{i}, \quad \hat{\mathbf{A}} \equiv N^{-1} \sum_{i=1}^{N} \ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}$, and $\hat{\mathbf{u}}_{i} \equiv \ddot{\mathbf{y}}_{i}-\ddot{\mathbf{X}}_{i} \hat{\boldsymbol{\beta}}_{F E}$. This estimator is fully robust in the sense that it does not rely on Assumption FE.3'. As usual, asymptotic standard errors of the elements of $\hat{\boldsymbol{\alpha}}$ are obtained by multiplying expression (11.81) by $N$ and taking the square roots of the diagonal elements. As special cases, expression (11.81) can be applied to the traditional unobserved effects and random trend models.
+
+The estimator $\hat{\boldsymbol{\alpha}}$ in equation (11.81) is not necessarily the most efficient. A better approach is to use the moment conditions for $\hat{\boldsymbol{\beta}}_{F E}$ and $\hat{\boldsymbol{\alpha}}$ simultaneously. This leads to nonlinear instrumental variables methods, something we take up in Chapter 14. Chamberlain (1992a) covers the efficient method of moments approach to estimating $\boldsymbol{\alpha}$ and $\boldsymbol{\beta}$; see also Lemieux (1998).
+
+\subsection*{11.7.3 Robustness of Standard Fixed Effects Methods}
+In the previous two sections, we assumed that a set of slope coefficients, $\boldsymbol{\beta}$, did not vary across unit, and that we know the set of slope coefficients, generally $\mathbf{a}_{i}$ in (11.69), that might vary across $i$. Even in this situation, the allowable dimension of the unobserved heterogeneity is restricted by the number of time periods, $T$. In this subsection we study what happens if we mistakenly treat some random slopes as if they are fixed and apply standard FE methods. We might ignore some heterogeneity because we are ignorant of the scope of heterogeneity in the model or because we simply do not have enough time periods to proceed with a general analysis.
+
+We begin with an extension of the usual model to allow for unit-specific slopes,
+
+
+\begin{align*}
+& y_{i t}=c_{i}+\mathbf{x}_{i t} \mathbf{b}_{i}+u_{i t}  \tag{11.82}\\
+& E\left(u_{i t} \mid \mathbf{x}_{i}, c_{i}, \mathbf{b}_{i}\right)=0, \quad t=1, \ldots, T, \tag{11.83}
+\end{align*}
+
+
+where $\mathbf{b}_{i}$ is $K \times 1$. However, unlike in Section 11.6.2, we now ignore the heterogeneity in the slopes and act as if $\mathbf{b}_{i}$ is constant all $i$. We think $c_{i}$ might be correlated with at least some elements of $\mathbf{x}_{i t}$, and therefore we apply the usual FE estimator. The question we address here is, when does the usual FE estimator consistently estimate the population average effect, $\boldsymbol{\beta}=\mathrm{E}\left(\mathbf{b}_{i}\right)$ ?
+
+In addition to assumption (11.83), we naturally need the usual FE rank condition, Assumption FE.2. But what else is needed for FE to consistently estimate $\boldsymbol{\beta}$ ? It helps to write $\mathbf{b}_{i}=\boldsymbol{\beta}+\mathbf{d}_{i}$ where the unit-specific deviation from the average, $\mathbf{d}_{i}$, necessarily has a zero mean. Then
+
+
+\begin{equation*}
+y_{i t}=c_{i}+\mathbf{x}_{i t} \boldsymbol{\beta}+\mathbf{x}_{i t} \mathbf{d}_{i}+u_{i t} \equiv c_{i}+\mathbf{x}_{i t} \boldsymbol{\beta}+v_{i t}, \tag{11.84}
+\end{equation*}
+
+
+where $v_{i t} \equiv \mathbf{x}_{i t} \mathbf{d}_{i}+u_{i t}$. As we saw in Section 10.5.6, a sufficient condition for consistency of the FE estimator (along with Assumption FE.2) is
+
+
+\begin{equation*}
+\mathrm{E}\left(\ddot{\mathbf{x}}_{i t}^{\prime} \ddot{u}_{i t}\right)=\mathbf{0}, \quad t=1, \ldots, T . \tag{11.85}
+\end{equation*}
+
+
+But $\ddot{v}_{i t}=\ddot{\mathbf{x}}_{i t} \mathbf{d}_{i}+\ddot{u}_{i t}$ and $\mathrm{E}\left(\ddot{\mathbf{x}}_{i t}^{\prime} \ddot{u}_{i t}\right)=\mathbf{0}$ by (11.83). Therefore, the extra assumption that ensures (11.85) is $\mathrm{E}\left(\ddot{\mathbf{x}}_{i t}^{\prime} \ddot{\mathbf{x}}_{i t} \mathbf{d}_{i}\right)=\mathbf{0}$ for all $t$. A sufficient condition, and one that is easier to interpret, is
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{b}_{i} \mid \ddot{\mathbf{x}}_{i t}\right)=\mathrm{E}\left(\mathbf{b}_{i}\right)=\boldsymbol{\beta}, \quad t=1, \ldots, T . \tag{11.86}
+\end{equation*}
+
+
+Importantly, condition (11.86) allows the slopes, $\mathbf{b}_{i}$, to be correlated with the regressors $\mathbf{x}_{i t}$ through permanent components. What it rules out is correlation between idiosyncratic movements in $\mathbf{x}_{i t}$. We can formalize this statement by writing\\
+$\mathbf{x}_{i t}=\mathbf{f}_{i}+\mathbf{r}_{i t}, t=1, \ldots, T$. Then (11.86) holds if $\mathrm{E}\left(\mathbf{b}_{i} \mid \mathbf{r}_{i 1}, \mathbf{r}_{i 2}, \ldots, \mathbf{r}_{i T}\right)=\mathrm{E}\left(\mathbf{b}_{i}\right)$. So $\mathbf{b}_{i}$ is allowed to be arbitrarily correlated with the permanent component, $\mathbf{f}_{i}$. (Of course, $\mathbf{x}_{i t}=\mathbf{f}_{i}+\mathbf{r}_{i t}$ is a special representation of the covariates, but it helps to illustrate condition (11.86).)
+
+Wooldridge (2005a) studies a more general class of estimators that includes the usual FE and random trend estimator. Write\\
+$y_{i t}=\mathbf{w}_{t} \mathbf{a}_{i}+\mathbf{x}_{i t} \mathbf{b}_{i}+u_{i t}, \quad t=1, \ldots, T$,\\
+where $\mathbf{w}_{t}$ is a set of deterministic functions of time. We maintain the standard assumption (11.83) but with $\mathbf{a}_{i}$ in place of $c_{i}$. Now, the "fixed effects" estimator sweeps away $\mathbf{a}_{i}$ by netting out $\mathbf{w}_{t}$ from $\mathbf{x}_{i t}$. In particular, now let $\ddot{\mathbf{x}}_{i t}$ denote the residuals from the regression $\mathbf{x}_{i t}$ on $\mathbf{w}_{t}, t=1, \ldots, T$.
+
+In the random trend model, $\mathbf{w}_{t}=(1, t)$, and so the elements of $\mathbf{x}_{i t}$ have unit-specific linear trends removed in addition to a level effect. Removing even more of the heterogeneity from $\left\{\mathbf{x}_{i t}\right\}$ makes it even more likely that (11.86) holds. For example, if $\mathbf{x}_{i t}=\mathbf{f}_{i}+\mathbf{h}_{i} t+\mathbf{r}_{i t}$, then $\mathbf{b}_{i}$ can be arbitrarily correlated with ( $\mathbf{f}_{i}, \mathbf{h}_{i}$ ). Of course, individually detrending the $\mathbf{x}_{i t}$ requires at least three time periods, and it decreases the variation in $\ddot{\mathbf{x}}_{i t}$ compared to the usual FE estimator. Not surprisingly, increasing the dimension of $\mathbf{w}_{t}$ (subject to the restriction $\operatorname{dim}\left(\mathbf{w}_{t}\right)<T$ ), generally leads to less precision of the estimator. See Wooldridge (2005a) for further discussion.
+
+Of course, the FD transformation can be used in place of, or in conjunction with, unit-specific detrending; see Section 11.6.1 for the random growth model. For example, if we use the FD transformation followed by the within transformation, it is easily seen that a condition sufficient for consistency of the resulting estimator for $\boldsymbol{\beta}$ is\\
+$\mathrm{E}\left(\mathbf{b}_{i} \mid \Delta \ddot{\mathbf{x}}_{i t}\right)=\mathrm{E}\left(\mathbf{b}_{i}\right), \quad t=2, \ldots, T$,\\
+where $\Delta \ddot{\mathbf{x}}_{i t}=\Delta \mathbf{x}_{i t}-\overline{\Delta \mathbf{x}_{i}}$ are the demeaned first differences.\\
+The results for the FE estimator (in the generalized sense of removing unit-specific means and possibly trends) extend to fixed effects IV methods, provided we add a constant conditional covariance assumption of the type introduced in Section 6.4.1, but extended to the panel data case. Murtazashvili and Wooldridge (2008) derive a simple set of sufficient conditions. In the model with general trends, we assume the natural extension of Assumption FEIV.1, that is, $\mathrm{E}\left(u_{i t} \mid \mathbf{z}_{i}, \mathbf{a}_{i}, \mathbf{b}_{i}\right)=0$ for all $t$, along with Assumption FEIV.2. We modify assumption (11.86) in the obvious way: replace $\ddot{\mathbf{x}}_{i t}$ with $\ddot{\mathbf{z}}_{i t}$, the individual-specific detrended instruments:
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{b}_{i} \mid \ddot{\mathbf{z}}_{i t}\right)=\mathrm{E}\left(\mathbf{b}_{i}\right)=\boldsymbol{\beta}, \quad t=1, \ldots, T \tag{11.89}
+\end{equation*}
+
+
+But something more is needed. Murtazashvili and Wooldridge (2008) show that, along with the previous assumptions, a sufficient condition is\\
+$\operatorname{Cov}\left(\ddot{\mathbf{x}}_{i t}, \mathbf{b}_{i} \mid \ddot{\mathbf{z}}_{i t}\right)=\operatorname{Cov}\left(\ddot{\mathbf{x}}_{i t}, \mathbf{b}_{i}\right), \quad t=1, \ldots, T$.
+
+Note that the covariance $\operatorname{Cov}\left(\ddot{\mathbf{x}}_{i t}, \mathbf{b}_{i}\right)$, a $K \times K$ matrix need not be zero, or even constant across time. In other words, unlike condition (11.86), we can allow the detrended covariates to be correlated with the heterogeneous slopes. But the conditional covariance cannot depend on the time-demeaned instruments.
+
+We can easily show why (11.90) suffices with the previous assumptions. First, if $\mathrm{E}\left(\mathbf{d}_{i} \mid \ddot{\mathbf{z}}_{i t}\right)=\mathbf{0}$, which follows from $\mathrm{E}\left(\mathbf{b}_{i} \mid \ddot{\mathbf{z}}_{i t}\right)=\mathrm{E}\left(\mathbf{b}_{i}\right)$, then $\operatorname{Cov}\left(\ddot{\mathbf{x}}_{i t}, \mathbf{d}_{i} \mid \ddot{\mathbf{z}}_{i t}\right)= \mathrm{E}\left(\ddot{\mathbf{x}}_{i t} \mathbf{d}_{i}^{\prime} \mid \ddot{\mathbf{z}}_{i t}\right)$, and so $\mathrm{E}\left(\ddot{\mathbf{x}}_{i t} \mathbf{d}_{i} \mid \ddot{\mathbf{z}}_{i t}\right)=\mathrm{E}\left(\ddot{\mathbf{x}}_{i t} \mathbf{d}_{i}\right) \equiv \gamma_{t}$ under the previous assumptions. Write $\ddot{\mathbf{x}}_{i t} \mathbf{d}_{i}=\gamma_{t}+r_{i t}$ where $\mathrm{E}\left(r_{i t i} \mid \ddot{\mathbf{z}}_{i t}\right)=0, t=1, \ldots, T$. Then we can write the transformed equation as\\
+$\ddot{y}_{i t}=\ddot{\mathbf{x}}_{i t} \boldsymbol{\beta}+\ddot{\mathbf{x}}_{i t} \mathbf{d}_{i}+\ddot{u}_{i t}=\ddot{y}_{i t}=\ddot{\mathbf{x}}_{i t} \boldsymbol{\beta}+\gamma_{t}+r_{i t}+\ddot{u}_{i t}$.
+
+Now, if $\mathbf{x}_{i t}$ contains a full set of time period dummies, then we can absorb $\gamma_{t}$ into $\ddot{\mathbf{x}}_{i t}$, and we assume that here. Then the sufficient condition for consistency of IV estimators applied to the transformed equations is $\mathrm{E}\left[\ddot{\mathbf{z}}_{i t}^{\prime}\left(r_{i t}+\ddot{u}_{i t}\right)\right]=\mathbf{0}$, and this condition is met under the maintained assumptions. In other words, under (11.89) and (11.90), the FE 2SLS estimator is consistent for the average population effect, $\boldsymbol{\beta}$. (Remember, we use "fixed effects" here in the general sense of eliminating the unit-specific trends, $\mathbf{a}_{i}$.) We must remember to include a full set of time period dummies if we want to apply this robustness result, something that should be done in any case. Naturally, we can also use GMM to obtain a more efficient estimator. If $\mathbf{b}_{i}$ truly depends on $i$, then the composite error $r_{i t}+\ddot{u}_{i t}$ is likely serially correlated and heteroskedastic. See Murtazashvili and Wooldridge (2008) for further discussion and simulation results on the peformance of the FE2SLS estimator. They also provide examples where the key assumptions cannot be expected to hold, such as when endogenous elements of $\mathbf{x}_{i t}$ are discrete.
+
+\subsection*{11.7.4 Testing for Correlated Random Slopes}
+The findings of the previous subsection suggest that standard panel data methods that remove unit-specific heterogeneity have satisfying robustness properties for estimating the population average effects. Nevertheless, in some cases we want to know whether there is evidence for heterogeneous slopes.
+
+We focus on the model (11.82), first under assumption (11.83). We could consider cases where $c_{i}$ is assumed to be uncorrelated with $\mathbf{x}_{i}$, but, in keeping with the spirit of\\
+the previous subsection, we allow $c_{i}$ to be correlated with $\mathbf{x}_{i}$. Then, allowing for the presence of $c_{i}$, the goal is effectively to test $\operatorname{Var}\left(\mathbf{b}_{i}\right)=\operatorname{Var}\left(\mathbf{d}_{i}\right)=\mathbf{0}$. Unfortunately, without additional assumptions, it is not possible to test $\operatorname{Var}\left(\mathbf{d}_{i}\right)=\mathbf{0}$, even if we are very specific about the alternative. Suppose we specify as the alternative\\
+$\operatorname{Var}\left(\mathbf{b}_{i} \mid \mathbf{x}_{i}\right)=\operatorname{Var}\left(\mathbf{b}_{i}\right) \equiv \boldsymbol{\Lambda}$,\\
+so that the conditional variance is not a function of $\mathbf{x}_{i}$. (We also assume $\mathrm{E}\left(\mathbf{b}_{i} \mid \mathbf{x}_{i}\right)= \mathrm{E}\left(\mathbf{b}_{i}\right)$ under the alternative.) Unfortunately, even assumption (11.92) is not enough to proceed. We need to restrict the conditional variance matrix of the idiosyncratic errors, and the simplest (and most common) assumption is\\
+$\operatorname{Var}\left(\mathbf{u}_{i} \mid \mathbf{x}_{i}, c_{i}, \mathbf{b}_{i}\right)=\sigma_{u}^{2} \mathbf{I}_{T}$,\\
+which is the natural extension of Assumption FE. 3 from Chapter 10. Along with (11.83), these assumptions allow us to test $\operatorname{Var}\left(\mathbf{b}_{i}\right)=\mathbf{0}$. To see why, write the timedemeaned equation as $\ddot{\mathbf{y}}_{i}=\ddot{\mathbf{X}}_{i} \boldsymbol{\beta}+\ddot{\mathbf{v}}_{i}$, where\\
+$\mathrm{E}\left(\ddot{\mathbf{v}}_{i} \mid \mathbf{x}_{i}\right)=\ddot{\mathbf{X}}_{i} \mathrm{E}\left(\mathbf{d}_{i} \mid \mathbf{x}_{i}\right)+\mathrm{E}\left(\ddot{\mathbf{u}}_{i} \mid \mathbf{x}_{i}\right)=\mathbf{0}$,\\
+$\operatorname{Var}\left(\ddot{\mathbf{v}}_{i} \mid \mathbf{x}_{i}\right)=\ddot{\mathbf{X}}_{i} \boldsymbol{\Lambda} \ddot{\mathbf{X}}_{i}^{\prime}+\sigma_{u}^{2} \mathbf{M}_{T}$,\\
+and $\mathbf{M}_{T}=\mathbf{I}_{T}-\mathbf{j}_{T}\left(\mathbf{j}_{T}^{\prime} \mathbf{j}_{T}\right)^{-1} \mathbf{j}_{T}$. The last equation shows that, under the maintained assumptions, $\operatorname{Var}\left(\ddot{\mathbf{v}}_{i} \mid \mathbf{x}_{i}\right)$ does not depend on $\ddot{\mathbf{X}}_{i}$ if $\boldsymbol{\Lambda}=\mathbf{0}$. If $\boldsymbol{\Lambda} \neq \mathbf{0}$, then the composite error in the time-demeaned equation generally exhibits heteroskedasticity and serial correlation that are quadratic functions of the time-demeaned regressors. So, the method would be to estimate $\boldsymbol{\beta}$ by standard FE methods, obtain the FE residuals, and then test whether the variance matrix is a quadratic function of the $\ddot{\mathbf{x}}_{i t}$.
+
+The main problem with the previous test is that it associates system heteroskedasticity - that is, variances and covariances depending on the regressors - with the presence of "random" coefficients. But if $\mathbf{b}_{i}=\boldsymbol{\beta}$ and $\operatorname{Var}\left(\mathbf{u}_{i} \mid \mathbf{x}_{i}, c_{i}\right)$ depends on $\mathbf{x}_{i}$, $\operatorname{Var}\left(\ddot{\mathbf{v}}_{i} \mid \mathbf{x}_{i}\right)$ generally depends on $\mathbf{x}_{i}$. In other words, there is no convincing way to distinguish system heteroskedasticity in $\operatorname{Var}\left(\mathbf{u}_{i} \mid \mathbf{x}_{i}, c_{i}\right)$ from nonconstant $\mathbf{b}_{i}$.
+
+Rather than try to test whether $\operatorname{Var}\left(\mathbf{b}_{i}\right) \neq \mathbf{0}$, we can instead test whether $\mathbf{b}_{i}$ varies with observable variables; that is, we can test\\
+$\mathrm{H}_{0}: \mathrm{E}\left(\mathbf{b}_{i} \mid \mathbf{x}_{i}\right)=\mathrm{E}\left(\mathbf{b}_{i}\right)$,\\
+when the covariates satisfy the strict exogeneity assumption (11.83). A sensible alternative is that $\mathrm{E}\left(\mathbf{b}_{i} \mid \mathbf{x}_{i}\right)$ depends with the time averages, something we can capture with\\
+$\mathbf{b}_{i}=\boldsymbol{\alpha}+\boldsymbol{\Gamma} \overline{\mathbf{x}}_{i}^{\prime}+\mathbf{d}_{i}$,\\
+where $\boldsymbol{\alpha}$ is $K \times 1$ and $\boldsymbol{\Gamma}$ is $K \times L$. Under the null hypothesis, $\boldsymbol{\Gamma}=\mathbf{0}$, and then $\boldsymbol{\alpha}=\boldsymbol{\beta}$. Explicitly allowing for aggregate time effects gives
+
+
+\begin{align*}
+y_{i t} & =\theta_{t}+c_{i}+\mathbf{x}_{i t} \boldsymbol{\alpha}+\mathbf{x}_{i t} \boldsymbol{\Gamma} \overline{\mathbf{x}}_{i}^{\prime}+\mathbf{x}_{i t} \mathbf{d}_{i}+u_{i t} \\
+& =\theta_{t}+c_{i}+\mathbf{x}_{i t} \boldsymbol{\alpha}+\left(\overline{\mathbf{x}}_{i} \otimes \mathbf{x}_{i t}\right) \operatorname{vec}(\boldsymbol{\Gamma})+\mathbf{x}_{i t} \mathbf{d}_{i}+u_{i t} \\
+& \equiv \theta_{t}+c_{i}+\mathbf{x}_{i t} \boldsymbol{\alpha}+\left(\overline{\mathbf{x}}_{i} \otimes \mathbf{x}_{i t}\right) \boldsymbol{\gamma}+v_{i t} \tag{11.96}
+\end{align*}
+
+
+where $v_{i t}=\mathbf{x}_{i t} \mathbf{d}_{i}+u_{i t}$ and $\boldsymbol{\gamma}=\operatorname{vec}(\boldsymbol{\Gamma})$. The test of $\mathrm{H}_{0}: \boldsymbol{\gamma}=\mathbf{0}$ is simple to carry out. It amounts to interacting the time averages with the elements of $\mathbf{x}_{i t}$ (or, one can choose a subset of $\overline{\mathbf{x}}_{i}$ to interact with a subset of $\mathbf{x}_{i t}$ ) and obtaining a fully robust test of joint significance in the context of FE estimation. A failure to reject means that if the $\mathbf{b}_{i}$ vary by $i$, they apparently do not do so in a way that depends on the time averages of the covariates. The weakness of this test is that it cannot detect heterogeneity in $\mathbf{b}_{i}$ that is uncorrelated with $\overline{\mathbf{x}}_{i}$. (Like the previous test, this test is not intended to determine whether FE is consistent for $\boldsymbol{\beta}=\mathrm{E}\left(\mathbf{b}_{i}\right)$.)
+
+We can easily allow some elements of $\mathbf{x}_{i t}$ to be endogenous, in which case we write the alternative as $\mathbf{b}_{i}=\boldsymbol{\alpha}+\boldsymbol{\Gamma} \overline{\mathbf{z}}_{i}^{\prime}+\mathbf{d}_{i}$. Then, under the assumptions in the previous subsection, we estimate
+
+
+\begin{equation*}
+y_{i t}=\theta_{t}+c_{i}+\mathbf{x}_{i t} \boldsymbol{\alpha}+\left(\overline{\mathbf{z}}_{i} \otimes \mathbf{x}_{i t}\right) \gamma+v_{i t} \tag{11.97}
+\end{equation*}
+
+
+by FEIV using instruments $\left(\mathbf{z}_{i t}, \overline{\mathbf{z}}_{i} \otimes \mathbf{z}_{i t}\right)$, which is $1 \times L+L^{2}$. FE2SLS estimation is equivalent to P2SLS estimation of the equation
+
+
+\begin{equation*}
+\ddot{y}_{i t}=\eta_{t}+\ddot{\mathbf{x}}_{i t} \boldsymbol{\alpha}+\left(\overline{\mathbf{z}}_{i} \otimes \ddot{\mathbf{x}}_{i t}\right) \gamma+\ddot{v}_{i t} \tag{11.98}
+\end{equation*}
+
+
+using instruments ( $\ddot{\mathbf{z}}_{i t}, \overline{\mathbf{z}}_{i} \otimes \ddot{\mathbf{z}}_{i t}$ ), where the double dot denotes time demeaning, as usual. This characterization is convenient for obtaining a fully robust test using software that computes P2SLS estimates with standard errors and test statistics robust to arbitrary serial correlation and heteroskedasticity. (Recall that the usual standard errors from (11.98) are not valid even under homoskedasticity and serial independence because it does not properly account for the lost degrees of freedom due to the time demeaning.) Again, we can be selective about what we actually include in $\left(\overline{\mathbf{z}}_{i} \otimes \mathbf{x}_{i t}\right)$. For example, perhaps we are interested in one element, say $b_{i 1}$, and one element of $\overline{\mathbf{z}}_{i}$, say $\bar{z}_{i 1}$. Then we would simply add the scalar $\bar{z}_{i 1} x_{i t 1}$ to the equation and compute its $t$ statistic. Generally, if we reject $\mathrm{H}_{0}$, we can entertain (11.97) as an alternative model, provided we make assumption (11.90). We can explicitly study how\\
+the partial effects of $\mathbf{x}_{i t}$ depend on $\overline{\mathbf{z}}_{i}$, and also compute the average partial effects. (Alternatively, we can use $\overline{\mathbf{z}}_{i}-\overline{\mathbf{z}}$ in place of $\overline{\mathbf{z}}_{i}$, and then the coefficient on coefficient on $\mathbf{x}_{i t}$ effectively would be the APE, $\boldsymbol{\beta}=\mathrm{E}\left(\mathbf{b}_{i}\right)$.) We can also include other timeconstant variables that drop out of the FE estimation when they appear by themselves; we just simply interact those variables with elements of $\mathbf{x}_{i t}$.
+
+Example 11.5 (Testing for Correlated Random Slopes in a Passenger Demand Equation): Suppose we think the elasticity of passenger demand with respect to airfare differs by route, and so we specify the equation\\
+lpassen $_{i t}=\theta_{t}+c_{i}+b_{i}$ lfare $_{i t}+u_{i t}$\\
+and we use $z_{i t}=$ concen $_{i t}$ as the instrument for lfare ${ }_{i t}$, just as in Example 11.1. To test whether $b_{i}$ is correlated with $\bar{z}_{i}$, we use the equation\\
+lpassen $_{i t}=\theta_{t}+c_{i}+$ alfare $_{i t}+\gamma \overline{\text { concen }}_{i} \cdot$ lfare $_{i t}+v_{i t}$,\\
+where $v_{i t}=x_{i t} d_{i}+u_{i t}$. We estimate this equation by FEIV using concen ${ }_{i t}$ and $\overline{\operatorname{concen}}_{i} \cdot$ concen $_{i t}$ as instruments. As mentioned above, this is equivalent to applying pooled IV to equation (11.98), and that is how we obtain the fully robust $t$ statistic. The estimated $\gamma$ is very large in magnitude, $\hat{\gamma}=-11.05$, but its robust $t$ statistic is only -.60 . We conclude that there is little evidence in this data set that $b_{i}$ varies with the time average of the route concentration.
+
+\section*{Problems}
+11.1. Let $y_{i t}$ denote the unemployment rate for city $i$ at time $t$. You are interested in studying the effects of a federally funded job training program on city unemployment rates. Let $\mathbf{z}_{i}$ denote a vector of time-constant city-specific variables that may influence the unemployment rate (these could include things like geographic location). Let $\mathbf{x}_{i t}$ be a vector of time-varying factors that can affect the unemployment rate. The variable prog $_{\text {it }}$ is the dummy indicator for program participation: prog $_{\text {it }}=1$ if city $i$ participated at time $t$. Any sequence of program participation is possible, so that a city may participate in one year but not the next.\\
+a. Discuss the merits of including $y_{i, t-1}$ in the model\\
+$y_{i t}=\theta_{t}+\mathbf{z}_{i} \boldsymbol{\gamma}+\mathbf{x}_{i t} \boldsymbol{\beta}+\rho_{1} y_{i, t-1}+\delta_{1}$ prog $_{i t}+u_{i t}, \quad t=1,2, \ldots, T$.\\
+State an assumption that allows you to consistently estimate the parameters by POLS.\\
+b. Evaluate the following statement: "The model in part a is of limited value because the POLS estimators are inconsistent if the $\left\{u_{i t}\right\}$ are serially correlated."\\
+c. Suppose that it is more realistic to assume that program participation depends on time-constant, unobservable city heterogeneity, but not directly on past unemployment. Write down a model that allows you to estimate the effectiveness of the program in this case. Explain how to estimate the parameters, describing any minimal assumptions you need.\\
+d. Write down a model that allows the features in parts a and c. In other words, prog $_{i t}$ can depend on unobserved city heterogeneity as well as on past unemployment history. Explain how to consistently estimate the effect of the program, again stating minimal assumptions.\\
+11.2. Consider the following unobserved components model:\\
+$y_{i t}=\mathbf{z}_{i t} \gamma+\delta w_{i t}+c_{i}+u_{i t}, \quad t=1,2, \ldots, T$,\\
+where $\mathbf{z}_{i t}$ is a $1 \times K$ vector of time-varying variables (which could include time-period dummies), $w_{i t}$ is a time-varying scalar, $c_{i}$ is a time-constant unobserved effect, and $u_{i t}$ is the idiosyncratic error. The $\mathbf{z}_{i t}$ are strictly exogenous in the sense that\\
+$\mathrm{E}\left(\mathbf{z}_{i s}^{\prime} u_{i t}\right)=\mathbf{0}, \quad$ all $s, t=1,2, \ldots, T$,\\
+but $c_{i}$ is allowed to be arbitrarily correlated with each $\mathbf{z}_{i t}$. The variable $w_{i t}$ is endogenous in the sense that it can be correlated with $u_{i t}$ (as well as with $c_{i}$ ).\\
+a. Suppose that $T=2$, and that assumption (11.99) contains the only available orthogonality conditions. What are the properties of the OLS estimators of $\gamma$ and $\delta$ on the differenced data? Support your claim (but do not include asymptotic derivations).\\
+b. Under assumption (11.99), still with $T=2$, write the linear reduced form for the difference $\Delta w_{i}$ as $\Delta w_{i}=\mathbf{z}_{i 1} \boldsymbol{\pi}_{1}+\mathbf{z}_{i 2} \boldsymbol{\pi}_{2}+r_{i}$, where, by construction, $r_{i}$ is uncorrelated with both $\mathbf{z}_{i 1}$ and $\mathbf{z}_{i 2}$. What condition on ( $\boldsymbol{\pi}_{1}, \boldsymbol{\pi}_{2}$ ) is needed to identify $\gamma$ and $\delta$ ? (Hint: It is useful to rewrite the reduced form of $\Delta w_{i}$ in terms of $\Delta \mathbf{z}_{i}$ and, say, $\mathbf{z}_{i 1}$.) How can you test this condition?\\
+c. Now consider the general $T$ case, where we add to assumption (11.99) the assumption $\mathrm{E}\left(w_{i s} u_{i t}\right)=0, s<t$, so that previous values of $w_{i t}$ are uncorrelated with $u_{i t}$. Explain carefully, including equations where appropriate, how you would estimate $\gamma$ and $\delta$.\\
+d. Again consider the general $T$ case, but now use the fixed effects transformation to eliminate $c_{i}$ :\\
+$\ddot{y}_{i t}=\ddot{\mathbf{z}}_{i t} \gamma+\delta \ddot{w}_{i t}+\ddot{u}_{i t}$\\
+What are the properties of the IV estimators if you use $\ddot{\mathbf{z}}_{i t}$ and $w_{i, t-p}, p \geq 1$, as instruments in estimating this equation by pooled IV? (You can only use time periods $p+1, \ldots, T$ after the initial demeaning.)\\
+11.3. Show that, in the simple model (11.41) with $T>2$, under the assumptions (11.42), $\mathrm{E}\left(r_{i t} \mid \mathbf{x}_{i}^{*}, c_{i}\right)=0$ for all $t$, and $\operatorname{Var}\left(r_{i t}-\bar{r}_{i}\right)$ and $\operatorname{Var}\left(x_{i t}^{*}-\bar{x}_{i}^{*}\right)$ constant across $t$, the plim of the FE estimator is\\
+$\operatorname{plim}_{N \rightarrow \infty} \hat{\beta}_{F E}=\beta\left\{1-\frac{\operatorname{Var}\left(r_{i t}-\bar{r}_{i}\right)}{\left[\operatorname{Var}\left(x_{i t}^{*}-\bar{x}_{i}^{*}\right)+\operatorname{Var}\left(r_{i t}-\bar{r}_{i}\right)\right]}\right\}$\\
+Thus, there is attenuation bias in the FE estimator under these assumptions.\\
+11.4. a. Show that, in the FE model, a consistent estimator of $\mu_{c} \equiv \mathrm{E}\left(c_{i}\right)$ is $\hat{\mu}_{c}=N^{-1} \sum_{i=1}^{N}\left(\bar{y}_{i}-\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\beta}}_{F E}\right)$.\\
+b. In the random trend model, how would you estimate $\mu_{g}=\mathrm{E}\left(g_{i}\right)$ ?\\
+11.5. An RE analysis of model (11.69) would add $\mathrm{E}\left(\mathbf{a}_{i} \mid \mathbf{w}_{i}, \mathbf{x}_{i}\right)=\mathrm{E}\left(\mathbf{a}_{i}\right)= \boldsymbol{\alpha}$ to Assumption FE.1' and, to Assumption FE.3', $\operatorname{Var}\left(\mathbf{a}_{i} \mid \mathbf{w}_{i}, \mathbf{x}_{i}\right)=\boldsymbol{\Lambda}$, where $\boldsymbol{\Lambda}$ is a $J \times J$ positive semidefinite matrix. (This approach allows the elements of $\mathbf{a}_{i}$ to be arbitrarily correlated.)\\
+a. Define the $T \times 1$ composite error vector $\mathbf{v}_{i} \equiv \mathbf{W}_{i}\left(\mathbf{a}_{i}-\boldsymbol{\alpha}\right)+\mathbf{u}_{i}$. Find $\mathrm{E}\left(\mathbf{v}_{i} \mid \mathbf{w}_{i}, \mathbf{x}_{i}\right)$ and $\operatorname{Var}\left(\mathbf{v}_{i} \mid \mathbf{w}_{i}, \mathbf{x}_{i}\right)$. Comment on the conditional variance.\\
+b. If you apply the usual RE procedure to the equation\\
+$y_{i t}=\mathbf{w}_{i t} \boldsymbol{\alpha}+\mathbf{x}_{i t} \boldsymbol{\beta}+v_{i t}, \quad t=1,2, \ldots, T$\\
+what are the asymptotic properties of the RE estimator and the usual RE standard errors and test statistics?\\
+c. How could you modify your inference from part b to be asymptotically valid?\\
+11.6. Does the measurement error model in equations (11.45) to (11.49) apply when $w_{i t}^{*}$ is a lagged dependent variable? Explain.\\
+11.7. In the Chamberlain model in Section 11.1.2, suppose that $\lambda_{t}=\lambda / T$ for all $t$. Show that the POLS coefficient on $\mathbf{x}_{i t}$ in the regression $y_{i t}$ on $1, \mathbf{x}_{i t}, \overline{\mathbf{x}}_{i}, t= 1, \ldots, T ; i=1, \ldots, N$, is the FE estimator. (Hint: Use partitioned regression.)\\
+11.8. In model (11.1), first difference to remove $c_{i}$ :
+
+
+\begin{equation*}
+\Delta y_{i t}=\Delta \mathbf{x}_{i t} \boldsymbol{\beta}+\Delta u_{i t}, \quad t=2, \ldots, T \tag{11.100}
+\end{equation*}
+
+
+Assume that a vector of instruments, $\mathbf{z}_{i t}$, satisfies $\mathrm{E}\left(\Delta u_{i t} \mid \mathbf{z}_{i t}\right)=0, t=2, \ldots, T$. Typically, several elements in $\Delta \mathbf{x}_{i t}$ would be included in $\mathbf{z}_{i t}$, provided they are appropriately exogenous. Of course the elements of $\mathbf{z}_{i t}$ can be arbitrarily correlated with $c_{i}$.\\
+a. State the rank condition that is necessary and sufficient for P2SLS estimation of equation (11.100) using instruments $\mathbf{z}_{i t}$ to be consistent (for fixed $T$ ).\\
+b. Under what additional assumptions are the usual P2SLS standard errors and test statistics asymptotically valid?\\
+c. How would you test for first-order serial correlation in $\Delta u_{i t}$ ?\\
+11.9. Consider model (11.1) under Assumptions FEIV. 1 and FEIV.2.\\
+a. Show that, under the additional Assumption FEIV.3, the asymptotic variance of $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$ is $\sigma_{u}^{2}\left\{\mathrm{E}\left(\ddot{\mathbf{X}}_{i}^{\prime} \ddot{\mathbf{Z}}_{i}\right)\left[\mathrm{E}\left(\ddot{\mathbf{Z}}_{i}^{\prime} \ddot{\mathbf{Z}}_{i}\right)\right]^{-1} \mathrm{E}\left(\ddot{\mathbf{Z}}_{i}^{\prime} \ddot{\mathbf{X}}_{i}\right)\right\}^{-1}$.\\
+b. Propose a consistent estimator of $\sigma_{u}^{2}$.\\
+c. Show that the 2SLS estimator of $\boldsymbol{\beta}$ from part a can be obtained by means of a dummy variable approach: estimate\\
+$y_{i t}=c_{1} d 1_{i}+\cdots+c_{N} d N_{i}+\mathbf{x}_{i t} \boldsymbol{\beta}+u_{i t}$\\
+by P2SLS, using instruments $\left(d 1_{i}, d 2_{i}, \ldots, d N_{i}, \mathbf{z}_{i t}\right)$. (Hint: Use the obvious extension of Problem 5.1 to P2SLS, and repeatedly apply the algebra of partial regression.) This is another case where, even though we cannot estimate the $c_{i}$ consistently with fixed $T$, we still get a consistent estimator of $\boldsymbol{\beta}$.\\
+d. In using the 2SLS approach from part c, explain why the usually reported standard errors are valid under Assumption FEIV.3.\\
+e. How would you obtain valid standard errors for 2SLS without Assumption FEIV.3?\\
+11.10. Consider the general model (11.69), where unobserved heterogeneity interacts with possibly several variables. Show that the FE estimator of $\boldsymbol{\beta}$ is also obtained by running the regression\\
+$y_{i t}$ on $d 1_{i} \mathbf{w}_{i t}, d 2_{i} \mathbf{w}_{i t}, \ldots, d N_{i} \mathbf{w}_{i t}, \mathbf{x}_{i t}, \quad t=1,2, \ldots, T ; i=1,2, \ldots, N$,\\
+where $d n_{i}=1$ if and only if $n=i$. In other words, we interact $\mathbf{w}_{i t}$ in each time period with a full set of cross section dummies, and then include all of these terms in a POLS regression with $\mathbf{x}_{i t}$. You should also verify that the residuals from regression (11.101) are identical to those from regression (11.77), and that regression (11.101) yields\\
+equation (11.76) directly. This proof extends the material on the basic dummy variable regression from Section 10.5.3.\\
+11.11. Apply the random growth model to the data in JTRAIN1.RAW (see Example 10.6):\\
+$\log \left(\operatorname{scrap}_{i t}\right)=\theta_{t}+c_{i}+g_{i} t+\beta_{1} \operatorname{grant}_{i t}+\beta_{2} \operatorname{grant}_{i, t-1}+u_{i t}$\\
+Specifically, difference once and then either difference again or apply fixed effects to the first-differenced equation. Discuss the results.\\
+11.12. An unobserved effects model explaining current murder rates in terms of the number of executions in the last three years is\\
+mrdrte $_{i t}=\theta_{t}+\beta_{1}$ exec $_{i t}+\beta_{2}$ unem $_{i t}+c_{i}+u_{i t}$,\\
+where $m r d r t e_{i t}$ is the number of murders in state $i$ during year $t$, per 10,000 people; $e x e c_{i t}$ is the total number of executions for the current and prior two years; and $u_{n e m}$ is the current unemployment rate, included as a control.\\
+a. Using the data for 1990 and 1993 in MURDER.RAW, estimate this model by first differencing. Notice that you should allow different year intercepts.\\
+b. Under what circumstances would exec $_{\text {it }}$ not be strictly exogenous (conditional on $c_{i}$ )? Assuming that no further lags of exec appear in the model and that unem is strictly exogenous, propose a method for consistently estimating $\boldsymbol{\beta}$ when exec is not strictly exogenous.\\
+c. Apply the method from part b to the data in MURDER.RAW. Be sure to also test the rank condition. Do your results differ much from those in part a?\\
+d. What happens to the estimates from parts a and c if Texas is dropped from the analysis?\\
+11.13. Use the data in PRISON.RAW for this question to estimate equation (11.40).\\
+a. Estimate the reduced form equation for $\Delta \log ($ prison $)$ to ensure that finall and final2 are partially correlated with $\Delta \log ($ prison $)$. The elements of $\Delta \mathbf{x}$ should be the changes in the following variables: $\log ($ polpc $), \log ($ incpc $)$, unem, black, metro, ag0\_14, ag15\_17, ag18\_24, and ag25\_34. Is there serial correlation in this reduced form?\\
+b. Use Problem 11.8c to test for serial correlation in $\Delta u_{i t}$. What do you conclude?\\
+c. Add an FE to equation (11.40). (This procedure is appropriate if we add a random growth term to equation (11.39).) Estimate the equation in first differences by FEIV.\\
+d. Estimate equation (11.39) using the property crime rate, and test for serial correlation in $\Delta u_{i t}$. Are there important differences compared with the violent crime rate?\\
+11.14. An extension of the model in Example 11.7 that allows enterprise zone designation to affect the growth of unemployment claims is\\
+$\log \left(u c l m s_{i t}\right)=\theta_{t}+c_{i}+g_{i} t+\delta_{1} e z_{i t}+\delta_{2} e z_{i t} \cdot t+u_{i t}$.\\
+Notice that each jurisdiction also has a separate growth rate $g_{i}$.\\
+a. Use the data in EZUNEM.RAW to estimate this model by FD estimation, followed by FE estimation on the differenced equation. Interpret your estimate of $\hat{\delta}_{2}$. Is it statistically significant?\\
+b. Reestimate the model setting $\delta_{1}=0$. Does this model fit better than the basic model in Example 11.4?\\
+c. Let $w_{i}$ be an observed, time-constant variable, and suppose we add $\beta_{1} w_{i}+\beta_{2} w_{i} \cdot t$ to the random growth model. Can either $\beta_{1}$ or $\beta_{2}$ be estimated? Explain.\\
+d. If we add $\eta w_{i} \cdot e z_{i t}$, can $\eta$ be estimated?\\
+11.15. Use the data in JTRAIN1.RAW for this question.\\
+a. Consider the simple equation\\
+$\log \left(\right.$ scrap $\left._{i t}\right)=\theta_{t}+\beta_{1}$ hrsemp $_{i t}+c_{i}+u_{i t}$,\\
+where $\operatorname{scrap}_{i t}$ is the scrap rate for firm $i$ in year $t$, and $h r s e m p$ it is hours of training per employee. Suppose that you difference to remove $c_{i}$, but you still think that $\Delta h r s e m p_{i t}$ and $\Delta \log \left(\operatorname{scrap}_{i t}\right)$ are simultaneously determined. Under what assumption is $\Delta$ grant $_{i t}$ a valid IV for $\Delta h r s e m p p_{i t}$ ?\\
+b. Using the differences from 1987 to 1988 only, test the rank condition for identification for the method described in part a.\\
+c. Estimate the FD equation by IV, and discuss the results.\\
+d. Compare the IV estimates on the first differences with the OLS estimates on the first differences.\\
+e. Use the IV method described in part a, but use all three years of data. How does the estimate of $\beta_{1}$ compare with only using two years of data?\\
+11.16. Consider a Hausman and Taylor-type model with a single time-constant explanatory variable:\\
+$y_{i t}=\gamma w_{i}+\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}+u_{i t}$,\\
+$\mathrm{E}\left(u_{i t} \mid w_{i}, \mathbf{x}_{i}, c_{i}\right)=0, \quad t=1, \ldots, T$,\\
+where $\mathbf{x}_{i t}$ is $1 \times K$ vector of time-varying explanatory variables.\\
+a. If we are interested only in estimating $\boldsymbol{\beta}$, how should we proceed, without making additional assumptions (other than a standard rank assumption)?\\
+b. Let $r_{i}$ be a time-constant proxy variable for $c_{i}$ in the sense that\\
+$\mathrm{E}\left(c_{i} \mid r_{i}, w_{i}, \mathbf{x}_{i}\right)=\mathrm{E}\left(c_{i} \mid r_{i}, \mathbf{x}_{i}\right)=\delta_{0}+\delta_{1} r_{i}+\overline{\mathbf{x}}_{i} \boldsymbol{\delta}_{2}$.\\
+The key assumption is that, once we condition on $r_{i}$ and $\mathbf{x}_{i}, w_{i}$ is not partially related to $c_{i}$. Assuming the standard proxy variable redundancy assumption $\mathrm{E}\left(u_{i t} \mid w_{i}, \mathbf{x}_{i}, c_{i}\right.$, $\left.r_{i}\right)=0$, find $\mathrm{E}\left(y_{i t} \mid w_{i}, \mathbf{x}_{i}, r_{i}\right)$.\\
+c. Using part b , argue that $\gamma$ is identified. Suggest a pooled OLS estimator.\\
+d. Assume now that (1) $\operatorname{Var}\left(u_{i t} \mid w_{i}, \mathbf{x}_{i}, c_{i}, r_{i}\right)=\sigma_{u}^{2}, t=1, \ldots, T$; (2) $\operatorname{Cov}\left(u_{i t}, u_{i s} \mid w_{i}\right.$, $\left.\mathbf{x}_{i}, c_{i}, r_{i}\right)=0$, all $t \neq s$; (3) $\operatorname{Var}\left(c_{i} \mid w_{i}, \mathbf{x}_{i}, r_{i}\right)=\sigma_{a}^{2}$. How would you efficiently estimate $\gamma$ (along with $\boldsymbol{\beta}, \delta_{0}, \delta_{1}$, and $\boldsymbol{\delta}_{2}$ )? [Hint: It might be helpful to write $c_{i}=\delta_{0}+\delta_{1} r_{i}+ \overline{\mathbf{x}}_{i} \boldsymbol{\delta}_{2}+a_{i}$, where $\mathrm{E}\left(a_{i} \mid w_{i}, \mathbf{x}_{i}, r_{i}\right)=0$ and $\operatorname{Var}\left(a_{i} \mid w_{i}, \mathbf{x}_{i}, r_{i}\right)=\sigma_{a}^{2}$.]\\
+11.17. Derive equation (11.81).\\
+11.18. Let $\hat{\boldsymbol{\beta}}$ be the REIV estimator.\\
+a. Derive $\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{\text {REIV }}-\boldsymbol{\beta}\right)\right.$ without Assumption REIV.3.\\
+b. Show how to consistently estimate the asymptotic variance in part a.\\
+11.19. Use the data in AIRFARE.RAW for this exercise.\\
+a. Estimate the reduced forms underlying the REIV and FEIV analyses in Example 11.1. Using fully robust $t$ statistics, is concen sufficiently (partially) correlated with lfare?\\
+b. Redo the REIV estimation, but drop the route distance variables. What happens to the estimated elasticity of passenger demand with respect to fare?\\
+c. Now consider a model where the elasticity can depend on route distance:
+
+$$
+\begin{aligned}
+\text { lpassen }_{i t}= & \theta_{t 1}+\alpha_{1} \text { lfare }_{i t}+\delta_{1} \text { ldist }_{i}+\delta_{2} \text { ldist }_{i}^{2}+\gamma_{1}\left(\text { ldist }_{i}-\mu_{1}\right) \text { lfare }_{i t} \\
+& +\gamma_{2}\left(\text { ldist }_{i}^{2}-\mu_{2}\right) \text { lfare }_{i t}+c_{i 1}+u_{i t 1}
+\end{aligned}
+$$
+
+where $\mu_{1}=\mathrm{E}\left(\right.$ ldist $\left._{i}\right)$ and $\mu_{2}=\mathrm{E}\left(\right.$ ldist $\left._{i}^{2}\right)$. The means are subtracted before forming the interactions so that $\alpha_{1}$ is the average partial effect. In using REIV or FEIV to estimate this model, what should be the IVs for the interaction terms?\\
+d. Use the data in AIRFARE.RAW to estimate the model in part c , replacing $\mu_{1}$ and $\mu_{2}$ with their sample averages. How do the REIV and FEIV estimates of $\alpha_{1}$ compare with the estimates in Table 11.1?\\
+e. Obtain fully robust standard errors for the FEIV estimation, and obtain a fully robust test of joint significance of the interaction terms. (Ignore the estimation of $\mu_{1}$ and $\mu_{2}$.) What is the robust 95 percent confidence interval for $\alpha_{1}$ ?\\
+f. Find the estimated elasticities for dist $=500$ and dist $=1,500$. What do you conclude?
+
+\section*{\begin{center}
+
+\end{document}

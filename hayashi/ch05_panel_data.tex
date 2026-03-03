@@ -1,0 +1,1797 @@
+% This LaTeX document needs to be compiled with XeLaTeX.
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{caption}
+\usepackage{bbold}
+\usepackage{multirow}
+\usepackage{fvextra, csquotes}
+% \usepackage[fallback]{xeCJK}
+\usepackage{polyglossia}
+\usepackage{fontspec}
+\usepackage{newunicodechar}
+\IfFontExistsTF{Noto Serif CJK TC}
+{\setCJKmainfont{Noto Serif CJK TC}}
+{\IfFontExistsTF{STSong}
+  {\setCJKmainfont{STSong}}
+  {\IfFontExistsTF{Droid Sans Fallback}
+    {\setCJKmainfont{Droid Sans Fallback}}
+    {\setCJKmainfont{SimSun}}
+}}
+
+\setmainlanguage{english}
+\IfFontExistsTF{CMU Serif}
+{\setmainfont{CMU Serif}}
+{\IfFontExistsTF{DejaVu Sans}
+  {\setmainfont{DejaVu Sans}}
+  {\setmainfont{Georgia}}
+}
+
+ Finite-Sample Properties of OLS }
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\newunicodechar{×}{\ifmmode\times\else{$\times$}\fi}
+\newunicodechar{⋮}{\ifmmode\vdots\else{$\vdots$}\fi}
+\newunicodechar{⇔}{\ifmmode\Leftrightarrow\else{$\Leftrightarrow$}\fi}
+\newunicodechar{¥}{\ifmmode\text{\yen}\else\yen\fi}
+\title{Chapter 5: Panel Data}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{CHAPTER 5 \\
+ Panel Data}
+\begin{abstract}
+A longitudinal or panel data set has multiple observations for a number of crosssection units. As its name suggests, a panel has two dimensions, one for crosssection units and the other for observations. The latter dimension is usually time, but there are exceptions. A cross-section sample of twins, for example, is a panel where the second dimension is siblings. The distinction between cross-section units and observations, the two terms used interchangeably until now, should be kept in mind throughout this chapter. When it is apt to do so, we will use the term "group" for the cross-section unit.\\
+In many applications, we encounter the error-components model. In such models, the error term of the equation has a component that is common to all observations (time-invariant if the second dimension of the panel is time) but that may not be orthogonal to regressors. There is available a technique, called the "fixed-effects estimator," which allows us to estimate the model without the help of instrumental variables. It and the random-effects estimator of the previous chapter are the two staple techniques in panel econometrics.\\
+The optional section of this chapter, Section 5.3, shows how to modify the fixedeffects estimator when the number of observations varies across groups. The empirical section takes up growth empirics, a topic that has recently attracted a great deal of attention.\\
+As it turns out, the fixed-effects and other estimators covered in this chapter are particular GMM estimators on a suitable transformation of the error-components model. The GMM interpretation of the fixed-effects estimator is pursued in an analytical exercise to this chapter, where you will be asked to find an estimator that is asymptotically more efficient than the fixed-effects estimator.
+\end{abstract}
+
+\subsection*{5.1 The Error-Components Model}
+Our point of departure is the multiple-equation model with common coefficients of Proposition 4.7. To simplify the discussion, we will assume that the sample is a random sample. This assumption is satisfied in most popular panels, such as the Panel Study of Income Dynamics (PSID) and the National Longitudinal Survey (NLS). In those panels, a large number - hundreds or even thousands - of crosssection units are randomly drawn from the population.
+
+For this case of random samples, the assumptions of Proposition 4.7 can be restated as (see (4.6.15) for the definition of $\left.\mathbf{y}_{i}(M \times 1), \mathbf{Z}_{i}(M \times L), \boldsymbol{\varepsilon}_{i}(M \times 1)\right)$ :
+
+
+\begin{equation*}
+\text { (system of } M \text { linear equations) } \mathbf{y}_{i}=\mathbf{Z}_{i} \delta+\varepsilon_{i} \tag{5.1.1}
+\end{equation*}
+
+
+
+\begin{equation*}
+\text { (random sample) }\left\{\mathbf{y}_{i}, \mathbf{Z}_{i}\right\} \text { is i.i.d. } \tag{5.1.2}
+\end{equation*}
+
+
+("SUR assumption") $\mathrm{E}\left(\mathbf{z}_{i m} \cdot \varepsilon_{i h}\right)=\mathbf{0}$ for $\boldsymbol{m}, \boldsymbol{h}=1,2, \ldots, \boldsymbol{M}$,\\
+i.e., $\mathrm{E}\left(\boldsymbol{\varepsilon}_{i} \otimes \mathbf{x}_{i}\right)=\mathbf{0}$ where $\mathbf{x}_{i}=$ union of $\left(\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)$,
+
+
+\begin{gather*}
+\text { (identification) } \mathrm{E}\left(\mathbf{Z}_{i} \otimes \mathbf{x}_{i}\right) \text { is of full column rank, }  \tag{5.1.4}\\
+\text { (conditional homoskedasticity) } \mathrm{E}\left(\boldsymbol{\varepsilon}_{i} \boldsymbol{\varepsilon}_{i}^{\prime} \mid \mathbf{x}_{i}\right)=\mathrm{E}\left(\boldsymbol{\varepsilon}_{i} \boldsymbol{\varepsilon}_{i}^{\prime}\right) \equiv \mathbf{\Sigma}  \tag{5.1.5}\\
+\text { (nonsingularity of } \mathrm{E}\left(\mathbf{g}_{i} \mathbf{g}_{i}^{\prime}\right) \text { ) } \mathrm{E}\left(\mathbf{g}_{i} \mathbf{g}_{i}^{\prime}\right) \text { is nonsingular, where } \mathbf{g}_{i} \equiv \boldsymbol{\varepsilon}_{i} \otimes \mathbf{x}_{i} \text {. } \tag{5.1.6}
+\end{gather*}
+
+
+As noted in Section 4.5, since $\mathrm{E}\left(\mathbf{g}_{i} \mathbf{g}_{i}^{\prime}\right)=\mathbf{\Sigma} \otimes \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ under conditional homoskedasticity, (5.1.6) is equivalent to the condition
+
+
+\begin{equation*}
+\boldsymbol{\Sigma} \text { and } \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right) \text { are nonsingular. } \tag{5.1.6'}
+\end{equation*}
+
+
+Under these assumptions, the random-effects estimator $\hat{\delta}_{\text {RE }}$, defined in (4.6.8') on page 293, is the efficient GMM estimator.
+
+\section*{Error Components}
+This model, very frequently used for panel data, is one where the unobservable error term $\varepsilon_{i m}$ is assumed to consist of two components:
+
+
+\begin{equation*}
+\varepsilon_{i m}=\alpha_{i}+\eta_{i m} . \tag{5.1.7}
+\end{equation*}
+
+
+\footnotetext{${ }^{1}$ The $\Sigma_{\mathbf{x z}}$ in Assumption $4.4^{\prime}$ can be written as $\mathrm{E}\left(\mathbf{Z}_{i} \otimes \mathbf{x}_{i}\right)$; see Review Question 4 to Section 4.6.
+}The first unobservable component $\alpha_{i}$, without the $m$ subscript and hence common to all equations, is called the individual effect, the individual heterogeneity, or the fixed effect. If we define
+
+$$
+\underset{(M \times 1)}{\eta_{i}} \equiv\left[\begin{array}{c}
+\eta_{i 1} \\
+\vdots \\
+\eta_{i M}
+\end{array}\right],
+$$
+
+the matrix representation of the $M$-equation system is
+
+$$
+\left[\begin{array}{c}
+y_{i 1} \\
+\vdots \\
+y_{i M}
+\end{array}\right]=\left[\begin{array}{c}
+\mathbf{z}_{i 1}^{\prime} \boldsymbol{\delta} \\
+\vdots \\
+\mathbf{z}_{i M}^{\prime} \boldsymbol{\delta}
+\end{array}\right]+\left[\begin{array}{c}
+\alpha_{i} \\
+\vdots \\
+\alpha_{i}
+\end{array}\right]+\left[\begin{array}{c}
+\eta_{i 1} \\
+\vdots \\
+\eta_{i M}
+\end{array}\right]
+$$
+
+or
+
+
+\begin{equation*}
+\mathbf{y}_{i}=\mathbf{Z}_{i} \boldsymbol{\delta}+\mathbf{1}_{M} \cdot \alpha_{i}+\boldsymbol{\eta}_{i} \quad(i=1,2, \ldots, n), \tag{$\prime$}
+\end{equation*}
+
+
+where $\mathbf{1}_{M}$ is the $M$-dimensional vector of ones.\\
+The orthogonality conditions (5.1.3) are satisfied if the regressors of the system are orthogonal to both error components, that is, if
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{z}_{i m} \cdot \alpha_{i}\right)=\mathbf{0} \quad \text { for } m=1,2, \ldots, M, \tag{5.1.8a}
+\end{equation*}
+
+
+and
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{z}_{i m} \cdot \eta_{i h}\right)=\mathbf{0} \quad \text { for } m, h=1,2, \ldots, M . \tag{5.1.8b}
+\end{equation*}
+
+
+However, in many applications that utilize panel data, (5.1.8a) is not a reasonable assumption to make. This is because the fixed effect represents some permanent characteristics of the individual economic unit, as illustrated by the following examples.
+
+Example 5.1 (production function with firm heterogeneity): In the loglinear production function (3.2.13) of Section 3.2, suppose the firm's efficiency $u_{i}$ stays constant over time. Then the equation for year $m$ is
+
+$$
+\log \left(Q_{i m}\right)=\phi_{0}+\phi_{1} \log \left(L_{i m}\right)+u_{i}+v_{i m},
+$$
+
+where $Q_{i m}$ is the output of firm $i$ in year $m$, $L_{i m}$ is labor input in year $m$, and $v_{i m}$ is the technology shock in year $m$. The equation can be written as (5.1.1') by setting
+
+$$
+y_{i m}=\log \left(Q_{i m}\right), \mathbf{z}_{i m}=\left(1, \log \left(L_{i m}\right)\right)^{\prime}, \boldsymbol{\delta}=\left(\phi_{0}, \phi_{1}\right)^{\prime}, \alpha_{i}=u_{i}, \eta_{i m}=v_{i m}
+$$
+
+Also,
+
+$$
+\mathbf{x}_{i}=\left(1, \log \left(L_{i 1}\right), \ldots, \log \left(L_{i M}\right)\right)^{\prime} .
+$$
+
+Under perfect competition, the individual effect $u_{i}$ would be positively correlated with labor input because efficient firms, whose $u_{i}$ is higher than its mean value, would hire more labor to expand (see (3.2.14)). If $v_{i m}$ represents unexpected shocks that are unforeseen by the firm when input choices are made, it is reasonable to assume that $v_{i m}$ is uncorrelated with the regressors.
+
+Example 5.2 (wage equation): For simplicity, drop experience from the wage equation of Example 4.2 but suppose data for 1982, in addition to 1969 and 1980, are available. Suppose also that the coefficient of schooling and that of IQ remain the same over time but that the intercept is time-dependent (due, for example, to business-cycle effects on wages). With the error decomposition (5.1.7), the three-equation system is
+
+$$
+\left\{\begin{array}{l}
+L W 69_{i}=\phi_{1}+\beta S 69_{i}+\gamma I Q_{i}+\alpha_{i}+\eta_{i 1}, \\
+L W 80_{i}=\phi_{2}+\beta S 80_{i}+\gamma I Q_{i}+\alpha_{i}+\eta_{i 2}, \\
+L W 82_{i}=\phi_{3}+\beta S 82_{i}+\gamma I Q_{i}+\alpha_{i}+\eta_{i 3} .
+\end{array}\right.
+$$
+
+As noted at the end of Section 4.6, even if a subset of the coefficients differs across equations, the system can be written as multiple equations with common coefficients. In this example, this is accomplished with
+
+\[
+\mathbf{Z}_{i}=\left[\begin{array}{c}
+\mathbf{z}_{i 1}^{\prime}  \tag{5.1.9}\\
+\mathbf{z}_{i 2}^{\prime} \\
+\mathbf{z}_{i 3}^{\prime}
+\end{array}\right]=\left[\begin{array}{ccccc}
+1 & 0 & 0 & S 69_{i} & I Q_{i} \\
+0 & 1 & 0 & S 80_{i} & I Q_{i} \\
+0 & 0 & 1 & S 82_{i} & I Q_{i}
+\end{array}\right], \quad \boldsymbol{\delta}^{\prime}=\left(\phi_{1}, \phi_{2}, \phi_{3}, \beta, \gamma\right) .
+\]
+
+Also,
+
+$$
+\mathbf{x}_{i}=\left(1, S 69_{i}, S 80_{i}, S 82_{i}, I Q_{i}\right)^{\prime} .
+$$
+
+The error term includes the wage determinants not accounted for by schooling and IQ. It may be reasonable to assume that they are divided between the permanent individual traits (denoted $\alpha_{i}$ ), which would affect the individual's choice of schooling, and other factors (denoted $\eta_{i m}$ ) uncorrelated with the regressors, such as measurement error in the log wage rate.
+
+\section*{Group Means}
+Fortunately, there is available a popular estimator, called the fixed-effects estimator, that is robust to the failure of (5.1.8a), i.e., that is consistent even when the regressors are not orthogonal to the fixed effect $\alpha_{i}$. To anticipate the next section's discussion, the estimator is applied to an $M$-equation system transformed from the original system (5.1.1'). The matrix used for the transformation is the annihilator associated with $\mathbf{1}_{M}$ :
+
+
+\begin{align*}
+\underset{(M \times M)}{\mathbf{Q}} & \equiv \mathbf{I}_{M}-\mathbf{1}_{M}\left(\mathbf{1}_{M}^{\prime} \mathbf{1}_{M}\right)^{-1} \mathbf{1}_{M}^{\prime} \\
+& =\mathbf{I}_{M}-\frac{1}{M} \mathbf{1}_{M} \mathbf{1}_{M}^{\prime} \\
+& =\mathbf{I}_{M}-\left[\begin{array}{ccc}
+1 / M & \cdots & 1 / M \\
+\vdots & & \vdots \\
+1 / M & \cdots & 1 / M
+\end{array}\right] . \tag{5.1.10}
+\end{align*}
+
+
+What this matrix does is to extract deviations from group means. For example, multiplying the $M$-dimensional vector $\mathbf{y}_{i}$ from left by $\mathbf{Q}$ results in
+
+\[
+\tilde{\mathbf{y}}_{i} \equiv \mathbf{Q} \mathbf{y}_{i}=\left[\begin{array}{c}
+y_{i 1}-\bar{y}_{i}  \tag{5.1.11}\\
+\vdots \\
+y_{i M}-\bar{y}_{i}
+\end{array}\right]=\mathbf{y}_{i}-\mathbf{1}_{M} \cdot \bar{y}_{i},
+\]
+
+where
+
+$$
+\bar{y}_{i}=\frac{1}{M} \mathbf{1}_{M}^{\prime} \mathbf{y}_{i}=\frac{1}{M} \sum_{m=1}^{M} y_{i m}
+$$
+
+is the group mean for the dependent variable. Note that this mean is over $m$, not over $i$; it is specific to each group ( $i$ ). Similarly for the regressors, each column of $\mathbf{Q} \mathbf{Z}_{i}$ is the vector of deviations for the corresponding column of $\mathbf{Z}_{i}$.
+
+\section*{A Reparameterization}
+Not surprisingly, however, robustness to the failure of (5.1.8a) comes at a price: some of the parameters of the model may no longer be identifiable after the transformation by $\mathbf{Q}$. To provide two examples,
+
+\begin{itemize}
+  \item The obvious case is the coefficient of a variable common to all equations. For example, $I Q_{i}$ in Example 5.2 is a common regressor (see (5.1.9)), so the column of $\mathbf{Z}_{i}$ corresponding to $I Q_{i}$ (the fifth column) is $\mathbf{1}_{M} \cdot I Q_{i}$ and the fifth column of $\mathbf{Q} \mathbf{Z}_{i}$ is a vector of zeros. Consequently, the IQ coefficient, $\gamma$, cannot\\
+be identified after the transformation. To separate the coefficient of common regressors from the rest, let $\mathbf{b}_{i}$ be the vector of common regressors and write the $M \times L$ matrix of regressors, $\mathbf{Z}_{i}$, as
+\end{itemize}
+
+
+\begin{equation*}
+\mathbf{Z}_{i}=\left(\mathbf{F}_{i} \vdots \mathbf{1}_{M} \mathbf{b}_{i}^{\prime}\right) \tag{5.1.12}
+\end{equation*}
+
+
+and partition the coefficient vector $\boldsymbol{\delta}$ accordingly:
+
+$$
+\delta=\left[\begin{array}{l}
+\beta \\
+\gamma
+\end{array}\right]
+$$
+
+The coefficient vector $\boldsymbol{\gamma}$ cannot be identified after transformation.
+
+\begin{itemize}
+  \item It may also be the case that, in addition to $\boldsymbol{\gamma}$, some of the coefficients in $\boldsymbol{\beta}$ are unidentifiable and a reparameterization is needed. Consider Example 5.2 where each equation has a different intercept. One of the intercepts needs to be dropped from $\mathbf{F}_{i}$ and included in $\mathbf{b}_{i}$, because a common intercept can be created by taking a linear combination of the equation-specific intercepts. One reparameterization is to define
+\end{itemize}
+
+\[
+\mathbf{F}_{i}=\left[\begin{array}{ccc}
+1 & 0 & S 69_{i}  \tag{5.1.13}\\
+0 & 1 & S 80_{i} \\
+0 & 0 & S 82_{i}
+\end{array}\right], \mathbf{b}_{i}=\left(1, I Q_{i}\right)^{\prime},
+\]
+
+so
+
+\[
+\mathbf{Z}_{i}=\left[\begin{array}{ccccc}
+1 & 0 & S 69_{i} & 1 & I Q_{i}  \tag{5.1.14}\\
+0 & 1 & S 80_{i} & 1 & I Q_{i} \\
+0 & 0 & S 82_{i} & 1 & I Q_{i}
+\end{array}\right], \boldsymbol{\beta}=\left(\phi_{1}-\phi_{3}, \phi_{2}-\phi_{3}, \beta\right)^{\prime}, \boldsymbol{\gamma}=\left(\phi_{3}, \gamma\right)^{\prime} .
+\]
+
+More generally, the identification condition for fixed-effects estimation is that $\mathbf{F}_{i}$ and $\mathbf{b}_{i}$ are defined so that
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{Q} \mathbf{F}_{i} \otimes \mathbf{x}_{i}\right) \text { is of full column rank } \tag{5.1.15}
+\end{equation*}
+
+
+where $\mathbf{x}_{i}=$ union of $\left(\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)$. Why is this an identification condition? Because (as you will see more clearly in Analytical Exercise 2), the fixed-effects estimator is a (specialization of the) random-effects estimator applied to the transformed regression of $\mathbf{Q y}$ on $\mathbf{Q F}$. (5.1.15) is just the adaptation of the identification condition (5.1.4) to the transformed regression.
+
+With $\mathbf{Z}_{i}$ thus divided between $\mathbf{F}_{i}$ and $\mathbf{b}_{i}$, the system of $M$-equations (5.1.1') on page 325 can be rewritten as
+
+
+\begin{align*}
+\mathbf{y}_{i} & =\mathbf{F}_{i} \boldsymbol{\beta}+\mathbf{1}_{\boldsymbol{M}} \cdot \mathbf{b}_{i}^{\prime} \boldsymbol{\gamma}+\mathbf{1}_{\boldsymbol{M}} \cdot \alpha_{i}+\boldsymbol{\eta}_{i} \quad(i=1,2, \ldots, n), \text { or } \\
+y_{i m} & =\mathbf{f}_{i m}^{\prime} \boldsymbol{\beta}+\mathbf{b}_{i}^{\prime} \boldsymbol{\gamma}+\alpha_{i}+\eta_{i m} \quad(i=1,2, \ldots, n ; m=1, \ldots, M), \tag{$\prime\prime$}
+\end{align*}
+
+
+where $\mathbf{f}_{i m}^{\prime}$ is the $m$-th row of $\mathbf{F}_{i}$. The error-components model consists of assumptions (5.1.1") ( $M$ linear equations), (5.1.2) (random samples), (5.1.8) (SUR assumption with two error components), (5.1.4) (identification), (5.1.5) (conditional homoskedasticity), (5.1.6) (nonsingular $\mathrm{E}\left(\mathbf{g}_{i} \mathbf{g}_{i}^{\prime}\right)$ ), and (5.1.15) (fixed-effects identification). We include the additional identification condition (5.1.15) for fixedeffects estimation, so that both the random-effects estimator and the fixed-effects estimator are well-defined for the same model.
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item (Verification of Proposition 4.7 assumptions) Verify that the conditions of Proposition 4.7 are satisfied when (5.1.1)-(5.1.6) hold. Show that the identification condition (5.1.4) is satisfied when $\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ is nonsingular. Hint: $\mathbf{z}_{i m}$ is a subset of $\mathbf{x}_{i}$. Thus, (5.1.4) is redundant.
+  \item (Nonuniqueness of reparameterization) (5.1.13) is not the only reparameterization for Example 5.2. If $\mathbf{F}_{i}$ is defined as
+\end{enumerate}
+
+$$
+\mathbf{F}_{i}=\left[\begin{array}{ccc}
+0 & 0 & S 69_{i} \\
+1 & 0 & S 80_{i} \\
+0 & 1 & S 82_{i}
+\end{array}\right],
+$$
+
+how should $\mathbf{b}_{i}$ and $\boldsymbol{\delta}$ be defined?\\
+3. Without reparameterization, the $\mathbf{F}_{i}$ for Example 5.2 is
+
+$$
+\mathbf{F}_{i}=\left[\begin{array}{cccc}
+1 & 0 & 0 & S 69_{i} \\
+0 & 1 & 0 & S 80_{i} \\
+0 & 0 & 1 & S 82_{i}
+\end{array}\right]
+$$
+
+with $\mathbf{b}_{i}=I Q_{i}$. Verify that (5.1.15) is not satisfied.
+
+\subsection*{5.2 The Fixed-Effects Estimator}
+\section*{The Formula}
+As already mentioned, the fixed-effects estimator is defined for the transformed system. Multiplying both sides of (5.1.1') on page 329 from the left by $\mathbf{Q}$ and making use of the fact that $\mathbf{Q} 1_{M}=\mathbf{0}$, we obtain
+
+$$
+\mathbf{Q} \mathbf{y}_{i}=\mathbf{Q} \mathbf{F}_{i} \boldsymbol{\beta}+\mathbf{Q} \boldsymbol{\eta}_{i}
+$$
+
+or
+
+
+\begin{equation*}
+\tilde{\mathbf{y}}_{i}=\tilde{\mathbf{F}}_{i} \boldsymbol{\beta}+\tilde{\boldsymbol{\eta}}_{i} \quad(i=1,2, \ldots, n), \tag{5.2.1}
+\end{equation*}
+
+
+where
+
+
+\begin{equation*}
+\underset{(M \times 1)}{\tilde{\mathbf{y}}_{i}} \equiv \mathbf{Q} \mathbf{y}_{i}, \underset{(M \times \# \boldsymbol{\beta})}{\widetilde{\mathbf{F}}_{i}} \equiv \mathbf{Q} \mathbf{F}_{i}, \underset{(M \times 1)}{\tilde{\boldsymbol{\eta}}_{i}} \equiv \mathbf{Q} \boldsymbol{\eta}_{i} \tag{5.2.2}
+\end{equation*}
+
+
+Thus, the fixed effect $\alpha_{i}$ and common regressors drop out in the transformed equations. Now form the pooled sample of transformed $\mathbf{y}_{i}$ and $\mathbf{F}_{i}$ as
+
+\[
+\underset{(M n \times 1)}{\tilde{\mathbf{y}}} \equiv\left[\begin{array}{c}
+\tilde{\mathbf{y}}_{1}  \tag{5.2.3}\\
+\vdots \\
+\tilde{\mathbf{y}}_{n}
+\end{array}\right], \underset{(M n \times \# \beta)}{\widetilde{\mathbf{F}}} \equiv\left[\begin{array}{c}
+\widetilde{\mathbf{F}}_{1} \\
+\vdots \\
+\tilde{\mathbf{F}}_{n}
+\end{array}\right] \text {. }
+\]
+
+The fixed-effects estimator of $\boldsymbol{\beta}$, denoted $\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}$, is the pooled OLS estimator, that is, the OLS estimator applied to the pooled sample $(\tilde{\mathbf{y}}, \tilde{\mathbf{F}})$ of size $M n$. Therefore,
+
+
+\begin{align*}
+\widehat{\boldsymbol{\beta}}_{\mathrm{FE}} & \equiv\left(\widetilde{\mathbf{F}}^{\prime} \widetilde{\mathbf{F}}\right)^{-1} \widetilde{\mathbf{F}}^{\prime} \tilde{\mathbf{y}} \\
+& =\left(\frac{1}{n} \sum_{i=1}^{n} \widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)^{-1} \frac{1}{n} \sum_{i=1}^{n} \widetilde{\mathbf{F}}_{i}^{\prime} \tilde{\mathbf{y}}_{i} \\
+& =\left[\frac{1}{n} \sum_{i=1}^{n}\left(\mathbf{Q F}_{i}\right)^{\prime}\left(\mathbf{Q} \mathbf{F}_{i}\right)\right]^{-1} \frac{1}{n} \sum_{i=1}^{n}\left(\mathbf{Q} \mathbf{F}_{i}\right)^{\prime}\left(\mathbf{Q} \mathbf{y}_{i}\right) \\
+& =\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{F}_{i}^{\prime} \mathbf{Q} \mathbf{Q} \mathbf{F}_{i}\right)^{-1} \frac{1}{n} \sum_{i=1}^{n} \mathbf{F}_{i}^{\prime} \mathbf{Q Q} \mathbf{y}_{i} \\
+& =\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{F}_{i}^{\prime} \mathbf{Q} \mathbf{F}_{i}\right)^{-1} \frac{1}{n} \sum_{i=1}^{n} \mathbf{F}_{i}^{\prime} \mathbf{Q} \mathbf{y}_{i} \quad \text { (since } \mathbf{Q} \text { is symmetric and idempotent). } \tag{5.2.4}
+\end{align*}
+
+
+Substituting (5.2.1) into (5.2.4), the sampling error can be obtained as
+
+
+\begin{align*}
+\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}-\boldsymbol{\beta} & =\left(\frac{1}{n} \sum_{i=1}^{n} \widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)^{-1} \frac{1}{n} \sum_{i=1}^{n} \widetilde{\mathbf{F}}_{i}^{\prime} \tilde{\boldsymbol{\eta}}_{i} \\
+& =\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{F}_{i}^{\prime} \mathbf{Q} \mathbf{F}_{i}\right)^{-1} \frac{1}{n} \sum_{i=1}^{n} \mathbf{F}_{i}^{\prime} \mathbf{Q} \boldsymbol{\eta}_{i} \tag{5.2.5}
+\end{align*}
+
+
+Because it is based on deviations from group means, the fixed-effects estimator is also known as the within estimator or the covariance estimator. Another, and perhaps more popular, derivation is to apply OLS to levels, i.e., not in deviations but with group (i) specific dummies added to the list of regressors. For this reason the estimator is also called the least squares dummy variables (LSDV) estimator. The LSDV interpretation allows us to see what additional assumptions are needed for the error-components model in developing a finite-sample theory for the estimator. This is left as Analytical Exercise 1.
+
+\section*{Large-Sample Properties}
+As you will prove in Analytical Exercise 2, the fixed-effects estimator can also be written as a GMM estimator, which lends itself to a straightforward development of large-sample theory for the fixed-effects estimator summarized in Proposition 5.1 below. Proving the proposition, however, can be accomplished more easily by inspecting the expression (5.2.5) for sampling error.
+
+Proposition 5.1 (large-sample properties of the fixed-effects estimator): Consider the error-components model (consisting of (5.1.1") on page 329, (5.1.2), (5.1.8), (5.1.4)-(5.1.6), and (5.1.15)), but relax the SUR assumption (5.1.8b) by requiring only that
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{f}_{i m} \cdot \eta_{i h}\right)=\mathbf{0} \quad \text { for all } m, h(=1,2, \ldots, M), \tag{5.2.6}
+\end{equation*}
+
+
+where $\mathbf{f}_{i m}^{\prime}$ is the $m$-th row of $\mathbf{F}_{i}$. Define $\tilde{\mathbf{y}}_{i}, \tilde{\mathbf{F}}_{i}$, and $\tilde{\boldsymbol{\eta}}_{i}$ by (5.2.2). Then:\\
+(a) the fixed-effects estimator (5.2.4) is consistent and asymptotically normal with
+
+
+\begin{equation*}
+\operatorname{Avar}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)=\left[\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)\right]^{-1} \mathrm{E}\left[\widetilde{\mathbf{F}}_{i}^{\prime} \mathrm{E}\left(\tilde{\boldsymbol{\eta}}_{i} \tilde{\boldsymbol{\eta}}_{i}^{\prime}\right) \widetilde{\mathbf{F}}_{i}\right]\left[\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)\right]^{-1} \tag{5.2.7}
+\end{equation*}
+
+
+(b) This asymptotic variance is consistently estimated by
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)}=\left(\frac{1}{n} \sum_{i=1}^{n} \widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)^{-1}\left(\frac{1}{n} \sum_{i=1}^{n} \widetilde{\mathbf{F}}_{i}^{\prime} \widehat{\mathbf{V}} \widetilde{\mathbf{F}}_{i}\right)\left(\frac{1}{n} \sum_{i=1}^{n} \widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)^{-1} \tag{5.2.8}
+\end{equation*}
+
+
+where $\widehat{\mathbf{V}}$ is the sample cross-moment matrix of transformed residuals associated with the fixed-effects estimator:
+
+
+\begin{equation*}
+\underset{(M \times M)}{\widehat{\mathbf{V}}} \equiv \frac{1}{n} \sum_{i=1}^{n}\left(\tilde{\mathbf{y}}_{i}-\widetilde{\mathbf{F}}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)\left(\tilde{\mathbf{y}}_{i}-\widetilde{\mathbf{F}}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)^{\prime} \tag{5.2.9}
+\end{equation*}
+
+
+The only nontrivial part of the proof is to show:\\
+(1) $\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)$ is nonsingular (and hence invertible),\\
+(2) $\mathrm{E}\left(\mathbf{F}_{i}^{\prime} \mathbf{Q} \boldsymbol{\eta}_{i}\right)=\mathbf{0}$ (which is needed for consistency), and\\
+(3) $\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \tilde{\eta}_{i} \tilde{\eta}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)$ (which is the Avar of $\left.\frac{1}{n} \sum_{i=1}^{n} \widetilde{\mathbf{F}}_{i}^{\prime} \tilde{\eta}_{i}\right)=\mathrm{E}\left[\widetilde{\mathbf{F}}_{i}^{\prime} \mathrm{E}\left(\tilde{\eta}_{i} \tilde{\eta}_{i}^{\prime}\right) \widetilde{\mathbf{F}}_{i}\right]$.
+
+The rest of the proof is an easy application of Kolmogorov's LLN and the LindebergLevy CLT.
+
+Proving that (5.1.15) implies (1) is left as an optional analytical exercise.\\
+To prove (2), use formula (4.6.16b) and rewrite the expectation as
+
+
+\begin{align*}
+\mathrm{E}\left(\mathbf{F}_{i}^{\prime} \mathbf{Q} \boldsymbol{\eta}_{i}\right) & =\mathrm{E}\left(\sum_{m=1}^{M} \sum_{h=1}^{M} q_{m h} \mathbf{f}_{i m} \cdot \eta_{i h}\right) \quad\left(q_{m h} \equiv(m, h) \text { element of } \mathbf{Q}\right) \\
+& =\sum_{m=1}^{M} \sum_{h=1}^{M} q_{m h} \mathrm{E}\left(\mathbf{f}_{i m} \cdot \eta_{i h}\right) \tag{5.2.10}
+\end{align*}
+
+
+This is zero by the orthogonality conditions (5.2.6).\\
+Proof of (3) is as follows. First note that
+
+$$
+\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \tilde{\eta}_{i} \tilde{\eta}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)=\mathrm{E}\left[\widetilde{\mathbf{F}}_{i}^{\prime} \mathrm{E}\left(\tilde{\eta}_{i} \tilde{\eta}_{i}^{\prime} \mid \mathbf{x}_{i}\right) \widetilde{\mathbf{F}}_{i}\right] .
+$$
+
+(This follows by the Law of Total Expectations and by the fact that $\mathbf{x}_{i}[=$ union of $\left(\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)$ ] includes the elements of $\mathbf{F}_{i}$ and $\widetilde{\mathbf{F}}_{i}$ is a function of $\mathbf{F}_{i}$.) But $\mathrm{E}\left(\tilde{\eta}_{i} \tilde{\eta}_{i}^{\prime} \mid \mathbf{x}_{i}\right)$ equals the unconditional mean $\mathrm{E}\left(\tilde{\eta}_{i} \tilde{\eta}_{i}^{\prime}\right)$ because
+
+
+\begin{align*}
+& \mathrm{E}\left(\tilde{\boldsymbol{\eta}}_{i} \tilde{\boldsymbol{\eta}}_{i}^{\prime} \mid \mathbf{x}_{i}\right)=\mathrm{E}\left(\tilde{\boldsymbol{\varepsilon}}_{i} \tilde{\boldsymbol{\varepsilon}}_{i}^{\prime} \mid \mathbf{x}_{i}\right) \quad\left(\text { since } \tilde{\boldsymbol{\varepsilon}}_{i} \equiv \mathbf{Q} \boldsymbol{\varepsilon}_{i}=\mathbf{Q}\left(\mathbf{1}_{M} \cdot \alpha_{i}+\boldsymbol{\eta}_{i}\right)=\mathbf{Q} \boldsymbol{\eta}_{i}=\tilde{\boldsymbol{\eta}}_{i}\right) \\
+& =\mathbf{Q} \mathrm{E}\left(\boldsymbol{\varepsilon}_{i} \boldsymbol{\varepsilon}_{i}^{\prime} \mid \mathbf{x}_{i}\right) \mathbf{Q} \\
+& =\mathbf{Q} \mathrm{E}\left(\boldsymbol{\varepsilon}_{i} \boldsymbol{\varepsilon}_{i}^{\prime}\right) \mathbf{Q} \quad(\text { by }(5.1 .5)) \\
+& =\mathrm{E}\left(\tilde{\varepsilon}_{i} \tilde{\varepsilon}_{i}^{\prime}\right) \\
+& =\mathrm{E}\left(\tilde{\boldsymbol{\eta}}_{i} \tilde{\boldsymbol{\eta}}_{i}^{\prime}\right) \quad\left(\text { since } \tilde{\boldsymbol{\varepsilon}}_{i}=\tilde{\boldsymbol{\eta}}_{i}\right) \tag{5.2.11}
+\end{align*}
+
+
+A glance at the expression for the asymptotic variance should make you suspect that there must be some other estimator that is asymptotically more efficient, because the asymptotic variance of an efficient estimator can be written as the inverse of a matrix. Indeed, as you will prove in Analytical Exercise 2, there is available an estimator that is asymptotically more efficient than the fixed-effects estimator.
+
+\section*{Digression: When $\boldsymbol{\eta}_{\boldsymbol{i}}$ Is Spherical}
+The usual error-components model assumes, additionally, that the second error component $\boldsymbol{\eta}_{i}$ is spherical:
+
+
+\begin{equation*}
+\mathrm{E}\left(\boldsymbol{\eta}_{i} \boldsymbol{\eta}_{i}^{\prime}\right)=\sigma_{\eta}^{2} \mathbf{I}_{M}, \text { so that } \mathrm{E}\left(\tilde{\boldsymbol{\eta}}_{i} \tilde{\boldsymbol{\eta}}_{i}^{\prime}\right)=\sigma_{\eta}^{2} \mathbf{Q} . \tag{5.2.12}
+\end{equation*}
+
+
+If, as in many panel data sets, $m$ is time, this assumption is often referred to as the assumption of no "serial correlation." The lack of serial correlation in this sense should not be confused with the condition that $\boldsymbol{\eta}_{i}$ be uncorrelated with $\boldsymbol{\eta}_{j}$ for $i \neq j$. The latter is a consequence of our maintained assumption that the sample is i.i.d.
+
+Substituting this into (5.2.7) and noting that $\mathbf{Q} \widetilde{\mathbf{F}}_{i}=\widetilde{\mathbf{F}}_{i}$, we find that the expression for the asymptotic variance simplifies to
+
+
+\begin{equation*}
+\operatorname{Avar}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)=\sigma_{\eta}^{2} \cdot\left[\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)\right]^{-1} . \tag{5.2.13}
+\end{equation*}
+
+
+If there is a consistent estimate, $\hat{\sigma}_{\eta}^{2}$, of $\sigma_{\eta}^{2}$, then the asymptotic variance is consistently estimated by
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)}=\hat{\sigma}_{\eta}^{2} \cdot\left(\frac{1}{n} \sum_{i=1}^{n} \widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)^{-1} \tag{5.2.14}
+\end{equation*}
+
+
+which equals $n$ times $\hat{\sigma}_{\eta}^{2} \cdot\left(\widetilde{\mathbf{F}}^{\prime} \widetilde{\mathbf{F}}\right)^{-1}$, that is, $n$ times the usual expression for the estimated variance matrix when OLS is applied to the pooled sample $(\tilde{\mathbf{y}}, \tilde{\mathbf{F}})$ of size $M n$.
+
+To extend the OLS analogy, define $S S R$ as
+
+
+\begin{equation*}
+S S R=\left(\tilde{\mathbf{y}}-\widetilde{\mathbf{F}}_{\boldsymbol{\beta}} \widehat{\boldsymbol{F}}_{\mathrm{FE}}\right)^{\prime}\left(\tilde{\mathbf{y}}-\widetilde{\mathbf{F}}_{\boldsymbol{\boldsymbol { \beta }}} \widehat{\mathrm{FE}}\right)=\sum_{i=1}^{n}\left(\tilde{\mathbf{y}}_{i}-\widetilde{\mathbf{F}}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)^{\prime}\left(\tilde{\mathbf{y}}_{i}-\widetilde{\mathbf{F}}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right) . \tag{5.2.15}
+\end{equation*}
+
+
+In the pooled OLS on deviations from group means, there are $\# \beta$ coefficients to be estimated. The usual OLS estimate of the error variance is
+
+
+\begin{equation*}
+\frac{S S R}{M n-\# \beta} . \tag{5.2.16}
+\end{equation*}
+
+
+This, however, is not consistent for $\sigma_{\eta}^{2}$. You will be asked to show in Analytical Exercise 3 that a consistent estimator is
+
+
+\begin{equation*}
+\frac{S S R}{M n-n-\# \beta} . \tag{5.2.17}
+\end{equation*}
+
+
+(For that matter, $S S R /(M n-n)$ is also consistent.) The reason $n$ has to be subtracted from the denominator of (5.2.16) is that $M$ transformed equations are not linearly independent; for both sides of the $M$ transformed equations, the sum is always zero, as you can see by multiplying both sides of (5.2.1) from left by $\mathbf{1}_{M}^{\prime}$ and making use of $\mathbf{1}_{M}^{\prime} \mathbf{Q}=\mathbf{0}^{\prime}$. The effective sample size of the pooled sample is $M n-n$, not $M n$. Use of (5.2.16) instead of (5.2.17) is a very common mistake, which results in an underestimation of standard errors and an overestimation of $t$-values. For example, if $M=3, n=1,000$, and $\# \beta=5$, the $t$-values will be overestimated by about $23 \%$ ( $=$ square root of $2995 / 1995$ minus one).
+
+\section*{Random Effects versus Fixed Effects}
+Now get back to the general case of no restriction on $\mathrm{E}\left(\boldsymbol{\eta}_{i} \boldsymbol{\eta}_{i}^{\prime}\right)$, so the error term can have an arbitrary pattern of "serial correlation" across $m$. Comparing (5.2.6) with (5.1.8), we see that the orthogonality conditions not used by the fixed-effects estimator are
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{f}_{i m} \cdot \alpha_{i}\right)=\mathbf{0} \text { for all } m, \mathrm{E}\left(\mathbf{b}_{i} \cdot \alpha_{i}\right)=\mathbf{0}, \mathrm{E}\left(\mathbf{b}_{i} \cdot \eta_{i m}\right)=\mathbf{0} \text { for all } m . \tag{5.2.18}
+\end{equation*}
+
+
+That is, the fixed-effects estimator is robust to the failure of (5.2.18). Let $\widehat{\boldsymbol{\beta}}_{\text {RE }}$ be the elements of $\hat{\delta}_{\mathrm{RE}}$ (the random-effects estimator applied to the original $M$-equation system (5.1.1') on page 329) that correspond to $\beta$ :
+
+\[
+\hat{\boldsymbol{\delta}}_{\mathrm{RE}} \equiv\left[\begin{array}{c}
+\widehat{\boldsymbol{\beta}}_{\mathrm{RE}}  \tag{5.2.19}\\
+\hat{\boldsymbol{\gamma}}_{\mathrm{RE}}
+\end{array}\right]
+\]
+
+Also, let $\mathrm{A} \operatorname{var}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{RE}}\right)$ be the asymptotic variance of $\widehat{\boldsymbol{\beta}}_{\mathrm{RE}}$. It is the leading submatrix of $\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right)$ (given by (4.6.9') on page 293) corresponding to $\boldsymbol{\beta}$.
+
+The random-effects estimator $\widehat{\boldsymbol{\beta}}_{\mathrm{RE}}$ is an efficient estimator while $\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}$ is consistent but not efficient. However, if (5.2.18) is violated, $\widehat{\boldsymbol{\beta}}_{\mathrm{RE}}$ is no longer guaranteed to be consistent, while $\widehat{\boldsymbol{\beta}}_{\text {FE }}$ remains consistent. Thus, a natural test of (5.2.18) is to consider the difference between the two estimators,
+
+
+\begin{equation*}
+\hat{\mathbf{q}} \equiv \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}-\widehat{\boldsymbol{\beta}}_{\mathrm{RE}} \tag{5.2.20}
+\end{equation*}
+
+
+It is easy to prove that $\sqrt{n} \hat{\mathbf{q}}$ is asymptotically normal. The Hausman principle (originally developed for ML estimators but proved to be applicable to GMM estimators in Analytical Exercise 9 to Chapter 3) implies that
+
+
+\begin{equation*}
+\operatorname{Avar}(\hat{\mathbf{q}})=\operatorname{Avar}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)-\operatorname{Avar}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{RE}}\right) . \tag{5.2.21}
+\end{equation*}
+
+
+(So, there is no need to incorporate the asymptotic covariance between $\widehat{\boldsymbol{\beta}}_{\text {FE }}$ and $\widehat{\boldsymbol{\beta}}_{\mathrm{RE}}$ because it is zero.) By Proposition 4.7, the leading submatrix of (4.6.9') on page 293 provides a consistent estimator of $\operatorname{Avar}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{RE}}\right)$. By Proposition 5.1, $\operatorname{Avar}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)$ is consistently estimated by (5.2.8). A consistent estimator of $\operatorname{Avar}(\hat{\mathbf{q}})$, therefore, is the difference. Write this as $\widehat{\operatorname{Avar}(\hat{\mathbf{q}}) \text {. It is proved in the appendix }}$ that (i) $\operatorname{Avar}(\hat{\mathbf{q}})$ is nonsingular (and hence positive definite) and (ii) the Hausman statistic defined below is guaranteed to be nonnegative for any sample $\left\{\mathbf{y}_{i}, \mathbf{Z}_{i}\right\}$. To summarize,
+
+Proposition 5.2 (Hausman specification test): Suppose the assumptions of the error-components model ((5.1.1") (on page 329), (5.1.2), (5.1.8), (5.1.4)-(5.1.6), and (5.1.15)) hold. Define $\hat{\mathbf{q}}$ and $\widehat{\mathrm{Avar}(\hat{\mathbf{q}})}$ as just described. Then the Hausman statistic
+
+
+\begin{equation*}
+H \equiv n \cdot \hat{\mathbf{q}}^{\prime}(\widehat{\operatorname{Avar}(\hat{\mathbf{q}})})^{-1} \hat{\mathbf{q}} \tag{5.2.22}
+\end{equation*}
+
+
+is distributed asymptotically chi-square with \# $\boldsymbol{\beta}$ degrees of freedom. It is nonnegative in finite samples.
+
+This test is a specification test because it can detect a failure of (5.2.18) which is part of the maintained assumptions of the error-components model. More specifically, consider a sequence of local alternatives that satisfy all the assumptions of the error-components model except (5.2.18). ${ }^{2}$ With some additional technical assumptions, it can be shown that the Hausman statistic converges to a noncentral $\chi^{2}$ distribution with a noncentrality parameter along those sequences of local alternatives. ${ }^{3}$ That is, the Hausman statistic has power against local alternatives under which the random-effects estimator is inconsistent.
+
+\section*{Relaxing Conditional Homoskedasticity}
+It is straightforward to derive the large sample distribution of the fixed-effects estimator without conditional homoskedasticity. As will be seen in the next section,
+
+\footnotetext{${ }^{2}$ The notion of local alternatives was introduced in Section 2.4.\\
+${ }^{3}$ See Newey (1985). The required technical assumption is Newey's Assumption 5.
+}
+extension of the large sample results to cover unbalanced panels is actually easier without conditional homoskedasticity.
+
+Proposition 5.3 (fixed-effects estimator without conditional homoskedasticity): Drop conditional homoskedasticity (5.1.5) from the hypothesis of Proposition 5.1. Define $\tilde{\mathbf{y}}_{i}, \tilde{\mathbf{F}}_{i}$, and $\tilde{\boldsymbol{\eta}}_{i}$ by (5.2.2). Then:\\
+(a) the fixed-effects estimator (5.2.4) is consistent and asymptotically normal with
+
+
+\begin{equation*}
+\operatorname{Avar}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)=\left[\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)\right]^{-1} \mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \tilde{\boldsymbol{\eta}}_{i} \tilde{\boldsymbol{\eta}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)\left[\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)\right]^{-1} . \tag{5.2.23}
+\end{equation*}
+
+
+(b) If, furthermore, some appropriate finite fourth-moment assumption (which is an adaptation of Assumption 4.6) is satisfied, then the asymptotic variance is consistently estimated by
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)}=\left(\frac{1}{n} \sum_{i=1}^{n} \widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)^{-1}\left(\frac{1}{n} \sum_{i=1}^{n}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \breve{\boldsymbol{\eta}}_{i} \breve{\boldsymbol{\eta}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)\right)\left(\frac{1}{n} \sum_{i=1}^{n} \widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)^{-1}, \tag{5.2.24}
+\end{equation*}
+
+
+where $\check{\boldsymbol{\eta}}_{i} \equiv \tilde{\mathbf{y}}_{i}-\widetilde{\mathbf{F}}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}$ (this $\check{\boldsymbol{\eta}}_{i}$ should not be confused with $\tilde{\boldsymbol{\eta}}_{i}$ in (5.2.1)).
+
+Again, there are two ways to prove this. Write the fixed-effects estimator as a GMM estimator and then apply the large sample theory of GMM estimators. Or you can prove it directly by inspecting the expression (5.2.4) for the sampling error. The only non-trivial part of the proof is that the middle summation in the expression\\
+\includegraphics[max width=\textwidth, alt={}]{14fb0795-6d81-4e76-9788-792298f1ddae-353_70_1261_1416_269} The required technique is very similar to the one used for proving Proposition 4.2 and so is not repeated here.
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item For the large sample results of this section to hold, do we have to assume that $\alpha_{i}$ and $\eta_{i}$ are orthogonal to each other?
+  \item (Dropping redundant equations) As mentioned in the text, the $M$ transformed equations are not linearly independent in the sense that any one of the $M$ transformed equations is a linear combination of the remaining $M-1$ equations. So consider forming a pooled sample of size $M n-n$ by dropping one transformed equation (say, the last equation) for each group (i). Is the OLS estimator on this smaller pooled sample the fixed-effects estimator? [Answer: No.]
+  \item (Importance of cross orthogonalities) Suppose (5.2.6) holds for $m=h$ but not necessarily for $m \neq h$. Would the fixed-effects estimator be necessarily consistent? [Answer: No.]
+  \item Verify that $\mathrm{E}\left(\tilde{\boldsymbol{\eta}}_{i} \tilde{\boldsymbol{\eta}}_{i}^{\prime}\right)$ is singular. (Nevertheless, $\mathrm{E}\left[\widetilde{\mathbf{F}}_{i}^{\prime} \mathrm{E}\left(\tilde{\boldsymbol{\eta}}_{i} \tilde{\boldsymbol{\eta}}_{i}^{\prime}\right) \widetilde{\mathbf{F}}_{i}\right]$ in (5.2.7) and $\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \tilde{\eta}_{i} \tilde{\eta}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)$ in (5.2.23) are nonsingular, as an optional analytical exercise will ask you to show.)
+  \item (Consistent estimation of error covariances) To prove that (5.2.9) is consistent for $\mathrm{E}\left(\tilde{\eta}_{i} \tilde{\eta}_{i}^{\prime}\right)$, you would apply Proposition 4.1 to the transformed system of $M$ equations. Verify that the conditions of the proposition are satisfied here. In particular, is the requirement that $\mathrm{E}\left(\tilde{\mathbf{f}}_{i m} \tilde{\mathbf{f}}_{i m}^{\prime}\right)$ (where $\tilde{\mathbf{f}}_{i m}$ is the $m$-th row of $\widetilde{\mathbf{F}}_{i}$ ) be finite satisfied by the error-component model? Hint: $\tilde{\mathbf{f}}_{i m}$ is a linear transformation of $\mathbf{x}_{i}$. (5.1.5) and (5.1.6) imply that $\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ is nonsingular.
+  \item (What the Hausman statistic tests) For simplicity, assume $\boldsymbol{\Sigma}\left(\equiv \mathrm{E}\left(\boldsymbol{\varepsilon}_{i} \boldsymbol{\varepsilon}_{i}^{\prime}\right)\right)$ is known. Also for simplicity, assume that there are no common regressors, so $\mathbf{z}_{i m}=\mathbf{f}_{i m}$ and (5.2.18) reduces to (5.1.8a): $\mathrm{E}\left(\mathbf{z}_{i m} \cdot \alpha_{i}\right)=\mathbf{0}$ for all $m$. This is the restriction not used by the fixed-effects estimator. Is the random-effects estimator necessarily inconsistent when (5.1.8a) fails but all the other assumptions of the error-components model (such as (5.1.8b)) are satisfied? Hint: Show that, without (5.1.8a),
+\end{enumerate}
+
+$$
+\operatorname{plim} \hat{\boldsymbol{\delta}}_{\mathrm{RE}}-\boldsymbol{\delta}=\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Sigma}^{-1} \mathbf{Z}_{i}\right)^{-1} \mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Sigma}^{-1} \boldsymbol{\varepsilon}_{i}\right),
+$$
+
+where $\boldsymbol{\varepsilon}_{i}=\mathbf{1} \cdot \boldsymbol{\alpha}_{i}+\boldsymbol{\eta}_{i}$. Provided (5.1.8b) holds, (5.1.8a) is sufficient for $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Sigma}^{-1} \boldsymbol{\varepsilon}_{i}\right)$ to be zero. Is it necessary? Thus, strictly speaking, the Hausman test is not a test of (5.1.8a); it is a test of $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Sigma}^{-1} \boldsymbol{\varepsilon}_{i}\right)=\mathbf{0}$.
+
+\subsection*{5.3 Unbalanced Panels (optional)}
+In applying the multiple-equation model to panel data, we have been making an implicit but important assumption that the variables are observable for all $m$, so that the number of observations for each cross-section unit is the same ( $M$ ). Such a panel is called a balanced panel. But no available panel data sets are balanced, thanks to exits from and entries to the survey. Inevitably, some firms disappear from the sample due to bankruptcies and mergers before the end year $M$ of the survey, while those firms that did not exist at the start of the survey may be included\\
+later. Some of the households initially in the survey will not complete the spell of $M$ periods due to household resolutions or because respondents get tired of being asked the same questions over and over again. The panel of identical siblings is unbalanced if it includes identical triplets (and even septuplets) as well as twins.
+
+This section shows that the fixed-effects estimator easily extends to unbalanced panels. This sanguine conclusion, however, depends on the assumption that whether the cross-section unit stays in the sample does not depend on the error term. Without this assumption, the estimator is no longer consistent. This phenomenon is called the selectivity bias. A full discussion of why a selectivity bias arises and how it can be corrected for is relegated to Section 8.2, because the issue is not specific to panel data.
+
+\section*{"Zeroing Out" Missing Observations}
+To handle missing observations, it is convenient to define a dummy variable, $d_{i m}$,
+
+\[
+d_{i m}= \begin{cases}1 & \text { if observation } m \text { is in the sample }  \tag{5.3.1}\\ 0 & \text { otherwise }\end{cases}
+\]
+
+and
+
+\[
+\underset{(M \times 1)}{\mathbf{d}_{i}}=\left[\begin{array}{c}
+d_{i 1}  \tag{5.3.2}\\
+\vdots \\
+d_{i M}
+\end{array}\right], M_{i}=\sum_{m=1}^{M} d_{i m}=\text { \# observations from } i \text {. }
+\]
+
+If observation $m$ is missing for group $i$, fill the $m$-th rows of $\mathbf{y}_{i}, \mathbf{F}_{i}$, and $\boldsymbol{\eta}_{i}$ with zeros so that they continue to be of fixed size. That is,
+
+\[
+\underset{(M \times 1)}{\mathbf{y}_{i}}=\left[\begin{array}{c}
+d_{i 1} \cdot y_{i 1}  \tag{5.3.3}\\
+\vdots \\
+d_{i M} \cdot y_{i M}
+\end{array}\right], \underset{(M \times \# \beta)}{\mathbf{F}_{i}}=\left[\begin{array}{c}
+d_{i 1} \cdot \mathbf{f}_{i 1}^{\prime} \\
+\vdots \\
+d_{i M} \cdot \mathbf{f}_{i M}^{\prime}
+\end{array}\right], \underset{(M \times 1)}{\boldsymbol{\eta}_{i}}=\left[\begin{array}{c}
+d_{i 1} \cdot \eta_{i 1} \\
+\vdots \\
+d_{i M} \cdot \eta_{i M}
+\end{array}\right] .
+\]
+
+Thus, for each $i$ and $m$, either all the elements of the vector ( $y_{i m}, \mathbf{f}_{i m}$ ) are observable or none is observable. We will not consider the case where some, but not all, elements of ( $y_{i m}, \mathbf{f}_{i m}$ ) are observable.
+
+With this new notation, (5.1.1") on page 329 becomes
+
+
+\begin{equation*}
+\mathbf{y}_{i}=\mathbf{F}_{i} \boldsymbol{\beta}+\mathbf{d}_{i} \cdot \mathbf{b}_{i}^{\prime} \boldsymbol{\gamma}+\mathbf{d}_{i} \cdot \alpha_{i}+\boldsymbol{\eta}_{i} \quad(i=1,2, \ldots, n) . \tag{5.3.4}
+\end{equation*}
+
+
+In the case of balanced panels, where $\mathbf{d}_{i}=\mathbf{1}_{M}$, the transformation matrix $\mathbf{Q}$ in the fixed-effects formula (5.2.4) is the annihilator associated with $\mathbf{1}_{M}$ (see (5.1.10)).
+
+With missing observations, we use as the transformation matrix the annihilator associated with $\mathbf{d}_{i}$ :
+
+
+\begin{align*}
+\underset{(M \times M)}{\mathbf{Q}} & =\mathbf{I}_{M}-\mathbf{d}_{i}\left(\mathbf{d}_{i}^{\prime} \mathbf{d}_{i}\right)^{-1} \mathbf{d}_{i}^{\prime} \\
+& =\mathbf{I}_{M}-\frac{1}{M_{i}} \mathbf{d}_{i} \mathbf{d}_{i}^{\prime} \quad\left(\text { since } \mathbf{d}_{i}^{\prime} \mathbf{d}_{i}=M_{i}\right) \tag{5.3.5}
+\end{align*}
+
+
+This matrix depends on $i$ because $\mathbf{d}_{i}$ differs across $i$. Nevertheless, we leave this dependence of $\mathbf{Q}$ on $i$ implicit for economy of notation. With $\mathbf{y}_{i}, \mathbf{F}_{i}, \boldsymbol{\eta}_{i}$, and $\mathbf{Q}$ thus redefined, the formula for the fixed-effects estimator remains the same as (5.2.4). Substituting (5.3.4) into this formula and observing that $\mathbf{Q d}_{i}=\mathbf{0}$, we see that the expression for the sampling error, too, is the same as (5.2.5).
+
+\section*{Zeroing Out versus Compression}
+As seen in Section 5.2 for the case of balanced panels, the fixed-effects estinator can be calculated as the OLS estimator on the pooled sample (of size $M n$ ) of deviations from group means. As before, let $\tilde{\mathbf{y}}_{i}, \tilde{\mathbf{F}}_{i}$, and $\tilde{\boldsymbol{\eta}}_{i}$ be the transformations by $\mathbf{Q}$ of $\mathbf{y}_{i}, \mathbf{F}_{i}$, and $\boldsymbol{\eta}_{i}$, respectively. For example, $\tilde{\mathbf{y}}_{i}$ looks like
+
+$$
+\underset{(M \times M)}{\tilde{\mathbf{y}}_{i}} \equiv \mathbf{Q} \mathbf{y}_{i}=\left[\begin{array}{c}
+d_{i 1} \cdot y_{i 1}-d_{i 1} \cdot \bar{y}_{i} \\
+\vdots \\
+d_{i M} \cdot y_{i M}-d_{i M} \cdot \bar{y}_{i}
+\end{array}\right]
+$$
+
+where
+
+
+\begin{equation*}
+\bar{y}_{i} \equiv \frac{1}{M_{i}} \mathbf{d}_{i}^{\prime} \mathbf{y}_{i}=\frac{1}{M_{i}} \times\left(\text { sum of } y_{i m} \text { over } m \text { for which data are available }\right) \tag{5.3.6}
+\end{equation*}
+
+
+Thus, if observation $m$ for group $i$ is available, the $m$-th element of $\tilde{\mathbf{y}}_{i}$ is still the deviation of $y_{i m}$ from the group mean, but the group mean is over available observations. Since $d_{i m}=0$ if observation $m$ is not available, the rows corresponding to missing observations in $\tilde{\mathbf{y}}_{i}$ are zero. The same structure applies to columns of $\widetilde{\mathbf{F}}_{i}$. Therefore, the pooled sample of size $M n$ created from $\left(\tilde{\mathbf{y}}_{i}, \tilde{\mathbf{F}}_{i}\right)(i=1, \ldots, n)$ has a number of rows filled with zeros. Those rows can be dropped from the pooled sample without affecting the numerical value of the fixed-effects estimator. That is, we can "compress" ( $\tilde{\mathbf{y}}_{i}, \tilde{\mathbf{F}}_{i}$ ) by dropping rows filled with zeros, before forming the pooled sample.
+
+\section*{No Selectivity Bias}
+The fixed-effects estimator, thus adapted to unbalanced panels, remains consistent and asymptotically normal, if the orthogonality conditions (5.2.6) in Proposition 5.1 are modified to
+
+
+\begin{equation*}
+\text { (no selectivity bias) } \mathrm{E}\left(\mathbf{f}_{i m} \cdot \eta_{i h} \mid \mathbf{d}_{i}\right)=\mathbf{0} \quad(m, h=1,2, \ldots, M) . \tag{5.3.7}
+\end{equation*}
+
+
+As shown in the next proposition, this condition is crucial for ensuring the consistency of the fixed-effects estimator. By the Law of Total Expectations, this condition is stronger than (5.2.6) that the unconditional expectation is zero. It is easy to construct an example where (5.3.7) does not hold because the pattern of selection $\mathbf{d}_{i}$ depends on the error term $\boldsymbol{\eta}_{i}$. Note that (5.3.7) does not involve the fixed effect $\alpha_{i}$. Thus, if the dependence of sample selection on the error term is only through the fixed effect, the problem of sample selectivity bias does not occur.
+
+If the orthogonality conditions (5.2.6) are strengthened as (5.3.7), the conclusions of Proposition 5.3 carry over:
+
+Proposition 5.4 (large-sample properties of the fixed-effects estimator for unbalauced panels): Consider the error-components model consisting of (5.3.4), (5.1.2), (5.1.4)-(5.1.6), (5.1.15), and (5.3.7), with $\left(\mathbf{y}_{i}, \mathbf{F}_{i}, \boldsymbol{\eta}_{i}\right)$ as in (5.3.3). As before, define $\left(\tilde{\mathbf{y}}_{i}, \tilde{\mathbf{F}}_{i}, \tilde{\boldsymbol{\eta}}_{i}\right)$ by (5.2.2), but with $\mathbf{Q}$ given by (5.3.5). Then the conclusions of Proposition 5.3 hold.
+
+Here we show that $\mathrm{E}\left(\mathbf{F}_{i}^{\prime} \mathbf{Q} \boldsymbol{\eta}_{i}\right)=\mathbf{0}$. (The other parts of the proof, which are applications of Kolmogorov's LLN and the Lindeberg-Levy CLT, are the same as in the proof of Proposition 5.3.) Since
+
+
+\begin{equation*}
+\mathbf{F}_{i}^{\prime} \mathbf{Q} \boldsymbol{\eta}_{i}=\sum_{m=1}^{M} \sum_{h=1}^{M} q_{m h}^{(i)} \cdot d_{i m} \cdot d_{i h} \cdot \mathbf{f}_{i m} \cdot \eta_{i h} \tag{5.3.8}
+\end{equation*}
+
+
+where $q_{m h}^{(i)}$ is the ( $m, h$ ) element of $\mathbf{Q}$ applied to the $i$-th equations, we have
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{F}_{i}^{\prime} \mathbf{Q} \eta_{i}\right)=\sum_{m=1}^{M} \sum_{h=1}^{M} \mathrm{E}\left(q_{m h}^{(i)} \cdot d_{i m} \cdot d_{i h} \cdot \mathbf{f}_{i m} \cdot \eta_{i h}\right) \tag{5.3.9}
+\end{equation*}
+
+
+If there is no selectivity bias so that $\mathrm{E}\left(\mathbf{f}_{i m} \cdot \eta_{i h} \mid \mathbf{d}_{i}\right)=\mathbf{0}$, then (5.3.9) equals zero\\
+because
+
+
+\begin{align*}
+& \mathrm{E}\left(q_{m h}^{(i)} \cdot d_{i m} \cdot d_{i h} \cdot \mathbf{f}_{i m} \cdot \eta_{i h}\right) \\
+& \left.=\mathrm{E}\left[q_{m h}^{(i)} \cdot d_{i m} \cdot d_{i h} \cdot \mathrm{E}\left(\mathbf{f}_{i m} \cdot \eta_{i h} \mid \mathbf{d}_{i}\right)\right] \quad \text { (since } q_{m h}^{(i)} \text { is a function of } \mathbf{d}_{i}\right) \tag{5.3.10}
+\end{align*}
+
+
+It is interesting that the extension to unbalanced panels is easier without conditional homoskedasticity. In order for (5.2.7) of Proposition 5.1 to be the asymptotic variance of the estimator under conditional homoskedasticity, we would have to assume that the second moment of $\tilde{\boldsymbol{\eta}}_{i}$ conditional on $\mathbf{x}_{i}$ and $\mathbf{d}_{i}$ equals the unconditional second moment, and consistent estimation of this second moment would be a bit complicated.
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item For $\mathbf{d}_{i}=(1,0,1)^{\prime}$, write down $\mathbf{Q}$.
+  \item (Alternative derivation of the fixed-effects estimator for unbalanced panels) Let $\mathbf{y}_{i}^{*}$ be the $M_{i}$-dimensional vector created from the $M$-dimensional vector $\mathbf{y}_{i}$ by dropping rows for which there is no observation. Similarly, create $\mathbf{F}_{i}^{*} \left(M_{i} \times \# \beta\right)$ from $\mathbf{F}_{i}$ and $\mathbf{d}_{i}^{*}$ from $\mathbf{d}_{i}$ (so $\mathbf{d}_{i}^{*}$ is the $M_{i}$-dimensional vector of ones). Let $\mathbf{Q}^{*}\left(M_{i} \times M_{i}\right)$ be the annihilator associated with $\mathbf{d}_{i}^{*}$. Verify that the fixed-effects estimator can also be written as (5.2.4) in terms of those starred matrices and vectors.
+  \item Section 4.6 described the pooled OLS in levels for the system (4.6.1') on page 292.\\
+(a) How would you modify the estimator (4.6.11') on page 293 to accommodate unbalanced panels? Hint: Define $\mathbf{y}_{i}$ and $\mathbf{Z}_{i}(M \times L)$ by "zeroing out."\\
+(b) Without conditional homoskedasticity, what is its asymptotic variance? [Answer: $\left[\mathrm{E}\left(\mathbf{Z}_{i} \mathbf{Z}_{i}^{\prime}\right)\right]^{-1} \mathrm{E}\left(\mathbf{Z}_{i} \boldsymbol{\varepsilon}_{i} \boldsymbol{\varepsilon}_{i}^{\prime} \mathbf{Z}_{i}^{\prime}\right)\left[\mathrm{E}\left(\mathbf{Z}_{i} \mathbf{Z}_{i}^{\prime}\right)\right]^{-1}$.]\\
+(c) How would you estimate the asymptotic variance? Hint: Replace $\widetilde{\mathbf{F}}_{i}$ by $\mathbf{Z}_{i}$, $\mathbf{Q}$ by $\mathbf{I}_{M}$, and $\tilde{\boldsymbol{\eta}}_{i}$ by $\boldsymbol{\varepsilon}_{i}$ in Proposition 5.3.
+\end{enumerate}
+
+\subsection*{5.4 Application: International Differences in Growth Rates}
+Do poor economies grow faster than rich economies? If so, how much faster? These are the questions addressed in the recent burgeoning literature of growth. ${ }^{4}$ This section derives the key equation that has been used to explain economic growth of nations and discusses ways to estimate it. Actual estimation of several specifications of the equation is relegated to the empirical exercise.
+
+\section*{Derivation of the Estimation Equation}
+In neoclassical growth theory, output per effective labor in period $t$, denoted $q(t)$ and to be defined more precisely in (5.4.4) below, converges to the steady-state level $q^{*}$. The log-linear approximation around the steady state gives
+
+
+\begin{equation*}
+\frac{\mathrm{d} \log (q(t))}{\mathrm{d} t}=\lambda \cdot\left[\log \left(q^{*}\right)-\log (q(t))\right] \tag{5.4.1}
+\end{equation*}
+
+
+Estimating $\lambda$, the speed of convergence, has been the objective of the recent growth literature. (5.4.1) implies that, for any two points, $t_{m-1}$ and $t_{m}$ in time,
+
+
+\begin{equation*}
+\log \left(q\left(t_{m}\right)\right)=(1-\rho) \cdot \log \left(q^{*}\right)+\rho \cdot \log \left(q\left(t_{m-1}\right)\right) \tag{5.4.2}
+\end{equation*}
+
+
+where
+
+
+\begin{equation*}
+\rho \equiv \exp \left[-\lambda \cdot\left(t_{m}-t_{m-1}\right)\right] \tag{5.4.3}
+\end{equation*}
+
+
+(Since in our data $t_{m}$ 's are equally spaced in time, $\rho$ will not depend on $m$.) Output per effective labor is defined as
+
+
+\begin{equation*}
+q(t) \equiv \frac{Y(t)}{A(t) L(t)} \tag{5.4.4}
+\end{equation*}
+
+
+where $Y(t)$ equals aggregate output, $L(t)$ equals aggregate hours worked, and $A(t)$ equals level of labor-augmenting technical progress. Assuming $A(t)$ grows at a constant rate $g$ (so that $A(t)=A(0) \exp (g t))$, (5.4.4) implies
+
+
+\begin{equation*}
+\log (q(t))=\log \left(\frac{Y(t)}{L(t)}\right)-\log (A(0))-g \cdot t \tag{5.4.5}
+\end{equation*}
+
+
+Substituting this into (5.4.2), we obtain
+
+\footnotetext{${ }^{4}$ A very extensive survey of the literature is Barro and Sala-i-Martin (1995).
+}
+
+\begin{equation*}
+\log \left(\frac{Y\left(t_{m}\right)}{L\left(t_{m}\right)}\right)=\rho \cdot \log \left(\frac{Y\left(t_{m-1}\right)}{L\left(t_{m-1}\right)}\right)+(1-\rho) \cdot\left[\log \left(q^{*}\right)+\log (A(0))\right]+\phi_{m} \tag{5.4.6}
+\end{equation*}
+
+where
+
+\begin{equation*}
+\phi_{m} \equiv g \cdot\left(t_{m}-\rho \cdot t_{m-1}\right) \tag{5.4.7}
+\end{equation*}
+
+
+An equivalent form of equation (5.4.6) can be obtained by subtracting $\log \frac{Y\left(t_{m-1}\right)}{L\left(t_{m-1}\right)}$ from both sides:
+
+
+\begin{align*}
+& \log \left(\frac{Y\left(t_{m}\right)}{L\left(t_{m}\right)}\right)-\log \left(\frac{Y\left(t_{m-1}\right)}{L\left(t_{m-1}\right)}\right) \\
+& =(\rho-1) \log \left(\frac{Y\left(t_{m-1}\right)}{L\left(t_{m-1}\right)}\right)+(1-\rho) \cdot\left[\log \left(q^{*}\right)+\log (A(0))\right]+\phi_{m} \tag{$\prime$}
+\end{align*}
+
+
+Since $\rho<1$ as $\lambda>0$, this equation says that the level of per capita output has a negative effect on subsequent growth. The country, when poor, should grow faster. This form of the equation is more intuitive, but for the purpose of choosing the correct estimation technique, (5.4.6) rather than (5.4.6') is more instructive.
+
+Equation (5.4.6) should hold for each country $i .^{5}$ For the rest of this section, we assume that the speed of convergence $(\lambda)$ and the growth rate of labor-augmenting technical progress ( $g$ ) are the same across countries. Then (5.4.6) for country $i$ can be written as
+
+
+\begin{equation*}
+y_{i m}=\phi_{m}+\rho y_{i, m-1}+\alpha_{i} \tag{5.4.8}
+\end{equation*}
+
+
+where
+
+
+\begin{align*}
+y_{i m} & =\log \left(\frac{Y\left(t_{m}\right)}{L\left(t_{m}\right)}\right) \text { for country } i \\
+\alpha_{i} & =(1-\rho) \times\left\{\log \left(q^{*}\right)+\log (A(0))\right\} \text { for country } i \tag{5.4.9}
+\end{align*}
+
+
+\section*{Appending the Error Term}
+It is a fairly standard practice in applied econometrics to derive an equation without an error term from the theory and then append an error term for estimation. Growth empirics is not an exception; an error term $\eta_{i m}$ is added to (5.4.8) to obtain
+
+
+\begin{equation*}
+y_{i m}=\phi_{m}+\rho y_{i, m-1}+\alpha_{i}+\eta_{i m} \tag{5.4.10}
+\end{equation*}
+
+
+\footnotetext{${ }^{5}$ We have derived the equation describing convergence assuming a closed economy. The assumption is hard to justify, but a similar equation can be derived under free mobility of physical capital if human capital is another factor of production and not freely mobile internationally. See, e.g., Barro and Sala-i-Martin (1995).
+}One natural interpretation of $\eta_{i m}$ is business cycles, which in macroeconomics are defined as the difference between actual output and potential output. Growth theory is about potential output. The discrepancy between potential output and actual output becomes the error term in the estimation equation derived from growth theory. But then there would be an errors-in-variables problem, which renders the regressors endogenous. ${ }^{6}$ For the rest of this section, we follow the mainstream growth literature and ignore the endogeneity problem.
+
+Another problem is the possible correlation in $\eta_{i m}$ between countries ( $i$ 's). This spatial (or geographical) correlation would not arise if the sample were a random sample. But the sample of nations is not a random sample; it is the universe. The phenomenon known as international business cycles implies that the spatial correlation would be positive. Statistical inference treating countries as if they were independent data points would overstate statistical significance. This problem, too, is largely ignored in the literature and will be ignored in our discussion.
+
+\section*{Treatment of $\boldsymbol{\alpha}_{\boldsymbol{i}}$}
+As is clear from (5.4.9), the term $\alpha_{i}$ in equation (5.4.10) depends on the steadystate level $q^{*}$ and the initial level of technology $A(0)$. How you treat $\alpha_{i}$ in the estimation depends on which version of neoclassical growth theory you subscribe to. According to the Cass-Koopmans optimal growth model, the sole determinant of the steady-state level $q^{*}$ is the growth rate of labor. Thus, if technological knowledge freely flows internationally so that $A(0)$ is the same across countries, the international differences in $\alpha_{i}$ are completely explained by the labor growth rate. Therefore, leaving aside the endogeneity problem just mentioned, OLS estimation of (5.4.10) delivers consistency if the labor growth rate is included as the additional regressor to control for $\alpha_{i}$. If you subscribe to the Solow-Swan growth theory, the saving rate is the other determinant of $q^{*}$, so the regression should include the saving rate along with the labor growth rate.
+
+A large fraction of the recent growth literature under the rubric of "conditional convergence" includes these and other variables that might affect $q^{*}$ or $A(0)$ such as measures of political stability and the degree of financial intermediation in order to control for $\alpha_{i}$. In the empirical exercise, you will be asked to estimate $\rho$, and hence the speed of convergence $\lambda$, using this conditional convergence approach.
+
+\footnotetext{${ }^{6}$ Let $x_{i m}$ be the $\log$ potential output in year $l_{m}$ for country $i$ that growth theory is purported to explain, so that (5.4.8) holds for $x_{i m}$ rather than for $y_{i m}$. Let $\log$ actual output $y_{i m}$ be related to $x_{i m}$ as $y_{i m}=x_{i m}+\eta_{i m}$. Then (5.4.10) results, but with the error term $\eta_{i m}-\rho \eta_{i, m-1}$. Not only would there be an errors-in-variables problem, but also the error term has a moving-average structure.
+}However, no matter how ingeniously the variables are selected to control for $\alpha_{i}$, some component of $\alpha_{i}$ having to do with features unique to the country would remain unexplained and find its way in the error term. Being part of $\alpha_{i}$, it is correlated with the regressor $y_{i, m-1}$ in (5.4.10). The OLS estimation, even if the equation includes a variety of variables to control for $\alpha_{i}$, will not provide consistency. The alternative approach is to treat $\alpha_{i}$ as an unobservable fixed effect.
+
+\section*{Consistent Estimation of Speed of Convergence}
+If output and other variables are observed at $M+1$ points in time, $t_{0}, t_{1}, t_{2}, \ldots, t_{M}$, equation (5.4.10) is available for $m=1, \ldots, M$. The fixed-effects technique could be applied to this $M$-equation system, but it does not provide consistency. The reason is that the system is "dynamic" in that some of the regressors are the dependent variables for other equations of the system. To see this, look at the first two equations of the system:
+
+$$
+\begin{aligned}
+& y_{i 1}=\phi_{1}+\rho y_{i 0}+\alpha_{i}+\eta_{i 1}, \\
+& y_{i 2}=\phi_{2}+\rho y_{i 1}+\alpha_{i}+\eta_{i 2} .
+\end{aligned}
+$$
+
+Suppose the error term $\eta_{i 1}$ is orthogonal to the regressors (which are a constant and $\left.y_{i 0}\right)$ in the first equation, so that $\mathrm{E}\left(\eta_{i 1}\right)=0$ and $\mathrm{E}\left(y_{i 0} \eta_{i 1}\right)=0$. If we further make the assumption that $\mathrm{E}\left(\alpha_{i} \eta_{i 1}\right)=0$, then from the first equation
+
+$$
+\mathrm{E}\left(y_{i 1} \eta_{i 1}\right)=\operatorname{Var}\left(\eta_{i 1}\right) \neq 0
+$$
+
+But $y_{i 1}$ is one of the regressors in the second equation. Therefore, if the error term $\eta_{i m}$ is orthogonal to the regressors for each equation, the "cross" orthogonalities are necessarily violated. ${ }^{7}$ As emphasized in Section 5.2 (see Review Question 3), the fixed-effects estimator is not guaranteed to be consistent if the cross orthogonalities are not satisfied. For a precise expression for the bias, see Analytical Question 4 to this chapter.
+
+One way to obtain consistency is the following. Take the first differences of the $M$-equations to obtain $M-1$ equations:
+
+
+\begin{gather*}
+y_{i 2}-y_{i 1}=\mu_{1}+\left(y_{i 1}-y_{i 0}\right) \rho+\left(\eta_{i 2}-\eta_{i 1}\right), \\
+y_{i 3}-y_{i 2}=\mu_{2}+\left(y_{i 2}-y_{i 1}\right) \rho+\left(\eta_{i 3}-\eta_{i 2}\right), \\
+\ldots \\
+y_{i M}-y_{i, M-1}=\mu_{M-1}+\left(y_{i, M-1}-y_{i, M-2}\right) \rho+\left(\eta_{i M}-\eta_{i, M-1}\right), \tag{5.4.11}
+\end{gather*}
+
+
+\footnotetext{${ }^{7}$ This was first pointed out by Nickell (1981).
+}
+where
+$$
+\mu_{m} \equiv \phi_{m+1}-\phi_{m}
+$$
+
+The random-effects estimator and the equation-by-equation OLS do not provide consistency because the regressors are not orthogonal to the error term. For example in the first equation, $y_{i 1}-y_{i 0}$ is not orthogonal to $\eta_{i 2}-\eta_{i 1}$ because $\mathrm{E}\left(y_{i 1} \cdot \eta_{i 1}\right) \neq$ 0 as just seen. Consistent estimation can be done by multiple-equation GMM, if there are valid instruments. In the optional empirical exercise to this chapter, you will be asked to use the saving rate as the instrument for the endogenous regressors. To the extent that the saving rate is uncorrelated with $\eta_{i m}$, this estimator is robust to the endogeneity problem mentioned above.
+
+\section*{QUESTIONS FOR REVIEW}
+\begin{enumerate}
+  \item The assumption that $g$ (growth rate of technical progress) is common to all countries is needed to derive (5.4.8). Do we have to assume that $g$ is constant over time? [Answer: No.]
+  \item (Identification) For simplicity, let $M=3$ so that (5.4.11) is a two-equation system.\\
+(a) Write (5.4.11) as a multiple-equation system with common coefficients by properly defining the $y_{i 1}, y_{i 2}, \mathbf{z}_{i 1}, \mathbf{z}_{i 2}, \boldsymbol{\delta}$ in (4.6.1). Hint: $\mathbf{z}_{i 2}$, for example, is $\left(0,1, y_{i 2}-y_{i 1}\right)^{\prime}$.\\
+(b) If $s_{i m}$ is the instrument for $y_{i m}-y_{i, m-1}$, the instrument vector for the $m$-th equation is $\mathbf{x}_{i m}=\left(1, s_{i m}\right)^{\prime}$ for $m=1,2$. Show that the system is not identified if $\operatorname{Cov}\left(s_{i m}, y_{i m}-y_{i, m-1}\right)=0$ for all $m$. Hint:
+\end{enumerate}
+
+$$
+\boldsymbol{\Sigma}_{\mathbf{x z}}=\left[\begin{array}{ccc}
+1 & 0 & \mathrm{E}\left(y_{i 1}-y_{i 0}\right) \\
+\mathrm{E}\left(s_{i 1}\right) & 0 & \mathrm{E}\left[s_{i 1}\left(y_{i 1}-y_{i 0}\right)\right] \\
+0 & 1 & \mathrm{E}\left(y_{i 2}-y_{i 1}\right) \\
+0 & \mathrm{E}\left(s_{i 1}\right) & \mathrm{E}\left[s_{i 2}\left(y_{i 2}-y_{i 1}\right)\right]
+\end{array}\right] .
+$$
+
+\section*{Appendix 5.A: Distribution of Hausman Statistic}
+This appendix proves that the $\operatorname{Avar}(\hat{\mathbf{q}})$ in (5.2.21) is positive definite and the Hausman statistic (5.2.22) is guaranteed to be nonnegative in any finite samples.
+
+As shown in Section 4.6,
+
+
+\begin{equation*}
+\hat{\delta}_{\mathrm{RE}}=\left(\mathbf{S}_{\mathrm{xz}}^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{S}_{\mathbf{x z}}\right)^{-1} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{S}_{\mathbf{x y}}, \tag{5.A.1}
+\end{equation*}
+
+
+where
+
+$$
+\begin{array}{rlr}
+\underset{(M K \times L)}{\mathbf{S}_{\mathbf{x z}}} & \equiv \frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i} \otimes \mathbf{x}_{i}, & \underset{(M K \times M K)}{\widehat{\mathbf{S}}} \\
+\underset{(K \times K)}{\mathbf{S}_{\mathbf{x x}}} & \equiv \frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}, & \widehat{\mathbf{\Sigma}} \otimes \mathbf{S}_{\mathbf{x x}} \\
+K \equiv \# \mathbf{x}_{i}, L \equiv \# \mathbf{z}_{i m}\left(\text { so } \mathbf{Z}_{i} \text { is } M \times L\right) & \equiv \frac{1}{n} \sum_{i=1}^{n} \mathbf{y}_{i} \otimes \mathbf{x}_{i},
+\end{array}
+$$
+
+Let
+
+$$
+\mathbf{Z}_{i}=\left(\mathbf{F}_{i} \vdots \mathbf{1 b}_{i}^{\prime}\right), p \equiv \# \boldsymbol{\beta}, \underset{(L \times p)}{\mathbf{D}}=\left[\begin{array}{c}
+\mathbf{I}_{p} \\
+\mathbf{0}
+\end{array}\right],
+$$
+
+so that $\mathbf{F}_{i}=\mathbf{Z}_{i} \mathbf{D}$. Then it can be shown fairly easily that
+
+
+\begin{equation*}
+\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}=\left(\mathbf{D}^{\prime} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}} \mathbf{D}\right)^{-1} \mathbf{D}^{\prime} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x y}}, \tag{5.A.2}
+\end{equation*}
+
+
+where
+
+$$
+\widehat{\mathbf{W}}=\mathbf{Q} \otimes \mathbf{S}_{\mathbf{x x}}^{-1}, \mathbf{Q} \equiv \text { annihilator associated with } \mathbf{1}_{M} \text {. }
+$$
+
+From (5.A.1) and (5.A.2) it follows that
+
+
+\begin{equation*}
+\hat{\mathbf{q}}=\left(\mathbf{D}^{\prime} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}} \mathbf{D}\right)^{-1} \mathbf{D}^{\prime} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{g}_{n}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right), \mathbf{g}_{n}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right)=\mathbf{S}_{\mathbf{x y}}-\mathbf{S}_{\mathbf{x z}} \hat{\boldsymbol{\delta}}_{\mathrm{RE}} . \tag{5.A.3}
+\end{equation*}
+
+
+(To derive this, recall from Section 4.6 that
+
+$$
+\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}=\frac{1}{n} \sum_{i=1}^{n} \mathbf{Z}_{i}^{\prime} \mathbf{Q} \mathbf{Z}_{i}
+$$
+
+But since $\mathbf{Q Z}_{i}=\left(\mathbf{Q F}_{i} \vdots \mathbf{0}\right)$, this equals
+
+\[
+\left[\begin{array}{cc}
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{F}_{i}^{\prime} \mathbf{Q F _ { i }} & \mathbf{0}  \tag{5.A.4}\\
+\mathbf{0} & \mathbf{0}
+\end{array}\right]
+\]
+
+so that $\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}=\mathbf{D D}^{\prime} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}}=\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}} \mathbf{D D}^{\prime}$.)\\
+As was shown in Analytical Exercise 5 of Chapter 3,
+
+
+\begin{equation*}
+\mathbf{g}_{n}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right)=\widehat{\mathbf{B}} \overline{\mathbf{g}}, \widehat{\mathbf{B}}=\mathbf{I}_{M K}-\mathbf{S}_{\mathbf{x z}}\left(\mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{S}}^{-1} \mathbf{S}_{\mathbf{x z}}\right)^{-1} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{S}}^{-1} . \tag{5.A.5}
+\end{equation*}
+
+
+Substituting this into (5.A.3), we obtain
+
+
+\begin{equation*}
+\sqrt{n} \hat{\mathbf{q}}=\left(\mathbf{D}^{\prime} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}} \mathbf{D}\right)^{-1} \mathbf{D}^{\prime} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \widehat{\mathbf{B}} \sqrt{n} \overline{\mathbf{g}} . \tag{5.A.6}
+\end{equation*}
+
+
+The asymptotic variance of this expression is
+
+
+\begin{equation*}
+\operatorname{Avar}(\hat{\mathbf{q}})=\left(\mathbf{D}^{\prime} \boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime} \mathbf{W} \boldsymbol{\Sigma}_{\mathbf{x z}} \mathbf{D}\right)^{-1} \mathbf{D}^{\prime} \boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime} \mathbf{W} \mathbf{B} \mathbf{S} \mathbf{B W} \boldsymbol{\Sigma}_{\mathbf{x z}} \mathbf{D}\left(\mathbf{D}^{\prime} \boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime} \mathbf{W} \boldsymbol{\Sigma}_{\mathbf{x z}} \mathbf{D}\right)^{-1}, \tag{5.A.7}
+\end{equation*}
+
+
+where $\mathbf{B}=\operatorname{plim} \widehat{\mathbf{B}}, \mathbf{W}=\operatorname{plim} \widehat{\mathbf{W}}=\mathbf{Q} \otimes \boldsymbol{\Sigma}_{\mathbf{x x}}^{-1}$, and $\mathbf{S} \equiv \operatorname{Avar}(\hat{\mathbf{g}})$. Here, $\mathbf{D}^{\prime} \boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime} \mathbf{W}$. $\boldsymbol{\Sigma}_{\mathbf{x z}} \mathbf{D}$ is invertible because it is easy to show that
+
+
+\begin{equation*}
+\mathbf{D}^{\prime} \boldsymbol{\Sigma}_{\mathbf{x z}}^{\prime} \mathbf{W} \boldsymbol{\Sigma}_{\mathbf{x z}} \mathbf{D}=\mathrm{E}\left(\mathbf{F}_{i} \mathbf{Q} \mathbf{F}_{i}^{\prime}\right), \tag{5.A.8}
+\end{equation*}
+
+
+which, as proved in Analytical Exercise 5, is nonsingular. (5.A.7) is consistently estimated by
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}(\hat{\mathbf{q}})}=\left(\mathbf{D}^{\prime} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}} \mathbf{D}\right)^{-1} \mathbf{D}^{\prime} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \widehat{\mathbf{B}} \widehat{\mathbf{S}} \widehat{\mathbf{B}} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}} \mathbf{D}\left(\mathbf{D}^{\prime} \mathbf{S}_{\mathbf{x z}}^{\prime} \widehat{\mathbf{W}} \mathbf{S}_{\mathbf{x z}} \mathbf{D}\right)^{-1} . \tag{5.A.9}
+\end{equation*}
+
+
+A straightforward but lengthy matrix calculation shows that (5.A.7) equals $\operatorname{Avar}\left(\hat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)-\mathbf{D}^{\prime} \operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right) \mathbf{D}$ and (5.A.9) equals $\left.\widehat{\operatorname{Avar}\left(\widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right.}\right)-\mathbf{D}^{\prime} \widehat{\operatorname{Avar}\left(\hat{\boldsymbol{\delta}}_{\mathrm{RE}}\right) \mathbf{D}}$. In any finite sample, (5.A.9) is positive semidefinite. So the Hausman statistic is guaranteed to be nonnegative.
+
+We now show that (5.A.7) is nonsingular. By (5.1.6), $\mathbf{S}$ is positive definite. Therefore, the rank of $\operatorname{Avar}(\hat{\mathbf{q}})$ equals the rank of
+
+
+\begin{equation*}
+\mathbf{B}\left(\mathbf{Q} \otimes \Sigma_{\mathbf{x z}}^{-1}\right) \Sigma_{\mathbf{x z}} \mathbf{D} . \tag{5.A.10}
+\end{equation*}
+
+
+Since the columns of $\mathbf{S}^{-1} \boldsymbol{\Sigma}_{\mathbf{x z}}$ form a basis for the column null space of $\mathbf{B}$ and since $\left(\mathbf{Q} \otimes \boldsymbol{\Sigma}_{\mathbf{x z}}^{-1}\right) \boldsymbol{\Sigma}_{\mathbf{x z}} \mathbf{D}$ is of full column rank by (5.1.15), by Lemma A. 5 of Newey (1985), ${ }^{8}$ the rank of (5.A.10) equals
+
+
+\begin{equation*}
+\operatorname{rank}\left[\left(\boldsymbol{\Sigma}^{-1} \otimes \boldsymbol{\Sigma}_{\mathbf{x x}}^{-1}\right) \boldsymbol{\Sigma}_{\mathbf{x z}} \vdots\left(\mathbf{Q} \otimes \boldsymbol{\Sigma}_{\mathbf{x x}}^{-1}\right) \boldsymbol{\Sigma}_{\mathbf{x z}} \mathbf{D}\right]-L, \tag{5.A.11}
+\end{equation*}
+
+
+where use has been made of the fact that $\mathbf{S}=\mathbf{\Sigma} \otimes \mathbf{\Sigma}_{\mathbf{x x}}$.\\
+Now, $\mathbf{x}_{i}$ collects all the unique variables in $\mathbf{Z}_{i}$. Rearrange $\mathbf{x}_{i}$ as
+
+
+\begin{equation*}
+\mathbf{x}_{i}=\left(\mathbf{z}_{i 1}^{\prime}, \ldots, \mathbf{z}_{i M}^{\prime}, \mathbf{b}_{i}^{\prime}\right)^{\prime} . \tag{5.A.12}
+\end{equation*}
+
+
+\footnotetext{${ }^{8}$ The lemma states: Let $\mathbf{A}$ be a $k \times \ell$ matrix, $\mathbf{B}$ an $\ell \times m$ matrix, and $\mathbf{C}$ an $\ell \times n$ matrix. If the columns of $\mathbf{C}$ form a basis for the column null space of $\mathbf{A}$ and $\operatorname{rank}(\mathbf{B})=m$, then $\operatorname{rank}(\mathbf{A B})=\operatorname{rank}(\mathbf{C}: \mathbf{B})-n$. Here, $k=\ell=M K, m=p$, and $n=L$.
+}Then
+
+\[
+\mathbf{z}_{i m}^{\prime}=\mathbf{x}_{i}^{\prime} \mathbf{H}_{m}, \mathbf{H}_{m} \equiv\left[\begin{array}{cc}
+\mathbf{e}_{m} \otimes \mathbf{I}_{p} & \mathbf{0}  \tag{5.A.13}\\
+\mathbf{0} & \mathbf{I}_{L-p}
+\end{array}\right], \mathbf{e}_{m}=m \text {-th column of } \mathbf{I}_{M}
+\]
+
+so that $\mathbf{\Sigma}_{\mathbf{x z}}$ can be written as
+
+
+\begin{equation*}
+\boldsymbol{\Sigma}_{\mathbf{x z}}=\left(\mathbf{I}_{M} \otimes \boldsymbol{\Sigma}_{\mathbf{x x}}\right) \mathbf{H}, \tag{5.A.14}
+\end{equation*}
+
+
+where $\mathbf{H}^{\prime}=\left(\mathbf{H}_{1}^{\prime}, \ldots, \mathbf{H}_{M}^{\prime}\right)$. Substituting (5.A.14) into (5.A.11), the rank of $\operatorname{Avar}(\hat{\mathbf{q}})$ is
+
+$$
+\operatorname{rank}\left[\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{K}\right) \mathbf{H} \vdots\left(\mathbf{Q} \otimes \mathbf{I}_{K}\right) \mathbf{H D}\right]-L
+$$
+
+The $m$-th $K$ rows of the $(M K \times(L+p))$ matrix $\left.\left[\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{K}\right) \mathbf{H} \vdots\left(\mathbf{Q} \otimes \mathbf{I}_{K}\right)\right] \mathbf{H D}\right]$ are
+
+\[
+\left[\begin{array}{ccc}
+\left(\begin{array}{c}
+\sigma^{m 1} \\
+\vdots \\
+\sigma^{m M}
+\end{array}\right) \otimes \mathbf{I}_{p} & \mathbf{0} & \left(\begin{array}{c}
+q_{m 1} \\
+\vdots \\
+q_{m M}
+\end{array}\right) \otimes \mathbf{I}_{p}  \tag{5.A.15}\\
+\mathbf{0} & \left(\sum_{h=1}^{M} \sigma^{m h}\right) \mathbf{I}_{L-p} & \mathbf{0}
+\end{array}\right] .
+\]
+
+Therefore, $\operatorname{rank}\left[\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{K}\right) \mathbf{H} \vdots\left(\mathbf{Q} \otimes \mathbf{I}_{K}\right) \mathbf{H D}\right]=L+p$ unless vec $\left(\boldsymbol{\Sigma}^{-1}\right)$ and $\operatorname{vec}(\mathbf{Q})$ are linearly dependent; that is, unless $\boldsymbol{\Sigma}^{-1}$ is proportional to $\mathbf{Q}$. But since $\operatorname{rank}\left(\boldsymbol{\Sigma}^{-1}\right)=M \neq \operatorname{rank}(\mathbf{Q})=M-1, \boldsymbol{\Sigma}^{-1}$ cannot be proportional to $\mathbf{Q}$.
+
+\section*{PROBLEM SET FOR CHAPTER 5}
+\section*{ANALYTICAL EXERCISES}
+\begin{enumerate}
+  \item (Fixed-effects estimator as the LSDV estimator) In (5.1.1') on page 329, redefine $\alpha_{i}$ to be the sum of old $\alpha_{i}$ and $\mathbf{b}_{i}^{\prime} \boldsymbol{\gamma}$, so that (5.1.1') becomes
+\end{enumerate}
+
+
+\begin{equation*}
+\mathbf{y}_{i}=\mathbf{F}_{i} \boldsymbol{\beta}+\mathbf{1}_{M} \cdot \alpha_{i}+\boldsymbol{\eta}_{i} \quad(i=1,2, \ldots, n) \tag{1}
+\end{equation*}
+
+
+Define the following stacked vectors and matrices:
+
+$$
+\underset{(M n \times 1)}{\mathbf{y}}=\left[\begin{array}{c}
+\mathbf{y}_{1} \\
+\vdots \\
+\mathbf{y}_{n}
+\end{array}\right], \underset{(M n \times \# \beta)}{\mathbf{F}}=\left[\begin{array}{c}
+\mathbf{F}_{1} \\
+\vdots \\
+\mathbf{F}_{n}
+\end{array}\right], \underset{(M n \times 1)}{\eta}=\left[\begin{array}{c}
+\eta_{1} \\
+\vdots \\
+\eta_{n}
+\end{array}\right], \underset{(n \times 1)}{\alpha}=\left[\begin{array}{c}
+\alpha_{1} \\
+\vdots \\
+\alpha_{n}
+\end{array}\right],
+$$
+
+
+\begin{gather*}
+\underset{(M n \times(n+\# \beta))}{\mathbf{W}}=(\mathbf{D} \vdots \mathbf{F}), \quad \underset{((n+\# \beta) \times 1)}{\boldsymbol{\theta}}=\left[\begin{array}{l}
+\boldsymbol{\alpha} \\
+\boldsymbol{\beta}
+\end{array}\right], \quad \\
+\underset{(M n \times n)}{\mathbf{D}}=\mathbf{I}_{n} \otimes \mathbf{1}_{M}=\left[\begin{array}{llll}
+\mathbf{1}_{M} & & & \\
+& \mathbf{1}_{M} & & \\
+& & \ddots & \\
+& & & \mathbf{1}_{M}
+\end{array}\right] \tag{2}
+\end{gather*}
+
+
+so that the $M$-equation system (1) for $i=1,2, \ldots, n$ can be written as
+
+$$
+\left[\begin{array}{c}
+\mathbf{y}_{1} \\
+\mathbf{y}_{2} \\
+\vdots \\
+\mathbf{y}_{n}
+\end{array}\right]=\left[\begin{array}{c}
+\mathbf{1}_{M} \cdot \alpha_{1} \\
+\mathbf{1}_{M} \cdot \alpha_{2} \\
+\vdots \\
+\mathbf{1}_{M} \cdot \alpha_{n}
+\end{array}\right]+\left[\begin{array}{c}
+\mathbf{F}_{1} \boldsymbol{\beta} \\
+\mathbf{F}_{2} \boldsymbol{\beta} \\
+\vdots \\
+\mathbf{F}_{n} \boldsymbol{\beta}
+\end{array}\right]+\left[\begin{array}{c}
+\boldsymbol{\eta}_{1} \\
+\boldsymbol{\eta}_{2} \\
+\vdots \\
+\boldsymbol{\eta}_{n}
+\end{array}\right]
+$$
+
+or
+
+$$
+\left[\begin{array}{c}
+\mathbf{y}_{1} \\
+\mathbf{y}_{2} \\
+\vdots \\
+\mathbf{y}_{n}
+\end{array}\right]=\left[\begin{array}{llll}
+\mathbf{1}_{M} & & & \\
+& \mathbf{1}_{M} & & \\
+& & \ddots & \\
+& & & \mathbf{1}_{M}
+\end{array}\right]\left[\begin{array}{c}
+\alpha_{1} \\
+\alpha_{2} \\
+\vdots \\
+\alpha_{n}
+\end{array}\right]+\left[\begin{array}{c}
+\mathbf{F}_{1} \\
+\mathbf{F}_{2} \\
+\vdots \\
+\mathbf{F}_{n}
+\end{array}\right] \boldsymbol{\beta}+\left[\begin{array}{c}
+\boldsymbol{\eta}_{1} \\
+\boldsymbol{\eta}_{2} \\
+\vdots \\
+\boldsymbol{\eta}_{n}
+\end{array}\right]
+$$
+
+or
+
+
+\begin{equation*}
+\mathbf{y}=\mathbf{D} \boldsymbol{\alpha}+\mathbf{F} \boldsymbol{\beta}+\boldsymbol{\eta}=\mathbf{W} \boldsymbol{\theta}+\boldsymbol{\eta} \tag{3}
+\end{equation*}
+
+
+The OLS estimator of $\boldsymbol{\theta}$ on a pooled sample of size $M n,(\mathbf{y}, \mathbf{W})$, is $\left(\mathbf{W}^{\prime} \mathbf{W}\right)^{-1}$. $W^{\prime} y$.\\
+(a) Show that the fixed-effects estimator given in (5.2.4) is the last \# $\boldsymbol{\beta}$ elements of this vector. Hint: Use the Frisch-Waugh Theorem about partitioned regressions (see Analytical Exercise 4(c) of Chapter 1). The first step is to regress y on $\mathbf{D}$ and regress each column of $\mathbf{F}$ on $\mathbf{D}$. If we define the annihilator associated with $\mathbf{D}$ as
+
+
+\begin{equation*}
+\underset{(M n \times M n)}{\mathbf{M}_{\mathbf{D}}} \equiv \mathbf{I}_{M n}-\mathbf{D}\left(\mathbf{D}^{\prime} \mathbf{D}\right)^{-1} \mathbf{D}^{\prime} \tag{4}
+\end{equation*}
+
+
+then the residual vectors can be written as $\mathbf{M}_{\mathbf{D}} \mathbf{y}$ and $\mathbf{M}_{\mathbf{D}} \mathbf{F}$. The second step is to regress $\mathbf{M}_{\mathbf{D}} \mathbf{y}$ on $\mathbf{M}_{\mathbf{D}} \mathbf{F}$. Show that the estimated regression coefficient\\
+can be written as
+
+
+\begin{equation*}
+\left(\mathbf{F}^{\prime} \mathbf{M}_{\mathbf{D}} \mathbf{F}\right)^{-1} \mathbf{F}^{\prime} \mathbf{M}_{\mathbf{D}} \mathbf{y} . \tag{5}
+\end{equation*}
+
+
+Show that $\mathbf{M}_{\mathbf{D}}=\mathbf{I}_{n} \otimes \mathbf{Q}$ (where $\mathbf{Q}$ is the annihilator associated with $\mathbf{1}_{M}$, as in the text) and use this to show that (1) is indeed the fixed-effects estimator.
+
+Alternatively, you can go all the way back to the normal equations. If a and $\mathbf{b}$ are the OLS estimators of $\alpha$ and $\beta$, then ( $\mathbf{a}, \mathbf{b}$ ) satisfies the system of $n+\# \beta$ linear simultaneous equations:
+
+\[
+\left[\begin{array}{cc}
+\mathbf{D}^{\prime} \mathbf{D} & \mathbf{D}^{\prime} \mathbf{F}  \tag{6}\\
+\mathbf{F}^{\prime} \mathbf{D} & \mathbf{F}^{\prime} \mathbf{F}
+\end{array}\right]\left[\begin{array}{l}
+\mathbf{a} \\
+\mathbf{b}
+\end{array}\right]=\left[\begin{array}{l}
+\mathbf{D}^{\prime} \mathbf{y} \\
+\mathbf{F}^{\prime} \mathbf{y}
+\end{array}\right] .
+\]
+
+Take the first $n$ equations and solve for $\mathbf{a}$ taking $\mathbf{b}$ as given. This should yield: $\mathbf{a}=\left(\mathbf{D}^{\prime} \mathbf{D}\right)^{-1}\left(\mathbf{D}^{\prime} \mathbf{y}-\mathbf{D}^{\prime} \mathbf{F b}\right)$. Then substitute this into the rest of the equations to solve for $\mathbf{b}$. (You can accomplish the same thing by using the formula for inverting partitioned matrices.)\\
+(b) Show:
+
+$$
+a_{i}=\bar{y}_{i}-\left(\frac{1}{M} \sum_{m=1}^{M} \mathbf{f}_{i m}^{\prime}\right) \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}
+$$
+
+where $a_{i}$ is the OLS estimator of $\alpha_{i}, \mathbf{f}_{i m}^{\prime}$ is the $m$-th row of $\mathbf{F}_{i}$, and $\bar{y}_{i}= \frac{1}{M}\left(y_{i 1}+\cdots+y_{i M}\right)$. Hint: Use the normal equations for $\alpha$.\\
+(c) Assume:\\
+(i) $\left\{\mathbf{y}_{i}, \mathbf{F}_{i}\right\}$ is i.i.d.,\\
+(ii) $\mathrm{E}\left(\boldsymbol{\eta}_{i} \mid \mathbf{F}_{i}\right)=\mathbf{0}$ (which is stronger than the orthogonality conditions (5.1.8b)),\\
+(iii) $\mathrm{E}\left(\boldsymbol{\eta}_{i} \boldsymbol{\eta}_{i}^{\prime} \mid \mathbf{F}_{i}\right)=\sigma_{\eta}^{2} \mathbf{I}_{M}$ (the spherical error assumption), and\\
+(iv) W is of full column rank.
+
+Show that the assumptions of the Classical Regression Model are satisfied for the pooled regression (3). Hint: You have to show that $\mathbf{W}$ is exogenous in (3), that is,
+
+$$
+\mathrm{E}(\boldsymbol{\eta} \mid \mathbf{W})=\underset{(M n \times 1)}{\mathbf{0}}
+$$
+
+Also show that $\mathrm{E}\left(\boldsymbol{\eta} \boldsymbol{\eta}^{\prime} \mid \mathbf{W}\right)=\sigma_{\eta}^{2} \mathbf{I}_{M n}$. Develop the small sample theory for $\mathbf{a}$ and $\mathbf{b}$. For example, are they unbiased? Let $S S R$ be the sum of squared residuals from the pooled regression (3). Is this $S S R$ the same as the $S S R$ from the "within" regression (5.2.15)?\\
+2. (GMM interpretation of FE) It is fairly well known for the case of two equations $(M=2)$ that the fixed-effects estimator is the OLS estimator in the regression of first differences: $y_{i 2}-y_{i 1}$ on $\mathbf{z}_{i 2}-\mathbf{z}_{i 1}$. This question generalizes this argument to the case of arbitrary $M$.
+
+We wish to write the fixed-effects estimator (5.2.4) in the GMM format
+
+
+\begin{equation*}
+\left(S_{\mathrm{xz}}^{\prime} \widehat{\mathrm{W}} S_{\mathrm{xz}}\right)^{-1} S_{\mathrm{xz}}^{\prime} \widehat{\mathrm{W}} S_{\mathrm{xy}} \tag{7}
+\end{equation*}
+
+
+for properly defined $\mathbf{S}_{\mathbf{x z}}, \widehat{\mathbf{W}}$, and $\mathbf{S}_{\mathbf{x y}}$. Let $\mathbf{C}$ be a matrix such that\\
+C is an $M \times(M-1)$ matrix of full column rank satisfying $\mathbf{C}^{\prime} \mathbf{1}_{M}=\mathbf{0}$.
+
+A prominent example of such a matrix $\mathbf{C}$ is the matrix of first differences:
+
+$$
+\underset{(M \times(M-1))}{\mathbf{C}}=\left[\begin{array}{rrrrrr}
+-1 & 0 & 0 & 0 & \ldots & 0 \\
+1 & -1 & 0 & 0 & \ldots & 0 \\
+0 & 1 & -1 & 0 & \ldots & 0 \\
+& & \ddots & \ddots & & \\
+0 & \ldots & 0 & 1 & -1 & 0 \\
+0 & \ldots & 0 & 0 & 1 & -1 \\
+0 & \ldots & 0 & 0 & 0 & 1
+\end{array}\right] .
+$$
+
+Another example is an $M \times(M-1)$ matrix created by dropping one column, say the last, from $\mathbf{Q}$, the annihilator associated with $\mathbf{1}_{M}$.\\
+(a) Verify that these two matrices satisfy (8).\\
+(b) For any given choice of $\mathbf{C}$, verify that you can derive the following system of $M-1$ transformed equations by multiplying both sides of the system of $M$ equations (5.1.1 ${ }^{\prime \prime}$ ) (on page 329 ) from left by $\mathbf{C}^{\prime}$ :
+
+
+\begin{equation*}
+\hat{\mathbf{y}}_{i}=\widehat{\mathbf{F}}_{i} \boldsymbol{\beta}+\hat{\boldsymbol{\eta}}_{i} \tag{9}
+\end{equation*}
+
+
+where
+
+$$
+\underset{((M-1) \times 1)}{\hat{\mathbf{y}}_{i}} \equiv \mathbf{C}^{\prime} \mathbf{y}_{i}, \underset{((M-1) \times \# \beta)}{\widehat{\mathbf{F}}_{i}} \equiv \mathbf{C}^{\prime} \mathbf{F}_{i}, \underset{((M-1) \times 1)}{\hat{\boldsymbol{\eta}}_{i}} \equiv \mathbf{C}^{\prime} \boldsymbol{\eta}_{i} .
+$$
+
+(c) (optional) Verify the following:
+
+If $\left\{\mathbf{y}_{i}, \mathbf{Z}_{i}\right\}$ satisfies the assumptions of the error-components model (which are (5.1.1"), (5.1.2), (5.1.8), (5.1.4), (5.1.5), and (5.1.6) or (5.1.6') on page 324), then $\left\{\hat{\mathbf{y}}_{i}, \widehat{\mathbf{F}}_{i}\right\}$ satisfies the assumptions of the random-effects model, i.e., for the $M-1$ equation system (9),\\
+(random sample) $\left\{\hat{\mathbf{y}}_{i}, \widehat{\mathbf{F}}_{i}\right\}$ is i.i.d.,\\
+(orthogonality conditions) $\mathrm{E}\left(\hat{\boldsymbol{\eta}}_{i} \otimes \mathbf{x}_{i}\right)=\mathbf{0}$ with $\mathbf{x}_{i}=$ union of $\left(\mathbf{z}_{i 1}, \ldots, \mathbf{z}_{i M}\right)=$ unique elements of $\left(\mathbf{F}_{i}, \mathbf{b}_{i}\right)$,\\
+(identification) $\mathrm{E}\left(\widehat{\mathbf{F}}_{i} \otimes \mathbf{x}_{i}\right)$ is of full column rank,\\
+(conditional homoskedasticity) $\mathrm{E}\left(\hat{\boldsymbol{\eta}}_{i} \hat{\boldsymbol{\eta}}_{i}^{\prime} \mid \mathbf{x}_{i}\right)=\mathrm{E}\left(\hat{\boldsymbol{\eta}}_{i} \hat{\boldsymbol{\eta}}_{i}^{\prime}\right)$ which is nonsingular,\\
+(nonsingularity of $\left.\mathrm{E}\left(\hat{\mathbf{g}}_{i} \hat{\mathbf{g}}_{i}^{\prime}\right)\right) \quad \mathrm{E}\left(\hat{\mathbf{g}}_{i} \hat{\mathbf{g}}_{i}^{\prime}\right)$ is nonsingular, $\hat{\mathbf{g}}_{i} \equiv \hat{\boldsymbol{\eta}}_{i} \otimes \mathbf{x}_{i}$.\\
+Hint: For the orthogonality conditions, note that (5.1.8b) can be written as $\mathrm{E}\left(\boldsymbol{\eta}_{i} \otimes \mathbf{x}_{i}\right)=\mathbf{0}$ and that $\hat{\boldsymbol{\eta}}_{i} \otimes \mathbf{x}_{i}=\left(\mathbf{C}^{\prime} \otimes \mathbf{I}_{K}\right)\left(\boldsymbol{\eta}_{i} \otimes \mathbf{x}_{i}\right)$. The identification condition is equivalent to (5.1.15) (see the answer sheet for proof). To show that $\mathrm{E}\left(\hat{\boldsymbol{\eta}}_{i} \hat{\boldsymbol{\eta}}_{i}^{\prime} \mid \mathbf{x}_{i}\right)$ does not depend on $\mathbf{x}_{i}$, use the fact that $\hat{\boldsymbol{\eta}}_{i}=\mathbf{C}^{\prime} \boldsymbol{\eta}_{i}=\mathbf{C}^{\prime} \boldsymbol{\varepsilon}_{i}$ since $\boldsymbol{\varepsilon}_{i}=\mathbf{1}_{M} \cdot \alpha_{i}+\boldsymbol{\eta}_{i}$. Given conditional homoskedasticity, we have
+
+$$
+\mathrm{E}\left(\hat{\mathbf{g}}_{i} \hat{\mathbf{g}}_{i}^{\prime}\right)=\mathrm{E}\left(\hat{\eta}_{i} \hat{\eta}_{i}^{\prime}\right) \otimes \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)
+$$
+
+So the last condition (nonsingularity of $\mathrm{E}\left(\hat{\mathbf{g}}_{i} \hat{\mathbf{g}}_{i}^{\prime}\right)$ ) is simply that $\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ be nonsingular.\\
+(d) Show that the fixed-effects estimator (5.2.4) can be written in the GMM format (7) with
+
+
+\begin{gather*}
+\mathbf{S}_{\mathbf{x z}}=\frac{1}{n} \sum_{i=1}^{n} \widehat{\mathbf{F}}_{i} \otimes \mathbf{x}_{i}, \mathbf{s}_{\mathbf{x y}}=\frac{1}{n} \sum_{i=1}^{n} \hat{\mathbf{y}}_{i} \otimes \mathbf{x}_{i}  \tag{10}\\
+\widehat{\mathbf{W}}=\left(\mathbf{C}^{\prime} \mathbf{C}\right)^{-1} \otimes\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)^{-1}
+\end{gather*}
+
+
+Hint: Use the following result from matrix algebra: If $\mathbf{C}$ satisfies condition (8), then
+
+
+\begin{equation*}
+\mathbf{C}\left(\mathbf{C}^{\prime} \mathbf{C}\right)^{-1} \mathbf{C}^{\prime}=\mathbf{Q} \tag{11}
+\end{equation*}
+
+
+(the annihilator associated with $\mathbf{1}_{M}$ ). The elements of $\mathbf{f}_{i m}$ are a subset of the elements of $\mathbf{x}_{i}$. Observe the "disappearance of $\mathbf{x}$." So, for example,
+
+$$
+\frac{1}{n} \sum_{i=1}^{n} \mathbf{f}_{i m} \mathbf{x}_{i}^{\prime}\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)^{-1} \frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{f}_{i h}^{\prime}=\frac{1}{n} \sum_{i=1}^{n} \mathbf{f}_{i m} \mathbf{f}_{i h}^{\prime}
+$$
+
+(e) Let $\widehat{\boldsymbol{\Psi}}((M-1) \times(M-1))$ be a consistent estimate of $\boldsymbol{\Psi} \equiv \mathrm{E}\left(\hat{\boldsymbol{\eta}}_{i} \hat{\boldsymbol{\eta}}_{i}^{\prime}\right)$. Show that the efficient GMM estimator is given by
+
+
+\begin{equation*}
+\widehat{\boldsymbol{\beta}}=\left(\frac{1}{n} \sum_{i=1}^{n} \widehat{\mathbf{F}}_{i}^{\prime} \widehat{\boldsymbol{\Psi}}^{-1} \widehat{\mathbf{F}}_{i}\right)^{-1} \frac{1}{n} \sum_{i=1}^{n} \widehat{\mathbf{F}}_{i}^{\prime} \widehat{\boldsymbol{\Psi}}^{-1} \hat{\mathbf{y}}_{i} . \tag{12}
+\end{equation*}
+
+
+Show that
+
+
+\begin{equation*}
+\operatorname{Avar}(\widehat{\boldsymbol{\beta}})=\left[\mathrm{E}\left(\widehat{\mathbf{F}}_{i}^{\prime} \Psi^{-1} \widehat{\mathbf{F}}_{i}\right)\right]^{-1} \tag{13}
+\end{equation*}
+
+
+Hint: Apply Proposition 4.7 to the present system of $M-1$ equations.\\
+(f) Show that the following is consistent for $\Psi$ :
+
+
+\begin{equation*}
+\underset{((M-1) \times(M-1))}{\widehat{\mathbf{\Psi}}}=\frac{1}{n} \sum_{i=1}^{n}\left(\hat{\mathbf{y}}_{i}-\widehat{\mathbf{F}}_{i} \hat{\boldsymbol{\delta}}_{\mathrm{FE}}\right)\left(\hat{\mathbf{y}}_{i}-\widehat{\mathbf{F}}_{i} \hat{\boldsymbol{\delta}}_{\mathrm{FE}}\right)^{\prime} . \tag{14}
+\end{equation*}
+
+
+Hint: Verify that all the assumptions of Proposition 4.1 are satisfied.\\
+(g) (Sargan's statistic) Derive Sargan's statistic associated with the efficient GMM estimator. Hint: In Proposition 4.7(c), set
+
+$$
+\widehat{\mathbf{S}}=\widehat{\Psi} \otimes\left(\frac{1}{n} \sum_{i=1}^{n} \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right), \mathbf{g}_{n}(\widehat{\boldsymbol{\beta}})=\mathbf{s}_{\mathbf{x y}}-\mathbf{S}_{\mathbf{x z}} \widehat{\boldsymbol{\beta}}
+$$
+
+(h) Suppose that $\boldsymbol{\eta}_{i}$ is spherical in that
+
+
+\begin{equation*}
+\mathrm{E}\left(\boldsymbol{\eta}_{i} \boldsymbol{\eta}_{i}^{\prime}\right)=\sigma_{\eta}^{2} \mathbf{I}_{M} \tag{15}
+\end{equation*}
+
+
+Verify that, if $\hat{\sigma}_{\eta}^{2}$ is a consistent estimator of $\sigma_{\eta}^{2}$, then
+
+
+\begin{equation*}
+\widehat{\Psi}=\hat{\sigma}_{\eta}^{2} \mathbf{C}^{\prime} \mathbf{C} \tag{16}
+\end{equation*}
+
+
+is consistent for $\boldsymbol{\Psi}$. Verify that the efficient GMM estimator (12) with this choice of $\widehat{\boldsymbol{\Psi}}$ is numerically equal to the fixed-effects estimator.\\
+(i) (Invariance to the choice of $\mathbf{C}$ ) Verify: if an $M \times(M-1)$ matrix $\mathbf{C}$ satisfies (8), so does $\mathbf{B}=\mathbf{C} \mathbf{A}$ where $\mathbf{A}$ is an $(M-1) \times(M-1)$ nonsingular matrix. Replace $\mathbf{C}$ everywhere in this section by $\mathbf{B}$ and verify that the choice of $\mathbf{C}$ does not change any of the results of this question.\\
+3. Let $S S R$ be the sum of squared residuals defined in (5.2.15). For the errorcomponent model with the spherical assumption that $\mathrm{E}\left(\boldsymbol{\eta}_{i} \boldsymbol{\eta}_{i}^{\prime}\right)=\sigma_{\eta}^{2} \mathbf{I}_{M}$, prove
+
+$$
+\operatorname{plim}_{n \rightarrow \infty} \frac{S S R}{n}=(M-1) \cdot \sigma_{\eta}^{2} .
+$$
+
+Hint:
+
+$$
+\begin{aligned}
+S S R & =\sum_{i=1}^{n}\left[\mathbf{Q}\left(\mathbf{y}_{i}-\mathbf{F}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)\right]^{\prime}\left[\mathbf{Q}\left(\mathbf{y}_{i}-\mathbf{F}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)\right] \\
+& =\sum_{i=1}^{n}\left(\mathbf{y}_{i}-\mathbf{F}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)^{\prime} \mathbf{Q}\left(\mathbf{y}_{i}-\mathbf{F}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right) \\
+& \quad(\text { since } \mathbf{Q} \text { is symmetric and idempotent) } \\
+& =\sum_{i=1}^{n}\left(\mathbf{y}_{i}-\mathbf{F}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right)^{\prime} \mathbf{C}\left(\mathbf{C}^{\prime} \mathbf{C}\right)^{-1} \mathbf{C}^{\prime}\left(\mathbf{y}_{i}-\mathbf{F}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right) \quad(\mathrm{by}(\mathbf{1 1})) \\
+& =\sum_{i=1}^{n} \hat{\mathbf{v}}_{i}^{\prime}\left(\mathbf{C}^{\prime} \mathbf{C}\right)^{-1} \hat{\mathbf{v}}_{i} \quad\left(\hat{\mathbf{v}}_{i} \equiv \mathbf{C}^{\prime} \mathbf{y}_{i}-\mathbf{C}^{\prime} \mathbf{F}_{i} \widehat{\boldsymbol{\beta}}_{\mathrm{FE}}\right) \\
+& =\sum_{i=1}^{n} \operatorname{trace}\left[\hat{\mathbf{v}}_{i}^{\prime}\left(\mathbf{C}^{\prime} \mathbf{C}\right)^{-1} \hat{\mathbf{v}}_{i}\right] \\
+& =\sum_{i=1}^{n} \operatorname{trace}\left[\left(\mathbf{C}^{\prime} \mathbf{C}\right)^{-1} \hat{\mathbf{v}}_{i} \hat{\mathbf{v}}_{i}^{\prime}\right] \\
+& =n \cdot \operatorname{trace}\left[\left(\mathbf{C}^{\prime} \mathbf{C}\right)^{-1} \frac{1}{n} \sum_{i=1}^{n} \hat{\mathbf{v}}_{i} \hat{\mathbf{v}}_{i}^{\prime}\right] \quad \text { (since the trace operator is linear). }
+\end{aligned}
+$$
+
+With the usual technical condition (that $\mathrm{E}\left(\mathbf{f}_{i m} \mathbf{f}_{i h}^{\prime}\right)$ exists and is finite for all $m, h$, which obtains if $\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ exists and is finite), it should now be routine to show that
+
+$$
+\frac{1}{n} \sum_{i=1}^{n} \hat{\mathbf{v}}_{i} \hat{\mathbf{v}}_{i}^{\prime} \underset{\mathrm{p}}{\rightarrow} \mathrm{E}\left(\mathbf{v}_{i} \mathbf{v}_{i}^{\prime}\right) \quad \text { as } n \rightarrow \infty
+$$
+
+where $\mathbf{v}_{i} \equiv \mathbf{C}^{\prime} \mathbf{y}_{i}-\mathbf{C}^{\prime} \mathbf{F}_{i} \boldsymbol{\beta}$. Show that $\mathrm{E}\left(\mathbf{v}_{i} \mathbf{v}_{i}^{\prime}\right)=\sigma_{\eta}^{2} \cdot \mathbf{C}^{\prime} \mathbf{C}$.\\
+4. (Inconsistency of the fixed-effects estimator for dynamic models) Consider a "dynamic" model
+
+$$
+y_{i m}=\alpha_{i}+\rho \cdot y_{i, m-1}+\eta_{i m} \quad(m=1,2, \ldots, M ; i=1,2, \ldots, n) .
+$$
+
+Suppose we have a random sample on $\left(y_{i 0}, y_{i 1}, \ldots, y_{i M}\right)$. We assume that $\mathrm{E}\left(\alpha_{i} \eta_{i m}\right)=0$, and $\mathrm{E}\left(y_{i 0} \eta_{i m}\right)=0$ for all $m$. Also assume there is no crossequation correlation: $\mathrm{E}\left(\eta_{i m} \eta_{i h}\right)=0$ for $m \neq h$, and that the second moment is the same across equations: $\mathrm{E}\left(\eta_{i m}^{2}\right)=\sigma_{\eta}^{2}$.\\
+(a) Write this system of $M$ equations as (5.1.1") on page 329 by properly defining $\mathbf{y}_{i}, \mathbf{F}_{i}$, and $\mathbf{b}_{i}$.\\
+(b) Show: $\mathrm{E}\left(y_{i m} \cdot \eta_{i h}\right)=0$ if $m<h$. Hint:
+
+$$
+y_{i m}=\eta_{i m}+\rho \eta_{i, m-1}+\cdots+\rho^{m-1} \eta_{i 1}+\frac{1-\rho^{m}}{1-\rho} \alpha_{i}+\rho^{m} y_{i 0}
+$$
+
+(c) Verify that $\mathrm{E}\left(y_{i m} \cdot \eta_{i h}\right)=\rho^{m-h} \sigma_{\eta}^{2}$ for $m \geq h$. (optional) Show that
+
+$$
+\mathrm{E}\left(\mathbf{F}_{i}^{\prime} \mathbf{Q} \eta_{i}\right)=-\frac{\sigma_{\eta}^{2}}{M} \frac{(M-1)-M \rho+\rho^{M}}{(1-\rho)^{2}}
+$$
+
+(d) Therefore, if $\mathrm{E}\left(\mathbf{F}_{i}^{\prime} \mathbf{Q} \mathbf{F}_{i}\right)$ is nonsingular and if $(M-1)-M \rho+\rho^{M} \neq 0$, then the fixed-effects estimator for this dynamic model is inconsistent. Which assumption of Proposition 5.1 guaranteeing the consistency of the fixedeffects estimator is violated?\\
+5. (Optional, identification ensures nonsingularity)\\
+(a) Show that $\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)$ in (5.2.7) is invertible under assumption (5.1.15), that $\mathrm{E}\left(\mathbf{Q F}_{i} \otimes \mathbf{x}_{i}\right)$ is of full column rank. Hint:
+
+$$
+\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)=\mathrm{E}\left(\mathbf{F}_{i}^{\prime} \mathbf{Q} \mathbf{F}_{i}\right)=\sum_{m=1}^{M} \sum_{h=1}^{M} q_{m h} \mathrm{E}\left(\mathbf{f}_{i m} \mathbf{f}_{i h}^{\prime}\right)
+$$
+
+where $q_{m h}=(m, h)$ element of $\mathbf{Q}$. Show that
+
+$$
+\mathrm{E}\left(\mathbf{f}_{i m} \mathbf{f}_{i h}^{\prime}\right)=\mathrm{E}\left(\mathbf{f}_{i m} \mathbf{x}_{i}^{\prime}\right)\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1} \mathrm{E}\left(\mathbf{x}_{i} \mathbf{f}_{i h}^{\prime}\right) .
+$$
+
+(Recall that the elements of $\mathbf{f}_{i m}$ are included in $\mathbf{x}_{i}$.) Finally, show that
+
+$$
+\begin{aligned}
+\mathbf{x}_{i} \mathbf{f}_{i m}^{\prime}=\mathbf{f}_{i m}^{\prime} \otimes \mathbf{x}_{i}, & \left(\mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)^{\prime}=\left(\mathbf{f}_{i 1} \otimes \mathbf{x}_{i}^{\prime}, \ldots, \mathbf{f}_{i M} \otimes \mathbf{x}_{i}^{\prime}\right), \text { and } \\
+\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right) & =\mathrm{E}\left(\mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)^{\prime}\left[\mathbf{Q} \otimes\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1}\right] \mathrm{E}\left(\mathbf{F}_{i} \otimes \mathbf{x}_{i}\right) \\
+& =\mathrm{E}\left(\mathbf{Q} \mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)^{\prime}\left(\mathbf{I}_{M} \otimes\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1}\right) \mathrm{E}\left(\mathbf{Q} \mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)
+\end{aligned}
+$$
+
+(b) Use a similar argument to show that $\mathrm{E}\left[\widetilde{\mathbf{F}}_{i}^{\prime} \mathrm{E}\left(\tilde{\boldsymbol{\eta}}_{i} \tilde{\boldsymbol{\eta}}_{i}^{\prime}\right) \widetilde{\mathbf{F}}_{i}\right]$ in (5.2.7) is nonsingular. Hint: Since
+
+$$
+\tilde{\eta}_{i}=\mathbf{Q} \boldsymbol{\eta}_{i}=\mathbf{Q} \boldsymbol{\varepsilon}_{i}
+$$
+
+we have
+
+$$
+\widetilde{\mathbf{F}}_{i}^{\prime} \mathrm{E}\left(\tilde{\eta}_{i} \tilde{\eta}_{i}^{\prime}\right) \widetilde{\mathbf{F}}_{i}=\widetilde{\mathbf{F}}_{i}^{\prime} \mathbf{Q} \mathrm{E}\left(\varepsilon_{i} \varepsilon_{i}^{\prime}\right) \mathbf{Q} \widetilde{\mathbf{F}}_{i}=\widetilde{\mathbf{F}}_{i}^{\prime} \mathrm{E}\left(\varepsilon_{i} \varepsilon_{i}^{\prime}\right) \widetilde{\mathbf{F}}_{i}
+$$
+
+Also,
+
+$$
+\mathrm{E}\left[\widetilde{\mathbf{F}}_{i}^{\prime} \mathrm{E}\left(\boldsymbol{\varepsilon}_{i} \boldsymbol{\varepsilon}_{i}^{\prime}\right) \widetilde{\mathbf{F}}_{i}\right]=\mathrm{E}\left(\mathbf{Q} \mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)^{\prime}\left(\mathrm{E}\left(\boldsymbol{\varepsilon}_{i} \boldsymbol{\varepsilon}_{i}^{\prime}\right) \otimes\left[\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]^{-1}\right) \mathrm{E}\left(\mathbf{Q} \mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)
+$$
+
+(c) Show that $\mathrm{E}\left(\widehat{\mathbf{F}}_{i}^{\prime} \boldsymbol{\Psi}^{-1} \widehat{\mathbf{F}}_{i}\right)$ in (13) of Analytical Exercise 2 is nonsingular. Hint: As shown in Analytical Exercise 2(c), $\mathrm{E}\left(\mathbf{Q} \mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)$ is of full column rank if and only if $\mathrm{E}\left(\mathbf{C}^{\prime} \mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)$ is of full column rank.\\
+6. (Optional, alternative identification condition) Consider the error-component model (5.1.1") on page 329. Let $p \equiv \# \beta$. If $\mathbf{A}_{m}$ is the matrix that picks up $\mathbf{f}_{i m}$ from $\mathbf{x}_{i}$, it can be written as
+
+$$
+\underset{(K \times p)}{\mathbf{A}_{m}}=\left[\begin{array}{c}
+\mathbf{e}_{m} \otimes \mathbf{I}_{p} \\
+\mathbf{0}
+\end{array}\right]
+$$
+
+where $\mathbf{e}_{m}$ is the $m$-th row of $\mathbf{I}_{M}$.\\
+(a) Let $\mathbf{A}(K M \times p)$ be the matrix obtained from stacking $\left(\mathbf{A}_{1}, \ldots, \mathbf{A}_{M}\right)$. Show that $\mathbf{F}_{i}=\left(\mathbf{I}_{M} \otimes \mathbf{x}_{i}^{\prime}\right) \mathbf{A}$.\\
+(b) Show that the rank condition (5.1.15), combined with the condition that $\mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)$ be nonsingular (which is implied by (5.1.5) and (5.1.6)), can be written as
+
+$$
+\operatorname{rank}\left[\left(\mathbf{Q} \otimes \mathbf{I}_{K}\right) \mathbf{A}\right]=p \quad(\equiv \# \boldsymbol{\beta})
+$$
+
+(This result will be used in the next exercise.) Hint:
+
+$$
+\begin{aligned}
+\mathbf{F}_{i} \otimes \mathbf{x}_{i} & =\left(\left[\left(\mathbf{I}_{M} \otimes \mathbf{x}_{i}^{\prime}\right) \mathbf{A}\right]\right) \otimes \mathbf{x}_{i} \\
+& =\left[\left(\mathbf{I}_{M} \otimes \mathbf{x}_{i}^{\prime}\right) \otimes \mathbf{x}_{i}\right](\mathbf{A} \otimes 1) \\
+& =\left(\mathbf{I}_{M} \otimes \mathbf{x}_{i}^{\prime} \otimes \mathbf{x}_{i}\right) \mathbf{A} \\
+& =\left[\mathbf{I}_{M} \otimes\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right] \mathbf{A} .
+\end{aligned}
+$$
+
+So
+
+$$
+\begin{aligned}
+\widetilde{\mathbf{F}}_{i} \otimes \mathbf{x}_{i} & =\left(\mathbf{Q} \otimes \mathbf{I}_{K}\right)\left(\mathbf{F}_{i} \otimes \mathbf{x}_{i}\right) \\
+& =\left[\mathbf{Q} \otimes\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right] \mathbf{A} \\
+& =\left(\mathbf{I}_{M} \otimes \mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\left(\mathbf{Q} \otimes \mathbf{I}_{K}\right) \mathbf{A} .
+\end{aligned}
+$$
+
+So $\mathrm{E}\left(\widetilde{\mathbf{F}}_{i} \otimes \mathbf{x}_{i}\right)=\left[\mathbf{I}_{M} \otimes \mathrm{E}\left(\mathbf{x}_{i} \mathbf{x}_{i}^{\prime}\right)\right]\left(\mathbf{Q} \otimes \mathbf{I}_{K}\right) \mathbf{A}$.\\
+7. (Optional, checking nonsingularity) Prove that $\mathrm{E}\left(\widetilde{\mathbf{F}}_{i}^{\prime} \tilde{\boldsymbol{\eta}}_{i} \tilde{\boldsymbol{\eta}}_{i}^{\prime} \widetilde{\mathbf{F}}_{i}\right)$ in (5.2.23) is nonsingular, by taking the following steps.\\
+(a) Write $\widetilde{\mathbf{F}}_{i}^{\prime} \tilde{\eta}_{i}$ as a linear function of $\mathbf{g}_{i} \equiv \boldsymbol{\varepsilon}_{i} \otimes \mathbf{x}_{i}$. Hint: Let $\mathbf{A}$ be as in the previous exercise.
+
+$$
+\begin{aligned}
+\widetilde{\mathbf{F}}_{i}^{\prime} \tilde{\eta}_{i} & =\mathbf{A}^{\prime}\left(\mathbf{I}_{M} \otimes \mathbf{x}_{i}\right) \mathbf{Q} \eta_{i} \\
+& =\mathbf{A}^{\prime}\left(\mathbf{I}_{M} \otimes \mathbf{x}_{i}\right) \mathbf{Q} \varepsilon_{i} \quad\left(\text { since } \varepsilon_{i}=\mathbf{1}_{M} \cdot \alpha_{i}+\eta_{i}\right) \\
+& =\mathbf{A}^{\prime}\left(\mathbf{I}_{M} \otimes \mathbf{x}_{i}\right)\left(\mathbf{Q} \varepsilon_{i} \otimes 1\right) \\
+& =\mathbf{A}^{\prime}\left(\mathbf{Q} \varepsilon_{i} \otimes \mathbf{x}_{i}\right) \\
+& =\mathbf{A}^{\prime}\left(\mathbf{Q} \otimes \mathbf{I}_{K}\right)\left(\varepsilon_{i} \otimes \mathbf{x}_{i}\right) \\
+& =\mathbf{A}^{\prime}\left(\mathbf{Q} \otimes \mathbf{I}_{K}\right) \mathbf{g}_{i}
+\end{aligned}
+$$
+
+(b) Prove the desired result. Hint: $\mathrm{E}\left(\mathbf{g}_{i} \mathbf{g}_{i}^{\prime}\right)$ is positive definite by (5.1.6).
+
+\section*{EMPIRICAL EXERCISES}
+In this exercise, you will estimate the speed of convergence using several different estimation techniques. We use the international panel constructed by Summers and Heston (1991), which has become the standard data set for studying the growth of nations. The Summers-Heston panel (also called the Penn World Table) includes major macro variables measured in a consistent basis for virtually all the countries of the world.
+
+The file SUM\_HES. ASC is an extract for 1960-1985 from version 5.6 of the Penn World Table downloaded from the NBER's home page (\href{http://www.nber.org}{www.nber.org}). The\\
+file is organized as follows. For each country, information on the country is contained in multiple records (rows). The first record has the country's identification code and two dummies, one for a communist regime (referred to as COM below) and the other for the Organization of Petroleum Exporting Countries (referred to as OPEC below). The second record has the year, the population (in thousands), real GDP per capita (in 1985 U.S. dollars), and the saving rate (in percent) for 1960. The third record has the same for 1961, and so forth. The twenty-seventh record of the country is for 1985. The first few records of the file look like:
+
+\begin{center}
+\begin{tabular}{rrrr}
+100 &  &  &  \\
+1960 & 10800 & 1723 & 19.9 \\
+1961 & 11016 & 1599 & 21.1 \\
+ & $\vdots$ &  &  \\
+ &  &  &  \\
+1984 & 21173 & 2962 & 26.4 \\
+1985 & 21848 & 2988 & 26.0 \\
+20 & 0 &  &  \\
+1960 & 4816 & 931 & 3.3 \\
+1961 & 4918 & 976 & 2.9 \\
+\end{tabular}
+\end{center}
+
+The file contains all 125 countries for which the data are available. (The mapping between the country ID and the country name is in country.asc. Country 1 is Algeria, 2 is Angola, etc. Note that the mapping in Penn World Table version 5.6 is different from that in Summers and Heston (1991).) GDP per capita is the country's real GDP converted into U.S. dollars using the purchasing power parity of the country's currency against the dollar for 1985 (the variable "RGDPCH" in the Penn World Table). The saving rate is measured as the ratio of real investment to real GDP ("I" in the Penn World Table). See Sections II and III (particularly III.D) of Summers and Heston (1991) for how the variables are constructed.
+
+The first issue we examine empirically is conditional convergence. (At this juncture it would be useful to skim Mankiw, Romer, and Weil (1992).) Let $s_{i}$ be the saving rate of country $i$ and $n_{i}$ be the country's population growth rate (which we take to be the growth rate of labor). In the Solow-Swan growth model with a Cobb-Douglas production function, the steady-state level of output per effective labor, denoted $q^{*}$ in the text, is a linear function of $\log \left(s_{i}\right)-\log \left(n_{i}+g+\delta\right)$, where $g$ is the rate of labor-augmenting technical progress and $\delta$ is the depreciation rate of the capital stock. Then, assuming $A(0)$, the initial level of technology, to be the\\
+same across countries, equation (5.4.10) can be written as
+
+
+\begin{equation*}
+y_{i m}=\phi_{m}+\rho y_{i, m-1}+\gamma_{1} \log \left(s_{i}\right)+\gamma_{2} \log \left(n_{i}+g+\delta\right)+\eta_{i m} . \tag{1}
+\end{equation*}
+
+
+The growth model implies that $\gamma_{1}=-\gamma_{2}$, but we will not impose this restriction. This is the specification estimated in Table IV of Mankiw et al. (1992). As in Mankiw et al., assume $g+\delta$ to be 5 percent for all countries, and take $s_{i}$ to be the saving rate averaged over the 1960-1985 period. We measure $n_{i}$ as the average annual population growth rate over the same period (Mankiw et al. uses the average growth rate of the working-age population). Because our sample of 125 countries includes (former) communist countries and OPEC, we add $\operatorname{COM}(=1$ if communist, 0 otherwise) and $\operatorname{OPEC}(=1$ if $\mathrm{OPEC}, 0$ otherwise) to the equation:
+
+
+\begin{align*}
+y_{i m}= & \phi_{m}+\rho y_{i, m-1}+\gamma_{1} \log \left(s_{i}\right)+\gamma_{2} \log \left(n_{i}+g+\delta\right) \\
+& +\gamma_{3} \mathrm{COM}_{i}+\gamma_{4} \mathrm{OPEC}_{i}+\eta_{i m} \tag{2}
+\end{align*}
+
+
+(a) By subtracting $y_{i, m-1}$ from both sides, we can rewrite (2) as
+
+
+\begin{align*}
+y_{i m}-y_{i, m-1}= & \phi_{m}+(\rho-1) y_{i, m-1}+\gamma_{1} \log \left(s_{i}\right)+\gamma_{2} \log \left(n_{i}+g+\delta\right) \\
+& +\gamma_{3} \mathrm{COM}_{i}+\gamma_{4} \mathrm{OPEC}_{i}+\eta_{i m} . \tag{$\prime$}
+\end{align*}
+
+
+For this specification, set $M=1$ (just one equation to estimate) and take $t_{0}=$ 1960 and $t_{1}=1985$, so the dependent variable, $y_{i 1}-y_{i 0}$, is the cumulative growth between 1960 and 1985. Plot $y_{i 1}-y_{i 0}$ against $y_{i 0}$ for the 125 countries included in the sample. Is there any relation between the initial GDP ( $y_{i 0}$ ) and the subsequent growth $\left(y_{i 1}-y_{i 0}\right)$ ? Assuming outright that the error term is orthogonal to the regressors, estimate equation (2') by OLS. Calculate the value of $\lambda$ (speed of convergence) implied by the OLS estimate of $\rho$. (It should be less than 1 percent per year.) Calculate the asymptotic standard error (i.e., $1 / n$ times the square root of the asymptotic variance) of your estimate of $\lambda$. Hint: By (5.4.3), $\hat{\lambda}=-\log (\hat{\rho}) / 25$. By the delta method (Lemma 2.5 of Section 2.1),
+
+$$
+\operatorname{Avar}(\hat{\lambda})=\frac{\operatorname{Avar}(\hat{\rho})}{(25 \rho)^{2}}
+$$
+
+(since the derivative of $\log (\rho)$ is $1 / \rho$ ). So a consistent estimate of $\operatorname{Avar}(\hat{\lambda})$ is $\widehat{\operatorname{Avar}(\hat{\rho})} /(25 \hat{\rho})^{2}$. The standard error of $\hat{\lambda}$ is $1 / n$ times the square root of this. So: the standard error of $\hat{\lambda}=$ (standard error of $\hat{\rho}) /(25 \hat{\rho})$. Can you confirm the finding that "if countries did not vary in their investment and population growth\\
+rates, there would be a strong tendency for poor countries to grow faster than rich ones" (Mankiw et al., 1992, p. 428).\\
+(b) (Fixed-effects estimation) By setting $M=25, t_{0}=1960, t_{1}=1961, \ldots$, $t_{25}=1985$, we can form a system of 25 equations, with (5.4.10) as the $m$-th equation. Estimate the system by the fixed-effect technique, assuming that the error is spherical in the sense of (5.2.12). What is the implied value of $\lambda$ ? (It should be about 6.4 percent per year.) (Optional: Calculate the standard errors without the spherical error assumption. As emphasized in the text, the fixed-effects estimator is not consistent. We nevertheless apply blindly the fixed-effect technique just to gain programming experience.)
+
+TSP Tip: TSP's command for the fixed-effects estimator (with the spherical error assumption) is PANEL. It, however, does not accept the data organization of SUM\_HES. ASC. It requires that the group (country) ID and the year be included in the rows containing information on group-years. The data file that PANEL can accept is FIXED. ASC. Its first few records are:
+
+\begin{center}
+\begin{tabular}{llllll}
+1 & 0 & 0 & 1961 & 1599 & 1723 \\
+1 & 0 & 0 & 1962 & 1275 & 1599 \\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{rrrrrr}
+1 & 0 & 0 & 1984 & 2962 & 2903 \\
+1 & 0 & 0 & 1985 & 2988 & 2962 \\
+2 & 0 & 0 & 1961 & 976 & 931 \\
+2 & 0 & 0 & 1962 & 984 & 976 \\
+\end{tabular}
+\end{center}
+
+⋮\\
+Here, the first variable is the country ID, followed by COM, OPEC, year, real per capita GDP for the year, and real per capita GDP for the previous year.
+
+RATS Tip: RATS does not have a command specifically for the fixed-effects estimator, but there is a command called PANEL (not to be confused with TSP's PANEL) that calculates deviations from group means. The RATS codes for doing this part of the exercise are shown here:
+
+\begin{verbatim}
+*
+* (b) fixed-effects estimation.
+*
+calendar(panelobs=25)
+allocate 0 125//25
+\end{verbatim}
+
+\begin{verbatim}
+open data fixed.asc
+data(org=obs) / id com opec year rgdp rgdpl
+* generate year dummies (only 24 dummies are
+* enough)
+dec vector[series] dummies(24)
+do i=1,24
+    set dummies(i) = (year = = i+1960)
+end do i
+* log transformation
+set y = log(rgdp);
+set ylag = log(rgdpl);
+* simple statistics
+table
+* calculate deviations from group means
+panel y / yw 1 entry 1.0 indiv -1.0
+dec vector[series] dumw(24)
+panel ylag / ylagw 1 entry 1.0 indiv -1.0
+do i=1,24
+    panel dummies(i) / dumw(i) 1 entry 1.0
+        indiv -1.0
+end do i
+* Within regression, with degrees of freedom
+* correction
+linreg(dfc=125) yw;# dumw ylagw
+\end{verbatim}
+
+(c) (optional) As in the previous question, take $M=25$ and $t_{0}=1960, t_{1}= 1961, t_{2}=1962, \ldots, t_{25}=1985$. Then (5.4.11) is a system of 24 equations if written as the model of Section 4.6:
+
+
+\begin{equation*}
+y_{i m}=\mathbf{z}_{i m}^{\prime} \boldsymbol{\delta}+\boldsymbol{\varepsilon}_{i m} \quad(i=1,2, \ldots, 125 ; m=1,2, \ldots, 24), \tag{3}
+\end{equation*}
+
+
+where the $y_{i m}$ in (3) equals $y_{i, m+1}-y_{i m}$ in (5.4.11),
+
+$$
+\mathbf{z}_{i m}=\left(0, \ldots, 0,1,0, \ldots, 0, y_{i m}-y_{i, m-1}\right)^{\prime}
+$$
+
+a 25 -dimensional vector whose $m$-th element is 1 ,
+
+$$
+\delta=\left(\mu_{1}, \ldots, \mu_{24}, \rho\right)^{\prime} .
+$$
+
+If $s_{i m}$ is country $i$ 's saving rate (investment/GDP ratio) in year $m$, use a constant and $s_{i, m-1}$ as the instrument in the $m$-th equation (so, for example, in the first equation where the nonconstant regressor is $y_{i, 1961}-y_{i, 1960}$, the vector of instruments is $\left.\left(1, s_{i, 1960}\right)^{\prime}\right)$. Apply the multiple-equation GMM technique to (3) assuming conditional homoskedasticity. (It will be very clumsy to use TSP or RATS; use GAUSS. The estimator is (4.6.6) with $\widehat{\mathbf{W}}$ set to the inverse of (4.5.3).) The implied value of $\lambda$ should be about 36 percent per year!
+
+\section*{ANSWERS TO SELECTED QUESTIONS}
+\section*{ANALYTICAL EXERCISES}
+1c. $\mathrm{E}\left(\boldsymbol{\eta}_{i} \mid \mathrm{W}\right)$
+
+$$
+\begin{aligned}
+& =\mathrm{E}\left(\boldsymbol{\eta}_{i} \mid \mathbf{F}\right) \quad \text { (since } \mathbf{D} \text { is a matrix of constants) } \\
+& =\mathrm{E}\left(\boldsymbol{\eta}_{i} \mid \mathbf{F}_{1}, \ldots, \mathbf{F}_{n}\right) \\
+& =\mathrm{E}\left(\boldsymbol{\eta}_{i} \mid \mathbf{F}_{i}\right)
+\end{aligned}
+$$
+
+(since $\boldsymbol{\eta}_{i}$ is indep. of $\left(\mathbf{F}_{1}, \ldots, \mathbf{F}_{i-1}, \mathbf{F}_{i+1}, \ldots, \mathbf{F}_{n}\right)$ by i.i.d. assumption) $=\mathbf{0}$.
+
+Therefore, the regressors are exogenous. Also,
+
+$$
+\begin{aligned}
+\mathrm{E}\left(\boldsymbol{\eta}_{i} \boldsymbol{\eta}_{i}^{\prime} \mid \mathbf{W}\right) & =\mathrm{E}\left(\boldsymbol{\eta}_{i} \boldsymbol{\eta}_{i}^{\prime} \mid \mathbf{F}\right) \\
+& =\mathrm{E}\left(\boldsymbol{\eta}_{i} \boldsymbol{\eta}_{i}^{\prime} \mid \mathbf{F}_{i}\right) \\
+& =\sigma_{\eta}^{2} \mathbf{I}_{M} \quad \text { (by the spherical error assumption) } .
+\end{aligned}
+$$
+
+By the i.i.d. assumption, $\mathrm{E}\left(\boldsymbol{\eta}_{i} \boldsymbol{\eta}_{j}^{\prime} \mid \mathbf{W}\right)=\mathbf{0}$ for $i \neq j$. So $\mathrm{E}\left(\boldsymbol{\eta} \boldsymbol{\eta}^{\prime} \mid \mathbf{W}\right)=\sigma_{\eta}^{2} \mathbf{I}_{M n}$.\\
+2c. Proof that " $\mathrm{E}\left(\mathbf{Q} \mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)$ is of full column rank" $\Leftrightarrow$ " $\mathrm{E}\left(\mathbf{C}^{\prime} \mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)$ is of full column rank":\\
+Let $\mathbf{A} \equiv \mathrm{E}\left(\mathbf{Q} \mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)$ and $\mathbf{B} \equiv \mathrm{E}\left(\mathbf{C}^{\prime} \mathbf{F}_{i} \otimes \mathbf{x}_{i}\right)$. There exists an $M \times(M-1)$ matrix $\mathbf{L}$ of full column rank such that $\mathbf{Q}=\mathbf{L} \mathbf{C}^{\prime}$ (it is actually $\mathbf{C}\left(\mathbf{C}^{\prime} \mathbf{C}\right)^{-1}$ by (11)). Let $\mathbf{D} \equiv \mathbf{L} \otimes \mathbf{I}_{K}$. Then $\mathbf{A}=\mathbf{D B}$. Since the rank of a product of two matrices is less than or equal to the rank of either of the two matrices,
+
+
+\begin{equation*}
+\operatorname{rank}(\mathbf{A}) \leq \operatorname{rank}(\mathbf{B}) . \tag{1}
+\end{equation*}
+
+
+Next consider a product $\mathbf{D}^{\prime} \mathbf{A}=\mathbf{D}^{\prime} \mathbf{D B}$.
+
+
+\begin{equation*}
+\operatorname{rank}\left(\mathbf{D}^{\prime} \mathbf{D B}\right) \leq \operatorname{rank}\left(\mathbf{D}^{\prime} \mathbf{A}\right) \leq \operatorname{rank}(\mathbf{A}) . \tag{2}
+\end{equation*}
+
+
+But since $\mathbf{L}$ is of full column rank, $\mathbf{D}^{\prime} \mathbf{D}$ is nonsingular. Since multiplication by a nonsingular matrix does not alter rank,
+
+
+\begin{equation*}
+\operatorname{rank}\left(\mathbf{D}^{\prime} \mathbf{D B}\right)=\operatorname{rank}(\mathbf{B}) . \tag{3}
+\end{equation*}
+
+
+From (1)-(3) it follows that $\operatorname{rank}(\mathbf{A})=\operatorname{rank}(\mathbf{B})$. Since $\mathbf{A}$ and $\mathbf{B}$ have the same number of columns, the desired conclusion follows.
+
+4a.
+
+$$
+\mathbf{y}_{i}=\left[\begin{array}{c}
+y_{i 1} \\
+\vdots \\
+y_{i M}
+\end{array}\right], \mathbf{F}_{i}=\left[\begin{array}{c}
+y_{i 0} \\
+\vdots \\
+y_{i, M-1}
+\end{array}\right]
+$$
+
+There is no $\mathbf{b}_{i}$.\\
+4d. Since $\mathrm{E}\left(\eta_{i h} \cdot y_{i m}\right) \neq 0$ for $m \geq h$, some of the "cross" orthogonalities are not satisfied.
+
+\section*{References}
+Barro, R., and X. Sala-i-Martin, 1995, Economic Growth, New York: McGraw-Hill.\\
+Mankiw, G., D. Romer, and D. Weil, 1992, "A Contribution to the Empirics of Economic Growth," Quarterly Journal of Economics, 107, 407-437.\\
+Newey, W., 1985, "Generalized Method of Moments Specification Testing," Journal of Econometrics, 29, 229-256.\\
+Nickell, S., 1981, "Biases in Dynamic Models with Fixed Effects," Econometrica, 49, 1417-1426.\\
+Summers, R., and A. Heston, 1991, "The Penn World Table (Mark 5): An Expanded Set of International Comparisons, 1950-1988," Quarterly Journal of Economics, 106, 327-368.
+
+
+\end{document}

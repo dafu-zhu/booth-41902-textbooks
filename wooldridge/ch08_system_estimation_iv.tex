@@ -1,0 +1,707 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 8: System Estimation by Instrumental Variables}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsection*{8.1 Introduction and Examples}
+In Chapter 7 we covered system estimation of linear equations when the explanatory variables satisfy certain exogeneity conditions. For many applications, even the weakest of these assumptions, Assumption SOLS.1, is violated, in which case instrumental variables procedures are indispensable.
+
+The modern approach to system instrumental variables (SIV) estimation is based on the principle of generalized method of moments (GMM). Method of moments estimation has a long history in statistics for obtaining simple parameter estimates when maximum likelihood estimation requires nonlinear optimization. Hansen (1982) and White (1982b) showed how the method of moments can be generalized to apply to a variety of econometric models, and they derived the asymptotic properties of GMM. Hansen (1982), who coined the name "generalized method of moments," treated time series data, and White (1982b) assumed independently sampled observations.
+
+A related class of estimators falls under the heading generalized instrumental variables (GIV). As we will see in Section 8.4, the GIV estimator can be viewed as an extension of the generalized least squares (GLS) method we covered in Chapter 7. We will also see that the GIV estimator, because of its dependence on a GLSlike transformation, is inconsistent in some important cases when GMM remains consistent.
+
+Though the models considered in this chapter are more general than those treated in Chapter 5, the derivations of asymptotic properties of system IV estimators are mechanically similar to the derivations in Chapters 5 and 7. Therefore, the proofs in this chapter will be terse, or omitted altogether.
+
+In econometrics, the most familar application of SIV estimation is to a simultaneous equations model (SEM). We will cover SEMs specifically in Chapter 9, but it is useful to begin with a typical SEM example. System estimation procedures have applications beyond the classical simultaneous equations methods. We will also use the results in this chapter for the analysis of panel data models in Chapter 11.
+
+Example 8.1 (Labor Supply and Wage Offer Functions): Consider the following labor supply function representing the hours of labor supply, $h^{s}$, at any wage, $w$, faced by an individual. As usual, we express this in population form:
+
+
+\begin{equation*}
+h^{S}(w)=\gamma_{1} w+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+u_{1} \tag{8.1}
+\end{equation*}
+
+
+where $\mathbf{z}_{1}$ is a vector of observed labor supply shifters-including such things as education, past experience, age, marital status, number of children, and nonlabor income-and $u_{1}$ contains unobservables affecting labor supply. The labor supply\\
+function can be derived from individual utility-maximizing behavior, and the notation in equation (8.1) is intended to emphasize that, for given $\mathbf{z}_{1}$ and $u_{1}$, a labor supply function gives the desired hours worked at any possible wage ( $w$ ) facing the worker. As a practical matter, we can only observe equilibrium values of hours worked and hourly wage. But the counterfactual reasoning underlying equation (8.1) is the proper way to view labor supply.
+
+A wage offer function gives the hourly wage that the market will offer as a function of hours worked. (It could be that the wage offer does not depend on hours worked, but in general it might.) For observed productivity attributes $\mathbf{z}_{2}$ (for example, education, experience, and amount of job training) and unobserved attributes $u_{2}$, we write the wage offer function as\\
+$w^{o}(h)=\gamma_{2} h+\mathbf{z}_{2} \boldsymbol{\delta}_{2}+u_{2}$.
+
+Again, for given $\mathbf{z}_{2}$ and $u_{2}, w^{o}(h)$ gives the wage offer for an individual agreeing to work $h$ hours.
+
+Equations (8.1) and (8.2) explain different sides of the labor market. However, rarely can we assume that an individual is given an exogenous wage offer and then, at that wage, decides how much to work based on equation (8.1). A reasonable approach is to assume that observed hours and wage are such that equations (8.1) and (8.2) both hold. In other words, letting ( $h, w$ ) denote the equilibrium values, we have\\
+$h=\gamma_{1} w+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+u_{1}$,\\
+$w=\gamma_{2} h+\mathbf{z}_{2} \boldsymbol{\delta}_{2}+u_{2}$.
+
+Under weak restrictions on the parameters, these equations can be solved uniquely for ( $h, w$ ) as functions of $\mathbf{z}_{1}, \mathbf{z}_{2}, u_{1}, u_{2}$, and the parameters; we consider this topic generally in Chapter 9. Further, if $\mathbf{z}_{1}$ and $\mathbf{z}_{2}$ are exogenous in the sense that\\
+$\mathrm{E}\left(u_{1} \mid \mathbf{z}_{1}, \mathbf{z}_{2}\right)=\mathrm{E}\left(u_{2} \mid \mathbf{z}_{1}, \mathbf{z}_{2}\right)=0$,\\
+then, under identification assumptions, we can consistently estimate the parameters of the labor supply and wage offer functions. We consider identification of SEMs in detail in Chapter 9. We also ignore what is sometimes a practically important issue: the equilibrium hours for an individual might be zero, in which case $w$ is not observed for such people. We deal with missing data issues in Chapter 21.
+
+For a random draw from the population, we can write\\
+$h_{i}=\gamma_{1} w_{i}+\mathbf{z}_{i 1} \boldsymbol{\delta}_{1}+u_{i 1}$,\\
+$w_{i}=\gamma_{2} h_{i}+\mathbf{z}_{i 2} \boldsymbol{\delta}_{2}+u_{i 2}$.
+
+Except under very special assumptions, $u_{i 1}$ will be correlated with $w_{i}$, and $u_{i 2}$ will be correlated with $h_{i}$. In other words, $w_{i}$ is probably endogenous in equation (8.5), and $h_{i}$ is probably endogenous in equation (8.6). It is for this reason that we study system instrumental variables methods.
+
+An example with the same statistical structure as Example 8.1 but with an omitted variables interpretation is motivated by Currie and Thomas (1995).
+
+Example 8.2 (Student Performance and Head Start): Consider an equation to test the effect of Head Start participation on subsequent student performance:\\
+score $_{i}=\gamma_{1}$ HeadStart $_{i}+\mathbf{z}_{i 1} \boldsymbol{\delta}_{1}+u_{i 1}$,\\
+where $\operatorname{score}_{i}$ is the outcome on a test when the child is enrolled in school and HeadStart $_{i}$ is a binary indicator equal to one if child $i$ participated in Head Start at an early age. The vector $\mathbf{z}_{i 1}$ contains other observed factors, such as income, education, and family background variables. The error term $u_{i 1}$ contains unobserved factors that affect score-such as child's ability-that may also be correlated with HeadStart. To capture the possible endogeneity of HeadStart, we write a linear reduced form (linear projection) for HeadStarti:
+
+HeadStart $_{i}=\mathbf{z}_{i} \boldsymbol{\delta}_{2}+u_{i 2}$.
+
+Remember, this projection always exists even though HeadStart ${ }_{i}$ is a binary variable. The vector $\mathbf{z}_{i}$ contains $\mathbf{z}_{i 1}$ and at least one factor affecting Head Start participation that does not have a direct effect on score. One possibility is distance to the nearest Head Start center. In this example we would probably be willing to assume that $\mathrm{E}\left(u_{i 1} \mid \mathbf{z}_{i}\right)=0$, since the test score equation is structural, but we would only want to assume $\mathrm{E}\left(\mathbf{z}_{i}^{\prime} u_{i 2}\right)=\mathbf{0}$, since the Head Start equation is a linear projection involving a binary dependent variable. Correlation between $u_{1}$ and $u_{2}$ means HeadStart is endogenous in equation (8.7).
+
+Both of the previous examples can be written for observation $i$ as\\
+$y_{i 1}=\mathbf{x}_{i 1} \boldsymbol{\beta}_{1}+u_{i 1}$,\\
+$y_{i 2}=\mathbf{x}_{i 2} \boldsymbol{\beta}_{2}+u_{i 2}$,\\
+which looks just like a two-equation SUR system but where $\mathbf{x}_{i 1}$ and $\mathbf{x}_{i 2}$ can contain endogenous as well as exogenous variables. Because $\mathbf{x}_{i 1}$ and $\mathbf{x}_{i 2}$ are generally correlated with $u_{i 1}$ and $u_{i 2}$, estimation of these equations by OLS or FGLS, as we studied in Chapter 7, will generally produce inconsistent estimators.
+
+We already know one method for estimating an equation such as equation (8.9): if we have sufficient instruments, apply 2SLS. Often 2SLS produces acceptable results, so why should we go beyond single-equation analysis? Not surprisingly, our interest in system methods with endogenous explanatory variables has to do with efficiency. In many cases we can obtain more efficient estimators by estimating $\boldsymbol{\beta}_{1}$ and $\boldsymbol{\beta}_{2}$ jointly, that is, by using a system procedure. The efficiency gains are analogous to the gains that can be realized by using feasible GLS rather than OLS in an SUR system.
+
+\subsection*{8.2 General Linear System of Equations}
+We now discuss estimation of a general linear model of the form\\
+$\mathbf{y}_{i}=\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{u}_{i}$,\\
+where $\mathbf{y}_{i}$ is a $G \times 1$ vector, $\mathbf{X}_{i}$ is a $G \times K$ matrix, and $\mathbf{u}_{i}$ is the $G \times 1$ vector of errors. This model is identical to equation (7.9), except that we will use different assumptions. In writing out examples, we will often omit the observation subscript $i$, but for the general analysis, carrying it along is a useful notational device. As in Chapter 7, the rows of $\mathbf{y}_{i}, \mathbf{X}_{i}$, and $\mathbf{u}_{i}$ can represent different time periods for the same crosssectional unit (so $G=T$, the total number of time periods). Therefore, the following analysis applies to panel data models where $T$ is small relative to the cross section sample size, $N$; for an example, see Problem 8.8. We cover general panel data applications in Chapter 11. (As in Chapter 7, the label "systems of equations" is not especially accurate for basic panel data models because we have only one behavioral equation over $T$ different time periods.)
+
+The following orthogonality condition is the basis for estimating $\boldsymbol{\beta}$ :\\
+ASSUMPTION SIV.1: $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)=\mathbf{0}$, where $\mathbf{Z}_{i}$ is a $G \times L$ matrix of observable instrumental variables.\\
+(The abbreviation SIV stands for "system instrumental variables.") For the purposes of discussion, we assume that $\mathrm{E}\left(\mathbf{u}_{i}\right)=\mathbf{0}$; this assumption is almost always true in practice anyway.
+
+From what we know about IV and 2SLS for single equations, Assumption SIV. 1 cannot be enough to identify the vector $\boldsymbol{\beta}$. An assumption sufficient for identification is the rank condition:\\
+assumption SIV.2: $\operatorname{rank} \mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}\right)=K$.
+
+Assumption SIV. 2 generalizes the rank condition from the single-equation case. (When $G=1$, Assumption SIV. 2 is the same as Assumption 2SLS.2b.) Since $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}\right)$ is an $L \times K$ matrix, Assumption SIV. 2 requires the columns of this matrix to be linearly independent. Necessary for the rank condition is the order condition: $L \geq K$. We will investigate the rank condition in detail for a broad class of models in Chapter 9. For now, we just assume that it holds.
+
+As in Chapter 7, it is useful to carry along two examples. The first applies to simultaneous equations models and other systems with endogenous explanatory variables. The second is a panel data model where instrumental variables are specified that are not the same as the explanatory variables.
+
+For the first example, write a $G$ equation system for the population as
+
+
+\begin{equation*}
+y_{1}=\mathbf{x}_{1} \boldsymbol{\beta}_{1}+u_{1} \tag{8.12}
+\end{equation*}
+
+
+$y_{G}=\mathbf{x}_{G} \boldsymbol{\beta}_{G}+u_{G}$,\\
+where, for each equation $g, \mathbf{x}_{g}$ is a $1 \times K_{g}$ vector that can contain both exogenous and endogenous variables. For each $g, \boldsymbol{\beta}_{g}$ is $K_{g} \times 1$. Because this looks just like the SUR system from Chapter 7, we will refer to it as an SUR system, keeping in mind the crucial fact that some elements of $\mathbf{x}_{g}$ are thought to be correlated with $u_{g}$ for at least some $g$.
+
+For each equation we assume that we have a set of instrumental variables, a $1 \times L_{g}$ vector $\mathbf{z}_{g}$, that are exogenous in the sense that\\
+$\mathrm{E}\left(\mathbf{z}_{g}^{\prime} u_{g}\right)=\mathbf{0}, \quad g=1,2, \ldots, G$.
+
+In most applications, unity is an element of $\mathbf{z}_{g}$ for each $g$, so that $\mathrm{E}\left(u_{g}\right)=0$, all $g$. As we will see, and as we already know from single-equation analysis, if $\mathbf{x}_{g}$ contains some elements correlated with $u_{g}$, then $\mathbf{z}_{g}$ must contain more than just the exogenous variables appearing in equation $g$. Much of the time the same instruments, which consist of all exogenous variables appearing anywhere in the system, are valid for every equation, so that $\mathbf{z}_{g}=\mathbf{w}$ (say), $g=1,2, \ldots, G$. Some applications require us to have different instruments for different equations, so we allow that possibility here.
+
+Putting an $i$ subscript on the variables in equations (8.12), and defining
+
+\[
+\underset{G \times 1}{\mathbf{y}_{i}} \equiv\left(\begin{array}{c}
+y_{i 1}  \tag{8.14}\\
+y_{i 2} \\
+\vdots \\
+y_{i G}
+\end{array}\right), \quad \underset{G \times K}{\mathbf{X}_{i}} \equiv\left(\begin{array}{ccccc}
+\mathbf{x}_{i 1} & \mathbf{0} & \mathbf{0} & \cdots & \mathbf{0} \\
+\mathbf{0} & \mathbf{x}_{i 2} & \mathbf{0} & \cdots & \mathbf{0} \\
+\vdots & & & & \vdots \\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \cdots & \mathbf{x}_{i G}
+\end{array}\right), \quad \underset{G \times 1}{\mathbf{u}_{i}} \equiv\left(\begin{array}{c}
+u_{i 1} \\
+u_{i 2} \\
+\vdots \\
+u_{i G}
+\end{array}\right)
+\]
+
+and $\boldsymbol{\beta}=\left(\boldsymbol{\beta}_{1}^{\prime}, \boldsymbol{\beta}_{2}^{\prime}, \ldots, \boldsymbol{\beta}_{G}^{\prime}\right)^{\prime}$, we can write equation (8.12) in the form (8.11). Note that $K=K_{1}+K_{2}+\cdots+K_{G}$ is the total number of parameters in the system.
+
+The matrix of instruments has a structure similar to $\mathbf{X}_{i}$ :\\
+$\mathbf{Z}_{i} \equiv\left(\begin{array}{ccccc}\mathbf{z}_{i 1} & \mathbf{0} & \mathbf{0} & \cdots & \mathbf{0} \\ \mathbf{0} & \mathbf{z}_{i 2} & \mathbf{0} & \cdots & \mathbf{0} \\ \vdots & & & & \vdots \\ \mathbf{0} & \mathbf{0} & \mathbf{0} & \cdots & \mathbf{z}_{i G}\end{array}\right)$,\\
+which has dimension $G \times L$, where $L=L_{1}+L_{2}+\cdots+L_{G}$. Then, for each $i$, $\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}=\left(\mathbf{z}_{i 1} u_{i 1}, \mathbf{z}_{i 2} u_{i 2}, \ldots, \mathbf{z}_{i G} u_{i G}\right)^{\prime}$,\\
+and so $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)=\mathbf{0}$ reproduces the orthogonality conditions (8.13). Also,\\
+$\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}\right)=\left(\begin{array}{ccccc}\mathrm{E}\left(\mathbf{z}_{i 1}^{\prime} \mathbf{x}_{i 1}\right) & \mathbf{0} & \mathbf{0} & \cdots & \mathbf{0} \\ \mathbf{0} & \mathrm{E}\left(\mathbf{z}_{i 2}^{\prime} \mathbf{x}_{i 2}\right) & \mathbf{0} & \cdots & \mathbf{0} \\ \vdots & & & & \vdots \\ \mathbf{0} & \mathbf{0} & \mathbf{0} & \cdots & \mathrm{E}\left(\mathbf{z}_{i G}^{\prime} \mathbf{x}_{i G}\right)\end{array}\right)$,\\
+where $\mathrm{E}\left(\mathbf{z}_{i g}^{\prime} \mathbf{x}_{i g}\right)$ is $L_{g} \times K_{g}$. Assumption SIV. 2 requires that this matrix have full column rank, where the number of columns is $K=K_{1}+K_{2}+\cdots+K_{G}$. A well-known result from linear algebra says that a block diagonal matrix has full column rank if and only if each block in the matrix has full column rank. In other words, Assumption SIV. 2 holds in this example if and only if\\
+rank $\mathrm{E}\left(\mathbf{z}_{i g}^{\prime} \mathbf{x}_{i g}\right)=K_{g}, \quad g=1,2, \ldots, G$.
+
+This is exactly the rank condition needed for estimating each equation by 2SLS, which we know is possible under conditions (8.13) and (8.18). Therefore, identification of the SUR system is equivalent to identification equation by equation. This reasoning assumes that the $\boldsymbol{\beta}_{g}$ are unrestricted across equations. If some prior restrictions are known, then identification is more complicated, something we cover explicitly in Chapter 9.
+
+In the important special case where the same instruments, say $\mathbf{w}_{i}$, can be used for every equation, we can write definition (8.15) as $\mathbf{Z}_{i}=\mathbf{I}_{G} \otimes \mathbf{w}_{i}$.
+
+For the panel data model
+
+
+\begin{equation*}
+y_{i t}=\mathbf{x}_{i t} \boldsymbol{\beta}+u_{i t}, \quad t=1, \ldots, T \tag{8.19}
+\end{equation*}
+
+
+we set $G=T$ and define the $T \times K$ matrix as in Chapter 7:\\
+$\mathbf{X}_{i}=\left(\begin{array}{c}\mathbf{x}_{i 1} \\ \mathbf{x}_{i 2} \\ \vdots \\ \mathbf{x}_{i T}\end{array}\right)$.
+
+As the model is written in (8.19), there is a common vector, $\boldsymbol{\beta}$, in each time period. Nevertheless, as we discussed in Chapter 7, this notation allows for different intercepts and slopes because $\mathbf{x}_{i t}$ can contain time period dummies and interactions between time dummies and covariates (whether those covariates change over time or not).
+
+If $\mathbf{z}_{i t}$ is a $1 \times L_{t}$ vector of instruments for each time period, in the sense that\\
+$\mathrm{E}\left(\mathbf{z}_{i t}^{\prime} u_{i t}\right)=\mathbf{0}, \quad t=1, \ldots, T$,\\
+then we can define the matrix of instruments as in (8.15), with the slight notational change $G=T$. When $L_{t}$ is the same for all $t\left(L_{t}=L, t=1, \ldots, T\right)$, a different choice is possible:\\
+$\mathbf{Z}_{i}=\left(\begin{array}{c}\mathbf{z}_{i 1} \\ \mathbf{z}_{i 2} \\ \vdots \\ \mathbf{z}_{i T}\end{array}\right)$.
+
+As we will see, generally the choice (8.22) leads to a different estimator than when the IVs are chosen as in (8.15).
+
+\subsection*{8.3 Generalized Method of Moments Estimation}
+\subsection*{8.3.1 General Weighting Matrix}
+The orthogonality conditions in Assumption SIV. 1 suggest an estimation strategy. Under Assumptions SIV. 1 and SIV.2, $\boldsymbol{\beta}$ is the unique $K \times 1$ vector solving the linear set population moment conditions\\
+$\mathrm{E}\left[\mathbf{Z}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \boldsymbol{\beta}\right)\right]=\mathbf{0}$.\\
+(That $\boldsymbol{\beta}$ is a solution follows from Assumption SIV.1; that it is unique follows by Assumption SIV.2.) In other words, if $\mathbf{b}$ is any other $K \times 1$ vector (so that at least one element of $\mathbf{b}$ is different from the corresponding element in $\boldsymbol{\beta}$ ), then
+
+
+\begin{equation*}
+\mathrm{E}\left[\mathbf{Z}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \mathbf{b}\right)\right] \neq \mathbf{0} \tag{8.24}
+\end{equation*}
+
+
+This equation shows that $\boldsymbol{\beta}$ is identified. Because sample averages are consistent estimators of population moments, the analogy principle applied to condition (8.23) suggests choosing the estimator $\hat{\boldsymbol{\beta}}$ to solve
+
+
+\begin{equation*}
+N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \hat{\boldsymbol{\beta}}\right)=\mathbf{0} \tag{8.25}
+\end{equation*}
+
+
+Equation (8.25) is a set of $L$ linear equations in the $K$ unknowns in $\hat{\boldsymbol{\beta}}$. First consider the case $L=K$, so that we have exactly enough IVs for the explanatory variables in the system. Then, if the $K \times K$ matrix $\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}$ is nonsingular, we can solve for $\hat{\boldsymbol{\beta}}$ as
+
+
+\begin{equation*}
+\hat{\boldsymbol{\beta}}=\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}\right)^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{y}_{i}\right) . \tag{8.26}
+\end{equation*}
+
+
+We can write $\hat{\boldsymbol{\beta}}$ using full matrix notation as $\hat{\boldsymbol{\beta}}=\left(\mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$, where $\mathbf{Z}$ is the $N G \times L$ matrix obtained by stacking $\mathbf{Z}_{i}$ from $i=1,2, \ldots, N, \mathbf{X}$ is the $N G \times K$ matrix obtained by stacking $\mathbf{X}_{i}$ from $i=1,2, \ldots, N$, and $\mathbf{Y}$ is the $N G \times 1$ vector obtained from stacking $\mathbf{y}_{i}, i=1,2, \ldots, N$. We call equation (8.26) the system IV (SIV) estimator. Application of the law of large numbers shows that the SIV estimator is consistent under Assumptions SIV. 1 and SIV.2.
+
+When $L>K$-so that we have more columns in the IV matrix $\mathbf{Z}_{i}$ than we need for identification-choosing $\hat{\boldsymbol{\beta}}$ is more complicated. Except in special cases, equation (8.25) will not have a solution. Instead, we choose $\hat{\boldsymbol{\beta}}$ to make the vector in equation (8.25) as "small" as possible in the sample. One idea is to minimize the squared Euclidean length of the $L \times 1$ vector in equation (8.25). Dropping the $1 / N$, this approach suggests choosing $\hat{\boldsymbol{\beta}}$ to make
+
+$$
+\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \hat{\boldsymbol{\beta}}\right)\right]^{\prime}\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \hat{\boldsymbol{\beta}}\right)\right]
+$$
+
+as small as possible. While this method produces a consistent estimator under Assumptions SIV. 1 and SIV.2, it rarely produces the best estimator, for reasons we will see in Section 8.3.3.
+
+A more general class of estimators is obtained by using a weighting matrix in the quadratic form. Let $\hat{\mathbf{W}}$ be an $L \times L$ symmetric, positive semidefinite matrix, where the " $\wedge$ " is included to emphasize that $\hat{\mathbf{W}}$ is generally an estimator. A generalized method of moments (GMM) estimator of $\boldsymbol{\beta}$ is a vector $\hat{\boldsymbol{\beta}}$ that solves the problem
+
+
+\begin{equation*}
+\min _{\mathbf{b}}\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \mathbf{b}\right)\right]^{\prime} \hat{\mathbf{W}}\left[\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \mathbf{b}\right)\right] . \tag{8.27}
+\end{equation*}
+
+
+Because expression (8.27) is a quadratic function of $\mathbf{b}$, the solution to it has a closed form. Using multivariable calculus or direct substitution, we can show that the unique solution is\\
+$\hat{\boldsymbol{\beta}}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{W}} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{W}} \mathbf{Z}^{\prime} \mathbf{Y}\right)$,\\
+assuming that $\mathbf{X}^{\prime} \mathbf{Z} \mathbf{W}^{\prime} \mathbf{Z}^{\prime} \mathbf{X}$ is nonsingular. To show that this estimator is consistent, we assume that $\hat{\mathbf{W}}$ has a nonsingular probability limit.
+
+ASSUMPTION SIV.3: $\hat{\mathbf{W}} \xrightarrow{p} \mathbf{W}$ as $N \rightarrow \infty$, where $\mathbf{W}$ is a nonrandom, symmetric, $L \times L$ positive definite matrix.
+
+In applications, the convergence in Assumption SIV. 3 will follow from the law of large numbers because $\hat{\mathbf{W}}$ will be a function of sample averages. The fact that $\mathbf{W}$ is assumed to be positive definite means that $\hat{\mathbf{W}}$ is positive definite with probability approaching one (see Chapter 3). We could relax the assumption of positive definiteness to positive semidefiniteness at the cost of complicating the assumptions. In most applications, we can assume that $\mathbf{W}$ is positive definite.\\
+THEOREM 8.1 (Consistency of GMM): Under Assumptions SIV.1-SIV.3, $\hat{\boldsymbol{\beta}} \xrightarrow{p} \boldsymbol{\beta}$ as $N \rightarrow \infty$.
+
+Proof: Write\\
+$\hat{\boldsymbol{\beta}}=\left[\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{Z}_{i}\right) \hat{\mathbf{W}}\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}\right)\right]^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{Z}_{i}\right) \hat{\mathbf{W}}\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{y}_{i}\right)$.\\
+Plugging in $\mathbf{y}_{i}=\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{u}_{i}$ and doing a little algebra gives\\
+$\hat{\boldsymbol{\beta}}=\boldsymbol{\beta}+\left[\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{Z}_{i}\right) \hat{\mathbf{W}}\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}\right)\right]^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{Z}_{i}\right) \hat{\mathbf{W}}\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)$.\\
+Under Assumption SIV.2, $\mathbf{C} \equiv \mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}\right)$ has rank $K$, and combining this with Assumption SIV.3, $\mathbf{C}^{\prime} \mathbf{W C}$ has rank $K$ and is therefore nonsingular. It follows by the law of large numbers that $\operatorname{plim} \hat{\boldsymbol{\beta}}=\boldsymbol{\beta}+\left(\mathbf{C}^{\prime} \mathbf{W C}\right)^{-1} \mathbf{C}^{\prime} \mathbf{W}\left(\operatorname{plim} N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)=\boldsymbol{\beta}+ \left(\mathbf{C}^{\prime} \mathbf{W C}\right)^{-1} \mathbf{C}^{\prime} \mathbf{W} \cdot \mathbf{0}=\boldsymbol{\beta}$.
+
+Theorem 8.1 shows that a large class of estimators is consistent for $\boldsymbol{\beta}$ under Assumptions SIV. 1 and SIV.2, provided that we choose $\hat{\mathbf{W}}$ to satisfy modest restrictions.
+
+When $L=K$, the GMM estimator in equation (8.28) becomes equation (8.26), no matter how we choose $\hat{\mathbf{W}}$, because $\mathbf{X}^{\prime} \mathbf{Z}$ is a $K \times K$ nonsingular matrix.
+
+We can also show that $\hat{\boldsymbol{\beta}}$ is asymptotically normally distributed under these first three assumptions.\\
+theorem 8.2 (Asymptotic Normality of GMM): Under Assumptions SIV.1-SIV.3, $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$ is asymptotically normally distributed with mean zero and
+
+Avar $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})=\left(\mathbf{C}^{\prime} \mathbf{W C}\right)^{-1} \mathbf{C}^{\prime} \mathbf{W} \mathbf{\Lambda W C}\left(\mathbf{C}^{\prime} \mathbf{W C}\right)^{-1}$,\\
+where\\
+$\boldsymbol{\Lambda} \equiv \mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{Z}_{i}\right)=\operatorname{Var}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)$.
+
+We will not prove this theorem in detail as it can be reasoned from\\
+$\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$
+
+$$
+=\left[\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{Z}_{i}\right) \hat{\mathbf{W}}\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}\right)\right]^{-1}\left(N^{-1} \sum_{i=1}^{N} \mathbf{X}_{i}^{\prime} \mathbf{Z}_{i}\right) \hat{\mathbf{W}}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right),
+$$
+
+where we use the fact that $N^{-1 / 2} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{u}_{i} \xrightarrow{d} \operatorname{Normal}(\mathbf{0}, \boldsymbol{\Lambda})$. The asymptotic variance matrix in equation (8.29) looks complicated, but it can be consistently estimated. If $\hat{\boldsymbol{\Lambda}}$ is a consistent estimator of $\boldsymbol{\Lambda}$-more on this later-then equation (8.29) is consistently estimated by
+
+
+\begin{equation*}
+\left[\left(\mathbf{X}^{\prime} \mathbf{Z} / N\right) \hat{\mathbf{W}}\left(\mathbf{Z}^{\prime} \mathbf{X} / N\right)\right]^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / N\right) \hat{\mathbf{W}} \hat{\mathbf{\Lambda}} \hat{\mathbf{W}}\left(\mathbf{Z}^{\prime} \mathbf{X} / N\right)\left[\left(\mathbf{X}^{\prime} \mathbf{Z} / N\right) \hat{\mathbf{W}}\left(\mathbf{Z}^{\prime} \mathbf{X} / N\right)\right]^{-1} \tag{8.31}
+\end{equation*}
+
+
+As usual, we estimate $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$ by dividing expression (8.31) by $N$.\\
+While the general formula (8.31) is occasionally useful, it turns out that it is greatly simplified by choosing $\hat{\mathbf{W}}$ appropriately. Since this choice also (and not coincidentally) gives the asymptotically efficient estimator, we hold off discussing asymptotic variances further until we cover the optimal choice of $\hat{\mathbf{W}}$ in Section 8.3.3.
+
+\subsection*{8.3.2 System Two-Stage Least Squares Estimator}
+A choice of $\hat{\mathbf{W}}$ that leads to a useful and familiar-looking estimator is
+
+
+\begin{equation*}
+\hat{\mathbf{W}}=\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)^{-1}=\left(\mathbf{Z}^{\prime} \mathbf{Z} / N\right)^{-1} \tag{8.32}
+\end{equation*}
+
+
+which is a consistent estimator of $\left[\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)\right]^{-1}$. Assumption SIV. 3 simply requires that $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)$ exist and be nonsingular, and these requirements are not very restrictive.
+
+When we plug equation (8.32) into equation (8.28) and cancel $N$ everywhere, we get $\hat{\boldsymbol{\beta}}=\left[\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right]^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$.
+
+This looks just like the single-equation 2SLS estimator, and so we call it the system 2SLS (S2SLS) estimator.
+
+When we apply equation (8.33) to the system of equations (8.12), with definitions (8.14) and (8.15), we get something very familiar. As an exercise, you should show that $\hat{\boldsymbol{\beta}}$ produces 2SLS equation by equation. (The proof relies on the block diagonal structures of $\mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}$ and $\mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}$ for each $i$.) In other words, we estimate the first equation by 2SLS using instruments $\mathbf{z}_{i 1}$, the second equation by 2 SLS using instruments $\mathbf{z}_{i 2}$, and so on. When we stack these into one long vector, we get equation (8.33).
+
+The interpretation of the system 2SLS estimator for the panel data model differs depending on the choice of instrument matrix. When the instrument matrix is stacked as in (8.22)-which means that we have the same number of IVs for each time period-the S2SLS estimator reduces to the pooled 2SLS (P2SLS) estimator. In other words, one treats the stacked panel data as a long cross section and performs standard 2SLS. If $\mathbf{Z}_{i}$ takes the form in (8.15), the S2SLS estimator has a different characterization. Namely, we run a first-stage regression separately for each $t, \mathbf{x}_{i t}$ on $\mathbf{z}_{i t}, i=1, \ldots, N$, and obtain the fitted values, $\hat{\mathbf{x}}_{i t}=\mathbf{z}_{i t} \hat{\Pi}_{t}$, where $\hat{\Pi}_{t}$ is $L_{t} \times K$. Then we obtain the pooled IV estimator using $\hat{\mathbf{x}}_{i t}$ (which is $1 \times K$ ) as the IVs for $\mathbf{x}_{i t}$. The key difference in the two approaches is that the P2SLS estimator pools across time in estimating the reduced form, while the second procedure estimates a separate reduced form for each $t$. See Problem 8.8 for verification of these claims, or see Wooldridge (2005e).
+
+In the next subsection we will see that the system 2SLS estimator is not necessarily the asymptotically efficient estimator. Still, it is $\sqrt{N}$-consistent and easy to compute given the data matrices $\mathbf{X}, \mathbf{Y}$, and $\mathbf{Z}$. This latter feature is important because we need a preliminary estimator of $\boldsymbol{\beta}$ to obtain the asymptotically efficient estimator.
+
+\subsection*{8.3.3 Optimal Weighting Matrix}
+Given that a GMM estimator exists for any positive definite weighting matrix, it is important to have a way of choosing among all of the possibilities. It turns out that there is a choice of $\mathbf{W}$ that produces the GMM estimator with the smallest asymptotic variance.
+
+We can appeal to expression (8.29) for a hint as to the optimal choice of $\mathbf{W}$. It is this expression we are trying to make as small as possible, in the matrix sense. (See Definition 3.11 for the definition of relative asymptotic efficiency.) The expression\\
+(8.29) simplifies to $\left(\mathbf{C}^{\prime} \boldsymbol{\Lambda}^{-1} \mathbf{C}\right)^{-1}$ if we set $\mathbf{W} \equiv \boldsymbol{\Lambda}^{-1}$. Using standard arguments from matrix algebra, it can be shown that $\left(\mathbf{C}^{\prime} \mathbf{W C}\right)^{-1} \mathbf{C}^{\prime} \mathbf{W} \boldsymbol{\Lambda} \mathbf{W C}\left(\mathbf{C}^{\prime} \mathbf{W C}\right)^{-1}-\left(\mathbf{C}^{\prime} \boldsymbol{\Lambda}^{-1} \mathbf{C}\right)^{-1}$ is positive semidefinite for any $L \times L$ positive definite matrix $\mathbf{W}$. The easiest way to prove this point is to show that
+
+
+\begin{equation*}
+\left(\mathbf{C}^{\prime} \mathbf{\Lambda}^{-1} \mathbf{C}\right)-\left(\mathbf{C}^{\prime} \mathbf{W C}\right)\left(\mathbf{C}^{\prime} \mathbf{W} \boldsymbol{\Lambda} \mathbf{W} \mathbf{C}\right)^{-1}\left(\mathbf{C}^{\prime} \mathbf{W} \mathbf{C}\right) \tag{8.34}
+\end{equation*}
+
+
+is positive semidefinite, and we leave this proof as an exercise (see Problem 8.5). This discussion motivates the following assumption and theorem.\\
+assumption SIV.4: $\mathbf{W}=\boldsymbol{\Lambda}^{-1}$, where $\boldsymbol{\Lambda}$ is defined by expression (8.30).\\
+theorem 8.3 (Optimal Weighting Matrix): Under Assumptions SIV.1-SIV.4, the resulting GMM estimator is efficient among all GMM estimators of the form (8.28).
+
+Provided that we can consistently estimate $\boldsymbol{\Lambda}$, we can obtain the asymptotically efficient GMM estimator. Any consistent estimator of $\boldsymbol{\Lambda}$ delivers the efficient GMM estimator, but one estimator is commonly used that imposes no structure on $\boldsymbol{\Lambda}$.
+
+Procedure 8.1 (GMM with Optimal Weighting Matrix):\\
+a. Let $\check{\boldsymbol{\beta}}$ be an initial consistent estimator of $\boldsymbol{\beta}$. In most cases this is the system 2SLS estimator.\\
+b. Obtain the $G \times 1$ residual vectors
+
+
+\begin{equation*}
+\check{\mathbf{u}}_{i}=\mathbf{y}_{i}-\mathbf{X}_{i} \check{\boldsymbol{\beta}}, \quad i=1,2, \ldots, N \tag{8.35}
+\end{equation*}
+
+
+c. A generally consistent estimator of $\boldsymbol{\Lambda}$ is $\hat{\boldsymbol{\Lambda}}=N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \check{\mathbf{u}}_{i} \check{\mathbf{u}}_{i}^{\prime} \mathbf{Z}_{i}$.\\
+d. Choose
+
+
+\begin{equation*}
+\hat{\mathbf{W}} \equiv \hat{\boldsymbol{\Lambda}}^{-1}=\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \check{\mathbf{u}}_{i} \check{\mathbf{u}}_{i}^{\prime} \mathbf{Z}_{i}\right)^{-1} \tag{8.36}
+\end{equation*}
+
+
+and use this matrix to obtain the asymptotically optimal GMM estimator.\\
+The estimator of $\boldsymbol{\Lambda}$ in part c of Procedure 8.1 is consistent for $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{Z}_{i}\right)$ under general conditions. When each row of $\mathbf{Z}_{i}$ and $\mathbf{u}_{i}$ represent different time periods-so that we have a single-equation panel data model-the estimator $\hat{\boldsymbol{\Lambda}}$ allows for arbitrary heteroskedasticity (conditional or unconditional), as well as arbitrary serial dependence (conditional or unconditional). The reason we can allow this generality is that we fix the row dimension of $\mathbf{Z}_{i}$ and $\mathbf{u}_{i}$ and let $N \rightarrow \infty$. Therefore, we are assuming that $N$, the size of the cross section, is large enough relative to $T$ to make fixed $T$ asymptotics sensible. (This is the same approach we took in Chapter 7.) With\\
+$N$ very large relative to $T$, there is no need to downweight correlations between time periods that are far apart, as in the Newey and West (1987) estimator applied to time series problems. Ziliak and Kniesner (1998) do use a Newey-West type procedure in a panel data application with large $N$. Theoretically, this is not required, and it is not completely general because it assumes that the underlying time series are weakly dependent. (See Wooldridge (1994a) for discussion of weak dependence in time series contexts.) A Newey-West type estimator might improve the finite-sample performance of the GMM estimator.
+
+The asymptotic variance of the optimal GMM estimator is estimated as
+
+
+\begin{equation*}
+\left[\left(\mathbf{X}^{\prime} \mathbf{Z}\right)\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{u}}_{i} \hat{\mathbf{u}}_{i}^{\prime} \mathbf{Z}_{i}\right)^{-1}\left(\mathbf{Z}^{\prime} \mathbf{X}\right)\right]^{-1}, \tag{8.37}
+\end{equation*}
+
+
+where $\hat{\mathbf{u}}_{i} \equiv \mathbf{y}_{i}-\mathbf{X}_{i} \hat{\boldsymbol{\beta}}$; asymptotically, it makes no difference whether the first-stage residuals $\check{\mathbf{u}}_{i}$ are used in place of $\hat{\mathbf{u}}_{i}$. The square roots of diagonal elements of this matrix are the asymptotic standard errors of the optimal GMM estimator. This estimator is called a minimum chi-square estimator, for reasons that will become clear in Section 8.5.2.
+
+When $\mathbf{Z}_{i}=\mathbf{X}_{i}$ and the $\hat{\mathbf{u}}_{i}$ are the system OLS residuals, expression (8.37) becomes the robust variance matrix estimator for SOLS [see expression (7.28)]. This expression reduces to the robust variance matrix estimator for FGLS when $\mathbf{Z}_{i}=\hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}$ and the $\hat{\mathbf{u}}_{i}$ are the FGLS residuals [see equation (7.52)].
+
+\subsection*{8.3.4 The Generalized Method of Moments Three-Stage Least Squares Estimator}
+The GMM estimator using weighting matrix (8.36) places no restrictions on either the unconditional or conditional (on $\mathbf{Z}_{i}$ ) variance matrix of $\mathbf{u}_{i}$ : we can obtain the asymptotically efficient estimator without making additional assumptions. Nevertheless, it is still common, especially in traditional simultaneous equations analysis, to assume that the conditional variance matrix of $\mathbf{u}_{i}$ given $\mathbf{Z}_{i}$ is constant. This assumption leads to a system estimator that is a middle ground between system 2SLS and the always-efficient minimum chi-square estimator.
+
+The GMM three-stage least squares (GMM 3SLS) estimator (or just 3SLS when the context is clear) is a GMM estimator that uses a particular weighting matrix. To define the 3SLS estimator, let $\check{\mathbf{u}}_{i}=\mathbf{y}_{i}-\mathbf{X}_{i} \check{\boldsymbol{\beta}}$ be the residuals from an initial estimation, usually system 2SLS. Define the $G \times G$ matrix
+
+
+\begin{equation*}
+\hat{\boldsymbol{\Omega}} \equiv N^{-1} \sum_{i=1}^{N} \check{\mathbf{u}}_{i} \check{\mathbf{u}}_{i}^{\prime} . \tag{8.38}
+\end{equation*}
+
+
+Using the same arguments as in the FGLS case in Section 7.5.1, $\hat{\boldsymbol{\Omega}} \xrightarrow{p} \boldsymbol{\Omega}=\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$. The weighting matrix used by 3SLS is\\
+$\hat{\mathbf{W}}=\left(N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{\Omega}} \mathbf{Z}_{i}\right)^{-1}=\left[\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \hat{\mathbf{\Omega}}\right) \mathbf{Z} / N\right]^{-1}$,\\
+where $\mathbf{I}_{N}$ is the $N \times N$ identity matrix. Plugging this into equation (8.28) gives the 3SLS estimator\\
+$\hat{\boldsymbol{\beta}}=\left[\mathbf{X}^{\prime} \mathbf{Z}\left\{\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \hat{\boldsymbol{\Omega}}\right) \mathbf{Z}\right\}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right]^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left\{\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \hat{\boldsymbol{\Omega}}\right) \mathbf{Z}\right\}^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$.
+
+By Theorems 8.1 and 8.2, $\hat{\boldsymbol{\beta}}$ is consistent and asymptotically normal under Assumptions SIV.1-SIV.3. Assumption SIV. 3 requires $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{\Omega Z}_{i}\right)$ to be nonsingular, a standard assumption.
+
+The term "three-stage least squares" is used here for historical reasons, and it will make more sense in Section 8.4. Generally, the GMM 3SLS estimator is simply given by formula equation (8.40); its computation does not require three stages.
+
+Because the 3SLS estimator is simply a GMM estimator with a particular weighting matrix, its consistency follows from Theorem 8.1 without additional assumptions. (And the 3SLS estimator is also $\sqrt{N}$-asymptotically normal.) But a natural question to ask is, When is 3SLS an efficient GMM estimator? The answer is simple. First, note that equation (8.39) always consistently estimates $\left[\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega} \mathbf{Z}_{i}\right)\right]^{-1}$. Therefore, from Theorem 8.3, equation (8.39) is an efficient weighting matrix provided $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega} \mathbf{Z}_{i}\right)=\boldsymbol{\Lambda}=\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{Z}_{i}\right)$.
+
+ASSUMPTION SIV.5: $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{Z}_{i}\right)=\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega} \mathbf{Z}_{i}\right)$, where $\boldsymbol{\Omega} \equiv \mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$.\\
+Assumption SIV. 5 is the system extension of the homoskedasticity assumption for 2SLS estimation of a single equation. A sufficient condition for Assumption SIV.5, and one that is easier to interpret, is\\
+$\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{Z}_{i}\right)=\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$.
+
+We do not take equation (8.41) as the homoskedasticity assumption because there are interesting applications where Assumption SIV. 5 holds but equation (8.41) does not (more on this topic in Chapters 9 and 11). When
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{u}_{i} \mid \mathbf{Z}_{i}\right)=\mathbf{0} \tag{8.42}
+\end{equation*}
+
+
+is assumed in place of Assumption SIV.1, then equation (8.41) is equivalent to $\operatorname{Var}\left(\mathbf{u}_{i} \mid \mathbf{Z}_{i}\right)=\operatorname{Var}\left(\mathbf{u}_{i}\right)$. Whether we state the assumption as in equation (8.41) or use\\
+the weaker form, Assumption SIV.5, it is important to see that the elements of the unconditional variance matrix $\boldsymbol{\Omega}$ are not restricted: $\sigma_{g}^{2}=\operatorname{Var}\left(u_{g}\right)$ can change across $g$, and $\sigma_{g h}=\operatorname{Cov}\left(u_{g}, u_{h}\right)$ can differ across $g$ and $h$.
+
+The system homoskedasticity assumption (8.41) necessarily holds when the instruments $\mathbf{Z}_{i}$ are treated as nonrandom and $\operatorname{Var}\left(\mathbf{u}_{i}\right)$ is constant across $i$. Because we are assuming random sampling, we are forced to properly focus attention on the variance of $\mathbf{u}_{i}$ conditional on $\mathbf{Z}_{i}$.
+
+For the system of equations (8.12) with instruments defined in the matrix (8.15), Assumption SIV. 5 reduces to (without the $i$ subscript)\\
+$\mathrm{E}\left(u_{g} u_{h} \mathbf{z}_{g}^{\prime} \mathbf{z}_{h}\right)=\mathrm{E}\left(u_{g} u_{h}\right) \mathrm{E}\left(\mathbf{z}_{g}^{\prime} \mathbf{z}_{h}\right), \quad g, h=1,2, \ldots, G$.
+
+Therefore, $u_{g} u_{h}$ must be uncorrelated with each of the elements of $\mathbf{z}_{g}^{\prime} \mathbf{z}_{h}$. When $g=h$, assumption (8.43) becomes\\
+$\mathrm{E}\left(u_{g}^{2} \mathbf{z}_{g}^{\prime} \mathbf{z}_{g}\right)=\mathrm{E}\left(u_{g}^{2}\right) \mathrm{E}\left(\mathbf{z}_{g}^{\prime} \mathbf{z}_{g}\right)$,\\
+so that $u_{g}^{2}$ is uncorrelated with each element of $\mathbf{z}_{g}$, along with the squares and cross products of the $\mathbf{z}_{g}$ elements. This is exactly the homoskedasticity assumption for single-equation IV analysis (Assumption 2SLS.3). For $g \neq h$, assumption (8.43) is new because it involves covariances across different equations.
+
+Assumption SIV. 5 implies that Assumption SIV. 4 holds (because the matrix (8.39) consistently estimates $\boldsymbol{\Lambda}^{-1}$ under Assumption SIV.5). Therefore, we have the following theorem:\\
+theorem 8.4 (Optimality of 3SLS): Under Assumptions SIV.1, SIV.2, SIV.3, and SIV.5, the 3SLS estimator is an optimal GMM estimator. Further, the appropriate estimator of $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$ is\\
+$\left[\left(\mathbf{X}^{\prime} \mathbf{Z}\right)\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{\Omega}} \mathbf{Z}_{i}\right)^{-1}\left(\mathbf{Z}^{\prime} \mathbf{X}\right)\right]^{-1}=\left[\mathbf{X}^{\prime} \mathbf{Z}\left\{\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \hat{\mathbf{\Omega}}\right) \mathbf{Z}\right\}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right]^{-1}$.
+
+It is important to understand the implications of this theorem. First, without Assumption SIV.5, the 3SLS estimator is generally less efficient, asymptotically, than the minimum chi-square estimator, and the asymptotic variance estimator for 3SLS in equation (8.45) is inappropriate. Second, even with Assumption SIV.5, the 3SLS estimator is no more asymptotically efficient than the minimum chi-square estimator: expressions (8.36) and (8.39) are both consistent estimators of $\boldsymbol{\Lambda}^{-1}$ under Assumption SIV.5. In other words, the estimators based on these two different choices for $\hat{\mathbf{W}}$ are $\sqrt{N}$-equivalent under Assumption SIV.5.
+
+Given the fact that the GMM estimator using expression (8.36) as the weighting matrix is never worse, asymptotically, than 3SLS, and in some important cases is strictly better, why is 3SLS ever used? There are at least two reasons. First, 3SLS has a long history in simultaneous equations models, whereas the GMM approach has been around only since the early 1980s, starting with the work of Hansen (1982) and White (1982b). Second, the 3SLS estimator might have better finite-sample properties than the optimal GMM estimator when Assumption SIV. 5 holds. However, whether it does or not must be determined on a case-by-case basis.
+
+There is an interesting corollary to Theorem 8.4. Suppose that in the system (8.11) we can assume $\mathrm{E}\left(\mathbf{X}_{i} \otimes \mathbf{u}_{i}\right)=\mathbf{0}$, which is a strict form of exogenecity from Chapter 7. We can use a method of moments approach to estimating $\boldsymbol{\beta}$, where the instruments for each equation, $\mathbf{x}_{i}^{o}$, is the row vector containing every row of $\mathbf{X}_{i}$. As shown by $\operatorname{Im}$, Ahn, Schmidt, and Wooldridge (1999), the GMM 3SLS estimator using instruments $\mathbf{Z}_{i}=\mathbf{I}_{G} \otimes \mathbf{x}_{i}^{o}$ is equal to the feasible GLS estimator that uses the same $\hat{\boldsymbol{\Omega}}$. Therefore, if Assumption SIV. 5 holds with $\mathbf{Z}_{i}=\mathbf{I}_{G} \otimes \mathbf{x}_{i}^{o}$, FGLS is asymptotically efficient in the class of GMM estimators that use the orthogonality condition in Assumption SGLS.1. Sufficient for Assumption SIV. 5 in the GLS context is the homoskedasticity assumption $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{X}_{i}\right)=\boldsymbol{\Omega}$.
+
+\subsection*{8.4 Generalized Instrumental Variables Estimator}
+In this section we study a system IV estimator that is based on transforming the original set of moment conditions using a GLS-type transformation. As we will see in Section 8.6, such an approach can lead to an asymptotically efficient estimator. The cost is that, in some cases, the transformation may lead to moment conditions that are no longer valid, leading to inconsistency.
+
+\subsection*{8.4.1 Derivation of the Generalized Instrumental Variables Estimator and Its Asymptotic Properties}
+Rather than estimating $\boldsymbol{\beta}$ using the moment conditions $\mathrm{E}\left[\mathbf{Z}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \boldsymbol{\beta}\right)\right]=0$, an alternative is to transform the moment conditions in a way analogous to generalized least squares. Typically, a GLS-like transformation is used in the context of a system homoskedasticity assumption such as (8.41), but we can analyze the properties of the estimator without any assumptions other than existence of the second moments. We simply let $\boldsymbol{\Omega}=\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$ as before, and we assume $\boldsymbol{\Omega}$ is positive definite. Then we transform equation (8.11), just as with a GLS analysis:
+
+
+\begin{equation*}
+\boldsymbol{\Omega}^{-1 / 2} \mathbf{y}_{i}=\boldsymbol{\Omega}^{-1 / 2} \mathbf{X}_{i} \boldsymbol{\beta}+\boldsymbol{\Omega}^{-1 / 2} \mathbf{u}_{i} . \tag{8.46}
+\end{equation*}
+
+
+Because we think some elements of $\mathbf{X}_{i}$ are endogenous, we apply system instrumental variables to equation (8.46). In particular, we use the system 2SLS estimator with instruments $\boldsymbol{\Omega}^{-1 / 2} \boldsymbol{Z}_{i}$; that is, we transform the instruments in the same way that we transform all other variables in (8.46). The resulting estimator can be written out with full data matrices as
+
+
+\begin{align*}
+\hat{\boldsymbol{\beta}}_{G I V}= & \left\{\left[\mathbf{X}^{\prime}\left(\mathbf{I}_{N} \otimes \boldsymbol{\Omega}^{-1}\right) \mathbf{Z}\right]\left[\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \boldsymbol{\Omega}^{-1}\right) \mathbf{Z}\right]^{-1}\left[\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \boldsymbol{\Omega}^{-1}\right) \mathbf{X}\right]\right\}^{-1} \\
+& \cdot\left[\mathbf{X}^{\prime}\left(\mathbf{I}_{N} \otimes \boldsymbol{\Omega}^{-1}\right) \mathbf{Z}\right]\left[\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \boldsymbol{\Omega}^{-1}\right) \mathbf{Z}\right]^{-1}\left[\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \boldsymbol{\Omega}^{-1}\right) \mathbf{Y}\right], \tag{8.47}
+\end{align*}
+
+
+where, for example, $\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \boldsymbol{\Omega}^{-1}\right) \mathbf{X}=\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}$. If we plug in $\mathbf{Y}=\mathbf{X} \boldsymbol{\beta}+\mathbf{U}$ and divide the last term by the sample size, then we see that the condition needed for consistency of $\hat{\boldsymbol{\beta}}$ is $N^{-1} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i} \xrightarrow{p} \mathbf{0}$. For completeness, a set of conditions for consistency and asymptotic normality of the GIV estimator is listed. The first assumption is the key orthogonality condition:\\
+assumption GIV.1: $\quad \mathrm{E}\left(\mathbf{Z}_{i} \otimes \mathbf{u}_{i}\right)=\mathbf{0}$.\\
+Assumption GIV. 1 requires that every element of the instrument matrix is uncorrelated with every element of the vector of errors. When $\mathbf{Z}_{i}=\mathbf{X}_{i}$, Assumptions GIV. 1 and SGLS. 1 are identical. For consistency, we can relax Assumption GIV. 1 to\\
+$\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right)=\mathbf{0}$,\\
+provided we know $\boldsymbol{\Omega}$ or use a consistent estimator of $\boldsymbol{\Omega}$. There are two reasons we adopt the stronger Assumption GIV.1. First, Assumption GIV. 1 ensures that replacing $\boldsymbol{\Omega}$ with a consistent estimator does not affect the $\sqrt{N}$-asymptotic distribution of the GIV estimator. (Essentially the same issue arises with feasible GLS.) Second, Assumption GIV. 1 implies that using an inconsistent estimator of $\boldsymbol{\Omega}$ (for example, if we incorrectly impose restrictions on $\boldsymbol{\Omega}$ ) does not cause inconsistency in the GIV estimator. Adopting equation (8.48) would require us to provide separate arguments for asymptotic normality in the realistic case that $\boldsymbol{\Omega}$ is replaced with $\hat{\boldsymbol{\Omega}}$, and even for consistency if we allow for inconsistent estimators of $\boldsymbol{\Omega}$.
+
+An important case where equation (8.48) holds but Assumption GIV. 1 might not is when $\boldsymbol{\Omega}$ (or, at least $\hat{\boldsymbol{\Omega}}$ ) is diagonal, in which case we should focus on equation (8.48). See, for example, Problem 8.8. (Because $\hat{\boldsymbol{\Omega}}$ is diagonal, we do not have to adjust the asymptotic variance of the GIV estimator for the estimation of $\hat{\boldsymbol{\Omega}}$.) Because Assumption GIV. 1 allows for a simpler unified treatment, and because it is often implicit in applications of GIV, we adopt it here.
+
+Naturally, we also need a rank condition:\\
+assumption GIV.2: (a) rank $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{Z}_{i}\right)=L$; (b) rank $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)=K$.
+
+When $G=1$, Assumption GIV. 2 reduces to Assumption 2SLS. 2 from Chapter 5. Typically, GIV.2(a) holds when the instruments exclude exact linear dependencies. Assumption GIV.2(b) requires that, after the GLS-like transformation, there are enough instruments partially correlated with the endogenous elements of $\mathbf{X}_{i}$.
+
+When $\boldsymbol{\Omega}$ in (8.47) is replaced with a consistent estimator, $\hat{\boldsymbol{\Omega}}$, we obtain the generalized instrumental variables (GIV) estimator. Typically, $\hat{\boldsymbol{\Omega}}$ would be chosen as in equation (8.38) after an initial S2SLS estimation. We have argued that the estimator is consistent under Assumptions GIV. 1 and GIV.2; the details of replacing $\boldsymbol{\Omega}$ with $\hat{\boldsymbol{\Omega}}$ are very similar to the FGLS case covered in Chapter 7.
+
+Implicit in GIV estimation is the first-stage regression $\hat{\boldsymbol{\Omega}}^{-1 / 2} \mathbf{X}_{i}$ on $\hat{\boldsymbol{\Omega}}^{-1 / 2} \mathbf{Z}_{i}$, which yields fitted values $\hat{\boldsymbol{\Omega}}^{-1 / 2} \mathbf{Z}_{i} \hat{\boldsymbol{\Pi}}^{*}$, where $\hat{\boldsymbol{\Pi}}^{*}=\left[\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \hat{\boldsymbol{\Omega}}^{-1}\right) \mathbf{Z}\right]^{-1}\left[\mathbf{Z}^{\prime}\left(\mathbf{I}_{N} \otimes \hat{\boldsymbol{\Omega}}^{-1}\right) \mathbf{X}\right.$. Of course, the first-stage regression need not be carried out to compute the GIV estimator, but, in comparing GIV with other estimators, it can be useful to think of GIV as system IV estimation of $\hat{\boldsymbol{\Omega}}^{-1 / 2} \mathbf{y}_{i}=\hat{\boldsymbol{\Omega}}^{-1 / 2} \mathbf{X}_{i} \boldsymbol{\beta}+\hat{\boldsymbol{\Omega}}^{-1 / 2} \mathbf{u}_{i}$ using IVs $\hat{\boldsymbol{\Omega}}^{-1 / 2} \mathbf{Z}_{i} \hat{\Pi}^{*}$.
+
+In Chapter 7, we noted that GLS when $\boldsymbol{\Omega}$ is not a diagonal matrix must be used with caution. Assumption GIV. 1 can impose unintended restrictions on the relationships between instruments and errors across equations, or time, or both. Users need to keep in mind that the GIV estimator generally requires stronger assumptions than $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)=\mathbf{0}$ for consistency.
+
+As with FGLS, there is a "standard" assumption under which the GIV estimator has a simplified asymptotic variance. The assumption is an extension of Assumption SGLS. 3 in Chapter 7.\\
+assumption GIV.3: $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{Z}_{i}\right)=\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{Z}_{i}\right)$.\\
+A sufficient condition for GIV. 3 is (8.41), the same assumption that is sufficient for the GMM 3SLS estimator to use the optimal weighting matrix. Under Assumptions GIV.1, GIV.2, and GIV.3, it is easy to show\\
+$\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{G I V}-\boldsymbol{\beta}\right)\right]=\left\{\mathrm{E}\left(\mathbf{X}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{Z}_{i}\right)\left[\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{Z}_{i}\right)\right]^{-1} \mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}_{i}\right)\right\}^{-1}$,\\
+and this matrix is easily estimated by the usual process of replacing expectations with sample averages and $\boldsymbol{\Omega}$ with $\hat{\boldsymbol{\Omega}}$.
+
+\subsection*{8.4.2 Comparison of Generalized Method of Moment, Generalized Instrumental Variables, and the Traditional Three-Stage Least Squares Estimator}
+Especially in estimating standard simultaneous equations models, a different kind of GLS transformation is often used. Rather than use an FGLS estimator in the first stage, as is implicit in GIV, the traditional 3SLS estimator is typically motivated as\\
+follows. The first stage uses untransformed $\mathbf{X}_{i}$ and $\mathbf{Z}_{i}$, giving fitted values $\hat{\mathbf{X}}_{i}=\mathbf{Z}_{i} \hat{\Pi}$, where $\hat{\Pi}=\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}$ is the matrix of first-stage regression coefficients. Then, equation (8.46) is estimated by system IV, but with instruments $\boldsymbol{\Omega}^{-1 / 2} \hat{\mathbf{X}}_{i}$. When we replace $\boldsymbol{\Omega}$ with its estimate, we arrive at the estimator\\
+$\hat{\boldsymbol{\beta}}_{T 3 S L S}=\left(\sum_{i=1}^{N} \hat{\mathbf{X}}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{X}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \hat{\mathbf{X}}_{i}^{\prime} \hat{\boldsymbol{\Omega}}^{-1} \mathbf{y}_{i}\right)$,\\
+where the subscript "T3SLS" denotes "traditional" 3SLS. Substituting $\mathbf{y}_{i}=\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{u}_{i}$ and rearranging shows that the orthogonality condition needed for consistency is\\
+$\mathrm{E}\left[\left(\mathbf{Z}_{i} \Pi\right)^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right]=\Pi^{\prime} \mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right]=\mathbf{0}$,\\
+where $\Pi=\operatorname{plim}(\hat{\Pi})$. Because of the presence of $\Pi^{\prime}$, condition (8.51) is not quite the same as Assumption GIV.1, but it would be a fluke if (8.51) held but GIV.1 did not. Like the GIV estimator, the consistency of the traditional 3SLS estimator does not follow from $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)=\mathbf{0}$.
+
+We have now discussed three different estimators of a system of equations based on estimating the variance matrix $\boldsymbol{\Omega}=\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$. Why have seemingly different estimators been given the label "three-stage least squares"? The answer is simple: In the setting that the traditional 3SLS estimator was proposed-system (8.12), with the same instruments used in every equation-all estimates are identical. In fact, the equivalence of all estimates holds if we just impose the common instrument assumption. Let $\mathbf{w}_{i}$ denote a vector assumed to be exogenous in every equation in the sense that $\mathrm{E}\left(\mathbf{w}_{i}^{\prime} u_{i g}\right)=\mathbf{0}$ for $g=1, \ldots, G$. In other words, any variable exogenous in one equation is exogenous in all equations. For a system such as (8.12), this means that the same instruments can be used for every equation. In a panel data setting, it means the chosen instruments are strictly exogenous. In either case, it makes sense to choose the instrument matrix as\\
+$\mathbf{Z}_{i}=\mathbf{I}_{G} \otimes \mathbf{w}_{i}$,\\
+which is a special case of (8.15). It follows from the results of Im, Ahn, Schmidt, and Wooldridge (1999) that the GMM 3SLS estimator and the GIV estimator (using the same $\hat{\boldsymbol{\Omega}}$ ) are identical. Further, it can be shown that the GIV estimator and the traditional 3SLS estimator are identical. (This follows because the first-stage regressions involve the same set of explanatory variables, $\mathbf{w}_{i}$, and so it does not matter whether the matrix of first-stage regression coefficients is obtained via FGLS, which is what GIV does, or system OLS, which is what T3SLS does.)
+
+In many modern applications of system IV methods to both simultaneous equations and panel data, instruments that are exogenous in one equation are not exogenous in all other equations. In such cases it is important to use the GMM 3SLS estimator once $\mathbf{Z}_{i}$ has been properly chosen. Of course, the minimum chi-square estimator that does not impose SIV. 5 is always available, too. The GIV estimator and the traditional 3SLS estimator generally induce correlation between the transformed instruments and the structural errors. For this reason, we will tend to focus on GMM methods based on the original orthogonality conditions. Nevertheless, particularly in Chapter 11, we will see that the GIV approach can provide insights into the workings of certain panel data estimators while also affording computational simplicity.
+
+\subsection*{8.5 Testing Using Generalized Method of Moments}
+\subsection*{8.5.1 Testing Classical Hypotheses}
+Testing hypotheses after GMM estimation is straightforward. Let $\hat{\boldsymbol{\beta}}$ denote a GMM estimator, and let $\hat{\mathbf{V}}$ denote its estimated asymptotic variance. Although the following analysis can be made more general, in most applications we use an optimal GMM estimator. Without Assumption SIV.5, the weighting matrix would be expression (8.36) and $\hat{\mathbf{V}}$ would be as in expression (8.37). This can be used for computing $t$ statistics by obtaining the asymptotic standard errors (square roots of the diagonal elements of $\hat{\mathbf{V}}$ ). Wald statistics of linear hypotheses of the form $\mathrm{H}_{0}: \mathbf{R} \boldsymbol{\beta}=\mathbf{r}$, where $\mathbf{R}$ is a $Q \times K$ matrix with rank $Q$, are obtained using the same statistic we have already seen several times. Under Assumption SIV. 5 we can use the 3SLS estimator and its asymptotic variance estimate in equation (8.45). For testing general system hypotheses, we would probably not use the 2SLS estimator, because its asymptotic variance is more complicated unless we make very restrictive assumptions.
+
+An alternative method for testing linear restrictions uses a statistic based on the difference in the GMM objective function with and without the restrictions imposed. To apply this statistic, we must assume that the GMM estimator uses the optimal weighting matrix, so that $\hat{\mathbf{W}}$ consistently estimates $\left[\operatorname{Var}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)\right]^{-1}$. Then, from Lemma 3.8,
+
+
+\begin{equation*}
+\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)^{\prime} \hat{\mathbf{W}}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right) \stackrel{a}{\sim} \chi_{L}^{2} \tag{8.53}
+\end{equation*}
+
+
+since $\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}$ is an $L \times 1$ vector with zero mean and variance $\boldsymbol{\Lambda}$. If $\hat{\mathbf{W}}$ does not consistently estimate $\left[\operatorname{Var}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)\right]^{-1}$, then result (8.53) is false, and the following method does not produce an asymptotically chi-square statistic.
+
+Let $\hat{\boldsymbol{\beta}}$ again be the GMM estimator, using optimal weighting matrix $\hat{\mathbf{W}}$, obtained without imposing the restrictions. Let $\tilde{\boldsymbol{\beta}}$ be the GMM estimator using the same weighting matrix $\hat{\mathbf{W}}$ but obtained with the $Q$ linear restrictions imposed. The restricted estimator can always be obtained by estimating a linear model with $K-Q$ rather than $K$ parameters. Define the unrestricted and restricted residuals as $\hat{\mathbf{u}}_{i} \equiv \mathbf{y}_{i}-\mathbf{X}_{i} \hat{\boldsymbol{\beta}}$ and $\tilde{\mathbf{u}}_{i} \equiv \mathbf{y}_{i}-\mathbf{X}_{i} \tilde{\boldsymbol{\beta}}$, respectively. It can be shown that, under $\mathrm{H}_{0}$, the GMM distance statistic has a limiting chi-square distribution:
+
+
+\begin{equation*}
+\left[\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \tilde{\mathbf{u}}_{i}\right)^{\prime} \hat{\mathbf{W}}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \tilde{\mathbf{u}}_{i}\right)-\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{u}}_{i}\right)^{\prime} \hat{\mathbf{W}}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{u}}_{i}\right)\right] / N \stackrel{a}{\sim} \chi_{Q}^{2} . \tag{8.54}
+\end{equation*}
+
+
+See, for example, Hansen (1982) and Gallant (1987). The GMM distance statistic is simply the difference in the criterion function (8.27) evaluated at the restricted and unrestricted estimates, divided by the sample size, $N$. For this reason, expression (8.54) is called a criterion function statistic. Because constrained minimization cannot result in a smaller objective function than unconstrained minimization, expression (8.54) is always nonnegative and usually strictly positive.
+
+Under Assumption SIV. 5 we can use the 3SLS estimator, in which case expression (8.54) becomes
+
+
+\begin{equation*}
+\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \tilde{\mathbf{u}}_{i}\right)^{\prime}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\boldsymbol{\Omega}} \mathbf{Z}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \tilde{\mathbf{u}}_{i}\right)-\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{u}}_{i}\right)^{\prime}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\boldsymbol{\Omega}} \mathbf{Z}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{u}}_{i}\right), \tag{8.55}
+\end{equation*}
+
+
+where $\hat{\boldsymbol{\Omega}}$ would probably be computed using the 2SLS residuals from estimating the unrestricted model. The division by $N$ has disappeared because of the definition of $\hat{\mathbf{W}}$; see equation (8.39).
+
+Testing nonlinear hypotheses is easy once the unrestricted estimator $\hat{\boldsymbol{\beta}}$ has been obtained. Write the null hypothesis as\\
+$\mathrm{H}_{0}: \mathbf{c}(\boldsymbol{\beta})=\mathbf{0}$,\\
+where $\mathbf{c}(\boldsymbol{\beta}) \equiv\left[c_{1}(\boldsymbol{\beta}), c_{2}(\boldsymbol{\beta}), \ldots, c_{Q}(\boldsymbol{\beta})\right]^{\prime}$ is a $Q \times 1$ vector of functions. Let $\mathbf{C}(\boldsymbol{\beta})$ denote the $Q \times K$ Jacobian of $\mathbf{c}(\boldsymbol{\beta})$. Assuming that $\operatorname{rank} \mathbf{C}(\boldsymbol{\beta})=Q$, the Wald statistic is\\
+$W=\mathbf{c}(\hat{\boldsymbol{\beta}})^{\prime}\left(\hat{\mathbf{C}} \hat{\mathbf{V}} \hat{\mathbf{C}}^{\prime}\right)^{-1} \mathbf{c}(\hat{\boldsymbol{\beta}})$,\\
+where $\hat{\mathbf{C}} \equiv \mathbf{C}(\hat{\boldsymbol{\beta}})$ is the Jacobian evaluated at the GMM estimate $\hat{\boldsymbol{\beta}}$. Under $\mathrm{H}_{0}$, the Wald statistic has an asymptotic $\chi_{Q}^{2}$ distribution.
+
+\subsection*{8.5.2 Testing Overidentification Restrictions}
+Just as in the case of single-equation analysis with more exogenous variables than explanatory variables, we can test whether overidentifying restrictions are valid in a system context. In the model (8.11) with instrument matrix $\mathbf{Z}_{i}$, where $\mathbf{X}_{i}$ is $G \times K$ and $\mathbf{Z}_{i}$ is $G \times L$, there are overidentifying restrictions if $L>K$. Assuming that $\hat{\mathbf{W}}$ is an optimal weighting matrix, it can be shown that
+
+
+\begin{equation*}
+\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{u}}_{i}\right)^{\prime} \hat{\mathbf{W}}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{u}}_{i}\right) \stackrel{a}{\sim} \chi_{L-K}^{2} \tag{8.58}
+\end{equation*}
+
+
+under the null hypothesis $\mathrm{H}_{0}: \mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)=\mathbf{0}$. The asymptotic $\chi_{L-K}^{2}$ distribution is similar to result (8.53), but expression (8.53) contains the unobserved errors, $\mathbf{u}_{i}$, whereas expression (8.58) contains the residuals, $\hat{\mathbf{u}}_{i}$. Replacing $\mathbf{u}_{i}$ with $\hat{\mathbf{u}}_{i}$ causes the degrees of freedom to fall from $L$ to $L-K$ : in effect, $K$ orthogonality conditions have been used to compute $\hat{\boldsymbol{\beta}}$, and $L-K$ are left over for testing.
+
+The overidentification test statistic in expression (8.58) is just the objective function (8.27) evaluated at the solution $\hat{\boldsymbol{\beta}}$ and divided by $N$. It is because of expression (8.58) that the GMM estimator using the optimal weighting matrix is called the minimum chi-square estimator: $\hat{\boldsymbol{\beta}}$ is chosen to make the minimum of the objective function have an asymptotic chi-square distribution. If $\hat{\mathbf{W}}$ is not optimal, expression (8.58) fails to hold, making it much more difficult to test the overidentifying restrictions. When $L=K$, the left-hand side of expression (8.58) is identically zero; there are no overidentifying restrictions to be tested.
+
+Under Assumption SIV.5, the 3SLS estimator is a minimum chi-square estimator, and the overidentification statistic in equation (8.58) can be written as
+
+
+\begin{equation*}
+\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{u}}_{i}\right)^{\prime}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{\Omega}} \mathbf{Z}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \hat{\mathbf{u}}_{i}\right) . \tag{8.59}
+\end{equation*}
+
+
+Without Assumption SIV.5, the limiting distribution of this statistic is not chi square.\\
+In the case where the model has the form (8.12), overidentification test statistics can be used to choose between a systems and a single-equation method. For example, if the test statistic (8.59) rejects the overidentifying restrictions in the entire system, then the 3SLS estimators of the first equation are generally inconsistent. Assuming that the single-equation 2SLS estimation passes the overidentification test discussed in Chapter 6, 2SLS would be preferred. However, in making this judgment it is, as always, important to compare the magnitudes of the two sets of estimates in addition to the statistical significance of test statistics. Hausman (1983, p. 435) shows how to\\
+construct a statistic based directly on the 3SLS and 2SLS estimates of a particular equation (assuming that 3SLS is asymptotically more efficient under the null), and this discussion can be extended to allow for the more general minimum chi-square estimator.
+
+\subsection*{8.6 More Efficient Estimation and Optimal Instruments}
+In Section 8.3.3 we characterized the optimal weighting matrix given the matrix $\mathbf{Z}_{i}$ of instruments. But this discussion begs the question of how we can best choose $\mathbf{Z}_{i}$. In this section we briefly discuss two efficiency results. The first has to do with adding valid instruments.
+
+To be precise, let $\mathbf{Z}_{i 1}$ be a $G \times L_{1}$ submatrix of the $G \times L$ matrix $\mathbf{Z}_{i}$, where $\mathbf{Z}_{i}$ satisfies Assumptions SIV. 1 and SIV.2. We also assume that $\mathbf{Z}_{i 1}$ satisfies Assumption SIV.2; that is, $\mathrm{E}\left(\mathbf{Z}_{i 1}^{\prime} \mathbf{X}_{i}\right)$ has rank $K$. This assumption ensures that $\boldsymbol{\beta}$ is identified using the smaller set of instruments. (Necessary is $L_{1} \geq K$.) Given $\mathbf{Z}_{i 1}$, we know that the efficient GMM estimator uses a weighting matrix that is consistent for $\boldsymbol{\Lambda}_{1}^{-1}$, where $\boldsymbol{\Lambda}_{1}=\mathrm{E}\left(\mathbf{Z}_{i 1}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{Z}_{i 1}\right)$. When we use the full set of instruments $\mathbf{Z}_{i}=\left(\mathbf{Z}_{i 1}, \mathbf{Z}_{i 2}\right)$, the optimal weighting matrix is a consistent estimator of $\boldsymbol{\Lambda}$ given in expression (8.30). Can we say that using the full set of instruments (with the optimal weighting matrix) is better than using the reduced set of instruments (with the optimal weighting matrix)? The answer is that, asymptotically, we can do no worse, and often we can do better, using a larger set of valid instruments.
+
+The proof that adding orthogonality conditions generally improves efficiency proceeds by comparing the asymptotic variances of $\sqrt{N}(\tilde{\boldsymbol{\beta}}-\boldsymbol{\beta})$ and $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$, where the former estimator uses the restricted set of IVs and the latter uses the full set. Then\\
+$\operatorname{Avar} \sqrt{N}(\tilde{\boldsymbol{\beta}}-\boldsymbol{\beta})-\operatorname{Avar} \sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})=\left(\mathbf{C}_{1}^{\prime} \boldsymbol{\Lambda}_{1}^{-1} \mathbf{C}_{1}\right)^{-1}-\left(\mathbf{C}^{\prime} \boldsymbol{\Lambda}^{-1} \mathbf{C}\right)^{-1}$,\\
+where $\mathbf{C}_{1}=\mathrm{E}\left(\mathbf{Z}_{i 1}^{\prime} \mathbf{X}_{i}\right)$. The difference in equation (8.60) is positive semidefinite if and only if $\mathbf{C}^{\prime} \boldsymbol{\Lambda}^{-1} \mathbf{C}-\mathbf{C}_{1}^{\prime} \boldsymbol{\Lambda}_{1}^{-1} \mathbf{C}_{1}$ is p.s.d. The latter result is shown by White (2001, Proposition 4.51) using the formula for partitioned inverse; we will not reproduce it here.
+
+The previous argument shows that we can never do worse asymptotically by adding instruments and computing the minimum chi-square estimator. But we need not always do better. The proof in White (2001) shows that the asymptotic variances of $\tilde{\boldsymbol{\beta}}$ and $\hat{\boldsymbol{\beta}}$ are identical if and only if
+
+
+\begin{equation*}
+\mathbf{C}_{2}=\mathrm{E}\left(\mathbf{Z}_{i 2}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{Z}_{i 1}\right) \Lambda_{1}^{-1} \mathbf{C}_{1}, \tag{8.61}
+\end{equation*}
+
+
+where $\mathbf{C}_{2}=\mathrm{E}\left(\mathbf{Z}_{i 2}^{\prime} \mathbf{X}_{i}\right)$. Generally, this condition is difficult to check. However, if we assume that $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mathbf{Z}_{i}\right)=\sigma^{2} \mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)$-the ideal assumption for system 2SLS-then condition (8.61) becomes\\
+$\mathrm{E}\left(\mathbf{Z}_{i 2}^{\prime} \mathbf{X}_{i}\right)=\mathrm{E}\left(\mathbf{Z}_{i 2}^{\prime} \mathbf{Z}_{i 1}\right)\left[\mathrm{E}\left(\mathbf{Z}_{i 1}^{\prime} \mathbf{Z}_{i 1}\right)\right]^{-1} \mathrm{E}\left(\mathbf{Z}_{i 1}^{\prime} \mathbf{X}_{i}\right)$.\\
+Straightforward algebra shows that this condition is equivalent to\\
+$\mathrm{E}\left[\left(\mathbf{Z}_{i 2}-\mathbf{Z}_{i 1} \mathbf{D}_{1}\right)^{\prime} \mathbf{X}_{i}\right]=\mathbf{0}$,\\
+where $\mathbf{D}_{1}=\left[\mathrm{E}\left(\mathbf{Z}_{i 1}^{\prime} \mathbf{Z}_{i 1}\right)\right]^{-1} \mathrm{E}\left(\mathbf{Z}_{i 1}^{\prime} \mathbf{Z}_{i 2}\right)$ is the $L_{1} \times L_{2}$ matrix of coefficients from the population regression of $\mathbf{Z}_{i 2}$ on $\mathbf{Z}_{i 1}$. Therefore, condition (8.62) has a simple interpretation: $\mathbf{X}_{i}$ is orthogonal to the part of $\mathbf{Z}_{i 2}$ that is left after netting out $\mathbf{Z}_{i 1}$. This statement means that $\mathbf{Z}_{i 2}$ is not partially correlated with $\mathbf{X}_{i}$, and so it is not useful as instruments once $\mathbf{Z}_{i 1}$ has been included.
+
+Condition (8.62) is very intuitive in the context of 2SLS estimation of a single equation. Under $\mathrm{E}\left(u_{i}^{2} \mathbf{z}_{i}^{\prime} \mathbf{z}_{i}\right)=\sigma^{2} \mathrm{E}\left(\mathbf{z}_{i}^{\prime} \mathbf{z}_{i}\right)$, 2SLS is the minimum chi-square estimator. The elements of $\mathbf{z}_{i}$ would include all exogenous elements of $\mathbf{x}_{i}$, and then some. If, say, $x_{i K}$ is the only endogenous element of $\mathbf{x}_{i}$, condition (8.62) becomes\\
+$\mathrm{L}\left(x_{i K} \mid \mathbf{z}_{i 1}, \mathbf{z}_{i 2}\right)=\mathrm{L}\left(x_{i K} \mid \mathbf{z}_{i 1}\right)$,\\
+so that the linear projection of $x_{i K}$ onto $\mathbf{z}_{i}$ depends only on $\mathbf{z}_{i 1}$. If you recall how the IVs for 2SLS are obtained-by estimating the linear projection of $x_{i K}$ on $\mathbf{z}_{i}$ in the first stage-it makes perfectly good sense that $\mathbf{z}_{i 2}$ can be omitted under condition (8.63) without affecting efficiency of 2SLS.
+
+In the general case, if the error vector $\mathbf{u}_{i}$ contains conditional heteroskedasticity, or correlation across its elements (conditional or otherwise), condition (8.61) is unlikely to be true. As a result, we can keep improving asymptotic efficiency by adding more valid instruments. Whenever the error term satisfies a zero conditional mean assumption, unlimited IVs are available. For example, consider the linear model $\mathrm{E}(y \mid \mathbf{x})=\mathbf{x} \boldsymbol{\beta}$, so that the error $u=y-\mathbf{x} \boldsymbol{\beta}$ has a zero mean given $\mathbf{x}$. The OLS estimator is the IV estimator using IVs $\mathbf{z}_{1}=\mathbf{x}$. The preceding efficiency result implies that, if $\operatorname{Var}(u \mid \mathbf{x}) \neq \operatorname{Var}(u)$, there are unlimited minimum chi-square estimators that are asymptotically more efficient than OLS. Because $\mathrm{E}(u \mid \mathbf{x})=0, \mathbf{h}(\mathbf{x})$ is a valid set of IVs for any vector function $\mathbf{h}(\cdot)$. (Assuming, as always, that the appropriate moments exist.) Then, the minimum chi-square estimate using IVs $\mathbf{z}=[\mathbf{x}, \mathbf{h}(\mathbf{x})]$ is generally more asymptotically efficient than OLS. (Chamberlain, 1982, and Cragg, 1983, independently obtained this result.) If $\operatorname{Var}(y \mid \mathbf{x})$ is constant, adding functions of $\mathbf{x}$ to the IV list results in no asymptotic improvement because the linear projection of $\mathbf{x}$ onto $\mathbf{x}$ and $\mathbf{h}(\mathbf{x})$ obviously does not depend on $\mathbf{h}(\mathbf{x})$.
+
+Under homoskedasticity, adding moment conditions does not reduce the asymptotic efficiency of the minimum chi-square estimator. Therefore, it may seem that, when we have a linear model that represents a conditional expectation, we cannot lose by adding IVs and performing minimum chi-square. (Plus, we can then test the functional form $\mathrm{E}(y \mid \mathbf{x})=\mathbf{x} \boldsymbol{\beta}$ by testing the overidentifying restrictions.) Unfortunately, as shown by several authors, including Tauchen (1986), Altonji and Segal (1996), and Ziliak (1997), GMM estimators that use many overidentifying restrictions can have very poor finite sample properties.
+
+The previous discussion raises the following possibility: rather than adding more and more orthogonality conditions to improve on inefficient estimators, can we find a small set of optimal IVs? The answer is yes, provided we replace Assumption SIV. 1 with a zero conditional mean assumption.
+
+ASSUMPTION SIV.1': $\mathrm{E}\left(u_{i g} \mid \mathbf{w}_{i}\right)=0, g=1, \ldots, G$ for some vector $\mathbf{w}_{i}$.\\
+Assumption SIV.1' implies that $\mathbf{w}_{i}$ is exogenous in every equation, and each element of the instrument matrix $\mathbf{Z}_{i}$ can be any function of $\mathbf{w}_{i}$.\\
+theorem 8.5 (Optimal Instruments): Under Assumption SIV.1' (and sufficient regularity conditions), the optimal choice of instruments is $\mathbf{Z}_{i}^{*}=\mathbf{\Omega}\left(\mathbf{w}_{i}\right)^{-1} \mathrm{E}\left(\mathbf{X}_{i} \mid \mathbf{w}_{i}\right)$, where $\boldsymbol{\Omega}\left(\mathbf{w}_{i}\right) \equiv \mathrm{E}\left(\mathbf{u}_{i}^{\prime} \mathbf{u}_{i} \mid \mathbf{w}_{i}\right)$, provided that rank $\mathrm{E}\left(\mathbf{Z}_{i}^{* \prime} \mathbf{X}_{i}\right)=K$.
+
+We will not prove Theorem 8.5 here. We discuss a more general case in Section 14.5; see also Newey and McFadden (1994, Section 5.4). Theorem 8.5 implies that, if the $G \times K$ matrix $\mathbf{Z}_{i}^{*}$ were available, we would use it in equation (8.26) in place of $\mathbf{Z}_{i}$ to obtain the SIV estimator with the smallest asymptotic variance. This would take the arbitrariness out of choosing additional functions of $\mathbf{z}_{i}$ to add to the IV list: once we have $\mathbf{Z}_{i}^{*}$, all other functions of $\mathbf{w}_{i}$ are redundant.
+
+Theorem 8.5 implies that if Assumption SIV.1', the system homoskedasticity assumption (8.41), and $\mathrm{E}\left(\mathbf{X}_{i} \mid \mathbf{w}_{i}\right)=\left(\mathbf{I}_{G} \otimes \mathbf{w}_{i}\right) \Pi \equiv \mathbf{Z}_{i} \Pi$ hold, then the optimal instruments are simply $\mathbf{Z}_{i}^{*}=\boldsymbol{\Omega}^{-1}\left(\mathbf{Z}_{i} \Pi\right)$. But this choice of instruments leads directly to the traditional 3SLS estimator in equation (8.50) when $\boldsymbol{\Omega}$ and $\Pi$ are replaced by their $\sqrt{N}$-consistent estimators. As we discussed in Section 8.4.2, this estimator is identical to the GIV estimator and GMM 3SLS estimator.
+
+If $\mathrm{E}\left(\mathbf{u}_{i} \mid \mathbf{X}_{i}\right)=\mathbf{0}$ and $\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime} \mid \mathbf{X}_{i}\right)=\boldsymbol{\Omega}$, then the optimal instruments are $\boldsymbol{\Omega}^{-1} \mathbf{X}_{i}$, which gives the GLS estimator. Replacing $\boldsymbol{\Omega}$ by $\hat{\boldsymbol{\Omega}}$ has no effect asymptotically, and so the FGLS is the SIV estimator with optimal choice of instruments.
+
+Without further assumptions, both $\boldsymbol{\Omega}\left(\mathbf{w}_{i}\right)$ and $\mathrm{E}\left(\mathbf{X}_{i} \mid \mathbf{w}_{i}\right)$ can be arbitrary functions of $\mathbf{w}_{i}$, in which case the optimal SIV estimator is not easily obtainable. It is possible to find an estimator that is asymptotically efficient using nonparametric estimation\\
+methods to estimate $\boldsymbol{\Omega}\left(\mathbf{w}_{i}\right)$ and $\mathrm{E}\left(\mathbf{X}_{i} \mid \mathbf{w}_{i}\right)$, but there are many practical hurdles to overcome in applying such procedures. See Newey (1990) for an approach that approximates $\mathrm{E}\left(\mathbf{X}_{i} \mid \mathbf{w}_{i}\right)$ by parametric functional forms, where the approximation gets better as the sample size grows.
+
+\subsection*{8.7 Summary Comments on Choosing an Estimator}
+Throughout this chapter we have commented on the robustness and efficiency of different estimators. It is useful here to summarize the considerations behind choosing among estimators for systems or panel data applications.
+
+Generally, if we have started with moment conditions of the form $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)=\mathbf{0}$, GMM estimation based on this set of moment conditions will be more robust than estimators based on a transformed set of moment conditions, such as GIV. If we decide to use GMM, we can use the unrestricted weighting matrix, as in (8.36), or we might use the GMM 3SLS estimator, which uses weighting matrix (8.39). Under Assumption SIV.5, which is a system homoskedasticity assumption, the 3SLS estimator is asymptotically efficient. In an important special case, where the instruments can be chosen as in (8.52), GMM 3SLS, GIV, and traditional 3SLS are identical. When GMM and GIV are both consistent but are not $\sqrt{N}$-asymptotically equivalent, they cannot generally be ranked in terms of asymptotic efficiency.
+
+One of the efficiency results of the previous section is that one can never do worse by adding instruments and using the efficient weighting matrix in GMM. This has implications for panel data applications. For example, if one has the option of choosing the instruments as in equation (8.22) or equation (8.15) (with $G=T$ ), the efficient GMM estimator using equation (8.15) is no less efficient, asymptotically, than the efficient GMM estimator using equation (8.22). This follows because we can obtain (8.22) as a linear combination of (8.15), and using a linear combination is operationally the same as using a restricted set of instruments.
+
+What about the choice between the S2SLS and the GMM 3SLS estimators? Under the assumptions of Theorem 8.4, GMM 3SLS is asymptotically no less efficient than S2SLS. Nevertheless, it is useful to know that there are situations where S2SLS and GMM 3SLS coincide.
+
+The first is easy: when the general system (8.11) is just identified, that is, $L=K$, all estimators reduce to the IV estimator in equation (8.26). In the case of the SUR system (8.12), the system is just identified if and only if each equation is just identified: $L_{g}=K_{g}, g=1, \ldots, G$ and the rank condition holds for each equation.
+
+When estimating system (8.12), there is another case where S2SLS-which, recall, reduces to 2SLS estimation of each equation-coincides with 3SLS, regardless of the\\
+degree of overidentification. The 3SLS estimator is equivalent to 2SLS equation by equation when $\hat{\boldsymbol{\Omega}}$ is a diagonal matrix, that is, $\hat{\boldsymbol{\Omega}}=\operatorname{diag}\left(\hat{\sigma}_{1}^{2}, \hat{\sigma}_{2}^{2}, \ldots, \hat{\sigma}_{G}^{2}\right)$; see Problem 8.7.
+
+The algebraic equivalence of system 2SLS and 3SLS for estimating (8.12) when $\hat{\boldsymbol{\Omega}}$ is a diagonal matrix allows us to conclude that S2SLS and 3SLS are asymptotically equivalent when $\boldsymbol{\Omega}$ is diagonal. The reason is simple. If we could use $\boldsymbol{\Omega}$ in the 3SLS estimator, then it would be identical to 2SLS equation by equation. The actual 3SLS estimator, which uses $\hat{\boldsymbol{\Omega}}$, is $\sqrt{N}$-equivalent to the hypothetical 3SLS estimator that uses $\boldsymbol{\Omega}$. Therefore, 3SLS and 2SLS are $\sqrt{N}$-equivalent.
+
+Even in cases where 2SLS on each equation is not algebraically or asymptotically equivalent to 3SLS, it is not necessarily true that we should prefer the 3SLS estimator (or the minimum chi-square estimator more generally). Why? Suppose primary interest lies in estimating the parameters of the first equation, $\boldsymbol{\beta}_{1}$. On the one hand, we know that 2SLS estimation of this equation produces consistent estimators under the orthogonality conditions $\mathrm{E}\left(\mathbf{z}_{1}^{\prime} u_{1}\right)=\mathbf{0}$ and the condition rank $\mathrm{E}\left(\mathbf{z}_{1}^{\prime} \mathbf{x}_{1}\right)=K_{1}$. For consistency, we do not care what is happening elsewhere in the system as long as these two assumptions hold. On the other hand, the GMM 3SLS and minimum chisquare estimators of $\boldsymbol{\beta}_{1}$ are generally inconsistent unless $\mathrm{E}\left(\mathbf{z}_{g}^{\prime} u_{g}\right)=\mathbf{0}$ for $g=1, \ldots, G$. (But we do not need to assume $\mathrm{E}\left(\mathbf{z}_{g}^{\prime} u_{h}\right)=0$ for $g \neq h$ as we would to apply GIV.) Therefore, in using GMM to consistently estimate $\boldsymbol{\beta}_{1}$, all equations in the system must be properly specified, which means that the instruments must be exogenous in their corresponding equations. Such is the nature of system estimation procedures. As with system OLS and FGLS, there is a trade-off between robustness and efficiency.
+
+\section*{Problems}
+8.1. a. Show that the GMM estimator that solves the problem (8.27) satisfies the first-order condition
+
+$$
+\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}\right)^{\prime} \hat{\mathbf{W}}\left(\sum_{i=1}^{N} \mathbf{Z}_{i}^{\prime}\left(\mathbf{y}_{i}-\mathbf{X}_{i} \hat{\boldsymbol{\beta}}\right)\right)=\mathbf{0}
+$$
+
+b. Use this expression to obtain formula (8.28).\\
+8.2 Consider the system of equations\\
+$\mathbf{y}_{i}=\mathbf{X}_{i} \boldsymbol{\beta}+\mathbf{u}_{i}$\\
+where $i$ indexes the cross section observation, $\mathbf{y}_{i}$ and $\mathbf{u}_{i}$ are $G \times 1, \mathbf{X}_{i}$ is $G \times K, \mathbf{Z}_{i}$ is the $G \times L$ matrix of instruments, and $\boldsymbol{\beta}$ is $K \times 1$. Let $\boldsymbol{\Omega}=\mathrm{E}\left(\mathbf{u}_{i} \mathbf{u}_{i}^{\prime}\right)$. Make the following\\
+four assumptions: (1) $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{u}_{i}\right)=\mathbf{0}$; (2) rank $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{X}_{i}\right)=K$; (3) $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \mathbf{Z}_{i}\right)$ is nonsingular; and (4) $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega} \mathbf{Z}_{i}\right)$ is nonsingular.\\
+a. What are the asymptotic properties of the 3SLS estimator?\\
+b. Find the asymptotic variance matrix of $\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{3 \text { SLS }}-\boldsymbol{\beta}\right)$.\\
+c. How would you estimate $\operatorname{Avar}\left(\hat{\boldsymbol{\beta}}_{3 \text { SLS }}\right)$ ?\\
+8.3. Let $\mathbf{x}$ be a $1 \times K$ random vector and let $\mathbf{z}$ be a $1 \times M$ random vector. Suppose that $\mathrm{E}(\mathbf{x} \mid \mathbf{z})=\mathrm{L}(\mathbf{x} \mid \mathbf{z})=\mathbf{z} \boldsymbol{\Pi}$, where $\boldsymbol{\Pi}$ is an $M \times K$ matrix; in other words, the expectation of $\mathbf{x}$ given $\mathbf{z}$ is linear in $\mathbf{z}$. Let $\mathbf{h}(\mathbf{z})$ be any $1 \times Q$ nonlinear function of $\mathbf{z}$, and define an expanded instrument list as $\mathbf{w} \equiv[\mathbf{z}, \mathbf{h}(\mathbf{z})]$.\\
+a. Show that rank $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)=\operatorname{rank} \mathrm{E}\left(\mathbf{w}^{\prime} \mathbf{x}\right)$. \{Hint: First show that $\operatorname{rank} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)=$ rank $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}^{*}\right)$, where $\mathbf{x}^{*}$ is the linear projection of $\mathbf{x}$ onto $\mathbf{z}$; the same holds with $\mathbf{z}$ replaced by $\mathbf{w}$. Next, show that when $\mathrm{E}(\mathbf{x} \mid \mathbf{z})=\mathrm{L}(\mathbf{x} \mid \mathbf{z}), \mathrm{L}[\mathbf{x} \mid \mathbf{z}, \mathbf{h}(\mathbf{z})]=\mathrm{L}(\mathbf{x} \mid \mathbf{z})$ for any function $\mathbf{h}(\mathbf{z})$ of $\mathbf{z}$.\}\\
+b. Explain why the result from part a is important for identification with IV estimation.\\
+8.4. Consider the system of equations (8.12), and let $\mathbf{w}$ be a row vector of variables exogenous in every equation. Assume that the exogeneity assumption takes the stronger form $\mathrm{E}\left(u_{g} \mid \mathbf{w}\right)=0, g=1,2, \ldots, G$. This assumption means that $\mathbf{w}$ and nonlinear functions of $\mathbf{w}$ are valid instruments in every equation.\\
+a. Suppose that $\mathrm{E}\left(\mathbf{x}_{g} \mid \mathbf{w}\right)$ is linear in $\mathbf{w}$ for all $g$. Show that adding nonlinear functions of $\mathbf{z}$ to the instrument list cannot help in satisfying the rank condition. (Hint: Apply Problem 8.3.)\\
+b. What happens if $\mathrm{E}\left(\mathbf{x}_{g} \mid \mathbf{w}\right)$ is a nonlinear function of $\mathbf{w}$ for some $g$ ?\\
+8.5. Verify that the difference $\left(\mathbf{C}^{\prime} \boldsymbol{\Lambda}^{-1} \mathbf{C}\right)-\left(\mathbf{C}^{\prime} \mathbf{W} \mathbf{C}\right)\left(\mathbf{C}^{\prime} \mathbf{W} \boldsymbol{\Lambda} \mathbf{W}\right)^{-1}\left(\mathbf{C}^{\prime} \mathbf{W C}\right)$ in expression (8.34) is positive semidefinite for any symmetric positive definite matrices $\mathbf{W}$ and $\boldsymbol{\Lambda}$. (Hint: Show that the difference can be expressed as\\
+$\mathbf{C}^{\prime} \boldsymbol{\Lambda}^{-1 / 2}\left[\mathbf{I}_{L}-\mathbf{D}\left(\mathbf{D}^{\prime} \mathbf{D}\right)^{-1} \mathbf{D}^{\prime}\right] \boldsymbol{\Lambda}^{-1 / 2} \mathbf{C}$\\
+where $\mathbf{D} \equiv \boldsymbol{\Lambda}^{1 / 2} \mathbf{W C}$. Then, note that for any $L \times K$ matrix $\mathbf{D}, \mathbf{I}_{L}-\mathbf{D}\left(\mathbf{D}^{\prime} \mathbf{D}\right)^{-1} \mathbf{D}^{\prime}$ is a symmetric, idempotent matrix, and therefore positive semidefinite.)\\
+8.6. Consider the system (8.12) in the $G=2$ case, with an $i$ subscript added:\\
+$y_{i 1}=\mathbf{x}_{i 1} \boldsymbol{\beta}_{1}+u_{i 1}$,\\
+$y_{i 2}=\mathbf{x}_{i 2} \boldsymbol{\beta}_{2}+u_{i 2}$.
+
+The instrument matrix is\\
+$\mathbf{Z}_{i}=\left(\begin{array}{cc}\mathbf{z}_{i 1} & \mathbf{0} \\ \mathbf{0} & \mathbf{z}_{i 2}\end{array}\right)$.\\
+Let $\boldsymbol{\Omega}$ be the $2 \times 2$ variance matrix of $\mathbf{u}_{i} \equiv\left(u_{i 1}, u_{i 2}\right)^{\prime}$, and write\\
+$\boldsymbol{\Omega}^{-1}=\left(\begin{array}{cc}\sigma^{11} & \sigma^{12} \\ \sigma^{12} & \sigma^{22}\end{array}\right)$.\\
+a. Find $\mathrm{E}\left(\mathbf{Z}_{i}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{u}_{i}\right)$ and show that it is not necessarily zero under the orthogonality conditions $\mathrm{E}\left(\mathbf{z}_{i 1}^{\prime} u_{i 1}\right)=\mathbf{0}$ and $\mathrm{E}\left(\mathbf{z}_{i 2}^{\prime} u_{i 2}\right)=\mathbf{0}$.\\
+b. What happens if $\boldsymbol{\Omega}$ is diagonal (so that $\boldsymbol{\Omega}^{-1}$ is diagonal)?\\
+c. What if $\mathbf{z}_{i 1}=\mathbf{z}_{i 2}$ (without restrictions on $\boldsymbol{\Omega}$ )?\\
+8.7 With definitions (8.14) and (8.15), show that system 2SLS and 3SLS are numerically identical whenever $\hat{\boldsymbol{\Omega}}$ is a diagonal matrix.\\
+8.8. Consider the standard panel data model\\
+$y_{i t}=\mathbf{x}_{i t} \boldsymbol{\beta}+u_{i t}$,\\
+where the $1 \times K$ vector $\mathbf{x}_{i t}$ might have some elements correlated with $u_{i t}$. Let $\mathbf{z}_{i t}$ be a $1 \times L$ vector of instruments, $L \geq K$, such that $\mathrm{E}\left(\mathbf{z}_{i t}^{\prime} u_{i t}\right)=\mathbf{0}, t=1,2, \ldots, T$. (In practice, $\mathbf{z}_{i t}$ would contain some elements of $\mathbf{x}_{i t}$, including a constant and possibly time dummies.)\\
+a. Write down the system 2SLS estimator if the instrument matrix is $\mathbf{Z}_{i}= \left(\mathbf{z}_{i 1}^{\prime}, \mathbf{z}_{i 2}^{\prime}, \ldots, \mathbf{z}_{i T}^{\prime}\right)^{\prime}$ (a $T \times L$ matrix). Show that this estimator is a pooled 2SLS estimator. That is, it is the estimator obtained by 2SLS estimation of equation (8.64) using instruments $\mathbf{z}_{i t}$, pooled across all $i$ and $t$.\\
+b. What is the rank condition for the pooled 2SLS estimator?\\
+c. Without further assumptions, show how to estimate the asymptotic variance of the pooled 2SLS estimator.\\
+d. Without further assumptions, how would you estimate the optimal weighting matrix? Be very specific.\\
+e. Show that the assumptions
+
+
+\begin{equation*}
+\mathrm{E}\left(u_{i t} \mid \mathbf{z}_{i t}, u_{i, t-1}, \mathbf{z}_{i, t-1}, \ldots, u_{i 1}, \mathbf{z}_{i 1}\right)=0, \quad t=1, \ldots, T \tag{8.65}
+\end{equation*}
+
+
+
+\begin{equation*}
+\mathrm{E}\left(u_{i t}^{2} \mid \mathbf{z}_{i t}\right)=\sigma^{2}, \quad t=1, \ldots, T \tag{8.66}
+\end{equation*}
+
+
+imply that the usual standard errors and test statistics reported from the pooled 2SLS estimation are valid. These assumptions make implementing 2SLS for panel data very simple.\\
+f. What estimator would you use under condition (8.65) but where we relax condition (8.66) to $\mathrm{E}\left(u_{i t}^{2} \mid \mathbf{z}_{i t}\right)=\mathrm{E}\left(u_{i t}^{2}\right) \equiv \sigma_{t}^{2}, t=1, \ldots, T$ ? This approach will involve an initial pooled 2SLS estimation.\\
+g. Suppose you choose the instrument matrix as $\mathbf{Z}_{i}=\operatorname{diag}\left(\mathbf{z}_{i 1}, \mathbf{z}_{i 2}, \ldots, \mathbf{z}_{i T}\right)$. Show that the system 2SLS estimator can be obtained as follows. (1) For each $t$, regress $\mathbf{x}_{i t}$ on $\mathbf{z}_{i t}, i=1, \ldots, T$, and obtain the fitted values, $\hat{\mathbf{x}}_{i t}$. (2) Compute the pooled IV estimator using $\hat{\mathbf{x}}_{i t}$ as IVs for $\mathbf{x}_{i t}$.\\
+h. What is the most efficient way to use the moment conditions $\mathrm{E}\left(\mathbf{z}_{i t}^{\prime} u_{i t}\right)=\mathbf{0}$, $t=1, \ldots, T$ ?\\
+8.9. Consider the single-equation linear model from Chapter 5: $y=\mathbf{x} \boldsymbol{\beta}+u$. Strengthen Assumption 2SLS. 1 to $\mathrm{E}(u \mid \mathbf{z})=0$ and Assumption 2SLS. 3 to $\mathrm{E}\left(u^{2} \mid \mathbf{z}\right)= \sigma^{2}$, and keep the rank condition 2SLS.2. Show that if $\mathrm{E}(\mathbf{x} \mid \mathbf{z})=\mathbf{z} \boldsymbol{\Pi}$ for some $L \times K$ matrix $\boldsymbol{\Pi}$, the 2SLS estimator uses the optimal instruments based on the orthogonality condition $\mathrm{E}(u \mid \mathbf{z})=0$. What does this result imply about OLS if $\mathrm{E}(u \mid \mathbf{x})=0$ and $\operatorname{Var}(u \mid \mathbf{x})=\sigma^{2}$ ?\\
+8.10. In the model from Problem 8.8, let $\hat{u}_{i t} \equiv y_{i t}-\mathbf{x}_{i t} \hat{\boldsymbol{\beta}}$ be the residuals after pooled 2SLS estimation.\\
+a. Consider the following test for $\operatorname{AR}(1)$ serial correlation in $\left\{u_{i t}: t=1, \ldots, T\right\}$ : estimate the auxiliary equation\\
+$y_{i t}=\mathbf{x}_{i t} \boldsymbol{\beta}+\rho \hat{u}_{i, t-1}+$ error $_{i t}, \quad t=2, \ldots, T, i=1, \ldots, N$\\
+by 2SLS using instruments ( $\mathbf{z}_{i t}, \hat{u}_{i, t-1}$ ), and use the $t$ statistic on $\hat{\rho}$. Argue that, if we strengthen (8.56) to $\mathrm{E}\left(u_{i t} \mid \mathbf{z}_{i t}, \mathbf{x}_{i, t-1}, u_{i, t-1}, \mathbf{z}_{i, t-1}, \mathbf{x}_{i, t-2}, \ldots, \mathbf{x}_{i 1}, u_{i 1}, \mathbf{z}_{i 1}\right)=0$, then the heteroskedasticity-robust $t$ statistic for $\hat{\rho}$ is asymptotically valid as a test for serial correlation. (Hint: Under the dynamic completeness assumption (8.56), which is effectively the null hypothesis, the fact that $\hat{u}_{i, t-1}$ is used in place of $u_{i, t-1}$ does not affect the limiting distribution of $\hat{\rho}$; see Section 6.1.3.) What is the homoskedasticity assumption that justifies the usual $t$ statistic?\\
+b. What should be done to obtain a heteroskedasticity-robust test?\\
+8.11. a. Use Theorem 8.5 to show that, in the single-equation model\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+u_{1}$,\\
+with $\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=0$-where $\mathbf{z}_{1}$ is a strict subset of $\mathbf{z}$-and $\operatorname{Var}\left(u_{1} \mid \mathbf{z}\right)=\sigma_{1}^{2}$, the optimal instrumental variables are $\left[\mathbf{z}_{1}, \mathrm{E}\left(y_{2} \mid \mathbf{z}\right)\right]$.\\
+b. If $y_{2}$ is a binary variable with $\mathrm{P}\left(y_{2}=1 \mid \mathbf{z}\right)=F(\mathbf{z})$ for some known function $F(\cdot)$, $0 \leq F(\mathbf{z}) \leq 1$, what are the optimal IVs?\\
+8.12 Suppose in the system (8.11) we think $\boldsymbol{\Omega}$ has a special form, and so we estimate a restricted version of it. Let $\hat{\boldsymbol{\Lambda}}$ be a $G \times G$ positive semidefinite matrix such that $\operatorname{plim}(\hat{\boldsymbol{\Lambda}})=\boldsymbol{\Lambda} \neq \boldsymbol{\Omega}$.\\
+a. If we apply GMM 3SLS using $\hat{\boldsymbol{\Lambda}}$, is the resulting estimator generally consistent for $\boldsymbol{\beta}$ ? Explain.\\
+b. If Assumption SIV. 5 holds, but $\boldsymbol{\Lambda} \neq \boldsymbol{\Omega}$, can you use the difference in criterion functions for testing?\\
+c. Let $\hat{\boldsymbol{\Omega}}$ be the unrestricted estimator given by (8.38), and suppose the restrictions imposed in obtaining $\hat{\boldsymbol{\Lambda}}$ hold: $\boldsymbol{\Lambda}=\boldsymbol{\Omega}$. Is there any loss in asymptotic efficiency in using $\hat{\boldsymbol{\Omega}}$ rather than $\hat{\boldsymbol{\Lambda}}$ in a GMM 3SLS analysis? Explain.\\
+8.13. Consider a model where exogenous variables interact with an endogenous explanatory variable:\\
+$y_{1}=\eta_{1}+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\mathbf{z}_{1} y_{2} \gamma_{1}+u_{1}$\\
+$\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=0$,\\
+where $\mathbf{z}$ is the vector of all exogenous variables. Assume, in addition, (1) $\operatorname{Var}\left(u_{1} \mid \mathbf{z}\right)=\sigma_{1}^{2}$ and (2) $E\left(y_{2} \mid \mathbf{z}\right)=\mathbf{z} \boldsymbol{\pi}_{2}$.\\
+a. Apply Theorem 8.5 to obtain the optimal instrumental variables.\\
+b. How would you operationalize the optimal IV estimator?\\
+8.14. Write a model for panel data with potentially endogenous explanatory variables as\\
+$y_{i t 1}=\eta_{t 1}+\mathbf{z}_{i t 1} \boldsymbol{\delta}_{1}+\mathbf{y}_{i t 2} \boldsymbol{\alpha}_{2}+u_{i t 1}, \quad t=1, \ldots, T$,\\
+where $\eta_{t 1}$ denotes a set of intercepts for each $t$, $\mathbf{z}_{i t 1}$ is $1 \times L_{1}$, and $\mathbf{y}_{i t 2}$ is $1 \times G_{1}$. Let $\mathbf{z}_{i t}$ be the $1 \times L$ vector, $L=L_{1}+L_{2}$, such that $\mathrm{E}\left(\mathbf{z}_{i t}^{\prime} u_{i t 1}\right)=\mathbf{0}, t=1, \ldots, T$. We need $L_{2} \geq G_{1}$.\\
+a. A reduced form for $\mathbf{y}_{i t 2}$ can be written as $\mathbf{y}_{i t 2}=\mathbf{z}_{i t} \Pi_{2}+\mathbf{v}_{i t 2}$. Explain how to use pooled OLS to obtain a fully robust test of $\mathrm{H}_{0}: \mathrm{E}\left(\mathbf{y}_{i t 2}^{\prime} u_{i t 1}\right)=\mathbf{0}$. (The test should have $G_{1}$ degrees of freedom.)\\
+b. Extend the approach based on equation (6.32) to obtain a test of overidentifying restrictions for the pooled 2SLS estimator. You should describe how to make the test fully robust to serial correlation and heteroskedasticity.\\
+8.15. Use the data in AIRFARE.RAW to answer this question.\\
+a. Estimate the passenger demand model
+
+$$
+\begin{aligned}
+\log \left(\text { passen }_{i t}\right)= & \beta_{0}+\delta_{1} y 98_{t}+\delta_{2} y 99_{t}+\delta_{3} y 00_{t}+\beta_{1} \log \left(\text { fare }_{i t}\right)+\beta_{2} \log \left(\text { dist }_{i}\right) \\
+& +\beta_{3}\left[\log \left(\text { dist }_{i}\right)\right]^{2}+u_{i t 1}
+\end{aligned}
+$$
+
+by pooled OLS. Obtain the usual standard error and the fully robust standard error for $\hat{\beta}_{1, P O L S}$. Interpret the coefficient.\\
+b. Explicitly test $\left\{u_{i t 1}: t=1, \ldots, 4\right\}$ for $\operatorname{AR}(1)$ serial correlation. What do you make of the estimate of $\rho$ ?\\
+c. The variable $\operatorname{concen}_{i t}$ can be used as an IV for $\log \left(\operatorname{fare}_{i t}\right)$. Estimate the reduced form for $\log \left(\right.$ fare $\left._{i t}\right)$ (by pooled OLS) and test whether $\log \left(\right.$ fare $\left._{i t}\right)$ and concen $_{i t}$ are sufficiently partially correlated. You should use a fully robust test.\\
+d. Estimate the model from part a by pooled 2 SLS. Is $\hat{\beta}_{1, P 2 S L S}$ practically different from $\hat{\beta}_{1, P O L S}$ ? How do the pooled and fully robust standard errors for $\hat{\beta}_{1, P 2 S L S}$ compare?\\
+e. Under what assumptions can you directly compare $\hat{\beta}_{1, P 2 S L S}$ and $\hat{\beta}_{1, P O L S}$ using the usual standard errors to obtain a Hausman statistic? Is it likely these assumptions are satisfied?\\
+f. Use the test from Problem 8.14 to formally test that $\log \left(\right.$ fare $\left._{i t}\right)$ is exogenous in the demand equation. Use the fully robust version.
+
+\section*{9 Simultaneous Equations Models}
+
+\end{document}

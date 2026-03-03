@@ -1,0 +1,1055 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 20: Nonrandom Samples}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\includegraphics[max width=\textwidth, alt={}]{2e17339c-7635-4ef8-aded-2191d8d853ff-0884_123_813_117_283}
+\end{center}}
+\subsection*{20.1 Introduction}
+In this chapter we study estimation when the data have been obtained by means of two common nonrandom sampling schemes. Stratified sampling occurs when units in a population are sampled with probabilities that do not reflect their frequency in the population. For example, in obtaining a data set on families, low-income families might be oversampled and high-income families undersampled. There are various mechanisms by which stratified samples are obtained, and we will cover the most common ones in this chapter.
+
+The case of truncated sampling covered in Section 19.7 can be viewed as an extreme case of stratified sampling, where part of the population is not sampled at all. For the most part, in this chapter we focus on the case where the entire population is sampled (but where the sampling frequencies differ from the population frequencies). As we will see, in this setup simple weighting methods are available for recovering the underlying population parameters.
+
+Cluster sampling refers to cases where clusters or groups, rather than individual units, are drawn from a population. For example, in evaluating the impact of educational policies on test performance of fourth-graders in Michigan, one might sample classrooms from the entire state (as opposed to randomly drawing fourth-graders from the population of all fourth-graders in Michigan). The classrooms constitute the clusters, and the students within the classrooms are the inividual units. The cluster sampling scheme generally implies that the outcomes of units within a cluster are correlated through unobserved "cluster effects." (In addition, some covariates, such as quality of the teacher, will be perfectly correlated because students in the same class have the same teacher. Other covariates, such as family income, are likely to have substantial correlation but would vary within a classroom.)
+
+When a cluster sample is obtained by randomly drawing clusters from a large population of clusters, the resulting data set has features in common with the panel data sets we have studied throughout the book. Namely, we have many clusters that can be assumed to be independent of each other, but observations within a cluster are correlated. In, say, a firm-level panel data set, the firm plays the role of a cluster and time plays the role of the individual units. Because of their statistical similarity to "large $N$, small $T$ " panel data sets, most of the statistical methods applied to cluster samples are familiar from our earlier analysis. We treat cluster samples separately because the nature of the within-cluster correlation is generally different from time series correlation, and cluster samples are naturally unbalanced even when there is no sample selection problem. (For example, in the population of fourth-grade classrooms in Michigan, we expect some variation in class size.)
+
+\subsection*{20.2 Stratified Sampling}
+We begin with an analysis of stratified samples where, as mentioned in the introduction, different subsets of the population are sampled with different frequencies. Obtaining samples that are not representative of the underlying population is often done intentionally in obtaining survey data. Some surveys are designed primarily to learn about a particular subset of the population (perhaps based on income, education, age, or race). That group is typically overrepresented in the sample compared with its frequency in the population.
+
+Stratification can be based on exogenous variables or endogenous variables (which are known once a model and assumptions have been specified) or some combination of these. As in the case of the sample selection problems we discussed in Chapter 19, it is important to know which is the case.
+
+We cover the two most common types of stratified sampling in this section (and touch on a third). In Section 20.2.1 we study standard stratified sampling, which involves stratifying the population and then drawing random samples from the different strata. A different sampling scheme, variable probability sampling, is based on randomly drawing units from a population but then keeping the observations with unequal probabilities.
+
+The section does not provide a detailed treatment of choice-based sampling, which occurs in discrete response models when the stratification is based entirely on the response variable. Various methods have been proposed for estimating discrete response models with choice-based samples under different assumptions. Manski and McFadden (1981) and Cosslett (1993) contain general treatments. For a class of discrete response models, Cosslett (1981) proposed an efficient estimation method with choice-based sampling, and Imbens (1992) obtained a computationally simple method-of-moments estimator that also achieves the efficiency bound. Imbens and Lancaster (1996) allow for general response variables in a maximum likelihood setting. In this section, we focus on a convenient weighted-estimation approach that applies to a variety of estimation methods. Not surprisingly, when applied in maximum likelihood contexts, weighted estimators are generally inefficient.
+
+\subsection*{20.2.1 Standard Stratified Sampling and Variable Probability Sampling}
+The two most common stratification schemes used in obtaining data sets in the social sciences are standard stratified sampling (SS sampling) and variable probability sampling (VP sampling). In SS sampling, the population is first partitioned into $J$ groups, $\mathscr{W}_{1}, \mathscr{W}_{2}, \ldots, \mathscr{W}_{J}$, which we assume are nonoverlapping and exhaustive. We let $\mathbf{w}$ denote the random vector representing the population of interest.
+
+STANDARD STRATIFIED SAMPLING: For $j=1, \ldots, J$, draw a random sample of size $N_{j}$ from stratum $j$. For each $j$, denote this random sample by $\left\{\mathbf{w}_{i j}: i=1,2, \ldots, N_{j}\right\}$.
+
+The strata sample sizes $N_{j}$ are nonrandom. Therefore, the total sample size, $N= N_{1}+\cdots+N_{J}$, is also nonrandom. A randomly drawn observation from stratum $j, \mathbf{w}_{i j}$, has distribution $\mathrm{D}\left(\mathbf{w} \mid \mathbf{w} \in \mathscr{W}_{j}\right)$. Therefore, while observations within a stratum are identically distributed, observations across strata are not. A scheme that is similar in nature to SS sampling is called multinomial sampling, where a stratum is first picked at random and then an observation is randomly drawn from the stratum. This does result in i.i.d. observations, but it does not correspond to how stratified samples are obtained in practice. It also leads to the same estimators as under SS sampling, so we do not discuss it further; see Cosslett (1993) or Wooldridge (1999b) for further discussion.
+
+Variable probability samples are obtained using a different scheme. First, an observation is drawn at random from the population. If the observation falls into stratum $j$, it is kept with probability $p_{j}$. Thus, random draws from the population are discarded with varying frequencies depending on which stratum they fall into. This kind of sampling is appropriate when information on the variable or variables that determine the strata is relatively easy to obtain compared with the rest of the information. Survey data sets, including initial interviews to collect panel or longitudinal data, are good examples. Suppose we want to oversample individuals from, say, lower income classes. We can first ask an individual her or his income. If the response is in income class $j$, this person is kept in the sample with probability $p_{j}$, and then the remaining information, such as education, work history, family background, and so on can be collected; otherwise, the person is dropped without further interviewing.
+
+A key feature of VP sampling is that observations within a stratum are discarded randomly. As discussed by Wooldridge (1999b), VP sampling is equivalent to the following:
+
+VARIABLE PROBABILITY SAMPLING: Repeat the following steps $N$ times:
+
+\begin{enumerate}
+  \item Draw an observation $\mathbf{w}_{i}$ at random from the population.
+  \item If $\mathbf{w}_{i}$ is in stratum $j$, toss a (biased) coin with probability $p_{j}$ of turning up heads. Let $h_{i j}=1$ if the coin turns up heads and zero otherwise.
+  \item Keep observation $i$ if $h_{i j}=1$; otherwise, omit it from the sample.
+\end{enumerate}
+
+The number of observations falling into stratum $j$ is denoted $N_{j}$, and the number of data points we actually have for estimation is $N_{0}=N_{1}+N_{2}+\cdots+N_{J}$. Notice that if $N$-the number of times the population is sampled-is fixed, then $N_{0}$ is a random variable: we do not know what each $N_{j}$ will be prior to sampling.
+
+The assumption that the probability of the coin turning up heads in step 2 depends only on the stratum ensures that sampling is random within each stratum. This roughly reflects how samples are obtained for certain large cross-sectional and panel data sets used in economics, including the panel study of income dynamics and the national longitudinal survey.
+
+To see that a VP sample can be analyzed as a random sample, we construct a population that incorporates the stratification. The VP sampling scheme is equivalent to first tossing all $J$ coins before actually observing which stratum $\mathbf{w}_{i}$ falls into; this gives $\left(h_{i 1}, \ldots, h_{i J}\right)$. Next, $\mathbf{w}_{i}$ is observed to fall into one of the strata. Finally, the outcome is kept or not depending on the coin flip for that stratum. The result is that the vector $\left(\mathbf{w}_{i}, \mathbf{h}_{i}\right)$, where $\mathbf{h}_{i}$ is the $J$-vector of binary indicators $h_{i j}$, is a random sample from a new population with sample space $\mathscr{W} \times \mathscr{H}$, where $\mathscr{W}$ is the original sample space and $\mathscr{H}$ denotes the sample space associated with outcomes from flipping $J$ coins. Under this alternative way of viewing the sampling scheme, $\mathbf{h}_{i}$ is independent of $\mathbf{w}_{i}$. Treating ( $\mathbf{w}_{i}, \mathbf{h}_{i}$ ) as a random draw from the new population is not at odds with the fact that our estimators are based on a nonrandom sample from the original population: we simply use the vector $\mathbf{h}_{i}$ to determine which observations are kept in the estimation procedure.
+
+\subsection*{20.2.2 Weighted Estimators to Account for Stratification}
+With variable probability sampling, it is easy to construct weighted objective functions that produce consistent and asymptotically normal estimators of the population parameters. Initially, it is useful to define a set of binary variables that indicate whether a random draw, $\mathbf{w}_{i}$, is kept in the sample and, if so, which stratum it falls into. Let $z_{i j}=1\left[\mathbf{w}_{i} \in \mathscr{W}_{j}\right], j=1, \ldots, J$ be the binary strata indicators, that is, $z_{i j}=1$ if and only if $\mathbf{w}_{i} \in \mathscr{W}_{j}$. The vector of strata indicators is $\mathbf{z}_{i}=\left(z_{i 1}, \ldots, z_{i J}\right)$. Then define
+
+
+\begin{equation*}
+r_{i j}=h_{i j} z_{i j}, \quad j=1, \ldots, J . \tag{20.1}
+\end{equation*}
+
+
+By definition, $r_{i j}=1$ for at most one $j$. If $h_{i j}=1$ then $r_{i j}=z_{i j}$, so that $r_{i j}$ is the same as the stratum indicator. If $r_{i j}=0$ for all $j=1,2, \ldots, J$, then the random draw $\mathbf{w}_{i}$ does not appear in the sample (and we probably do not know which stratum the observation fell into).
+
+With these definitions, we can define the weighted M-estimator, $\hat{\boldsymbol{\theta}}_{w}$, as the solution to
+
+
+\begin{equation*}
+\min _{\boldsymbol{\theta} \in \boldsymbol{\Theta}} \sum_{i=1}^{N} \sum_{j=1}^{J} p_{j}^{-1} r_{i j} q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right), \tag{20.2}
+\end{equation*}
+
+
+where $q(\mathbf{w}, \boldsymbol{\theta})$ is the objective function that is chosen to identify the population parameters $\boldsymbol{\theta}_{\mathrm{o}}$. Note how the outer summation is over all potential observations, that\\
+is, the observations that would appear in a random sample. The indicators $r_{i j}$ simply pick out the observations that actually appear in the available sample, and these indicators also attach each observed data point to its stratum. The objective function (20.2) weights each observed data point in the sample by the inverse of the sampling probability. For implementation it is useful to write the objective function as
+
+
+\begin{equation*}
+\min _{\boldsymbol{\theta} \in \boldsymbol{\Theta}} \sum_{i=1}^{N_{0}} p_{j_{i}}^{-1} q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right), \tag{20.3}
+\end{equation*}
+
+
+where, without loss of generality, the data points actually observed are ordered $i= 1, \ldots, N_{0}$. Since $j_{i}$ is the stratum for observation $i, p_{j_{i}}^{-1}$ is the weight attached to observation $i$ in the estimation. In practice, the $p_{j_{i}}^{-1}$ are the sampling weights reported with other variables in VP stratified samples.
+
+The objective function $q(\mathbf{w}, \boldsymbol{\theta})$ contains all of the M-estimator examples we have covered so far in the book, including least squares (linear and nonlinear), conditional maximum likelihood, and partial maximum likelihood. In panel data applications, the probability weights are from sampling in an initial year. Weights for later years are intended to reflect both stratification (if any) and possible attrition, as discussed in Section 19.9.3.
+
+In the case of estimating the mean from a population, the resulting weighted Mestimator has a familiar form. Let $\mu_{o}=\mathrm{E}(w)$ be the population mean. Then the weighted M-estimator solves\\
+$\min _{\mu \in \mathbb{R}} \sum_{i=1}^{N_{0}} p_{j_{i}}^{-1}\left(w_{i}-\mu\right)^{2}$,\\
+and the solution is easily seen to be the weighted average\\
+$\hat{\mu}_{w}=\sum_{i=1}^{N_{0}} v_{j_{i}} w_{i}$,\\
+where\\
+$v_{j_{i}}=\left(\sum_{h=1}^{N_{0}} p_{j_{h}}^{-1}\right)^{-1} p_{j_{i}}^{-1}$.
+
+In the general case, Wooldridge (1999b) shows that, under the same assumptions as Theorem 12.2 and the assumption that each sampling probability is positive, the weighted M-estimator consistently estimates $\boldsymbol{\theta}_{o}$, which is assumed to uniquely\\
+minimize $\mathrm{E}[q(\mathbf{w}, \boldsymbol{\theta})]$. Actually, as shown by Wooldridge (2007), consistency follows from our treatment of inverse-probability-weighted M-estimation in Section 19.8. As noted earlier, the vector $\mathbf{z}_{i}$ is the $J$-vector of strata indicators, $z_{i j}=1\left[w_{i} \in W_{j}\right]$. Under VP sampling, the sampling probability depends only on the stratum, so Assumption 19.6 holds by design. In particular, define $s_{i}=h_{i 1} z_{i 1}+\cdots+h_{i J} z_{i J}$ to be the selection indicator. Then
+
+
+\begin{equation*}
+\mathrm{P}\left(s_{i}=1 \mid \mathbf{z}_{i}, \mathbf{w}_{i}\right)=\mathrm{P}\left(s_{i}=1 \mid \mathbf{z}_{i}\right)=p_{1} z_{i 1}+p_{2} z_{i 2}+\cdots+p_{J} z_{i J} \tag{20.7}
+\end{equation*}
+
+
+Therefore, we can use the consistency result for IPW M-estimation directly to establish the consistency of the IPW estimator for VP sampling.
+
+Asymptotic normality also follows under the same regularity conditions as in Chapter 12. Wooldridge (1999b) shows that a valid estimator of the asymptotic variance of $\hat{\boldsymbol{\theta}}_{w}$ is
+
+
+\begin{equation*}
+\left[\sum_{i=1}^{N_{0}} p_{j_{i}}^{-1} \nabla_{\theta}^{2} q_{i}\left(\hat{\boldsymbol{\theta}}_{w}\right)\right]^{-1}\left[\sum_{i=1}^{N_{0}} p_{j_{i}}^{-2} \nabla_{\theta} q_{i}\left(\hat{\boldsymbol{\theta}}_{w}\right)^{\prime} \nabla_{\theta} q_{i}\left(\hat{\boldsymbol{\theta}}_{w}\right)\right]\left[\sum_{i=1}^{N_{0}} p_{j_{i}}^{-1} \nabla_{\theta}^{2} q_{i}\left(\hat{\boldsymbol{\theta}}_{w}\right)\right]^{-1}, \tag{20.8}
+\end{equation*}
+
+
+which looks like the standard formula for a robust variance matrix estimator except for the presence of the sampling probabilities $p_{j_{i}}$.
+
+When $\mathbf{w}$ partitions as $(\mathbf{x}, \mathbf{y})$, an alternative estimator replaces the Hessian $\nabla_{\theta}^{2} q_{i}\left(\hat{\boldsymbol{\theta}}_{w}\right)$ in expression (20.8) with $\mathbf{A}\left(\mathbf{x}_{i}, \hat{\boldsymbol{\theta}}_{w}\right)$, where $\mathbf{A}\left(\mathbf{x}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right) \equiv \mathrm{E}\left[\nabla_{\theta}^{2} q\left(\mathbf{w}_{i}, \boldsymbol{\theta}_{\mathrm{o}}\right) \mid \mathbf{x}_{i}\right]$, as in Chapter 12 . Asymptotic standard errors and Wald statistics can be obtained using either estimate of the asymptotic variance.
+
+We can also apply the "surprising" efficiency result concerning estimation of the sampling probabilities to VP stratification-at least if additional information is kept during the sampling. For a random draw $i$ the log likelihood for the density of $s_{i}$ given $\mathbf{z}_{i}$ can be written as
+
+
+\begin{equation*}
+l_{i}(\mathbf{p})=\sum_{j=1}^{J} z_{i j}\left[s_{i} \log \left(p_{j}\right)+\left(1-s_{i}\right) \log \left(1-p_{j}\right)\right] \tag{20.9}
+\end{equation*}
+
+
+For each $j=1, \ldots, J$, the maximum likelihood estimate, $\hat{p}_{j}$, is easily seen to be the fraction of observations retained out of all of those originally drawn from from stratum $j: \hat{p}_{j}=M_{j} / N_{j}$, where $M_{j}=\sum_{i=1}^{N} z_{i j} s_{i}$ and $N_{j}=\sum_{i=1}^{N} z_{i j}$. In other words, $M_{j}$ is the number of retained data points from stratum $j$, and $N_{j}$ is the number of times stratum $j$ was drawn in the VP sampling scheme. If the $N_{j}, j=1, \ldots, J$, are reported along with the VP sample, then we can easily obtain the $\hat{p}_{j}$ (because the $M_{j}$ are always known). We do not need to observe the specific strata indicators for obser-\\
+vations for which $s_{i}=0$. (If the stratification is exogenous, as defined in Section 20.2.3, then it does not matter whether we use the estimated or known sampling probabilities: the asymptotic variance is unchanged in that case.)
+
+Example 20.1 (Linear Model under Stratified Sampling): In estimating the linear model
+
+
+\begin{equation*}
+y=\mathbf{x} \boldsymbol{\beta}_{\mathrm{o}}+u, \quad \mathrm{E}\left(\mathbf{x}^{\prime} u\right)=\mathbf{0} \tag{20.10}
+\end{equation*}
+
+
+by IPW least squares, the asymptotic variance matrix estimator is\\
+$\left(\sum_{i=1}^{N_{0}} p_{j_{i}}^{-1} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)^{-1}\left(\sum_{i=1}^{N_{0}} p_{j_{i}}^{-2} \hat{u}_{i}^{2} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)\left(\sum_{i=1}^{N_{0}} p_{j_{i}}^{-1} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)^{-1}$,\\
+where $\hat{u}_{i}=y_{i}-\mathbf{x}_{i} \hat{\boldsymbol{\beta}}_{w}$ is the residual after WLS estimation. Interestingly, this is simply the White (1980b) heteroskedasticity-consistent covariance matrix estimator applied to the stratified sample, where all variables for observation $i$ are weighted by $p_{j_{i}}^{-1 / 2}$ before performing the regression. This estimator has been suggested by, among others, Hausman and Wise (1981). Hausman and Wise use maximum likelihood to obtain more efficient estimators in the context of the normal linear regression model, that is, $u \mid \mathbf{x} \sim \operatorname{Normal}\left(\mathbf{x} \boldsymbol{\beta}_{\mathrm{o}}, \sigma_{\mathrm{o}}^{2}\right)$. Because of stratification, MLE is not generally robust to failure of the homoskedastic normality assumption.
+
+It is important to remember that the form of expression (20.11) in this example is not due to potential heteroskedasticity in the underlying population model. Even if $\mathrm{E}\left(u^{2} \mid \mathbf{x}\right)=\sigma_{\mathrm{o}}^{2}$, the estimator (20.11) is generally needed because of the stratified sampling. This estimator also works in the presence of heteroskedasticity of arbitrary and unknown form in the population, and it is routinely computed by many regression packages.
+
+Example 20.2 (Conditional MLE under Stratified Sampling): When $f(\mathbf{y} \mid \mathbf{x} ; \boldsymbol{\theta})$ is a correctly specified model for the density of $\mathbf{y}_{i}$ given $\mathbf{x}_{i}$ in the population, the inverse-probability-weighted MLE is obtained with $q_{i}(\boldsymbol{\theta}) \equiv-\log \left[f\left(\mathbf{y}_{i} \mid \mathbf{x}_{i} ; \boldsymbol{\theta}\right)\right]$. This estimator is consistent and asymptotically normal, with asymptotic variance estimator given by expression (20.8) [or the form that uses $\left.\mathbf{A}\left(\mathbf{x}_{i}, \hat{\boldsymbol{\theta}}_{w}\right)\right]$.
+
+A weighting scheme is also available in the standard stratified sampling case, but the weights are different from the VP sampling case. To derive them, let $Q_{j}= \mathrm{P}\left(\mathbf{w} \in \mathscr{W}_{j}\right)$ denote the population frequency for stratum $j$; we assume that the $Q_{j}$ are known. By the law of iterated expectations,
+
+
+\begin{equation*}
+\mathrm{E}[q(\mathbf{w}, \boldsymbol{\theta})]=Q_{1} \mathrm{E}\left[q(\mathbf{w}, \boldsymbol{\theta}) \mid \mathbf{w} \in \mathscr{W}_{1}\right]+\cdots+Q_{J} \mathrm{E}\left[q(\mathbf{w}, \boldsymbol{\theta}) \mid \mathbf{w} \in \mathscr{W}_{J}\right] \tag{20.12}
+\end{equation*}
+
+
+for any $\boldsymbol{\theta}$. For each $j, \mathrm{E}\left[q(\mathbf{w}, \boldsymbol{\theta}) \mid \mathbf{w} \in \mathscr{W}_{j}\right]$ can be consistently estimated using a random sample obtained from stratum $j$. This scheme leads to the sample objective function\\
+$Q_{1}\left[N_{1}^{-1} \sum_{i=1}^{N_{1}} q\left(\mathbf{w}_{i 1}, \boldsymbol{\theta}\right)\right]+\cdots+Q_{J}\left[N_{J}^{-1} \sum_{i=1}^{N_{J}} q\left(\mathbf{w}_{i J}, \boldsymbol{\theta}\right)\right]$,\\
+where $\mathbf{w}_{i j}$ denotes a random draw $i$ from stratum $j$ and $N_{j}$ is the nonrandom sample size for stratum $j$. We can apply the uniform law of large numbers to each term, so that the sum converges uniformly to equation (20.12) under the regularity conditions in Chapter 12. By multiplying and dividing each term by the total number of observations $N=N_{1}+\cdots+N_{J}$, we can write the sample objective function more simply as\\
+$N^{-1} \sum_{i=1}^{N}\left(Q_{j_{i}} / H_{j_{i}}\right) q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)$,\\
+where $j_{i}$ denotes the stratum for observation $i$ and $H_{j} \equiv N_{j} / N$ denotes the fraction of observations in stratum $j$. Because we have the stratum indicator $j_{i}$, we can drop the $j$ subscript on $\mathbf{w}_{i}$. When we omit the division by $N$, equation (20.13) has the same form as equation (20.3), but the weights are $\left(Q_{j_{i}} / H_{j_{i}}\right)$ rather than $p_{j_{i}}^{-1}$ (and the arguments for why each weighting works are very different). Also, in general, the formula for the asymptotic variance is different in the SS sampling case. In addition to the minor notational change of replacing $N_{0}$ with $N$, the middle matrix in equation (20.8) becomes\\
+$\sum_{j=1}^{J}\left(Q_{j}^{2} / H_{j}^{2}\right)\left[\sum_{i=1}^{N_{j}}\left(\nabla_{\theta} \hat{q}_{i j}-\overline{\nabla_{\theta} q_{j}}\right)^{\prime}\left(\nabla_{\theta} \hat{q}_{i j}-\overline{\nabla_{\theta} q_{j}}\right)\right]$,\\
+where $\nabla_{\theta} \hat{q}_{i j} \equiv \nabla_{\theta} q\left(\mathbf{w}_{i j}, \hat{\boldsymbol{\theta}}_{w}\right)$ and $\overline{\nabla_{\theta} q_{j}} \equiv N_{j}^{-1} \sum_{i=1}^{N_{j}} \nabla_{\theta} \hat{q}_{i j}$ (the within-stratum sample average). This approach requires us to explicitly partition observations into their respective strata. See Wooldridge (2001) for a detailed derivation. [If in the VP sampling case the population frequencies $Q_{j}$ are known, it is better to use as weights $Q_{j} /\left(N_{j} / N_{0}\right)$ rather than $p_{j}^{-1}$, which makes the analysis look just like the SS sampling case. See Wooldridge (1999b) for details.]
+
+If in Example 20.2 we have standard stratified sampling rather than VP sampling, the weighted MLE is typically called the weighted exogenous sample MLE (WESMLE); this estimator was suggested by Manski and Lerman (1977) in the context of choice-based sampling in discrete response models. (Actually, Manski and Lerman (1977) use multinomial sampling where $H_{j}$ is the probability of picking stratum $j$. But Cosslett (1981) showed that a more efficient estimator is obtained by\\
+using $N_{j} / N$, as one always does in the case of SS sampling; see Wooldridge (1999b) for an extension of Cosslett's result to the M-estimator case.)
+
+Provided that the sampling weights $Q_{j_{i}} / H_{j_{i}}$ or $p_{j_{i}}^{-1}$ are given (along with the stratum), analysis with the weighted M-estimator under SS or VP sampling is fairly straightforward, but it is not likely to be efficient. In the conditional maximum likelihood case it is certainly possible to do better. See Imbens and Lancaster (1996) for a careful treatment.
+
+\subsection*{20.2.3 Stratification Based on Exogenous Variables}
+When $\mathbf{w}$ partitions as $(\mathbf{x}, \mathbf{y})$, where $\mathbf{x}$ is exogenous in a sense to be made precise, and stratification is based entirely on $\mathbf{x}$, the standard unweighted estimator on the stratified sample is consistent and asymptotically normal. The sense in which $\mathbf{x}$ must be exogenous is that $\boldsymbol{\theta}_{\mathrm{o}}$ solves
+
+
+\begin{equation*}
+\min _{\boldsymbol{\theta} \in \boldsymbol{\theta}} \mathrm{E}[q(\mathbf{w}, \boldsymbol{\theta}) \mid \mathbf{x}] \tag{20.15}
+\end{equation*}
+
+
+for each possible outcome $\mathbf{x}$. This assumption holds in a variety of contexts with conditioning variables and correctly specified models. For example, as we discussed in Chapter 12, the condition holds for nonlinear regression when the conditional mean is correctly specified and $\boldsymbol{\theta}_{\mathrm{o}}$ is the vector of conditional mean parameters; in Chapter 13 we showed that this holds for conditional maximum likelihood when the density of $\mathbf{y}$ given $\mathbf{x}$ is correct. It also holds in other cases, including the quasimaximum likelihood estimators we discussed in Chapter 18 when the conditional mean is correctly specified. One interesting point-which we will rely on in our treatment of estimating average treatment effects in Chapter 21-is that, in the linear case, it will not be enough for $u$ to be uncorrelated with $\mathbf{x}$. If we want to estimate the linear projection of $y$ on $\mathbf{x}$, we generally need to use the weighted estimator, even if stratification is a function of $\mathbf{x}$.
+
+In the case of VP sampling, a common form of exogenous stratification occurs when the strata are defined in terms of $\mathbf{x}$, and that is the case we treat here. (See Section 19.8 or Wooldridge (2007) for more general situations.) Then, again letting $s_{i}=h_{i 1} z_{i 1}+\cdots+h_{i J} z_{i J}$ be the selection indicator, where each $z_{i j}$ is a function of $\mathbf{x}_{i}$, $\mathrm{P}\left(s_{i}=1 \mid \mathbf{w}_{i}, \mathbf{x}_{i}\right)=\mathrm{P}\left(s_{i}=1 \mid \mathbf{x}_{i}\right)$. We can immediately apply the results of Section 19.8 to conclude that the unweighted M-estimator is consistent.
+
+A direct proof is also informative. The unweighted M-estimator, using the stratified sample, $\hat{\boldsymbol{\theta}}_{u}$, minimizes
+
+
+\begin{equation*}
+\sum_{i=1}^{N} s_{i} q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)=\sum_{i=1}^{N} \sum_{j=1}^{N} h_{i j} z_{i j} q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right), \tag{20.16}
+\end{equation*}
+
+
+and consistency generally follows if we can show that the population value, $\boldsymbol{\theta}_{o}$, uniquely minimizes
+
+
+\begin{equation*}
+\sum_{j=1}^{N} \mathrm{E}\left[h_{i j} z_{i j} q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right]=\sum_{j=1}^{N} p_{j} \mathrm{E}\left[z_{i j} q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right], \tag{20.17}
+\end{equation*}
+
+
+where the equality follows because $h_{i j}$ is independent of $\left(z_{i j}, \mathbf{w}_{i}\right)$ by the nature of VP sampling, and $p_{j}=\mathrm{E}\left(h_{i j}\right)$. Now, because $z_{i j}$ is a function of $\mathbf{x}_{i}$, it follows by iterated expectations that
+
+
+\begin{equation*}
+\mathrm{E}\left[z_{i j} q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right]=\mathrm{E}\left\{\mathrm{E}\left[z_{i j} q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right) \mid \mathbf{x}_{i}\right]\right\}=\mathrm{E}\left\{z_{i j} \mathrm{E}\left[q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right) \mid \mathbf{x}_{i}\right]\right\} . \tag{20.18}
+\end{equation*}
+
+
+By assumption, $\boldsymbol{\theta}_{o}$ minimizes $\mathrm{E}\left[q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right) \mid \mathbf{x}_{i}\right]$, and, because $z_{i j}$ is a zero-one variable, $\boldsymbol{\theta}_{o}$ is also a minimizer of $\mathrm{E}\left[z_{i j} q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right]$. Now, with $p_{j} \geq 0$ for all $j, \boldsymbol{\theta}_{o}$ is also a solution to
+
+
+\begin{equation*}
+\min _{\boldsymbol{\theta} \in \boldsymbol{\Theta}} \sum_{j=1}^{N} \mathrm{E}\left[h_{i j} z_{i j} q\left(\mathbf{w}_{i}, \boldsymbol{\theta}\right)\right], \tag{20.19}
+\end{equation*}
+
+
+which is what we wanted to show.\\
+Unlike in the case of the weighted estimator, uniqueness of $\boldsymbol{\theta}_{o}$ in the population is no longer sufficient for identification using the unweighted estimator. In particular, if $p_{j}=0$ for some $j$, part of the population is not sampled at all, and this may (but need not) result in lack of identification of $\boldsymbol{\theta}_{o}$. As discussed in Wooldridge (2001) for the case of SS sampling, $p_{j}>0$ for all $j$ ensures identification of $\boldsymbol{\theta}_{o}$ when it is identified in the population.
+
+Generally, when stratification is based on $\mathbf{x}$, one can make a case for weighting if interest lies in the solution to the population problem
+
+
+\begin{equation*}
+\min _{\boldsymbol{\theta} \in \boldsymbol{\Theta}} \mathrm{E}[q(\mathbf{w}, \boldsymbol{\theta})], \tag{20.20}
+\end{equation*}
+
+
+which we have called $\boldsymbol{\theta}_{o}$. The IPW estimator consistently estimates $\boldsymbol{\theta}_{o}$ without further assumptions, while the unweighted estimator requires the stronger assumption described surrounding equation (20.15). A special case is the linear regression model discussed in Example 20.1: to consistently estimate the linear projection, we must use weights even if selection is based on $\mathbf{x}$. Consistency of the unweighted estimator requires that we are estimating the conditional mean. In the next chapter, we will see other uses of this fact about the weighted versus unweighted estimator.
+
+Wooldridge (1999b) shows that the usual asymptotic variance estimators (see Section 12.5) are valid when stratification is based on $\mathbf{x}$ and we ignore the stratification problem. For example, the usual conditional maximum likelihood analysis holds. In\\
+the case of regression, we can use the usual heteroskedasticity-robust variance matrix estimator. Or, if we assume homoskedasticity in the population, the nonrobust form (see equation (12.58)) is valid with the usual estimator of the error variance.
+
+When a generalized conditional information matrix equality holds, and stratification is based on $\mathbf{x}$, Wooldridge (1999b) shows that the unweighted estimator is more efficient than the weighted estimator. The key assumption is
+
+
+\begin{equation*}
+\mathrm{E}\left[\nabla_{\theta} q\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right)^{\prime} \nabla_{\theta} q\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right) \mid \mathbf{x}\right]=\sigma_{\mathrm{o}}^{2} \mathrm{E}\left[\nabla_{\theta}^{2} q\left(\mathbf{w}, \boldsymbol{\theta}_{\mathrm{o}}\right) \mid \mathbf{x}\right] \tag{20.21}
+\end{equation*}
+
+
+for some $\sigma_{\mathrm{o}}^{2}>0$. When assumption (20.21) holds and $\boldsymbol{\theta}_{\mathrm{o}}$ solves equation (20.19), the asymptotic variance of the unweighted M-estimator is smaller than that for the weighted M-estimator. This generalization includes conditional maximum likelihood (with $\sigma_{\mathrm{o}}^{2}=1$ ) and nonlinear regression under homoskedasticity.
+
+Very similar conclusions hold for standard stratified sampling. One useful fact is that, when stratification is based on $\mathbf{x}$, the estimator (20.8) is valid with $p_{j}=H_{j} / Q_{j}$ (and $N_{0}=N$ ); therefore, we need not compute within-strata variation in the estimated score. The unweighted estimator is consistent when stratification is based on $\mathbf{x}$ and the usual asymptotic variance matrix estimators are valid. The unweighted estimator is also more efficient when assumption (20.21) holds. See Wooldridge (2001) for statements of assumptions and proofs of theorems.
+
+As a practical matter, modern statistical packages that have built-in features for analyzing data from stratified samples typically ask for two pieces of information: the sampling weights and the stratum identifier. If one specifies the weights but not the stratum identifier, the middle of the "sandwich" will not be estimated as in equation (20.14). The within-stratum averages will not be subtracted off, resulting in larger estimated asymptotic variances than necessary (except in the case of exogenous sampling under exogeneity of $\mathbf{x}$ ). In other words, the resulting confidence intervals and inference will be (asymptotically) conservative. It is better to use the information on the strata along with the sampling weights.
+
+\subsection*{20.3 Cluster Sampling}
+We now turn to the problem of cluster sampling, where individual units are sampled in groups or clusters. As mentioned in the introduction, the problems of cluster sampling and panel data analysis are similar in their statistical structures: each confronts the problem of correlation when observations come with a natural nesting. The similarities are strongest in the case where a large number of clusters, each relatively small, is drawn from a large population of clusters. This case is relatively easy to handle, and we treat it first in Section 20.3.1.
+
+Many data sets have both a panel data and cluster sampling structure. Inference that is robust to serial correlation and cluster correlation is straightforward provided the number of clusters is large. We discuss this case in Section 20.3.2.
+
+Section 20.3.3 summarizes what is known about applying the usual cluster formulas when the cluster sizes are large rather than "small."
+
+Recently, researchers have studied data structures that can be classified as a small number of clusters and many observations per cluster. Section 20.3.4 provides two methods for analyzing such structures.
+
+\subsection*{20.3.1 Inference with a Large Number of Clusters and Small Cluster Sizes}
+We begin with the problem of estimating linear and nonlinear models when we can sample a large number of clusters from a large population of clusters. For each group or cluster $g$, let $\left\{\left(y_{g m}, \mathbf{x}_{g}, \mathbf{z}_{g m}\right): m=1, \ldots, M_{g}\right\}$ be the observable data, where $M_{g}$ is the number of units in cluster $g, y_{g m}$ is a scalar response, $\mathbf{x}_{g}$ is a $1 \times K$ vector containing explanatory variables that vary only at the cluster level, and $\mathbf{z}_{g m}$ is a $1 \times L$ vector of covariates that vary within (as well as across) groups. In most applications of cluster samples, at least some covariates change only at the group level; earlier we gave the example of teacher characteristics when each cluster is a classroom. In fact, it is probably a sensible rule to at least consider the data as being generated as a cluster sample whenever covariates at a level more aggregated than the individual units are included in an analysis. For example, in analyzing firm-level data, if industry-level covariates are included then we should treat the data as a cluster sample, with each industry acting as a cluster.
+
+Throughout we assume that the sampling scheme generates observations that are independent across $g$. In other words, we independently draw $G$ clusters from the population of all clusters. This assumption can be restrictive, particularly when the clusters are large geographical units. Nevertheless, in some cases we can define the clusters to allow additional "spatial correlation." For example, if originally we think of sampling fourth-grade classrooms, but then we are worried about correlation in student performance not just within class but also within school, then we can define the clusters to be the schools. What we will not cover is schemes where any two geographical units are allowed to be correlated, with correlation diminishing as the observations are farther apart in space.
+
+The theory with $G \rightarrow \infty$ and the group sizes, $M_{g}$, fixed is well developed; see, for example, White (1984) and Arellano (1987). Of course, it is up to the researcher to decide whether the sizes of $G$ and the $M_{g}$ are suitable for this asymptotic framework. Here, we follow Wooldridge (2003a) and summarize these results and emphasize how one might have to use robust inference methods even when it is not so obvious.
+
+Not surprisingly, linear models are easiest to analyze. The standard linear model with an additive error is\\
+$y_{g m}=\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+\mathbf{z}_{g m} \gamma+v_{g m}, \quad m=1, \ldots, M_{g} ; g=1, \ldots, G$.
+
+As with panel data, our approach to estimation and inference in equation (20.22) depends on several factors, including whether we are interested in the effects of aggregate variables $(\boldsymbol{\beta})$ or individual-specific variables $(\boldsymbol{\gamma})$. In addition, we need to make assumptions about the error terms. An important issue is whether the $v_{g m}$ contain a common group effect that can be separated in an additive fashion, as in\\
+$v_{g m}=c_{g}+u_{g m}, \quad m=1, \ldots, M_{g}$,\\
+where $c_{g}$ is an unobserved cluster effect and $u_{g m}$ is the idiosyncratic error. Another important issue is whether the explanatory variables in equation (20.22) can be taken to be appropriately exogenous. If the covariates satisfy\\
+$\mathrm{E}\left(v_{g m} \mid \mathbf{x}_{g}, \mathbf{z}_{g m}\right)=0, \quad m=1, \ldots, M_{g} ; g=1, \ldots, G$,\\
+or even a zero-correlation version, the pooled OLS estimator, where we regress $y_{g m}$ on $1, \mathbf{x}_{g}, \mathbf{z}_{g m}, m=1, \ldots, M_{g} ; g=1, \ldots, G$, is consistent for $\boldsymbol{\theta} \equiv\left(\alpha, \boldsymbol{\beta}^{\prime}, \boldsymbol{\gamma}^{\prime}\right)^{\prime}$ as $G \rightarrow \infty$ with $M_{g}$ fixed. Further, the POLS estimator is $\sqrt{G}$-asymptotically normal.
+
+Without more assumptions, a robust variance matrix is needed to account for correlation within clusters or heteroskedasticity in $\operatorname{Var}\left(v_{g m} \mid \mathbf{x}_{g}, \mathbf{z}_{g m}\right)$, or both. When $v_{g m}$ has the form in equation (20.23), the amount of within-cluster correlation can be substantial, with the result that the usual OLS standard errors can be very misleading (and, in most cases, systematically too small). Write $\mathbf{W}_{g}$ as the $M_{g} \times(1+K+L)$ matrix of all regressors for group $g$. Then the $(1+K+L) \times(1+K+L)$ variance matrix estimator is
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}}\left(\hat{\boldsymbol{\theta}}_{\text {POLS }}\right)=\left(\sum_{g=1}^{G} \mathbf{W}_{g}^{\prime} \mathbf{W}_{g}\right)^{-1}\left(\sum_{g=1}^{G} \mathbf{W}_{g}^{\prime} \hat{\mathbf{v}}_{g} \hat{\mathbf{v}}_{g}^{\prime} \mathbf{W}_{g}\right)\left(\sum_{g=1}^{G} \mathbf{W}_{g}^{\prime} \mathbf{W}_{g}\right)^{-1} \tag{20.25}
+\end{equation*}
+
+
+where $\hat{\mathbf{v}}_{g}$ is the $M_{g} \times 1$ vector of pooled OLS residuals for group $g$. As we discussed for the panel data case, this "sandwich" variance matrix estimator is now computed routinely using "cluster" options in popular statistical packages. One simply needs to specify the cluster identifier.
+
+Pooled OLS estimation of the parameters in equation (20.22) ignores the withincluster correlation of the $v_{g m}$ in estimation, so that it can be very inefficient if $c_{g}$ is a part of the error $v_{g m}$. As we know from panel data analysis, if we strengthen the exogeneity assumption to\\
+$\mathrm{E}\left(v_{g m} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)=0, \quad m=1, \ldots, M_{g} ; g=1, \ldots, G$,\\
+where $\mathbf{Z}_{g}$ is the $M_{g} \times L$ matrix of unit-specific covariates, then we can exploit the presence of $c_{g}$ in equation (20.23) in a generalized least squares (GLS) analysis. Assumption (20.26) rules out covariates from one member of the cluster affecting the outcomes on another, holding own covariates fixed. At least nominally, this assumption appears to rule out "peer effects," but such effects can be allowed by including measures of peers in $\mathbf{z}_{g m}$.
+
+The standard random effects approach makes enough assumptions so that the $M_{g} \times M_{g}$ variance-covariance matrix of $\mathbf{v}_{g}=\left(v_{g 1}, v_{g 2}, \ldots, v_{g, M_{g}}\right)^{\prime}$ has the "random effects" form,\\
+$\operatorname{Var}\left(\mathbf{v}_{g}\right)=\sigma_{c}^{2} \mathbf{j}_{M_{g}}^{\prime} \mathbf{j}_{M_{g}}+\sigma_{u}^{2} \mathbf{I}_{M_{g}}$,\\
+where $\mathbf{j}_{M_{g}}$ is the $M_{g} \times 1$ vector of ones and $\mathbf{I}_{M_{g}}$ is the $M_{g} \times M_{g}$ identity matrix. In the standard setup, we also make the system homoskedasticity assumption, familiar from the panel data analysis in Chapter 10:\\
+$\operatorname{Var}\left(\mathbf{v}_{g} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)=\operatorname{Var}\left(\mathbf{v}_{g}\right)$.
+
+As in the panel data case, it is important to understand the role of assumption (20.28): it implies that the conditional variance-covariance matrix is the same as the unconditional variance-covariance matrix, but it does not restrict $\operatorname{Var}\left(\mathbf{v}_{g}\right)$; it can be any $M_{g} \times M_{g}$ matrix under assumption (20.28). The particular random effects structure on $\operatorname{Var}\left(\mathbf{v}_{g}\right)$ is given by assumption (20.27). Under assumptions (20.27) and (20.28), the resulting GLS estimator is the well-known random effects (RE) estimator. The estimator has the same structure as in the unbalanced panel data case; see Section 19.9.1.
+
+The random effects estimator $\hat{\boldsymbol{\theta}}_{R E}$ is asymptotically more efficient than pooled OLS under assumptions (20.26), (20.27), and (20.28) as $G \rightarrow \infty$ with the $M_{g}$ fixed. The RE estimates and test statistics are computed routinely by popular software packages for cluster samples. Nevertheless, an important point is often overlooked in applications of RE: one can, and in many cases should, make inference completely robust to an unknown form of $\operatorname{Var}\left(\mathbf{v}_{g} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)$.
+
+The idea in obtaining a fully robust variance matrix for RE is straightforward, as we saw in Chapter 10 for panel data. Even if $\operatorname{Var}\left(\mathbf{v}_{g} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)$ does not have the RE form, the RE estimator is still consistent and $\sqrt{G}$-asymptotically normal under assumption (20.26), and it is likely to be more efficient than pooled OLS even if $\operatorname{Var}\left(\mathbf{v}_{g} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)$ does not have the RE form. The case for a fully robust variance matrix for RE is somewhat more subtle than in the panel data case, where serial correlation in the idiosyncratic errors generally invalidates assumption (20.27). Of\\
+course, heteroskedasticity in $\operatorname{Var}\left(c_{g} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)$ or $\operatorname{Var}\left(u_{g m} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)$ is always a possibility, and either justifies robust inference. As an example, suppose that the coefficients on $\mathbf{z}_{g m}$ vary at the cluster level:\\
+$y_{g m}=\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+\mathbf{z}_{g m} \gamma_{g}+v_{g m}, \quad m=1, \ldots, M_{g} ; g=1, \ldots, G$.
+
+By estimating a standard random effects model that assumes common slopes $\gamma$, we effectively include $\mathbf{z}_{g m}\left(\gamma_{g}-\gamma\right)$ in the idiosyncratic error; doing so generally creates within-group correlation because $\mathbf{z}_{g m}\left(\gamma_{g}-\gamma\right)$ and $\mathbf{z}_{g p}\left(\gamma_{g}-\gamma\right)$ will be correlated for $m \neq p$, conditional on $\mathbf{Z}_{g}$. Also, the idiosyncratic error will have heteroskedasticity that is a function of $\mathbf{z}_{g m}$. Nevertheless, if we assume $\mathrm{E}\left(\boldsymbol{\gamma}_{g} \mid \mathbf{X}_{g}, \mathbf{Z}_{g}\right)=\mathrm{E}\left(\boldsymbol{\gamma}_{g}\right) \equiv \boldsymbol{\gamma}$ along with assumption (20.26), the random effects estimator still consistently estimates the average slopes, $\boldsymbol{\gamma}$ (and $\boldsymbol{\beta}$ ). Therefore, in applying random effects to panel data or cluster samples, it is sensible (with large $G$ ) to make the variance estimator of random effects robust to arbitrary heteroskedasticity and within-group correlation.
+
+In applications, one often computes the POLS and RE estimates to see how sensitive the estimates are to choice of variance matrix. Further, one is tempted to compare estimated variance matrices-or, at least, standard errors-to see if RE is more efficient than POLS. It is fine to do so provided one uses fully robust standard errors for POLS and RE. For example, it certainly makes no sense to compare the usual POLS standard errors (which ignore the cluster sampling) with the usual RE standard errors (which account for the clustering, at least to some extent). By comparing the fully robust forms for each set of estimates, one is comparing generally reliable estimates of the sampling variation of the POLS and RE estimates.
+
+If we are only interested in estimating $\boldsymbol{\gamma}$, the fixed effects (FE) or within estimator is attractive. The within transformation subtracts within-group averages from the dependent variable and explanatory variables:\\
+$y_{g m}-\bar{y}_{g}=\left(\mathbf{z}_{g m}-\overline{\mathbf{z}}_{g}\right) \gamma+u_{g m}-\bar{u}_{g}, \quad m=1, \ldots, M_{g} ; g=1, \ldots, G$,\\
+and this equation is estimated by pooled OLS. (Of course, the $\mathbf{x}_{g}$ get swept away by the within-group demeaning.) Under a full set of FE assumptions-which, as in the panel data case, allows arbitrary correlation between $c_{g}$ and the $\mathbf{z}_{g m}$-inference is straightforward using standard software. Nevertheless, analogous to the random effects case, it is prudent to allow $\operatorname{Var}\left(u_{g} \mid \mathbf{Z}_{g}\right)$ to have an arbitrary form, including within-group correlation and heteroskedasticity. For example, if we start with model (20.29), then $\left(\mathbf{z}_{g m}-\overline{\mathbf{z}}_{g}\right)\left(\boldsymbol{\gamma}_{g}-\boldsymbol{\gamma}\right)$ appears in the error term. As we discussed in Section 11.7.3, the FE estimator is still consistent if $\mathrm{E}\left(\gamma_{g} \mid \mathbf{z}_{g m}-\overline{\mathbf{z}}_{g}\right)=\mathrm{E}\left(\gamma_{g}\right)=\gamma$, an assumption that allows $\gamma_{g}$ to be correlated with $\overline{\mathbf{z}}_{g}$. Nevertheless, $u_{g m}$ and $u_{g p}$ will be correlated for $m \neq p$. A fully robust variance matrix estimator is
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}}\left(\hat{\gamma}_{F E}\right)=\left(\sum_{g=1}^{G} \ddot{\mathbf{Z}}_{g}^{\prime} \ddot{\mathbf{Z}}_{g}\right)^{-1}\left(\sum_{g=1}^{G} \ddot{\mathbf{Z}}_{g}^{\prime} \hat{\ddot{u}}_{g} \hat{\ddot{u}}_{g}^{\prime} \ddot{\mathbf{Z}}_{g}\right)\left(\sum_{g=1}^{G} \ddot{\mathbf{Z}}_{g}^{\prime} \ddot{\mathbf{Z}}_{g}\right)^{-1}, \tag{20.31}
+\end{equation*}
+
+
+where $\ddot{\mathbf{Z}}_{g}$ is the matrix of within-group deviations from means and $\hat{\ddot{\mathbf{u}}}_{g}$ is the $M_{g} \times 1$ vector of fixed effects residuals. This estimator is justified with large- $G$ asymptotics. It has exactly the same form as the unbalanced panel data case.
+
+One benefit of a fixed effects approach in the standard model with constant slopes but $c_{g}$ in the composite error term is that no adjustments are necessary if the $c_{g}$ are correlated across groups. When the groups represent different geographical units, we might expect correlation across groups close to each other. If we think such correlation is largely captured through the unobserved effect $c_{g}$, then its elimination by means of the within transformation effectively solves the problem. If we use pooled OLS or random effects, we would have to deal with spatial correlation across $g$, in addition to within-group correlation, a difficult statistical problem.
+
+An alternative to FE estimation, and one that leads to a simple Hausman test for comparing FE and RE, is to add the group averages to an RE estimation. Let $\overline{\mathbf{z}}_{g}$ denote the vector of within-group averages, and write
+
+
+\begin{equation*}
+y_{g m}=\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+\mathbf{z}_{g m} \boldsymbol{\gamma}+\overline{\mathbf{z}}_{g} \boldsymbol{\xi}+a_{g}+u_{g m}, \quad m=1, \ldots, M_{g} ; g=1, \ldots, G, \tag{20.32}
+\end{equation*}
+
+
+where $c_{g}=\overline{\mathbf{z}}_{g} \boldsymbol{\xi}+a_{g}$ (and we absorb the intercept here into $\alpha$ ). Estimating this equation by, say, RE allows us to easily test $H_{0}: \boldsymbol{\xi}=\mathbf{0}$ in a fully robust way, which tests the null that the RE estimator is consistent. It can be shown that, even though the panel is not balanced, the estimate of $\boldsymbol{\gamma}$ is the FE estimate. In addition, this approach allows us to estimate coefficients on $\mathbf{x}_{g}$. (Pooled OLS can also be used, and also delivers the FE estimate of $\boldsymbol{\gamma}$.)
+
+Example 20.3 (Cluster Correlation in Teacher Compensation): The data set in BENEFITS.RAW includes average compensation, at the school level, for teachers in Michigan. Interest lies in testing for a trade-off between salary and nonsalary compensation. We view this as a cluster sample of school districts, with the schools within districts representing the individual units.
+
+A standard approach is to estimate the equation
+
+
+\begin{align*}
+\log \left(\text { avgsal }_{g m}\right)= & \alpha+\beta_{1} b s_{g m}+\beta_{2} \log \left(\text { staff }_{g m}\right)+\beta_{3} \log \left(\text { enroll }_{g m}\right) \\
+& +\beta_{4} \text { lunch }_{g m}+c_{g}+u_{g m} \tag{20.33}
+\end{align*}
+
+
+where $\operatorname{avgsal}_{g m}$ is the average salary for school $m$ in district $g, b s_{g m}=a v g b e_{g m} /$ avgsal $_{g m}$, where avgben $_{g m}$ is the average benefits received by teachers, staff ${ }_{g m}$ is the number of staff per 1,000 students, enroll ${ }_{g m}$ is school enrollment, and lunch $_{g m}$ is the
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 20.1\\
+Salary-Benefits Trade-off for Michigan Teachers}
+\begin{tabular}{|l|l|l|l|}
+\hline
+Dependent Variable & \multicolumn{3}{|l|}{$\log$ (avgsal)} \\
+\hline
+\multirow[b]{2}{*}{Estimation Method} & (1) & (2) & (3) \\
+\hline
+ & Pooled OLS & Random Effects & Fixed Effects \\
+\hline
+Explanatory Variable bs & \begin{tabular}{l}
+-0.177 \\
+(0.122) \\[0pt]
+[0.260] \\
+\end{tabular} & \begin{tabular}{l}
+-0.381 \\
+(0.112) \\[0pt]
+[0.150] \\
+\end{tabular} & \begin{tabular}{l}
+-0.495 \\
+(0.133) \\[0pt]
+[0.194] \\
+\end{tabular} \\
+\hline
+$\log ($ staff $)$ & \begin{tabular}{l}
+-0.691 \\
+(0.018) \\[0pt]
+[0.035] \\
+\end{tabular} & \begin{tabular}{l}
+-0.617 \\
+(0.015) \\[0pt]
+[0.036] \\
+\end{tabular} & \begin{tabular}{l}
+-0.622 \\
+(0.017) \\[0pt]
+[0.043] \\
+\end{tabular} \\
+\hline
+log(enroll) & \begin{tabular}{l}
+-0.0292 \\
+(0.0085) \\[0pt]
+[0.0257] \\
+\end{tabular} & \begin{tabular}{l}
+-0.0249 \\
+(0.0076) \\[0pt]
+[0.0115] \\
+\end{tabular} & \begin{tabular}{l}
+-0.0515 \\
+(0.0094) \\[0pt]
+[0.0131] \\
+\end{tabular} \\
+\hline
+lunch & \begin{tabular}{l}
+-0.00085 \\
+(0.00016) \\[0pt]
+[0.00057] \\
+\end{tabular} & \begin{tabular}{l}
+0.00030 \\
+(0.00018) \\[0pt]
+[0.00020] \\
+\end{tabular} & \begin{tabular}{l}
+0.00051 \\
+(0.00021) \\[0pt]
+[0.00021] \\
+\end{tabular} \\
+\hline
+constant & \begin{tabular}{l}
+13.724 \\
+(0.112) \\[0pt]
+[0.256] \\
+\end{tabular} & \begin{tabular}{l}
+13.367 \\
+(0.098) \\[0pt]
+[0.197] \\
+\end{tabular} & \begin{tabular}{l}
+13.618 \\
+(0.113) \\[0pt]
+[0.241] \\
+\end{tabular} \\
+\hline
+Number of districts & 537 & 537 & 537 \\
+\hline
+Number of schools & 1,848 & 1,848 & 1,848 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Quantities in parentheses are the nonrobust standard errors; those in brackets are robust to arbitrary within-district correlation as well as heteroskedasticity.\\
+The intercept reported for fixed effects is the average of the estimated district effects.\\
+The fully robust regression based Hausman test, with four degrees-of-freedom in the chi-square distribution, yields $H=20.70$ and $p$-value $=0.0004$.\\
+percentage of students eligible for the federal free or reduced-price lunch program. Using the approximation $\log (1+x) \approx x$ for "small" $x$, it can be shown that a dollar-for-dollar trade-off in salary and benefits is the same as $\beta_{1}=-1$.
+
+We estimate the equation using three methods: pooled OLS, random effects, and fixed effects. The results are given in Table 20.1. The table contains the nonrobust standard errors for each method-that is, the standard errors computed under the "ideal" set of assumptions for the particular estimator-along with the standard errors that are robust to arbitrary within-district correlation and heteroskedasticity.
+
+The POLS estimates provide little evidence of a trade-off between salary and benefits. The coefficient is negative, but its value, -0.177 , is pretty small, and not close to -1 (the hypothesized value for a one-for-one trade-off between salary and benefits). Its fully robust $t$ statistic is less than 0.7 in magnitude. Notice that the robust standard error, which properly accounts for the cluster nature of the data, is more than twice as large as the nonrobust one.
+
+The magnitude of the random effects coefficient $b s$ is notably larger than the pooled OLS estimate, and it is statistically different from zero, even using the fully robust standard error. The RE transformation removes a fraction of the district averages. (The fraction depends on the number of schools in a district, and it ranges from about 0.379 to 0.938 , with more than $50 \%$ of the districts at 0.379 .) Even though RE nominally accounts for the cluster (district) effect, the nonrobust standard errors evidently understate the actual sampling variation. The robust $95 \%$ confidence interval excludes zero, but it also excludes -1 (and the RE point estimate, -0.381 , is far from -1 ). The robust standard error on $\log ($ staff $), 0.036$, is more than twice as large as the nonrobust one, 0.015 . Again, this finding points to the importance of using robust inference even if we nominally account for the common district effect by means of random effects estimation. Incidentally, the RE robust standard errors are, except in one case, smaller than the robust pooled OLS standard errors, indicating that RE is more efficient than POLS even though RE is evidently not the most efficient estimator (because it appears there is a more complicted pattern of cluster correlation than accounted for by RE).
+
+Column (3) in Table 20.1 contains the fixed effects estimates. The coefficient on $b s$ is about -0.50 , which is still pretty far from -1 , and statistically different from -1 even using the fully robust standard error. Again, allowing for clustering and heteroskedasticity is important for appropriate inference: the usual FE standard errors appear to be too small. Because total compensation varies significantly by district, it is important to allow the district effects to be correlated with the explanatory variables, as FE does.
+
+Not surprisingly, the fully robust RE standard errors are somewhat below the fully robust FE standard errors, a result which makes it tempting to use the RE estimates. But the robust Hausman test, obtained by adding the four group averages to the RE estimation and testing their joint significance, yields a low $p$-value, about 0.0004 . It appears the district effect is systematically related to some of the variables (staff size especially), and so the safest strategy is to use the fixed effects estimates with fully robust inference.
+
+The discussion of the previous methods extends immediately to instrumental variables versions of all estimators. With large $G$, one can afford to make pooled twostage least squares (2SLS), random effects 2SLS, and fixed effects 2SLS robust to arbitrary within-cluster correlation and heteroskedasticity. Adding the group averages of the exogenous explanatory variables (including the extra instruments), estimating the resulting equation by RE 2SLS (where the group averages act as their own instruments), and jointly testing the group averages for significance leads to a simple Hausman test comparing RE 2SLS and FE 2SLS.
+
+If the random effects variance matrix structure does not hold, more efficient estimation can be achieved by applying generalized method of moments (GMM); again, GMM is justified with large $G$.
+
+As we discussed in Section 12.10.3, one might apply least absolute deviations or quantile regression directly to equation (20.32). While difficult to justify in general, adding the group averages and then applying, say, LAD, can be a useful way to approximate the effects of the variables on the median while allowing the group heterogeneity to be correlated with the individual-specific covariates. Under the kinds of symmetry assumptions discussed in Section 12.10.3, this can be a good way to account for outliers in the data.
+
+For a the case where $G$ is much larger than the group sizes, cluster-robust inference is available for nonlinear models, too. A general treatment based on M-estimation is possible, but most of the points can be illustrated with binary response models. Let $y_{g m}$ be a binary response, with $\mathbf{x}_{g}$ and $\mathbf{z}_{g m}, m=1, \ldots, M_{g}, g=1, \ldots, G$ defined as before. Assume that\\
+$y_{g m}=1\left[\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+\mathbf{z}_{g m} \boldsymbol{\gamma}+c_{g}+u_{g m} \geq 0\right]$,\\
+where $c_{g}$ is the cluster effect and $u_{g m}$ is the unit-specific error. If, say, we assume\\
+$u_{g m} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}, c_{g} \sim \operatorname{Normal}(0,1)$,\\
+then\\
+$\mathrm{P}\left(y_{g m}=1 \mid \mathbf{x}_{g}, \mathbf{z}_{g m}, c_{g}\right)=\mathrm{P}\left(y_{g m}=1 \mid \mathbf{x}_{g}, \mathbf{Z}_{g}, c_{g}\right)=\Phi\left(\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+\mathbf{z}_{g m} \gamma+c_{g}\right)$,\\
+where $\Phi(\cdot)$ is the standard normal (cdf), as usual. Alternatively, if $u_{g m}$ follows a logistic distribution, then we replace $\Phi(\cdot)$ with $\Lambda(\cdot)$. Notice that expression (20.35) assumes that, conditional on $c_{g}, \mathbf{x}_{g}$, and $\mathbf{z}_{g m}, \mathbf{z}_{g p}$ for $p \neq m$ does not affect the outcome. For pooled methods we could relax this restriction (as in the linear case), but, with the presence of $c_{g}$, this affords little generality in practice.
+
+As in nonlinear panel data models, the presence of $c_{g}$ in equation (20.36) raises several important issues, including how we estimate quantities of interest. As in the panel data case, we have some interest in estimating average partial or marginal effects. For example, if the first element of $\mathbf{x}_{g}$ is continuous,\\
+$\frac{\partial \mathrm{P}\left(y_{g m}=1 \mid \mathbf{x}_{g}, \mathbf{z}_{g m}, c_{g}\right)}{\partial x_{g 1}}=\beta_{1} \phi\left(\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+\mathbf{z}_{g m} \gamma+c_{g}\right)$,\\
+where $\phi(\cdot)$ is the standard normal density function. If\\
+$c_{g} \mid \mathbf{x}_{g}, \mathbf{Z}_{g} \sim \operatorname{Normal}\left(0, \sigma_{c}^{2}\right)$,\\
+then the APEs are obtained from the average structural function\\
+$\operatorname{ASF}\left(\mathbf{x}_{g}, \mathbf{z}_{g m}\right)=\Phi\left[\left(\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+\mathbf{z}_{g m} \gamma\right) /\left(1+\sigma_{c}^{2}\right)^{1 / 2}\right] \equiv \Phi\left(\alpha_{c}+\mathbf{x}_{g} \boldsymbol{\beta}_{c}+\mathbf{z}_{g m} \gamma_{c}\right)$,\\
+where $\alpha_{c}=\alpha /\left(1+\sigma_{c}^{2}\right)^{1 / 2}$, and so on. Because the right-hand side of equation (20.39) is $\mathrm{P}\left(y_{g m}=1 \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)$, the scaled coefficients are conveniently estimated using pooled probit or a generalized estimating equation (GEE) approach. In either case, inference must be robust to allow general covariance structures $\operatorname{Cov}\left(y_{g m}, y_{g p} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)$ for $m \neq p$. These certainly will not be zero (as would be required to ignore the clustering using pooled methods), but neither will they be constant. The same formulas used in the panel data case apply to cluster samples, with the small change that the group sizes are generally different.
+
+The pooled and GEE approaches are attractive because they are computationally simple and do not require specification of a joint distribution within clusters. Alternatively, we can impose more assumptions-as in the panel data case-and use full maximimum likelihood (conditional on $\mathbf{x}_{g}$ and $\mathbf{Z}_{g m}$, of course). If we supplement assumptions (20.34), (20.35), and (20.38) with\\
+$\left\{u_{g 1}, \ldots, u_{g, M_{g}}\right\}$ are independent conditional on $\left(\mathbf{x}_{g}, \mathbf{Z}_{g}, c_{g}\right)$,\\
+then we have the random effects probit model. Details of its estimation are similar to the panel data case, with the minor exception that here we must allow for an unequal number of observations per cluster. Because we can separately identify $\boldsymbol{\alpha} \boldsymbol{,} \boldsymbol{\beta} \boldsymbol{,} \boldsymbol{\gamma}$, and $\sigma_{c}^{2}$, partial effects at various values of $c_{g}$ are identified in addition to the average partial effects. In one important way, a random effects approach under the conditional independence assumption (20.40) is more attractive for cluster samples than for panel data: in panel data it is often the case that time series innovations are correlated over time. With a cluster sample, independence of individual outcomes after conditioning on a common cluster effect is often more believable. (Nevertheless, we are conditioning only on a scalar heterogeneity, $c_{g}$, so such an assumption may still be too restrictive.)
+
+As with panel data, we often want to allow the cluster heterogeneity, $c_{g}$, to be correlated with the observed covariates. When the cluster sizes are the same-that is, $M_{g}=M$ for all $g$-we can apply the same methods we used for balanced panel, including probit, logit, ordered probit, Tobit, count data, fractional responses, and so on. Calculations of average partial effects are identical, and random effects approaches under conditional independence are attractive. But pooled methods are often computationally simpler and are sufficient for identifying APEs.
+
+A challenging task for CRE approaches using cluster samples is how to model correlation between the unobserved heterogeneity and $\left\{\mathbf{z}_{g m}: m=1, \ldots, M_{g}\right\}$ when\\
+the clusters are not balanced with respect to cluster size. One possible solution is to randomly drop observations from clusters to make them all the same size. Then we could apply the usual approach for balanced panel data. Unfortunately, this approach can be very costly in terms of lost data. For example, if the smallest group has $M_{g}=3$, we would have to drop observations from all other groups until we only have three in each group.
+
+The problem with different group sizes is that it is unclear how one should model the correlation between $c_{g}$ and $\left(\mathbf{z}_{g 1}, \ldots, \mathbf{z}_{g, M_{g}}\right)$ for each $g$. Nevertheless, there are several possibilities. We can get some insight by assuming joint normality of ( $c_{g}$, $\mathbf{z}_{g 1}, \ldots, \mathbf{z}_{g, M_{g}}$ ) and then assuming that $\mathrm{E}\left(c_{g} \mid \mathbf{z}_{g 1}, \ldots, \mathbf{z}_{g, M_{g}}\right)=\mathrm{E}\left(c_{g} \mid \overline{\mathbf{z}}_{g}\right)=\eta_{g}+\overline{\mathbf{z}}_{g} \boldsymbol{\xi}_{g}$, that is, assuming $\overline{\mathbf{z}}_{g}$ is a sufficient statistic for the mean. Then it must follow that\\
+$\boldsymbol{\xi}_{g}=\left[\operatorname{Var}\left(\overline{\mathbf{z}}_{g}\right)\right]^{-1} \operatorname{Cov}\left(\overline{\mathbf{z}}_{g}, c_{g}\right)$\\
+$\eta_{g}=\mathrm{E}\left(c_{g}\right)-\mathrm{E}\left(\overline{\mathbf{z}}_{g}\right) \boldsymbol{\xi}_{g}$.\\
+For the sake of argument, assume that $\left\{\mathbf{z}_{g m}: m=1, \ldots, M_{g}\right\}$ has an unobserved effects structure, that is, $\mathbf{z}_{g m}=\mathbf{r}_{g}+\mathbf{e}_{g m}$ where $\mathbf{r}_{g}$ is uncorrelated with each $\mathbf{e}_{g m}$ and $\left\{\mathbf{e}_{g m}: m=1, \ldots, M_{g}\right\}$ are pairwise uncorrelated with zero mean and common variance matrix $\boldsymbol{\Sigma}_{\mathbf{e}}$. Then $\mathrm{E}\left(\overline{\mathbf{z}}_{g}\right)=\boldsymbol{\mu}_{\mathbf{r}}$ and $\operatorname{Var}\left(\overline{\mathbf{z}}_{g}\right)=\boldsymbol{\Sigma}_{\mathbf{r}}+M_{g}^{-1} \boldsymbol{\Sigma}_{\mathbf{e}}$. Assume that $c_{g}$ is uncorrelated with the $\mathbf{e}_{g m}$, and let $\boldsymbol{\sigma}_{\mathbf{r} c}$ be the vector of covariances of $\mathbf{r}_{g}$ with $c_{g}$. Then
+
+
+\begin{equation*}
+\boldsymbol{\xi}_{g}=\left(\boldsymbol{\Sigma}_{\mathbf{r}}+M_{g}^{-1} \boldsymbol{\Sigma}_{\mathbf{e}}\right)^{-1} \boldsymbol{\sigma}_{\mathbf{r} c} \tag{20.41}
+\end{equation*}
+
+
+$\eta_{g}=\mu_{c}-\boldsymbol{\mu}_{\mathbf{r}} \boldsymbol{\xi}_{g}$,\\
+where $\mu_{c}=\mathrm{E}\left(c_{g}\right)$. Further, if we write $c_{g}=\eta_{g}+\overline{\mathbf{z}}_{g} \boldsymbol{\xi}_{g}+a_{g}$,\\
+$\operatorname{Var}\left(a_{g}\right)=\sigma_{c}^{2}-\boldsymbol{\sigma}_{\mathbf{r} c}^{\prime}\left(\boldsymbol{\Sigma}_{\mathbf{r}}+M_{g}^{-1} \boldsymbol{\Sigma}_{\mathbf{e}}\right)^{-1} \boldsymbol{\sigma}_{\mathbf{r} c}$.
+
+These calculations show that, even under fairly strong assumptions, both $\mathrm{E}\left(c_{g} \mid \overline{\mathbf{z}}_{g}\right)$ and $\operatorname{Var}\left(c_{g} \mid \overline{\mathbf{z}}_{g}\right)$ depend on the group size, $M_{g}$ (and $\mathrm{E}\left(c_{g} \mid \overline{\mathbf{z}}_{g}\right)$ depends on $\overline{\mathbf{z}}_{g}$, too). If $\boldsymbol{\Sigma}_{\mathbf{r}}=\mathbf{0}$, the mean and variance depend on $M_{g}$ and $M_{g} \cdot \overline{\mathbf{z}}_{g}$. If $\boldsymbol{\Sigma}_{\mathbf{r}}$ is "large" (in a matrix sense), or $M_{g}$ is large, the mean and variance are almost independent of $M_{g}$ (but the mean is a linear function of $\overline{\mathbf{z}}_{g}$ ). If $\boldsymbol{\Sigma}_{\mathbf{r}}$ and $\boldsymbol{\Sigma}_{\mathrm{e}}$ are both scalar multiples of the identity matrix, the function of $M_{g}$ has the form $\left(\sigma_{r}^{2}+M_{g}^{-1} \sigma_{e}^{2}\right)^{-1}$, which, for large $M_{g}$, can be approximated well by a low-order polynomial in $M_{g}^{-1}$.
+
+How should we apply these calculations for the conditional mean and variance of $c_{g}$ ? First, we should recognize that they are derived under strong assumptions, so we should not use such specific forms. (Plus, they would not be very easy to handle computationally.) An approach that may be flexible enough is
+
+
+\begin{equation*}
+c_{g}=\psi_{0}+\psi_{1} M_{g}+\overline{\mathbf{z}}_{g} \boldsymbol{\psi}_{2}+\left(M_{g} \cdot \overline{\mathbf{z}}_{g}\right) \boldsymbol{\psi}_{3}+a_{g} \tag{20.44}
+\end{equation*}
+
+
+
+\begin{equation*}
+\operatorname{Var}\left(a_{g} \mid \mathbf{z}_{g 1}, \ldots, \mathbf{z}_{g, M_{g}}\right)=\operatorname{Var}\left(a_{g}\right)=\omega_{0}+\omega_{1} M_{g} \tag{20.45}
+\end{equation*}
+
+
+(where we expect $\omega_{1}<0$ because the conditional variance of $c_{g}$ shrinks as the number of explanatory variables increases). If we use these expressions in place of the usual Chamberlain-Mundlak approach (and include $\mathbf{x}_{g}$, too), we get the following estimating equation:\\
+$\mathrm{P}\left(y_{g m}=1 \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)=\Phi\left[\frac{\left(\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+\mathbf{z}_{g m} \boldsymbol{\gamma}+\psi_{1} M_{g}+\overline{\mathbf{z}}_{g} \boldsymbol{\psi}_{2}+\left(M_{g} \cdot \overline{\mathbf{z}}_{g}\right) \boldsymbol{\psi}_{3}\right)}{\sqrt{1+\omega_{0}+\omega_{1} M_{g}}}\right]$.
+
+In principle, the parameters here can be estimated by, say, a pooled heteroskedastic probit analysis. To estimate the parameters, a normalization is needed on the variance (because when $\omega_{1}=0$, only the parameters scaled by $1 / \sqrt{1+\omega_{0}}$ are identified). In fact, using modern software that allows for exponential forms of heteroskedasticity in probit anlaysis, an easy way to estimate the identified parameters, and then obtain average partial effects, is to specify the variance as $\exp \left[\delta_{1} \log \left(M_{g}\right)\right]$. When $\delta_{1}=0$, the variance is one, and we estimate the scaled coefficients. Notice that specifying the composite variance as $\exp \left[\delta_{1} \log \left(M_{g}\right)\right]$ also has the benefit of nesting the cases where $\operatorname{Var}\left(a_{g}\right)$ is a linear function of $M_{g}$ or $M_{g}^{-1}$.
+
+A more flexible approach is to let the conditional variance of $c_{g}$ be as flexible as the conditional mean, but still nesting the preceding simple functional form. For example, a more flexible estimating equation is
+
+
+\begin{equation*}
+\mathrm{P}\left(y_{g m}=1 \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)=\Phi\left[\frac{\left(\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+\mathbf{z}_{g m} \gamma+\psi_{1} M_{g}+\overline{\mathbf{z}}_{g} \boldsymbol{\psi}_{2}+\left(M_{g} \cdot \overline{\mathbf{z}}_{g}\right) \boldsymbol{\psi}_{3}\right)}{\exp \left(\delta_{1} \log \left(M_{g}\right)+\overline{\mathbf{z}}_{g} \boldsymbol{\delta}_{2}+\log \left(M_{g}\right) \overline{\mathbf{z}}_{g} \boldsymbol{\delta}_{3}\right)}\right] \tag{20.47}
+\end{equation*}
+
+
+We could replace $M_{g}$ in the mean part with $M_{g}^{-1}$, or even use both functions. Such an equation is relatively straightforward to estimate using heteroskedastic probit software.
+
+A very attractive alternative with large $G$ and not much variation in the group sizes $M_{g}$ is to allow a different set of parameters in $\mathrm{D}\left(c_{g} \mid M_{g}, \overline{\mathbf{z}}_{g}\right)$ for each value of $M_{g}$. This is easily accomplished by including dummies for all but one group size and also interacting the dummies with $\overline{\mathbf{z}}_{g}$ in the mean and the variance. In equation (20.43) the variance depends only on $M_{g}$, and so one might want to simplify the estimation by including only the group-size dummies in the variance.
+
+Regardless of the specific expression we use for $\mathrm{P}\left(y_{g m}=1 \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)$, it is straightforward to estimate the average partial effects. The conditioning variables that we must average out are ( $M_{g}, \overline{\mathbf{z}}_{g}$ ), and we use, as usual, the discussion in Section 2.2.5.
+
+Let $m\left(\mathbf{x}_{g}, \mathbf{z}_{g m}, M_{g}, \overline{\mathbf{z}}_{g}, \boldsymbol{\theta}\right)$ be the response probability $\mathrm{P}\left(y_{g m}=1 \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)$, where $\boldsymbol{\theta}$ is the set of all parameters. Then the ASF, for fixed values of $\mathbf{x}$ and $\mathbf{z}$, is consistently estimated as
+
+
+\begin{equation*}
+\widehat{A S F}(\mathbf{x}, \mathbf{z})=G^{-1} \sum_{g=1}^{G} m\left(\mathbf{x}, \mathbf{z}, M_{g}, \overline{\mathbf{z}}_{g}, \hat{\boldsymbol{\theta}}\right) \tag{20.48}
+\end{equation*}
+
+
+that is, we average out ( $M_{g}, \overline{\mathbf{z}}_{g}$ ). (As usual, one must use caution in interpreting the effects of the group-level variables if these are partially correlated with $c_{g}$.)
+
+Incidentally, the methods proposed here can be applied to unbalanced panel data sets, assuming, of course, that the reason the panel is unbalanced can be ignored. With a large cross section, $N$ (which replaces $G$ ), and a small number of time periods, $T_{i}$ (which replaces $M_{g}$ ) for each observation $i$, the flexible approach of allowing different parameters for each $T_{i}$ is attractive.
+
+Rather than adopt a correlated random effects probit approach, we can apply the fixed effects logit approach, assuming that the observations within a cluster are independent conditional on the observed covariates and the cluster effect, $c_{g}$. Naturally, the cluster-level variables, $\mathbf{x}_{g}$, are eliminated, and one can only estimate parameters, not partial effects. The mechanics are essentially identical to the panel data case. Geronimus and Korenman (1992) use sister pairs to study the effects of teenage motherhood on subsequent economic outcomes, so $M_{g}=2$ for all $g$. When the outcome is binary (such as an employment indicator), the authors apply fixed effects logit. CRE probit can also be used to obtain the magnitudes of the effects.
+
+The same CRE approach can be applied to other nonlinear models, such as ordered probit and Tobit models. Generally, if we begin with a density $f\left(\mathbf{y}_{g m} \mid \mathbf{x}_{g}, \mathbf{z}_{g m}\right.$, $\mathbf{c}_{g} ; \boldsymbol{\theta}$ ), where both $\mathbf{y}_{g m}$ and $\mathbf{c}_{g}$ can be vectors, and then specify a heterogeneity density, say, $h\left(\mathbf{c}_{g} \mid M_{g}, \overline{\mathbf{z}}_{g} ; \boldsymbol{\delta}\right)$, a partial MLE analysis can be obtained by "integrating out" $\mathbf{c}_{g}$ to get the density
+
+
+\begin{equation*}
+\int f\left(\mathbf{y}_{g m} \mid \mathbf{x}_{g}, \mathbf{z}_{g m}, \mathbf{c} ; \boldsymbol{\theta}\right) h\left(\mathbf{c} \mid M_{g}, \overline{\mathbf{z}}_{g} ; \boldsymbol{\delta}\right) \mathrm{d} \mathbf{c} \tag{20.49}
+\end{equation*}
+
+
+As we know from the panel data case, this density has a simple form for common models, such as Tobit, when $c_{g}$ is a scalar and $h\left(\cdot \mid M_{g}, \overline{\mathbf{z}}_{g} ; \boldsymbol{\delta}\right)$ is chosen to have a simple form, such as normal. However, as for the probit case, one should allow heteroskedasticity in $\operatorname{Var}\left(c_{g} \mid M_{g}, \overline{\mathbf{z}}_{g}\right)$, leading to a pooled estimation strategy based on the "heteroskedastic Tobit" model. We also know that using pooled (that is, partial) MLE does not always fully identify the parameters, but it does often identify scaled parameters and average partial effects. Because the observations within clusters are\\
+almost certainly correlated, even after conditioning on $\left(\mathbf{x}_{g}, \mathbf{Z}_{g}\right)$, inference that allows within-cluster correlation is crucial.
+
+Various quasi-MLEs can also be adapted to account for correlated random effects in the context of cluster sampling. In the exponential case, we would be led to a mean function that looks like, say,\\
+$\mathrm{E}\left(y_{g m} \mid \mathbf{Z}_{g}, M_{g}\right)=\mathrm{E}\left(y_{g m} \mid \mathbf{z}_{g m}, M_{g}, \overline{\mathbf{z}}_{g}\right)=\exp \left(\mathbf{x}_{g} \boldsymbol{\beta}+\mathbf{z}_{g m} \boldsymbol{\gamma}+\alpha_{M_{g}}+\overline{\mathbf{z}}_{g} \boldsymbol{\psi}_{M_{g}}\right)$,\\
+where $\alpha_{M_{g}}$ and $\boldsymbol{\psi}_{M_{g}}$ are specific to the group size, $M_{g}$ (or we use linear or low-order polynomials in $M_{g}$ or $M_{g}^{-1}$, or both). The parameters can be estimated by, say, pooled Poisson QMLE, or GEE using the Poisson distribution by including a full set of group-size dummies along with $\overline{\mathbf{z}}_{g}$ and interactions with $\overline{\mathbf{z}}_{g}$. The elements of ( $\boldsymbol{\beta}, \boldsymbol{\gamma}$ ) measure semielasticities or elasticities on the mean response. The APEs on the mean are obtained by averaging out $\left(M_{g}, \overline{\mathbf{z}}_{g}\right)$. See Problem 20.8 for the case of a fractional response.
+
+As in the panel data case, the fixed effects Poisson estimator is very convenient when we start with\\
+$\mathrm{E}\left(y_{g m} \mid \mathbf{Z}_{g}, c_{g}\right)=\mathrm{E}\left(y_{g m} \mid \mathbf{z}_{g m}, c_{g}\right)=\exp \left(\mathbf{z}_{g m} \boldsymbol{\gamma}+c_{g}\right)$.
+
+With arbitrarily unbalanced group sizes, the FE Poisson estimator (viewed as a quasi-MLE) consistently estimates $\boldsymbol{\gamma}$ (and $\mathbf{x}_{g}$ is eliminated). No other feature of the Poisson distribution needs to be correctly specified, and sources of within-cluster correlation other than $c_{g}$ are allowed (provided, of course, we use fully robust inference).
+
+\subsection*{20.3.2 Cluster Samples with Unit-Specific Panel Data}
+Often, cluster samples come with a time component, so that there are two potential sources of correlation across observations: across time within the same individual and across individuals within the same group. The two sources of correlation may also interact: different individuals within the same group or cluster might have unobserved shocks correlated across different time periods.
+
+Generally, accounting for more than two data dimensions is complicated if there is not a natural nesting. Here we consider the case where each unit belongs to a cluster and the cluster identification does not change over time. In other words, we have panel data on each individual or unit, and each unit belongs to a cluster. For example, we might have annual panel data at the firm level where each firm belongs to the same industry (cluster) for all years. Or, we might have panel data for schools that each belong to a district. This is a special case of a hierarchical linear model (HLM)\\
+setup. Models for data structures involving panel data and clustering are also called mixed models (although this latter name typically refers to the situation, which we treat later, in which some slope parameters are constant and others are unobserved heterogeneity). In the HLM/mixed models literature, more levels of nesting are allowed, but we will not consider more general structures; see, for example, Raudenbush and Bryk (2002).
+
+Now we have three data subscripts on at least some variables that we observe. For example, the response variable is $y_{g m t}$, where $g$ indexes the group or cluster, $m$ is the unit within the group, and $t$ is the time index. Mainly for expository purposes, assume we have a balanced panel with the time periods running from $t=1, \ldots, T$. Within cluster $g$ there are $M_{g}$ units, and we have sampled $G$ clusters. (In the HLM literature, $g$ is usually called the first level and $m$ the second level.)
+
+As with a pure cluster sample, we assume that we have many groups, $G$, and relatively few members of the group. Further, our discussion of asymptotic properties of estimators assumes that $T$ is fixed. In particular, the analysis is with the $M_{g}$ and $T$ fixed with $G$ getting large. For example, if we can sample, say, several hundred school districts, with a few to maybe a few dozen schools per district, over a handful of years, then we have a data set that can be analyzed in the current framework.
+
+A standard linear model with constant slopes can be written, for $t=1, \ldots, T$, $m=1, \ldots, M_{g}$, and a random draw $g$ from the population of clusters as\\
+$y_{g m t}=\eta_{t}+\mathbf{w}_{g} \boldsymbol{\alpha}+\mathbf{x}_{g m} \boldsymbol{\beta}+\mathbf{z}_{g m t} \boldsymbol{\delta}+h_{g}+c_{m g}+u_{g m t}$,\\
+where, say, $h_{g}$ is the industry or district effect, $c_{g m}$ is the firm effect or school effect (firm or school $m$ in industry or district $g$ ), and $u_{g m t}$ is the idiosyncratic effect. In other words, the composite error is\\
+$v_{g m t}=h_{g}+c_{g m}+u_{g m t}$.
+
+Generally, the model can include variables that change at any level. In equation (20.52), some elements of $\mathbf{z}_{\text {gmt }}$ might change only across $g$ and $t$, and not by unit. This is an important special case for policy analysis where the policy applies at the group level and changes over time. In such cases it is crucial for obtaining correct inference to recognize the cluster correlation. In effect, if one has observables in the model measured at the group level (whether or not they change over time), it is effectively cheating to then assume there are no group-level unobservables affecting $y_{g m t}$. This could be the case, but one should not assume it from the outset.
+
+A simple estimation method, assuming $v_{g m t}$ is uncorrelated with $\left(\mathbf{w}_{g}, \mathbf{x}_{g m}, \mathbf{z}_{g m t}\right)$, is pooled OLS, which is consistent as $G \rightarrow \infty$ for any cluster or serial correlation pattern. The most general inference for pooled OLS-maintaining independence across\\
+clusters-is to allow any kind of serial correlation across units or time, or both, within a cluster.
+
+Not surprisingly, one can apply a generalized least squares analysis that makes assumptions about the components of the composite error. Typically, it is assumed that the components are pairwise uncorrelated, the $c_{g m}$ are uncorrelated within cluster (with common variance), and the $u_{g m t}$ are uncorrelated within cluster and across time (with common variance). The resulting feasible GLS estimator is an extension of the usual random effects estimator for panel data. Because of the large- $G$ setting, the estimator is consistent and asymptotically normal whether or not the actual variance structure we use in estimation is the proper one. To guard against heteroskedasticity in any of the errors and serial correlation in the $\left\{u_{g m t}\right\}$, one should use fully robust inference that does not rely on the form of the unconditional variance matrix (which may also differ from the conditional variance matrix).
+
+Simple strategies are available, too. For example, one can apply random effects at the individual level, effectively ignoring the clusters in estimation. In other words, treat the data as a standard panel data set in estimation. Such an estimator might be more efficient than pooled OLS yet easier to obtain than a complete GLS analysis that also accounts for the cluster sampling. To account for the cluster sampling in inference, one computes a fully robust variance matrix estimator for the usual random effects estimator. Many statistical packages have options to allow for clustering at a higher level of aggregation than the level at which random effects is applied.
+
+More formally, write the equation for each cluster as\\
+$\mathbf{y}_{g}=\mathbf{R}_{g} \boldsymbol{\theta}+\mathbf{v}_{g}$,\\
+where a row of $\mathbf{R}_{g}$ is $\left(1, d 2, \ldots, d T, \mathbf{w}_{g}, \mathbf{x}_{g m}, \mathbf{z}_{g m t}\right)$ (which includes a full set of period dummies) and $\boldsymbol{\theta}$ is the vector of all regression parameters. For cluster $g, \mathbf{y}_{g}$ contains $M_{g} T$ elements ( $T$ periods for each unit $m$ ). In particular,\\
+$\mathbf{y}_{g}=\left(\begin{array}{c}\mathbf{y}_{g 1} \\ \mathbf{y}_{g 2} \\ \vdots \\ \mathbf{y}_{g, M_{g}}\end{array}\right), \quad \mathbf{y}_{g m}=\left(\begin{array}{c}y_{g m 1} \\ y_{g m 2} \\ \vdots \\ y_{g m T}\end{array}\right)$,\\
+so that each $\mathbf{y}_{g m}$ is $T \times 1 ; \mathbf{v}_{g}$ has an identical structure. Now, we can obtain $\boldsymbol{\Omega}_{g}=\operatorname{Var}\left(\mathbf{v}_{g}\right)$ under various assumptions and apply feasible GLS.
+
+Random effects estimation at the unit level is obtained by choosing $\boldsymbol{\Omega}_{g}=\mathbf{I}_{M_{g}} \otimes \boldsymbol{\Lambda}$, where $\boldsymbol{\Lambda}$ is the $T \times T$ matrix with the RE structure. Of course, if there is withincluster correlation, this is not the correct form of $\operatorname{Var}\left(\mathbf{v}_{g}\right)$, and that is why robust\\
+inference generally is needed after RE estimation. Generally, to allow for an incorrect structure imposed on $\boldsymbol{\Omega}_{g}$, or to allow for system heteroskedasticity, that is, $\operatorname{Var}\left(\mathbf{v}_{g} \mid \mathbf{R}_{g}\right) \neq \operatorname{Var}\left(\mathbf{v}_{g}\right)$, we use fully robust inference. In particular, the robust asymptotic variance of $\hat{\boldsymbol{\theta}}$ is estimated as
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}}(\hat{\boldsymbol{\theta}})=\left(\sum_{g=1}^{G} \mathbf{R}_{g}^{\prime} \hat{\boldsymbol{\Omega}}_{g}^{-1} \mathbf{R}_{g}\right)^{-1}\left(\sum_{g=1}^{G} \mathbf{R}_{g}^{\prime} \hat{\boldsymbol{\Omega}}_{g}^{-1} \hat{\mathbf{v}}_{g} \hat{\mathbf{v}}_{g}^{\prime} \hat{\boldsymbol{\Omega}}_{g}^{-1} \mathbf{R}_{g}\right)^{-1}\left(\sum_{g=1}^{G} \mathbf{R}_{g}^{\prime} \hat{\boldsymbol{\Omega}}_{g}^{-1} \mathbf{R}_{g}\right)^{-1}, \tag{20.56}
+\end{equation*}
+
+
+where $\hat{\mathbf{v}}_{g}=\mathbf{y}_{g}-\mathbf{R}_{g} \hat{\boldsymbol{\theta}}$. Some software packages that allow cluster-robust inference after panel data estimation compute this fully robust asymptotic variance. Unfortunately, routines intended for estimating HLMs (or mixed models) often assume that the structure imposed on $\boldsymbol{\Omega}_{g}$ is correct, and that $\operatorname{Var}\left(\mathbf{v}_{g} \mid \mathbf{R}_{g}\right)=\operatorname{Var}\left(\mathbf{v}_{g}\right)$. The resulting inference could be misleading, especially if serial correlation in $\left\{u_{g m t}\right\}$ is not allowed.
+
+Because of the nested data structure, we have available different versions of fixed effects estimators. Subtracting cluster averages from all observations within a cluster eliminates $h_{g}$; when $\mathbf{w}_{g t}=\mathbf{w}_{g}$ for all $t, \mathbf{w}_{g}$ is also eliminated. But the unit-specific effects, $c_{m g}$, are still part of the error term. If we are mainly interested in $\boldsymbol{\delta}$, the coefficients on the time-varying variables $\mathbf{z}_{g m t}$, then removing $c_{g m}$ (along with $h_{g}$ ) is attractive. In other words, use a standard fixed effects analysis at the individual level. (If the units were allowed to change groups over time, then we would replace $h_{g}$ with $h_{g t}$, and then subtracting off individual-specific means would not remove the timevarying cluster effects.)
+
+Example 20.4 (Effects of Spending on School Performance): The data in MEAP94\_98, which are a subset of those used in Papke (2005), contain school-level panel data on student performance and per-pupil spending. The variable to be explained, math4, is the percentage of students receiving a satisfactory score on a fourth-grade math test administered by the state of Michigan. The key variable, lavgrexp $=\log$ (avgrexp), is the log of average real per-pupil spending for the current and previous year. The data set is for the years 1994 through 1998; it is unbalanced, with schools having either three, four, or five years of data (in various patterns). The other school-level controls are enrollment, in logarithmic form (lenroll), and the percentage of students eligible for the free lunch program (lunch). A full set of year dummies is also included.
+
+We can view this as a cluster sample because schools are nested within districts. Certainly much of the variability in spending is across districts, and so it may be important to allow for district-level effects.
+
+The results of fixed effects estimation, at the school level, are given in Table 20.2. Because schools are in the same district in every year, eliminating a school effect also
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 20.2\\
+Fixed Effects Estimation of Spending on Test Pass Rates}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\multirow[t]{2}{*}{Dependent Variable} & \multicolumn{4}{|l|}{math4} \\
+\hline
+ & FE Coefficient & Usual FE Standard Error & S.E. Clustered by School & S.E. Clustered by District \\
+\hline
+\multicolumn{5}{|l|}{Explanatory Variable} \\
+\hline
+$\log$ (avgrexp) & 6.29 & 2.10 & 2.43 & 3.13 \\
+\hline
+lunch & -0.022 & 0.031 & 0.039 & 0.040 \\
+\hline
+$\log$ (enrol) & -2.04 & 1.79 & 1.79 & 2.10 \\
+\hline
+$y 95$ & 11.62 & 0.55 & 0.54 & 0.72 \\
+\hline
+$y 96$ & 13.06 & 0.66 & 0.69 & 0.93 \\
+\hline
+y97 & 10.15 & 0.70 & 0.73 & 0.96 \\
+\hline
+$y 98$ & 23.41 & 0.72 & 0.77 & 1.03 \\
+\hline
+Number of districts & \multicolumn{4}{|c|}{467} \\
+\hline
+Number of schools & \multicolumn{4}{|c|}{1,683} \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+removes any additive district effect. But within-district correlation can be present if some of the slopes change by district. Along with the FE estimates, three standard errors are provided: the usual FE standard errors that ignore serial correlation and within-district correlation; the standard errors that are robust to arbitrary serial correlation within school but assume no correlation across schools within a district; and the most robust standard errors that allow within-district correlation across schools and time periods. (Remember that we are assuming independence across districts; without this assumption, proper inference becomes much more difficult.)
+
+The FE estimate of $\beta_{\text {lavgrexp }}$ is about 6.29 , which means that a $10 \%$ increase in average real spending is estimated to increase the pass rate by about 0.63 percentage points. Using the usual FE standard error, about 2.10 , the $t$ statistic for $\hat{\beta}_{\text {lavgrexp }}$ is about 3.0. Therefore, the effect of spending is statistically significant at a low significance level (about $0.3 \%$ ) using the usual FE inference. The standard error that allows arbitrary serial correlation within schools (and heteroskedasticity, too) is higher, about 2.43 . Naturally, this reduces the statistical significance of $\hat{\beta}_{\text {lavgrexp }}$. The standard error in column (4) is subtantially higher, about 3.13. Allowing for within-district correlation and serial correlation has practically important effects on the uncertainty associated with the estimate. Using the fully robust standard error, the $95 \%$ confidence interval for $\beta_{\text {lavgrexp }}$ excludes zero, but only barely.
+
+If the model is given by equations (20.52) and (20.53), the unit-specific time demeaning eliminates all cluster correlation, and the inference need only be made robust to neglected serial correlation in $\left\{u_{g m t}\right\}$. But we might want to use clusterrobust inference anyway to allow for more general situations. Suppose the model is
+
+
+\begin{align*}
+y_{g m t} & =\eta_{t}+\mathbf{w}_{g} \boldsymbol{\alpha}+\mathbf{x}_{g m} \boldsymbol{\beta}+\mathbf{z}_{g m t} \mathbf{d}_{m g}+h_{g}+c_{m g}+u_{g m t} \\
+& =\eta_{t}+\mathbf{w}_{g t} \boldsymbol{\alpha}+\mathbf{x}_{g m} \boldsymbol{\beta}+\mathbf{z}_{g m t} \boldsymbol{\delta}+h_{g}+c_{m g}+u_{g m t}+\mathbf{z}_{g m t} \mathbf{e}_{g m}, \tag{20.57}
+\end{align*}
+
+
+where $\mathbf{d}_{g m}=\boldsymbol{\delta}+\mathbf{e}_{g m}$ is a set of unit-specific intercepts on the individual, time-varying covariates $\mathbf{z}_{g m t}$. The time-demeaned equation within individual $m$ in cluster $g$ is\\
+$y_{g m t}-\bar{y}_{g m}=\zeta_{t}+\left(\mathbf{z}_{g m t}-\overline{\mathbf{z}}_{g m}\right) \boldsymbol{\delta}+\left(u_{g m t}-\bar{u}_{g m}\right)+\left(\mathbf{z}_{g m t}-\overline{\mathbf{z}}_{g m}\right) \mathbf{e}_{g m}$.
+
+Because the $\mathbf{e}_{g m}$ are generally correlated across units within cluster $g$, the last term generally induces cluster correlation of a heteroskedastic nature within cluster $g$. From our discussion in Section 11.7.3, we know that FE is still consistent if $\mathrm{E}\left(\mathbf{d}_{m g} \mid \mathbf{z}_{g m t}-\overline{\mathbf{z}}_{g m}\right)=\mathrm{E}\left(\mathbf{d}_{m g}\right), m=1, \ldots, M_{g}, t=1, \ldots, T$, and all $g$, and so clusterrobust inference, which is automatically robust to serial correlation and heteroskedasticity, makes perfectly good sense.
+
+An important feature of the HLM approach is the possibility of allowing the slopes to depend on observed covariates. Often one begins with a model at the unit-timeperiod level that contains heterogeneity, and then allows the intercept and slopes to depend on higher-level covariates. Write a model for unit $m$ at time $t$ in cluster $g$ as\\
+$y_{g m t}=\mathbf{z}_{g m t} \mathbf{d}_{g m}+v_{g m t}$,\\
+and then decompose the idiosyncratic error, $v_{\text {gmt }}$, as\\
+$v_{g m t}=\eta_{t}+c_{g m}+u_{g m t}$,\\
+where the $\eta_{t}$ are aggregate time effects. For notational simplicity, we absorb the group effect, $h_{g t}$, into $u_{g m t}$, and allow $c_{g m}$ and $u_{g m t}$ to be correlated within group. For each $(g, m)$ define\\
+$\overline{\mathbf{r}}_{g m}=\left(\mathbf{w}_{g}, \overline{\mathbf{x}}_{g}, \mathbf{x}_{g m}, \overline{\mathbf{z}}_{g m}\right)$,\\
+where $\overline{\mathbf{x}}_{g}=M_{g}^{-1} \sum_{p=1}^{M_{g}} \mathbf{x}_{g p}$ and $\overline{\mathbf{z}}_{g m}=T^{-1} \sum_{s=1}^{T} \mathbf{z}_{g m s}$. In other words, $\overline{\mathbf{r}}_{g m}$ includes the group-level covariates along with group averages of the unit-specific covariates, the unit-specific covariates, and the time averages of the covariates that change over time. Now assume
+
+
+\begin{equation*}
+c_{g m}=\alpha+\overline{\mathbf{r}}_{g m} \boldsymbol{\gamma}+a_{g m} \tag{20.61}
+\end{equation*}
+
+
+$\mathbf{d}_{g m}=\boldsymbol{\delta}+\boldsymbol{\Pi}\left(\overline{\mathbf{r}}_{g m}-\boldsymbol{\mu}_{\overline{\mathbf{r}}}\right)^{\prime}+\mathbf{e}_{g m}$,\\
+insert these in the equation, and use basic algebra:\\
+$y_{g m t}=\zeta_{t}+\overline{\mathbf{r}}_{g m} \boldsymbol{\gamma}+\mathbf{z}_{g m t} \boldsymbol{\delta}+\left[\left(\overline{\mathbf{r}}_{g m}-\boldsymbol{\mu}_{\overline{\mathbf{r}}}\right) \otimes \mathbf{z}_{g m t}\right] \boldsymbol{\pi}+a_{g m}+\mathbf{z}_{g m t} \mathbf{e}_{g m}+u_{g m t}$,\\
+where $\boldsymbol{\pi}=\operatorname{vec}(\boldsymbol{\Pi})$. Importantly, centering $\overline{\mathbf{r}}_{g m}$ about its average before forming the interactions means that $\boldsymbol{\delta}$ is the average partial effect. If we instead use $\overline{\mathbf{r}}_{g m} \otimes \mathbf{z}_{g m t}$, the coefficients on the level terms, $\mathbf{z}_{g m t}$, may be of little interest because they measure the effects of the $\mathbf{z}_{g m t}$ when $\overline{\mathbf{r}}_{g m}$ is zero, which is unlikely to be an interesting segment of the population. In practice, the population mean, $\boldsymbol{\mu}_{\overline{\mathbf{r}}}$, is replaced with the sample average across $m$ and $g$. The presence of $\mathbf{z}_{g m t} \mathbf{e}_{g m}$ in the error term, as well as potential serial correlation in $\left\{u_{g m t}\right\}$, makes a genuine GLS analysis difficult but possible under simple structures for the variance-covariance matrices. But we can use any of the simpler strategies mentioned earlier. For example, we can act as if $\mathbf{e}_{g m}=0$ and as if $u_{\text {gmt }}$ is serially uncorrelated in estimation. We can apply random effects to account for a cluster-level effect or RE at the individual level, or both. Basically, we include cluster-level variables, averages of unit-specific, time-constant variables, and time averages of the variables that change over time along with the unit-specific variables. For added flexibility, we include a full set of interactions. Regardless of the specifics, we use fully robust inference.
+
+A very similar discussion holds in the context of instrumental variables. Suppose we start with the model\\
+$y_{g m t}=\eta_{t}+\mathbf{r}_{g m t} \boldsymbol{\theta}+v_{g m t}$,\\
+where $\mathbf{r}_{\text {gmt }}$ contains all covariates and $v_{g m t}$ is the composite error. If we have exogenous variables, say $\mathbf{q}_{\text {gmt }}$, such that $\mathrm{E}\left(\mathbf{q}_{\text {gmt }}^{\prime} v_{\text {gmt }}\right)=\mathbf{0}$ and the rank condition holds, then pooled 2SLS is attractive for its simplicity. It does not matter whether elements of $\mathbf{r}_{\text {gmt }}$ or $\mathbf{q}_{\text {gmt }}$ contain elements that change only across $g$, across $g$ and $m$, across $g$ and $t$, or across $g, m$, and $t$, provided the rank condition holds. Without further assumptions, the 2SLS variance matrix estimator, as well as inference generally, should be robust to arbitrary serial correlation and cluster correlation at the most aggregated level. For example, if $g$ indexes counties and $m$ indexes manufacturing plants operating within a county, then we should cluster at the county level. We may have a policy and instruments that change only at the county level over time, along with exogenous explanatory variables that change at the plant level (either constant or over time). In evaluating whether the rank condition holds-say, for a single endogenous variable $w_{\text {gmt }}$-one can use a pooled OLS regression $w_{\text {gmt }}$ on $1, d 2_{t}, \ldots, d T_{t}$, $\mathbf{q}_{\text {gmt }}$ (assuming that $\mathbf{q}_{\text {gmt }}$ contains all exogenous variables in equation (20.63)) to test for joint significance of the proposed instruments in $\mathbf{q}_{g m t}$. Naturally, such a test should be made robust to arbitrary cluster and serial correlation to be convincing. The test works even if $w_{\text {gmt }}$ does not change across $m$ (or even $t$ for that matter), and the same with $\mathbf{q}_{g m t}$. The inference is valid with large $G$ provided it is made fully robust.
+
+In the previous scenario, if we apply, say, fixed effects 2SLS, where we eliminate a time-constant, plant-level effect, then we need the variables of interest to at least change over time (if not across $m$ ); the same is true of the instruments. If we have instruments that change only by $g$, the FE2SLS estimator-whether we remove a county-level or plant-level effect-does not identify $\boldsymbol{\theta}$.
+
+\subsection*{20.3.3 Should We Apply Cluster-Robust Inference with Large Group Sizes?}
+Until recently, the "cluster-robust" standard errors and test statistics obtained from pooled OLS, random effects, and fixed effects were known to be valid only as $G \rightarrow \infty$ with each $M_{g}$ fixed. As a practical matter, that fact means that one should have lots of small groups. Recently, because of the structure of many commonly used cluster samples, researchers have become interested in the performance of cluster-robust inference when the number of groups, $G$, is not substantially larger than the typical group size, $M_{g}$.
+
+Consider the basic model without a time structure, for simplicity, and consider formula (20.25), the asymptotic variance for pooled OLS. With a large number of groups and small group sizes, we can get good estimates of the within-cluster correlations-technically, of the cluster correlations of the cross products of the regressors and errors-even if they are unrestricted, and it is for that reason that the robust variance matrix is consistent as $G \rightarrow \infty$ with $M_{g}$ fixed. In fact, in this scenario, one loses nothing in terms of asymptotic local power (with local alternatives shrinking to zero at the rate $G^{-1 / 2}$ ) if $c_{g}$ is not present. In other words, based on first-order asymptotic analysis, there is no cost to being fully robust to any kind of within-group correlation or heteroskedasticity. These arguments apply equally to panel data sets with a large number of cross sections and relatively few time periods, whether or not the idiosyncratic errors are serially correlated, and to the cluster sample/panel data setting considered in Section 20.3.2.
+
+What if one applies robust inference in scenarios where the fixed $M_{g}, G \rightarrow \infty$ asymptotic analysis is not realistic? Hansen (2007) has recently derived properties of the cluster-robust variance matrix and related test statistics under various scenarios that help us more fully understand the properties of cluster-robust inference across different data configurations. Hansen (2007, Theorem 2) shows that, with $G$ and $M_{g}$ both getting large, the usual inference based on equation (20.25) is valid with arbitrary correlation among the errors, $v_{g m}$, within each group. Because we usually think of $v_{g m}$ as including the group effect $c_{g}$, this means that, with large group sizes, we can obtain valid inference using the cluster-robust variance matrix, provided that $G$ is also large. So, for example, if we have a sample of $G=100$ schools and roughly $M_{g}=100$ students per school, and we use pooled OLS leaving the school effects\\
+in the error term, we should expect the inference to have roughly the correct size. Probably we leave the school effects in the error term because we are interested in a school-specific explanatory variable, perhaps indicating a policy change. Adding a short time dimension does not change these conclusions.
+
+Unfortunately, pooled OLS with cluster effects when $G$ is small and group sizes are large falls outside Hansen's theoretical findings: the proper asymptotic analysis would be with $G$ fixed, $M_{g} \rightarrow \infty$, and persistent within-cluster correlation (because of the presence of $c_{g}$ in the error) causes problems in such cases. Consequently, we should not expect good properties of the cluster-robust inference with small groups and very large group sizes when cluster effects are left in the error term. As an example, suppose that $G=10$ hospitals have been sampled with several hundred patients per hospital. If the explanatory variable of interest is exogenous and varies only at the hospital level, it is tempting to use pooled OLS with cluster-robust inference. But we have no theoretical justification for doing so, and we have reasons to expect it will not work well-including the simulations in Hansen (2007).
+
+If the explanatory variables of interest vary within group-say, within each hospital a subset of patients were provided with a specific kind of care-fixed effects is attractive for a couple of reasons. The first advantage is the usual one about allowing $c_{g}$ to be arbitrarily correlated with the $\mathbf{z}_{g m}$. The second advantage is that, with large $M_{g}$, we can treat the $c_{g}$ as parameters to estimate-because we can estimate them precisely-and then assume that the observations are independent across $m$ (as well as $g$ ). Therefore, the usual inference is valid, perhaps with adjustments for heteroskedasticity.
+
+In summary, for true cluster sample applications, cluster-robust inference using pooled OLS delivers statistics with proper size when $G$ and $M_{g}$ are both moderately large, but they should probably be avoided with large $M_{g}$ and small $G$. We will discuss some approaches for handling a small number of groups in Section 20.3.4.
+
+\subsection*{20.3.4 Inference When the Number of Clusters Is Small}
+If the explanatory variable or variables of interest do not change within cluster and the number of clusters is small, none of the previous methods can be used for reliable inference. Fixed effects eliminates the key variables, while for pooled OLS we are not justified in using cluster-robust inference. (Whether a random effects analysis produces valid inference with small $G$ and large $M_{g}$ appears to be an open, and very interesting, question.)
+
+The problem of proper inference when $M_{g}$ is large relative to $G$ was brought to light by Moulton (1990), who was interested in studying data on individuals clustered at the state level in the United States. He proposed corrections to the usual OLS\\
+standard errors that impose more structure than the usual cluster-robust standard errors studied by Hansen (2007). Either way, the corrections to the usual OLS inference tend to work well provided the $M_{g}$ are not too much bigger than $G$. In this subsection we are interested in cases where a large $G$ analysis makes no sense.
+
+Often with small $G$ and large $M_{g}$ the sampling scheme more resembles that of standard stratified sampling, but without requiring a complete partition of the population. In other words, a small set of populations are defined, and then random samples are obtained from those populations. As an example, a random sample of adults is obtained from each of a handful of cities, some of which received federal aid for a job-training program. Labor market outcomes are recorded, possibly including changes from an early time period. In this scenario, we could analyze the data as independent outcomes across and, more importantly, within group. We will return to this point.
+
+Recent work by Donald and Lang (2007) (hereafter, DL) treats the small $G$ case within the context of cluster sampling. That is, presumably from a large population of clusters, only a handful or so are drawn (and then we may or may not sample every unit within each cluster). As mentioned in the previous subsection, such a scenario causes problems for cluster-robust inference. Therefore, DL propose a different approach.
+
+Before we cover the DL approach, it is important to understand that the structure of data sets in the small $G$ case is the same whether we think of drawing a small number of clusters from a large population or fixing a few clusters and then drawing large random samples from them. Unfortunately, how one proceeds is dependent on how we view the sampling scheme. As we will see, the DL approach is typically much more conservative than the standard approach.
+
+To illustrate the issues considered by DL, consider the simplest case, with a single regressor that varies only by group:
+
+
+\begin{align*}
+y_{g m} & =\alpha+\beta x_{g}+c_{g}+u_{g m}  \tag{20.64}\\
+& =\delta_{g}+\beta x_{g}+u_{g m}, \quad m=1, \ldots, M_{g} ; g=1, \ldots, G \tag{20.65}
+\end{align*}
+
+
+Notice how equation (20.65) is written as a model with common slope, $\beta$, but intercept, $\delta_{g}$, that varies across $g$. Donald and Lang focus on equation (20.64), where $c_{g}$ is assumed to be independent of $x_{g}$ with zero mean. They use this formulation to highlight the problems of applying standard inference to equation (20.64), that is, acting as if $c_{g}$ is absent. We know this is a bad idea even in the large $G$, small $M_{g}$ case, as it ignores the persistent correlation in the errors within each group. Unfortunately, while Hansen (2007) has shown that cluster-robust inference is valid with large $G$,\\
+even if the $M_{g}$ are also large, it is not valid when $G$ is small. Thus other approaches are needed.
+
+One way to see the problem in applying standard inference is to note that when $M_{g}=M$ for all $g=1, \ldots, G$, the pooled OLS estimator, $\hat{\beta}$, is identical to the "between" estimator obtained from the regression
+
+
+\begin{equation*}
+\bar{y}_{g} \text { on } 1, x_{g}, \quad g=1, \ldots, G \tag{20.66}
+\end{equation*}
+
+
+Conditional on the $x_{g}$, the estimator $\hat{\beta}$ inherits its distribution from $\left\{\bar{v}_{g}: g=1, \ldots\right.$, $G\}$, the within-group averages of the composite errors $v_{g m} \equiv c_{g}+u_{g m}$. The presence of $c_{g}$ means new observations within group do not provide additional information for estimating $\beta$ beyond how they affect the group average, $\bar{y}_{g}$. In effect, we only have $G$ useful pieces of information.
+
+If we add some strong assumptions, there is a solution to the inference problem. In addition to assuming $M_{g}=M$ for all $g$, assume $c_{g} \mid x_{g} \sim \operatorname{Normal}\left(0, \sigma_{c}^{2}\right)$ and assume $u_{g m} \mid x_{g}, c_{g} \sim \operatorname{Normal}\left(0, \sigma_{u}^{2}\right)$. Then $\bar{v}_{g}$ is independent of $x_{g}$ and $\bar{v}_{g} \sim \operatorname{Normal}\left(0, \sigma_{c}^{2}+\right. \sigma_{u}^{2} / M$ ) for all $g$. Because we assume independence across $g$, the equation
+
+
+\begin{equation*}
+\bar{y}_{g}=\alpha+\beta x_{g}+\bar{v}_{g}, \quad g=1, \ldots, G \tag{20.67}
+\end{equation*}
+
+
+satisfies the classical linear model assumptions. Therefore, we can use inference based on the $t_{G-2}$ distribution to test hypotheses about $\beta$, provided $G>2$. When $G$ is very small, the requirements for a significant $t$ statistic using the $t_{G-2}$ distribution are much more stringent than if we use the $t_{M_{1}+M_{2}+\cdots+M_{G}-2}$ distribution - which is what we would be doing if we used the usual pooled OLS statistics.
+
+When $\mathbf{x}_{g}$ is a $1 \times K$ vector, we need $G>K+1$ to use the $t_{G-K-1}$ distribution for inference. (In Moulton (1990), $G=50$ states and $\mathbf{x}_{g}$ contains 17 elements.)
+
+As pointed out by DL, performing the correct inference in the presence of $c_{g}$ is not just a matter of correcting the pooled OLS standard errors for cluster correlationsomething that does not appear to be valid for small $G$, anyway-or using the RE estimator. In the case of common group sizes, there is only estimator: pooled OLS. Random effects and between regression in equation (20.66) all lead to the same $\hat{\beta}$. The regression in equation (20.66), by using the $t_{G-2}$ distribution, yields inference with appropriate size.
+
+We can apply the DL method without normality of the $u_{g m}$ if the common group size $M$ is large: by the central limit theorem, $\bar{u}_{g}$ will be approximately normally distributed very generally. Then, because $c_{g}$ is normally distributed, we can treat $\bar{v}_{g}$ as approximately normal with constant variance. Further, even if the group sizes differ across $g$, for very large group sizes $\bar{u}_{g}$ will be a negligible part of $\bar{v}_{g}: \operatorname{Var}\left(\bar{v}_{g}\right)=\sigma_{c}^{2}+ \sigma_{u}^{2} / M_{g}$. Provided $c_{g}$ is normally distributed and it dominates $\bar{v}_{g}$, a classical linear model analysis on equation (20.67) should be roughly valid.
+
+The broadest applicability of DL's setup occurs when the average of the idiosyncratic errors, $\bar{u}_{g}$, can be ignored - either because $\sigma_{u}^{2}$ is small relative to $\sigma_{c}^{2}, M_{g}$ is large, or both. In fact, applying DL with different group sizes or nonnormality of the $u_{g m}$ is identical to ignoring the estimation error in the sample averages, $\bar{y}_{g}$. In other words, it is as if we are analyzing the simple regression $\mu_{g}=\alpha+\beta x_{g}+c_{g}$ using the classical linear model assumptions (where we then insert $\bar{y}_{g}$ in place of the unknown group mean, $\mu_{g}$, and ignore the estimation error). With small $G$, we need to further assume that $c_{g}$ is normally distributed.
+
+If $\mathbf{z}_{g m}$ appears in the model, then we can use the averaged equation\\
+$\bar{y}_{g}=\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+\overline{\mathbf{z}}_{g} \gamma+\bar{v}_{g}, \quad g=1, \ldots, G$,\\
+provided $G>K+L+1$. If $c_{g}$ is independent of ( $\mathbf{x}_{g}, \overline{\mathbf{z}}_{g}$ ) with a homoskedastic normal distribution and the group sizes are large, inference can be carried out using the $t_{G-K-L-1}$ distribution.
+
+The DL solution to the inference problem with small $G$ is pretty common as a strategy to check robustness of results obtained from cluster samples, but often it is implemented with somewhat large $G$ (say, $G=50$ ). Often with cluster samples one estimates the parameters using the disaggregated data and also the averaged data. When some covariates vary within cluster, using averaged data is generally inefficient, but when estimating equation (20.68) we need not make standard errors robust to within-cluster correlation. We now know that if $G$ is reasonably large and the group sizes not too large, the cluster-robust inference applied to the disaggregated data can be acceptable. As pointed out by DL, with small $G$ one should use the group averages in a classical linear model analysis.
+
+For small $G$ and large $M_{g}$, inference obtained analyzing equation (20.67) as a classical linear model will be very conservative in the absence of a cluster effect. Thus the DL approach can be used in situations where one requires very strong statistical evidence for the effect of a policy. Nevertheless, the DL approach rules out some widely used staples of policy analysis. For example, suppose we have two populations (maybe men and women, two different cities, or a treatment and a control group) with means $\mu_{g}, g=1,2$, and we would like to obtain a confidence interval for their difference. In almost all cases, it makes sense to view the data as being two random samples, one from each subgroup of the population. Under random sampling from each group, and assuming normality and equal population variances, the usual comparison-of-means statistic is distributed exactly as $t_{M_{1}+M_{2}-2}$ under the null hypothesis of equal population means. (Or, we can construct an exact $95 \%$ confidence interval of the difference in population means.) With even moderate sizes for $M_{1}$ and $M_{2}$, the $t_{M_{1}+M_{2}-2}$ distribution is close to the standard normal distribution. Also, we can relax normality to obtain approximately valid inference, and it is easy\\
+to adjust the $t$ statistic to allow for different population variances. With a controlled experiment, the standard difference-in-means analysis is often quite convincing. Yet we cannot even study this estimator in the DL setup because $G=2$.
+
+Donald and Lang criticize Card and Krueger (1994) for comparing mean wage changes of workers at a sample of fast-food restaurants across two states because Card and Krueger fail to account for the state effect (New Jersey or Pennsylvania), $c_{g}$, in the composite error, $v_{g m}$. It is important to remember that the DL criticism of the standard difference-in-differences estimator has nothing to do with whether the increase in the minimum wage in New Jersey (in April 1992) was an exogenous event: DL's framework assumes that $x_{g}$, which is an indicator for whether a fast-food restaurant is in New Jersey, is independent of the state effect, $c_{g}$. Rather, DL's criticism only concerns inference. (Card and Krueger find a positive, not a negative, employment effect of increasing the minimum wage, so having a confidence interval seems to be less important in this particular case.)
+
+To further study the $G=2$ case with a binary policy indicator, write the difference in means as
+
+
+\begin{equation*}
+\mu_{2}-\mu_{1}=\left(\delta_{2}+\beta\right)-\delta_{1}=\left(\alpha+c_{2}+\beta\right)-\left(\alpha+c_{1}\right)=\beta+\left(c_{2}-c_{1}\right) \tag{20.69}
+\end{equation*}
+
+
+Under the DL assumptions, $c_{2}-c_{1}$ has mean zero, and so including it as part of the estimate, which is $\bar{y}_{2}-\bar{y}_{1}$, does not result in bias. The authors work under the assumption that $\beta$ is the parameter of interest, but, if the experiment is properly randomized-as is maintained by DL-it is harmless to include the $c_{g}$ in the estimated effect, in which case the standard comparison-of-means methodology, using large $M_{g}$ asymptotics, is appropriate.
+
+Consider now a case where the DL approach to inference can be applied. Assume $G=4$ with groups 1 and 2 the control groups ( $x_{1}=x_{2}=0$ ) and groups 3 and 4 the treatment groups ( $x_{3}=x_{4}=1$ ). The DL approach would involve computing the averages for each group, $\bar{y}_{g}$, and running the regression $\bar{y}_{g}$ on $1, x_{g}, g=1, \ldots, 4$. Inference is based on the $t_{2}$ distribution. The estimator $\hat{\beta}$ in this case can be written as
+
+
+\begin{equation*}
+\hat{\beta}=\left(\bar{y}_{3}+\bar{y}_{4}\right) / 2-\left(\bar{y}_{1}+\bar{y}_{2}\right) / 2 . \tag{20.70}
+\end{equation*}
+
+
+(The pooled OLS regression using the disaggregated data results in the weighted average $\left(p_{3} \bar{y}_{3}+p_{4} \bar{y}_{4}\right)-\left(p_{1} \bar{y}_{1}+p_{2} \bar{y}_{2}\right), \quad$ where $\quad p_{1}=M_{1} /\left(M_{1}+M_{2}\right), \quad p_{2}=M_{2} / \left(M_{1}+M_{2}\right), p_{3}=M_{3} /\left(M_{3}+M_{4}\right)$, and $p_{4}=M_{4} /\left(M_{3}+M_{4}\right)$ are the relative proportions within the control and treatment groups, respectively.) With $\hat{\beta}$ written as in equation (20.70), we are left to wonder why we need to use the $t_{2}$ distribution for, say, constructing a confidence interval. Each $\bar{y}_{g}$ is usually obtained from a large sample- $M_{g}=30$ or so is usually sufficient for approximate normality of the stan-\\
+dardized mean—and so $\hat{\beta}$, when properly standardized, has an approximate standard normal distribution quite generally.
+
+In effect, the DL approach rejects the usual large-sample confidence interval based on group means because it may not be the case that $\mu_{1}=\mu_{2}$ and $\mu_{3}=\mu_{4}$. In other words, the control groups may be heterogeneous, as might be the treatment groups. This possibility in itself does not invalidate standard inference applied to equation (20.70). In fact, if we define the object of interest as\\
+$\tau=\left(\mu_{3}+\mu_{4}\right) / 2-\left(\mu_{1}+\mu_{2}\right) / 2$,\\
+which is an average treatment effect of sorts, then $\hat{\beta}$ is consistent for $\beta$ and (when properly scaled) asymptotically normal as the $M_{g}$ get large.
+
+The previous example suggests a different way to view the small $G$, large $M_{g}$ setup. In this particular setup, we are estimating two parameters, $\alpha$ and $\beta$, given four moments that we can estimate with the data. The OLS estimates from $\bar{y}_{g}$ on $1, x_{g}$, $g=1, \ldots, G$, are minimum distance (MD) estimates that impose the restrictions $\mu_{1}=\mu_{2}=\alpha$ and $\mu_{3}=\mu_{4}=\alpha+\beta$. In particular, using the $4 \times 4$ identity matrix as the weight matrix, we get $\hat{\beta}$ as in equation (20.70) and $\hat{\alpha}=\left(\bar{y}_{1}+\bar{y}_{2}\right) / 2$. Using the MD approach, we see there are two overidentifying restrictions, which are easily tested. But even if we reject them, it simply implies that at least one pair of means within each of the control and treatment groups differs. If, say, we have four cities and random samples of workers from each city, $x_{g}=1$ indicates a job-training program in two of the four cities, and $y_{g m}$ is the change in labor market income, then it may simply be the case that the job-training program had differential effects across the two treatment cities, or that the mean change in labor market income differed across the two control cities, or both. Why should we reject the usual large $M_{g}$ inference simply because the job-training program has heterogeneous effects?
+
+With large group sizes, and whether or not $G$ is especially large, we can put the general problem into an MD framework, as done, for example, by Loeb and Bound (1996), who had $G=36$ cohort-division groups and many observations per group. For each group $g$, write\\
+$y_{g m}=\delta_{g}+\mathbf{z}_{g m} \gamma_{g}+u_{g m}, \quad m=1, \ldots, M_{g}$,\\
+where we assume random sampling within group and independent sampling across groups. We make the standard assumptions for OLS to be consistent (as $M_{g} \rightarrow \infty$ ) and $\sqrt{M_{g}}$-asymptotically normal, as in Chapter 4. The presence of group-level variables $\mathbf{x}_{g}$ in a "structural" model can be viewed as putting restrictions on the intercepts, $\delta_{g}$, in the separate group models in equation (20.72). In particular,\\
+$\delta_{g}=\alpha+\mathbf{x}_{g} \boldsymbol{\beta}, \quad g=1, \ldots, G$,\\
+where we think of $\mathbf{x}_{g}$ as fixed, observed attributes of heterogeneous groups. With $K$ attributes we must have $G \geq K+1$ to determine $\alpha$ and $\boldsymbol{\beta}$. If $M_{g}$ is large enough to estimate the $\delta_{g}$ precisely, a simple two-step estimation strategy suggests itself. First, obtain the $\hat{\delta}_{g}$, along with $\hat{\gamma}_{g}$, from an OLS regression within each group. If $G=K+1$, then, typically, we can solve for $\hat{\boldsymbol{\theta}} \equiv\left(\hat{\alpha}, \hat{\boldsymbol{\beta}}^{\prime}\right)^{\prime}$ uniquely in terms of the $G \times 1$ vector $\hat{\boldsymbol{\delta}}: \hat{\boldsymbol{\theta}}=\mathbf{X}^{-1} \hat{\boldsymbol{\delta}}$, where $\mathbf{X}$ is the $(K+1) \times(K+1)$ matrix with $g$ th row $\left(1, \mathbf{x}_{g}\right)$. If $G> K+1$, then, in a second step, we can use a minimum distance approach, as described in Section 14.6. If we use $\mathbf{I}_{G}$, the $G \times G$ identity matrix, as the weighting matrix, then the minimum distance estimator can be computed from the OLS regression\\
+$\hat{\delta}_{g} \quad$ on $\quad 1, \mathbf{x}_{g}, \quad g=1, \ldots, G$.
+
+Under asymptotics such that $M_{g}=\rho_{g} M$ where $0<\rho_{g} \leq 1$ and $M \rightarrow \infty$, the minimum distance estimator $\hat{\boldsymbol{\theta}}$ is consistent and $\sqrt{M}$-asymptotically normal. Still, this particular MD estimator is asymptotically inefficient except under strong assumptions. Because the samples are assumed to be independent, it is not appreciably more difficult to obtain the efficient MD estimator, also called the "minimum chi-square" estimator.
+
+First consider the case where $\mathbf{z}_{g m}$ does not appear in the first-stage estimation, so that the $\hat{\delta}_{g}$ is just $\bar{y}_{g}$, the sample mean for group $g$. Let $\hat{\sigma}_{g}^{2}$ denote the usual sample variance for group $g$. Because the $\bar{y}_{g}$ are independent across $g$, the efficient MD estimator uses a diagonal weighting matrix. As a computational device, the minimum chi-square estimator can be computed by using the weighted least squares (WLS) version of regression (20.74), where group $g$ is weighted by $M_{g} / \hat{\sigma}_{g}^{2}$ (groups that have more data and smaller variance receive greater weight). Conveniently, the reported $t$ statistics from the WLS regression are asymptotically standard normal as the group sizes $M_{g}$ get large. (With fixed $G$, the WLS nature of the estimation is just a computational device; the standard asymptotic analysis of the WLS estimator has $G \rightarrow \infty$.) The minimum distance approach works with small $G$ provided $G \geq K+1$ and each $M_{g}$ is large enough so that normality is a good approximation to the distribution of the (properly scaled) sample average within each group.
+
+If $\mathbf{z}_{g m}$ is present in the first-stage estimation, we use as the minimum chi-square weights the inverses of the asymptotic variances for the $g$ intercepts in the separate $G$ regressions. With large $M_{g}$, we might make these fully robust to heteroskedasticity in $\mathrm{E}\left(u_{g m}^{2} \mid \mathbf{z}_{g m}\right)$ using the White (1980a) sandwich variance estimator. At a minimum we would want to allow different $\sigma_{g}^{2}$ even if we assume homoskedasticity within groups. Once we have the $\widehat{\operatorname{Avar}}\left(\hat{\delta}_{g}\right)$-which are just the squared reported standard errors for the $\hat{\delta}_{g}$-we use as weights $1 / \widehat{\operatorname{Avar}}\left(\hat{\delta}_{g}\right)$ in the computationally simple WLS procedure. We are still using independence across $g$ in obtaining a diagonal weighting matrix in the MD estimation.
+
+An important by-product of the WLS regression is a minimum chi-square statistic that can be used to test the $G-K-1$ overidentifying restrictions. The statistic is easily obtained as the weighted sum of squared residuals, say, $S S R_{w}$. Under the null hypothesis in equation (20.73), $S S R_{w} \stackrel{a}{\sim} \chi_{G-K-1}^{2}$ as the group sizes, $M_{g}$, get large. If we reject $\mathrm{H}_{0}$ at a reasonably small significance level, the $\mathbf{x}_{g}$ are not sufficient for characterizing the changing intercepts across groups. If we fail to reject $\mathrm{H}_{0}$, we can have some confidence in our specification and obtain confidence intervals for linear combinations of the population averages using the usual standard normal approximation.
+
+We might also be interested in how one (or more) of the slopes in $\gamma_{g}$ depends on the group features, $\mathbf{x}_{g}$. Then, we simple replace $\hat{\delta}_{g}$ with, say, $\hat{\gamma}_{g 1}$, the slope on the first element of $\mathbf{z}_{g m}$. Naturally, we would use $1 / \widehat{\operatorname{Avar}}\left(\hat{\gamma}_{g 1}\right)$ as the weights in the MD estimation.
+
+The minimum distance approach can also be applied if we impose $\gamma_{g}=\gamma$ for all $g$, as in the original model. Obtaining the $\hat{\delta}_{g}$ themselves is easy: run the pooled regression\\
+$y_{g m} \quad$ on $\quad d 1_{g}, d 2_{g}, \ldots, d G_{g}, \mathbf{z}_{g m}, \quad m=1, \ldots, M_{g} ; g=1, \ldots, G$,\\
+where $d 1_{g}, d 2_{g}, \ldots, d G_{g}$ are group dummy variables. Using the $\hat{\delta}_{g}$ from the pooled regression (20.74) in MD estimation is complicated by the fact that the $\hat{\delta}_{g}$ are no longer asymptotically independent; in fact, $\hat{\delta}_{g}=\bar{y}_{g}-\overline{\mathbf{z}}_{g} \hat{\gamma}$, where $\hat{\gamma}$ is the vector of common slopes, and the presence of $\hat{\gamma}$ induces correlation among the intercept estimators. Let $\hat{\mathbf{V}}$ be the $G \times G$ estimated (asymptotic) variance matrix of the $G \times 1$ vector $\hat{\boldsymbol{\delta}}$. Then the MD estimator is $\hat{\boldsymbol{\theta}}=\left(\mathbf{X}^{\prime} \hat{\mathbf{V}}^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \hat{\mathbf{V}}^{-1} \hat{\boldsymbol{\delta}}$, and its estimated asymptotic variance is $\left(\mathbf{X}^{\prime} \hat{\mathbf{V}}^{-1} \mathbf{X}\right)^{-1}$. If the OLS regression (20.74) is used, or even the WLS version, the resulting standard errors will be incorrect because they ignore the across-group correlation in the estimated intercepts.
+
+Intermediate approaches are available, too. Loeb and Bound (1996) (hereafter, LB) allow different group intercepts and group-specific slopes on education, but impose common slopes on demographic and family background variables. The main group-level covariate is the student-teacher ratio. Thus LB are interested in seeing how the student-teacher ratio affects the relationship between test scores and education levels. They use both the unweighted estimator and the weighted estimator and find that the results differ in unimportant ways. Because they impose common slopes on a set of regressors, the estimated slopes on education (say $\hat{\gamma}_{g 1}$ ) are not asymptotically independent, and perhaps using a nondiagonal estimated variance matrix $\hat{\mathbf{V}}$ (which would be $36 \times 36$ in this case) is more appropriate.
+
+If we reject the overidentifying restrictions, we are essentially concluding that $\delta_{g}=\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+c_{g}$, where $c_{g}$ can be interpreted as the deviation from the restrictions\\
+in equation (20.73) for group $g$. As $G$ increases relative to $K$, the likelihood of rejecting the restrictions increases. One possibility is to apply the Donald and Lang approach, where the OLS regression (20.74) is analyzed in the context of the classical linear model (CLM) with inference based on the $t_{G-K-1}$ distribution. Why is a CLM analysis justified? Since $\hat{\delta}_{g}=\delta_{g}+O_{p}\left(M_{g}^{-1 / 2}\right)$, we can ingore the estimation error in $\hat{\delta}_{g}$ for large $M_{g}$ Then, it is as if we are estimating the equation $\delta_{g}=\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+c_{g}$, $g=1, \ldots, G$ by OLS. If the $c_{g}$ are drawn from a normal distribution, classical analysis is applicable because $c_{g}$ is assumed to be independent of $\mathbf{x}_{g}$. This approach is desirable when one cannot, or does not want to, find group-level observables that completely determine the $\delta_{g}$. It is predicated on the assumption that the other factors in $c_{g}$ are not systematically related to $\mathbf{x}_{g}$, a reasonable assumption if, say, $\mathbf{x}_{g}$ is a randomly assigned treatment at the group level, a case considered by Angrist and Lavy (2002).
+
+Unlike in the linear case, for nonlinear models exact inference is unavailable even under the strongest set of assumptions. Nevertheless, if the group sizes $M_{g}$ are reasonably large, we can extend the DL approach to nonlinear models and obtain approximate inference. In addition, the minimum distance approach carries over essentially without change.
+
+We can apply the methods to any nonlinear model that has an index structure, which includes all the common ones, and many other models besides. Again, it is helpful to study the probit case in some detail. With small $G$ and random sampling of $\left\{\left(y_{g m}, \mathbf{z}_{g m}\right): m=1, \ldots, M_{g}\right\}$ within each $g$, write
+
+
+\begin{equation*}
+\mathrm{P}\left(y_{g m}=1 \mid \mathbf{z}_{g m}\right)=\Phi\left(\delta_{g}+\mathbf{z}_{g m} \gamma_{g}\right), \quad m=1, \ldots, M_{g} \tag{20.76}
+\end{equation*}
+
+
+$\delta_{g}=\alpha+\mathbf{x}_{g} \boldsymbol{\beta}, \quad g=1, \ldots, G$.
+
+As with the linear model, we assume the intercept, $\delta_{g}$ in equation (20.76), is a function of the group features $\mathbf{x}_{g}$. With the $M_{g}$ moderately large, we can get good estimates of the $\delta_{g}$. The $\hat{\delta}_{g}, g=1, \ldots, G$, are easily obtained by estimating a separate probit for each group. Or, we can impose common $\gamma_{g}$ and just estimate different group intercepts (sometimes called "group fixed effects").
+
+Under the restrictions in equation (20.77), we can apply the minimum distance approach just as before. Let $\widehat{\operatorname{Avar}}\left(\hat{\delta}_{g}\right)$ denote the estimated asymptotic variances of the $\hat{\delta}_{g}$ (so these shrink to zero at the rate $1 / M_{g}$ ). If the $\hat{\delta}_{g}$ are obtained from $G$ separate probits, they are independent, and the $\widehat{\operatorname{Avar}}\left(\hat{\delta}_{g}\right)$ are all we need. As in the linear case, if a pooled method is used, the $G \times G$ matrix $\widehat{\operatorname{Avar}}(\hat{\boldsymbol{\delta}})$ should be inverted and then used as the weighting matrix. For binary response, we use the usual MLE estimated variance. If we are using fractional probit for a fractional response, these\\
+would be from a sandwich estimate of the asymptotic variance. In the case where the $\hat{\delta}_{g}$ are obtained from separate probits, we can obtain the minimum distance estimates as the WLS estimates from\\
+$\hat{\delta}_{g} \quad$ on $\quad 1, x_{g}, \quad g=1, \ldots, G$\\
+using weights $1 / \widehat{\operatorname{Avar}}\left(\hat{\delta}_{g}\right)$. This is the efficient minimum distance estimator and, conveniently, the proper asymptotic standard errors are reported from the WLS estimation (even though we are doing large $M_{g}$, not large $G$, asymptotics here). Generally, we can write the MD estimator as before: $\hat{\boldsymbol{\theta}}=\left(\mathbf{X}^{\prime} \hat{\mathbf{V}}^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \hat{\mathbf{V}}^{-1} \hat{\boldsymbol{\delta}}$, where $\hat{\boldsymbol{\delta}}$ is the $G \times 1$ vector of $\hat{\delta}_{g}$ and $\hat{\mathbf{V}}=\widehat{\operatorname{Avar}}(\hat{\boldsymbol{\delta}})$. The overidentification test is obtained exactly as in the linear case: there are $G-K-1$ degrees of freedom in the chi-square distribution.
+
+If we reject the overidentification restrictions, we can adapt Donald and Lang (2007) and treat\\
+$\hat{\delta}_{g}=\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+$ error $_{g}, \quad g=1, \ldots, G$\\
+as approximately satisfying the classical linear model assumptions, provided $G> K+1$, just as before. As in the linear case, this approach is justified if $\delta_{g}=\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+ c_{g}$ with $c_{g}$ independent of $\mathbf{x}_{g}$ and $c_{g}$ drawn from a homoskedastic normal distribution. It assumes that we can ignore the estimation error in $\hat{\delta}_{g}$, based on $\hat{\delta}_{g}=\delta_{g}+ O\left(1 / \sqrt{M_{g}}\right)$. Because the DL approach ignores the estimation error in $\hat{\delta}_{g}$, it is unchanged if one imposes some constant slopes across the groups.
+
+Once we have estimated $\alpha$ and $\boldsymbol{\beta}$, the estimated effect on the response probability can be obtained by averaging the response probability for a given $\mathbf{x}$ :\\
+$G^{-1} \sum_{g=1}^{G}\left(M_{g}^{-1} \sum_{m=1}^{M_{g}} \Phi\left(\hat{\alpha}+\mathbf{x} \hat{\boldsymbol{\beta}}+\mathbf{z}_{g m} \hat{\gamma}_{g}\right)\right)$,\\
+where derivatives or differences with respect to the elements of $\mathbf{x}$ can be computed. Here, the minimum distance approach has an important advantage over the DL approach: the finite sample properties of estimator (20.79) are virtually impossible to obtain, whereas the large- $M_{g}$ asymptotics underlying minimum distance would be straightforward using the delta method. The bootstrap should also be valid when the sampling scheme generates independent observations within each $g$.
+
+With binary response problems, the two-step methods described here are problematical when the response does not vary within group. For example, suppose that $x_{g}$ is a binary treatment-equal to one for receiving a voucher to attend college-and $y_{g m}$ is an indicator of attending college. Each group is a high school class, say. If\\
+some high schools have all students attend college, one cannot use probit (or logit) of $y_{g m}$ on $\mathbf{z}_{g m}, m=1, \ldots, M_{g}$. A linear regression returns zero-slope coefficients and intercept equal to unity. Of course, if randomization occurs at the group level-that is, $x_{g}$ is independent of group attributes-then it is not necessary to control for the $\mathbf{z}_{g m}$. Instead, the within-group averages can be used in a simple minimum distance approach. In this case, as $y_{g m}$ is binary, the DL approximation will not be valid, as the CLM assumptions will not even approximately hold in the model $\bar{y}_{g}=\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+ e_{g}$ (because $\bar{y}_{g}$ is always a fraction regardless of the size of $M_{g}$ ).
+
+Naturally, there is nothing special about binary response models. It is possible to apply any nonlinear model using the invididual-specific data to obtain group-level estimates. Then, equation (20.78) can be applied.
+
+\subsection*{20.4 Complex Survey Sampling}
+Often, survey data are characterized by clustering and variable probability sampling. For example, suppose that $g$ represents the primary sampling unit (PSU) (say, city) and individuals or families (indexed by $m$ ) are secondary sampling units, sampled within each PSU with probability $p_{g m}$. Consider the problem of regression using such a data set. If $\hat{\boldsymbol{\beta}}$ is the IPW estimator pooled across PSUs and individuals, then its variance is estimated as
+
+
+\begin{equation*}
+\left(\sum_{g=1}^{G} \sum_{m=1}^{M_{g}} \mathbf{x}_{g m}^{\prime} \mathbf{x}_{g m} / p_{g m}\right)^{-1}\left[\sum_{g=1}^{G} \sum_{m=1}^{M_{g}} \sum_{r=1}^{M_{g}} \hat{u}_{g m} \hat{u}_{g r} \mathbf{x}_{g m}^{\prime} \mathbf{x}_{g r} /\left(p_{g m} p_{g r}\right)\right]\left(\sum_{g=1}^{G} \sum_{m=1}^{M_{g}} \mathbf{x}_{g m}^{\prime} \mathbf{x}_{g m} / p_{g m}\right)^{-1} . \tag{20.80}
+\end{equation*}
+
+
+The middle of the sandwich accounts for cluster correlation along with unequal sampling probabilities. If the probabilities are estimated using retention frequencies, expression (20.80) is conservative, as we discussed in Section 20.2.2. A similar expression holds for general M-estimation. Typically, packages that support survey sampling require a variable defining the clusters along with a variable containing the inverse probability weights.
+
+Multistage sampling schemes introduce more complications because standard stratification is often involved. Consider the following setup, closely related to Bhattacharya (2005). Let there be $S$ strata (for example, states in the United States), exhaustive and mutually exclusive. Within stratum $s$, there are $C_{s}$ clusters (for example, zip codes). In order to use large-sample approximations, we assume that in each stratum a large number of clusters is sampled. Typically, the sampling of clusters is\\
+without replacement, but the resulting dependence across sampled clusters generated is more difficult to study. Instead, we assume sampling with replacement, which is harmless if the number of clusters sampled within each stratum, $N_{s}$, is "large." As before, we allow arbitrary correlation across units (say, households) within each cluster (say, zip code).
+
+Within stratum $s$ and cluster $c$, let there be $M_{s c}$ total units (households or individuals). Therefore, the total number of units in the population is\\
+$M=\sum_{s=1}^{S} \sum_{c=1}^{C_{s}} M_{s c}$.
+
+It is convenient to start with the problem of estimating the mean of a variable that describes the population. Let $z$ be a variable, such as family income, whose mean we want to estimate. List all population values as $\left\{z_{s c m}^{o}: m=1, \ldots, M_{s c}, c=1, \ldots, C_{s}\right.$, $s=1, \ldots, S\}$, so the population mean can be written as\\
+$\mu=M^{-1} \sum_{s=1}^{S} \sum_{c=1}^{C_{s}} \sum_{m=1}^{M_{s c}} z_{s c m}^{o}$.
+
+Define the total in the population as\\
+$\tau=\sum_{s=1}^{S} \sum_{c=1}^{C_{s}} \sum_{m=1}^{M_{s c}} z_{s c m}^{o}=M \mu$.
+
+It is also useful to define the totals within each cluster and stratum, $\tau_{s c}=\sum_{m=1}^{M_{s c}} z_{s c m}^{o}$ and $\tau_{s}=\sum_{c=1}^{C_{s}} \tau_{s c}$, respectively.
+
+The specific sampling scheme is as follows: (1) for each stratum $s$, randomly draw $N_{s}$ clusters, with replacement; (2) for each cluster $c$ drawn in step (1), randomly sample $K_{s c}$ households with replacement. For each pair ( $s, c$ ), define the sample average\\
+$\hat{\mu}_{s c}=K_{s c}^{-1} \sum_{m=1}^{K_{s c}} z_{s c m}$.
+
+Because this is an average based on a random sample within $(s, c)$,\\
+$\mathrm{E}\left(\hat{\mu}_{s c}\right)=\mu_{s c}=M_{s c}^{-1} \sum_{m=1}^{M_{s c}} z_{s c m}^{o}$.
+
+To continue up to the cluster level we need the total, $\tau_{s c}=M_{s c} \mu_{s c}$, for which an unbiased estimator is $\hat{\tau}_{s c}=M_{s c} \hat{\mu}_{s c}$ for all $\left\{(s, c): c=1, \ldots, C_{s}, s=1, \ldots, S\right\}$ (even if we eventually do not use some clusters because they are not sampled). Now, for each stratum $s$, the estimator $N_{s}^{-1} \sum_{c=1}^{N_{s}} \hat{\tau}_{s c}$, which is the average of the cluster totals within stratum $s$, has expected value which is the population average (for stratum $s$ ), that is, $C_{s}^{-1} \sum_{c=1}^{C_{s}} \tau_{s c}=C_{s}^{-1} \sum_{c=1}^{C_{s}} \sum_{m=1}^{M_{s c}} z_{s c m}^{o}=C_{s}^{-1} \tau_{s}$. (In general, $C_{s}^{-1} \tau_{s} \neq \mu_{s}= \left(\sum_{c=1}^{C_{s}} M_{s c}\right)^{-1} \tau_{s}$ unless each cluster has only one observation.) It follows that an unbiased estimator of the total $\tau_{s}$ for stratum $s$ is
+
+
+\begin{equation*}
+C_{s} \cdot N_{s}^{-1} \sum_{c=1}^{N_{s}} \hat{\tau}_{s c} \tag{20.86}
+\end{equation*}
+
+
+Finally, the total in the entire population is estimated as
+
+
+\begin{align*}
+\sum_{s=1}^{S}\left(C_{s} \cdot N_{s}^{-1} \sum_{c=1}^{N_{s}} \hat{\tau}_{s c}\right) & =\sum_{s=1}^{S}\left(C_{s} / N_{s}\right) \sum_{c=1}^{N_{s}}\left(M_{s c} / K_{s c}\right) \sum_{m=1}^{K_{s c}} z_{s c m} \\
+& =\sum_{s=1}^{S} \sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}}\left(\frac{C_{s}}{N_{s}} \cdot \frac{M_{s c}}{K_{s c}}\right) z_{s c m} \equiv \sum_{s=1}^{S} \sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}} \omega_{s c} z_{s c m} \tag{20.87}
+\end{align*}
+
+
+where
+
+
+\begin{equation*}
+\omega_{s c} \equiv \frac{C_{s}}{N_{s}} \cdot \frac{M_{s c}}{K_{s c}} \tag{20.88}
+\end{equation*}
+
+
+is the weight for every unit sampled in stratum-cluster pair $(s, c)$. This weight accounts for undersampled or oversampled clusters within strata and undersampled or oversampled units within clusters. Expressions (20.87) and (20.88) appear in the literature on complex survey sampling, sometimes without $M_{s c} / K_{s c}$ when each cluster is sampled as a complete unit, and so $M_{s c} / K_{s c}=1$. To estimate the population mean, $\mu$, we just divide by $M$, the total number of units in the population,
+
+
+\begin{equation*}
+\hat{\mu}=M^{-1}\left(\sum_{s=1}^{S} \sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}} \omega_{s c} z_{s c m}\right) \tag{20.89}
+\end{equation*}
+
+
+In fact, we do not need to know the population size, $M$, to obtain an unbiased estimator of $\mu$. We can obtain an alternative estimator that uses a modified set of weights. It falls out naturally from a regression framework, to which we now turn.
+
+To study the asymptotic properties of regression (and many other estimation methods), it is convenient to modify the weights so that they are constant, or con-\\
+verge to a constant. The weights $\omega_{s c}$ in expression (20.88) converge to zero at rate $N_{s}^{-1}$ because $C_{s}$ and $M_{s c}$ are fixed and $K_{s c}$ is treated as fixed. (We assume a relatively small number of households sampled per cluster.) Let $N=N_{1}+N_{2}+\cdots+N_{S}$ be the total number of clusters sampled and define\\
+$v_{s c}=\frac{C_{s}}{\left(N_{s} / N\right)} \cdot \frac{M_{s c}}{K_{s c}}=N \omega_{s c}$.
+
+As in Bhattacharya (2005), it is easiest just to assume $N_{s}=a_{s} N$ for $a_{s}$ fixed, $0<a_{s}<1, a_{1}+\cdots+a_{S}=1$. But we can also just assume $N_{s} / N$ converges to $a_{s}$ with the same property. Therefore, by writing $v_{s c}=\left(C_{s} / a_{s}\right)\left(M_{s} / K_{s}\right)$, we see that $v_{s c}$ is constant. Further, any optimization problem that uses $\omega_{s c}$ as weights gives the same answer when $v_{s c}$ is used because the scale factor in equation (20.90) does not depend on $s$ or $c$. The key in the formulas for the asymptotic variance below is that $v_{s c}$ is (roughly) constant.
+
+While equation (20.90) is the most natural definition of the weights for obtaining the limiting distribution results, we can use different formulations without changing the end formulas. For example, let $C=C_{1}+\cdots+C_{S}$ be the total number of clusters in the population, let $M$ be the total number of units in the population, and let $K$ be the total units samples. Then, for the final formulas, we could use the weights defined as\\
+$v_{s c}=\frac{\left(C_{s} / C\right)}{\left(N_{s} / N\right)} \cdot \frac{\left(M_{s c} / M\right)}{\left(K_{s c} / K\right)}=\frac{(N K)}{(C M)} \omega_{s c}$.
+
+Because $C, M$, and $K$ are fixed, the factor $K /(C M)$ has no effect on estimation or inference. Equation (20.91) has a nice interpretation because it is expressed in terms of frequencies of the population relative to the sample frequencies. For example, if $\left(C_{s} / C\right)>\left(N_{s} / N\right)$, which means that stratum $s$ is underrepresented in terms of number of clusters, equation (20.91) gives more weight to such strata. The same is true of the fractions involving the number of units (say, households).
+
+While we can consider general M-estimation problems, or generalized method of moments as in Bhattacharya (2005), we consider least squares for concreteness. The weighted minimization problem is
+
+
+\begin{equation*}
+\min _{\boldsymbol{\beta}} N^{-1} \sum_{s=1}^{S} \sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}} v_{s c}\left(y_{s c m}-\mathbf{x}_{s c m} \boldsymbol{\beta}\right)^{2}, \tag{20.92}
+\end{equation*}
+
+
+where it is helpful to divide by $N$ to facilitate the asymptotic analysis as $N \rightarrow \infty$. The first-order condition is
+
+
+\begin{equation*}
+N^{-1} \sum_{s=1}^{S} \sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}} v_{s c} \mathbf{x}_{s c m}^{\prime}\left(y_{s c m}-\mathbf{x}_{s c m} \hat{\boldsymbol{\beta}}\right)=\mathbf{0} \tag{20.93}
+\end{equation*}
+
+
+Using arguments similar to the SS sampling case, but accounting for the clustering (by, in effect, treating each cluster as its own observation), we can show that an appropriate estimator of $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$-in the sense that it is consistent for $\operatorname{Avar}[\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})]$ when multiplied by $N$-is
+
+
+\begin{equation*}
+\left(\sum_{s=1}^{S} \sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}} v_{s c} \mathbf{x}_{s c m}^{\prime} \mathbf{x}_{s c m}\right)^{-1} \hat{\mathbf{B}}\left(\sum_{s=1}^{S} \sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}} v_{s c} \mathbf{x}_{s c m}^{\prime} \mathbf{x}_{s c m}\right)^{-1}, \tag{20.94}
+\end{equation*}
+
+
+where $\hat{\mathbf{B}}$ is somewhat complicated:
+
+
+\begin{align*}
+\hat{\mathbf{B}}= & \sum_{s=1}^{S} \sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}} v_{s c}^{2} \hat{u}_{s c m}^{2} \mathbf{x}_{s c m}^{\prime} \mathbf{x}_{s c m}+\sum_{s=1}^{S} \sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}} \sum_{r \neq m}^{K_{s c}} v_{s c}^{2} \hat{u}_{s c m} \hat{u}_{s c r} \mathbf{x}_{s c m}^{\prime} \mathbf{x}_{s c r} \\
+& -\sum_{s=1}^{S} N_{s}^{-1}\left(\sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}} v_{s c} \mathbf{x}_{s c m}^{\prime} \hat{u}_{s c m}\right)\left(\sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}} v_{s c} \mathbf{x}_{s c m}^{\prime} \hat{u}_{s c m}\right)^{\prime} \tag{20.95}
+\end{align*}
+
+
+The first part of $\hat{\mathbf{B}}$ is obtained using the White "heteroskedasticity"-robust form. The second piece accounts for the correlation within clusters; this is typically a positive definite matrix, and it generally increases the asymptotic standard errors. The third piece actually reduces the variance by accounting for the nonzero means of the "score" within strata, just as in the SS sampling case.
+
+If each cluster has just one unit, so $M_{s c}=K_{s c}=1$, then expression (20.94) reduces to
+
+
+\begin{align*}
+& \left(\sum_{s=1}^{S} \sum_{c=1}^{N_{s}} v_{s c} \mathbf{x}_{s c}^{\prime} \mathbf{x}_{s c}\right)^{-1}\left[\left(\sum_{s=1}^{S} \sum_{c=1}^{N_{s}} v_{s c}^{2} \hat{u}_{s c}^{2} \mathbf{x}_{s c}^{\prime} \mathbf{x}_{s c}\right)\right. \\
+& \left.\quad-\sum_{s=1}^{S} N_{s}^{-1}\left(\sum_{c=1}^{N_{s}} v_{s c} \mathbf{x}_{s c}^{\prime} \hat{u}_{s c}\right)\left(\sum_{c=1}^{N_{s}} v_{s c} \mathbf{x}_{s c}^{\prime} \hat{u}_{s c}\right)^{\prime}\right] \cdot\left(\sum_{s=1}^{S} \sum_{c=1}^{N_{s}} v_{s c} \mathbf{x}_{s c}^{\prime} \mathbf{x}_{s c}\right)^{-1}, \tag{20.96}
+\end{align*}
+
+
+which is the formuala for standard stratified sampling with a finite number of units in each stratum.
+
+For general M-estimation, the outer sandwich in (20.94) is replaced with the inverse of the weighted Hessian, $\left[\sum_{s=1}^{S} \sum_{c=1}^{N_{s}} \sum_{m=1}^{K_{s c}} v_{s c} \mathbf{H}\left(\mathbf{w}_{s c m}, \hat{\boldsymbol{\theta}}\right)\right]^{-1}$, while $\mathbf{x}_{s c m}^{\prime} \hat{u}_{s c m}$ in equation (20.95) is replaced with the score, $\mathbf{s}\left(\mathbf{w}_{\text {scm }}, \hat{\boldsymbol{\theta}}\right)$. Some econometrics packages\\
+have made implementation fairly straightforward for a variety of linear and nonlinear models. To obtain the correct asymptotic variance estimator-one that is neither too optimistic nor too conservative-one needs to specify the strata, the clusters, and the sampling weights.
+
+\section*{Problems}
+20.1. Use expressions (20.4) and (20.5) to answer this question.\\
+a. Derive the estimator in equation (20.5) from the minimization problem in expression (20.4).\\
+b. Show directly that the estimator $\tilde{\mu}_{w}=N^{-1} \sum_{i=1}^{N}\left(s_{i} / p_{j_{i}}\right) w_{i}$ is unbiased for $\mu$.\\
+c. What practical advantage does $\hat{\mu}_{w}$ have over $\tilde{\mu}_{w}$ ?\\
+20.2. Use the log likelihood in equation (20.9) to derive $\hat{p}_{j}=M_{j} / N_{j}, j=1, \ldots, J$, where $M_{j}$ is the number of retained observations from stratum $j$ and $N_{j}$ is the number of times stratum $j$ was drawn.\\
+20.3. Let $y$ be a scalar response variable and $\mathbf{x}$ a vector of explanatory variables, and let $m(\mathbf{x}, \boldsymbol{\theta})$ denote a model for $\mathrm{E}(y \mid \mathbf{x})$. The parameter space is $\boldsymbol{\Theta}$.\\
+a. Let $\hat{\boldsymbol{\theta}}_{w}$ be the IPW nonlinear least squares estimator. Write down the minimization problem solved by $\hat{\boldsymbol{\theta}}_{w}$.\\
+b. Assume that the model is correctly specified for $\mathrm{E}(y \mid \mathbf{x})$, and let $\boldsymbol{\theta}_{o}$ denote the population value; assume that $\boldsymbol{\theta}_{o}$ is identified in the population. Provide a set of sufficient conditions for consistency of $\hat{\boldsymbol{\theta}}_{w}$ for $\boldsymbol{\theta}_{o}$. (Hint: See Theorem 12.2.)\\
+c. Assuming that $m(\mathbf{x}, \cdot)$ is twice continuously differentiable on the interior of $\boldsymbol{\Theta}$ and that $\boldsymbol{\theta}_{o} \in \operatorname{int}(\boldsymbol{\Theta})$, propose an estimator of the asymptotic variance of $\hat{\boldsymbol{\theta}}_{w}$ that depends only on the gradient of $m(\mathbf{x}, \cdot)$-not its Hessian.\\
+d. If you add the homoskedasticity assumption $\operatorname{Var}(y \mid \mathbf{x})=\sigma_{o}^{2}$, does the formula from part c simplify?\\
+e. If $m(\mathbf{x}, \boldsymbol{\theta})$ is misspecified, how should you adjust the estimator in part c?\\
+20.4. Consider the problem of standard stratified sampling. Assume that the sample shares, $H_{j}$, converge to $\bar{H}_{j}>0$ as $N \rightarrow \infty, j=1, \ldots, J$. Further, suppose that $\boldsymbol{\theta}_{o}$ minimizes $\mathrm{E}[q(\mathbf{w}, \boldsymbol{\theta}) \mid \mathbf{x}]$ over $\boldsymbol{\Theta}$ for each $\mathbf{x}$ and that $\boldsymbol{\theta}_{o}$ uniquely minimizes $\mathrm{E}[q(\mathbf{w}, \boldsymbol{\theta})]$ over $\boldsymbol{\Theta}$. Argue that the unweighted estimator is consistent for $\boldsymbol{\theta}_{o}$. (Hint: Write the unweighted objective function as
+
+$$
+\sum_{j=1}^{J} H_{j}\left[N_{j}^{-1} \sum_{i=1}^{N_{j}} q\left(\mathbf{w}_{i j}, \boldsymbol{\theta}\right)\right]
+$$
+
+and argue that this function converges uniformly to\\
+$\bar{H}_{1} \mathrm{E}\left[q(\mathbf{w}, \boldsymbol{\theta}) \mid \mathbf{x} \in \mathscr{X}_{1}\right]+\bar{H}_{2} \mathrm{E}\left[q(\mathbf{w}, \boldsymbol{\theta}) \mid \mathbf{x} \in \mathscr{X}_{2}\right]+\cdots+\bar{H}_{J} \mathrm{E}\left[q(\mathbf{w}, \boldsymbol{\theta}) \mid \mathbf{x} \in \mathscr{X}_{J}\right]$,\\
+where the strata are $\mathscr{X}_{1}, \mathscr{X}_{2}, \ldots, \mathscr{X}_{J}$. Then show that $\boldsymbol{\theta}_{o}$ uniquely minimizes this expression by arguing that it uniquely minimizes $\mathrm{E}\left[q(\mathbf{w}, \boldsymbol{\theta}) \mid \mathbf{x} \in \mathscr{X}_{j}\right]$ for at least one $j$.)\\
+20.5. Use the data in BENEFITS.RAW to answer this question.\\
+a. To equation (20.33) add the within-district averages of bs, lstaff, lenroll, and lunch, where lstaff and lenroll denote logarithms. Estimate this equation by pooled OLS. How do the coefficients on $b s$, lstaff, lenroll, and lunch compare with the FE coefficients? Are the usual pooled OLS standard errors valid here?\\
+b. Estimate the equation from part a by random effects. (That is, include the district averages along with the original variables.) How do these estimates compare with the FE estimates? How do the cluster-robust standard errors compare with the clusterrobust standard errors for FE?\\
+c. Use the estimation in part $b$ to obtain the value of the fully robust Wald statistic testing the RE assumption that the district effect is uncorrelated with the four district averages.\\
+20.6. Use the data in BENEFITS.RAW to answer this question.\\
+a. How many schools in the sample have a benefits-salary ratio of at least 0.5 ?\\
+b. Estimate equation (20.33) by fixed effects omitting the observations from part a. Discuss how the estimate of $\beta_{b s}$ changes, as well as its cluster-robust standard error.\\
+c. Now add the within-district averages of all four variables and estimate the equation by least absolute deviations, using all the observations. How strong is the evidence for a trade-off using LAD?\\
+20.7. Use the data in MEAP94\_98 to answer this question.\\
+a. How many schools have all five years of data? Are there any schools with only one year?\\
+b. Obtain the within-school time averages of the variables lavgrexp, lunch, lenrol, and the four-year dummies $y 95$ through $y 98$. Include these in a pooled OLS regression that includes the other variables in Table 20.2 (including the year dummies themselves). Verify that the coefficients on the original variables are the FE estimates.
+
+What is the coefficient on $\overline{\text { lunch }}$ (the time average)? Is it statistically different from zero using a cluster-robust standard error at the district level?\\
+c. Now use RE rather than pooled OLS on the equation in part b. Again verify that you obtain the FE estimates on the original variables. Is the RE coefficient on $\overline{\text { lunch }}$ identical to the POLS coefficient? Is it still statistically significant?\\
+d. Redo part c, but do not include the time averages of the year dummies. Do you still get the FE estimates on lavgrexp, lunch, and lenrol? Why, with an unbalanced panel, must we include the time averages of year dummies for RE to equal FE, whereas we did not have to in the balanced case?\\
+e. Now go back to the original FE estimation in Table 20.2, but drop the year dummies. How does the estimated spending effect change from Table 20.2? Which estimate is more reliable?\\
+f. Return to the equation implicit in Table 20.2, but estimate the equation by pooled OLS and RE. (That is, do not include the time averages of the variables.) How do the estimates of the spending effect compare with the FE estimates? How come the lunch variable is much more important in the POLS and RE estimation?\\
+g. Considering the various estimates and standard errors in Table 20.2 and obtained for this problem, which estimate of the spending variable and which standard error seem most reliable?\\
+20.8. In the setting of Section 20.3.1, let $y_{g m}$ be a fractional response variable, and consider the model\\
+$\mathrm{E}\left(y_{g m} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}, c_{g}\right)=\Phi\left(\alpha+\mathbf{x}_{g} \boldsymbol{\beta}+\mathbf{z}_{g m} \boldsymbol{\gamma}+c_{g}\right)$.\\
+a. Assume that $c_{g}=\eta_{g}+\overline{\mathbf{z}}_{g} \boldsymbol{\xi}_{g}+a_{g}$. Find $\mathrm{E}\left(y_{g m} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}, a_{g}\right)$.\\
+b. Add the assumption $a_{g} \mid \mathbf{x}_{g}, \mathbf{Z}_{g} \sim \operatorname{Normal}\left(0, \tau_{g}^{2}\right)$ and find $\mathrm{E}\left(y_{g m} \mid \mathbf{x}_{g}, \mathbf{Z}_{g}\right)$. (Hint: It should have the probit form.)\\
+c. Suppose that $\eta_{g}, \boldsymbol{\xi}_{g}$, and $\tau_{g}^{2}$ depend only on the group size, $M_{g}$. Suggest a method for estimating all the parameters.\\
+d. How would you perform inference on the parameters estimated in part c?
+
+\section*{\begin{center}
+
+\end{document}

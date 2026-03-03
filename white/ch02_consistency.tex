@@ -1,0 +1,369 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{03C4}{\ifmmode\tau\else{$\tau$}\fi}
+\title{Chapter 2: Consistency}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Consistency}
+In this chapter we introduce the concepts needed to analyze the behavior of $\hat{\boldsymbol{\beta}}_{n}$ and $\tilde{\boldsymbol{\beta}}_{n}$ as $n \rightarrow \infty$.
+
+\subsection*{2.1 Limits}
+The most fundamental concept is that of a limit.
+
+Definition 2.1 Let $\left\{b_{n}\right\}$ be a sequence of real numbers. If there exists a real number $b$ and if for every real $\delta>0$ there exists an integer $N(\delta)$ such that for all $n>N(\delta),\left|b_{n}-b\right|<\delta$, then $b$ is the limit of the sequence $\left\{b_{n}\right\}$.
+
+In this definition the constant $\delta$ can take on any real value, but it is the very small values of $\delta$ that provide the definition with its impact. By choosing a very small $\delta$, we ensure that $b_{n}$ gets arbitrarily close to its limit $b$ for all $n$ that are sufficiently large. When a limit exists, we say that the sequence $\left\{b_{n}\right\}$ converges to $b$ as $n$ tends to infinity, written $b_{n} \rightarrow b$ as $n \rightarrow \infty$. We also write $b=\lim _{n \rightarrow \infty} b_{n}$. When no ambiguity is possible, we simply write $b_{n} \rightarrow b$ or $b=\lim b_{n}$. If for any $a \in \mathbb{R}$, there exists an integer $N(a)$ such that $b_{n}>a$ for all $n>N(a)$, we write $b_{n} \rightarrow \infty$ and we write $b_{n} \rightarrow-\infty$ if $-b_{n} \rightarrow \infty$.
+
+Example 2.2 (i) Let $b_{n}=1-1 / n$. Then $b_{n} \rightarrow 1$. (ii) Let $b_{n}=(1+a / n)^{n}$. Then $b_{n} \rightarrow e^{a}$. (iii) Let $b_{n}=n^{2}$. Then $b_{n} \rightarrow \infty$. (iv) Let $b_{n}=(-1)^{n}$. Then no limit exists.
+
+The concept of a limit extends directly to sequences of real vectors. Let $\mathbf{b}_{n}$ be a $k \times 1$ vector with real elements $b_{n i}, i=1, \ldots, k$. If $b_{n i} \rightarrow b_{i}$, $i=1, \ldots, k$, then $\mathbf{b}_{n} \rightarrow \mathbf{b}$, where $\mathbf{b}$ has elements $b_{i}, i=1, \ldots, k$. An analogous extension applies to matrices.
+
+Often we wish to consider the limit of a continuous function of a sequence. For this, either of the following equivalent definitions of continuity suffices.
+
+Definition 2.3 Given $\mathbf{g}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{l}(k, l \in \mathbb{N})$ and $\mathbf{b} \in \mathbb{R}^{k}$, (i) the function $\mathbf{g}$ is continuous $\mathbf{a t} \mathbf{b}$ if for any sequence $\left\{\mathbf{b}_{n}\right\}$ such that $\mathbf{b}_{n} \rightarrow \mathbf{b}, \mathbf{g}\left(\mathbf{b}_{n}\right) \rightarrow \mathbf{g}(\mathbf{b})$; or equivalently (ii) the function $\mathbf{g}$ is continuous at $\mathbf{b}$ if for every $\varepsilon>0$ there exists $\delta(\varepsilon)>0$ such that if $\mathbf{a} \in \mathbb{R}^{k}$ and $\left|a_{i}-b_{i}\right|<\delta(\varepsilon)$, $i=1, \ldots, k$, then $\left|g_{j}(\mathbf{a})-g_{j}(\mathbf{b})\right|<\varepsilon, j=1, \ldots$, l. Further, if $B \subset \mathbb{R}^{k}$, then $\mathbf{g}$ is continuous on $B$ if it is continuous at every point of $B$.
+
+Example 2.4 (i) From this it follows that if $\mathbf{a}_{n} \rightarrow \mathbf{a}$ and $\mathbf{b}_{n} \rightarrow \mathbf{b}$, then $\mathbf{a}_{n}+\mathbf{b}_{n} \rightarrow \mathbf{a}+\mathbf{b}$ and $\mathbf{a}_{n} \mathbf{b}_{n}^{\prime} \rightarrow \mathbf{a b}^{\prime}$. (ii) The matrix inverse function is continuous at every point that represents a nonsingular matrix, so that if $\mathbf{X}^{\prime} \mathbf{X} / n \rightarrow \mathbf{M}$, a finite nonsingular matrix, then $\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \rightarrow \mathbf{M}^{-1}$.
+
+Often it is useful to have a measure of the order of magnitude of a particular sequence without particularly worrying about its convergence. The following definition compares the behavior of a sequence $\left\{b_{n}\right\}$ with the behavior of a power of $n$, say $n^{\boldsymbol{\lambda}}$, where $\lambda$ is chosen so that $\left\{b_{n}\right\}$ and $\left\{n^{\boldsymbol{\lambda}}\right\}$ behave similarly.
+
+Definition 2.5 (i) The sequence $\left\{b_{n}\right\}$ is at most of order $n^{\lambda}$, denoted $b_{n}=O\left(n^{\lambda}\right)$, if for some finite real number $\Delta>0$, there exists a finite integer $N$ such that for all $n>N,\left|n^{-\lambda} b_{n}\right|<\Delta$. (ii) The sequence $\left\{b_{n}\right\}$ is of order smaller than $n^{\lambda}$, denoted $b_{n}=o\left(n^{\lambda}\right)$, if for every real number $\delta>0$ there exists a finite integer $N(\delta)$ such that for all $n>N(\delta),\left|n^{-\lambda} b_{n}\right|<\delta$, i.e., $n^{-\lambda} b_{n} \rightarrow 0$.
+
+In this definition we adopt a convention that we utilize repeatedly in the material to follow; specifically, we let $\Delta$ represent a real positive constant that we may take to be as large as necessary, and we let $\delta$ (and similarly $\varepsilon)$ represent a real positive constant that we may take to be as small as necessary. In any two different places $\Delta$ (or $\delta$ ) need not represent the same value, although there is no loss of generality in supposing that it does. (Why?)
+
+As we have defined these notions, $b_{n}=O\left(n^{\lambda}\right)$ if $\left\{n^{-\lambda} b_{n}\right\}$ is eventually bounded, whereas $b_{n}=o\left(n^{\lambda}\right)$ if $n^{-\lambda} b_{n} \rightarrow 0$. Obviously, if $b_{n}=o\left(n^{\lambda}\right)$, then $b_{n}=O\left(n^{\lambda}\right)$. Further, if $b_{n}=O\left(n^{\lambda}\right)$, then for every $\delta>0, b_{n}=O\left(n^{\lambda+\delta}\right)$. When $b_{n}=O\left(n^{0}\right)$, it is simply (eventually) bounded and may or may not have a limit. We often write $O(1)$ in place of $O\left(n^{0}\right)$. Similarly, $b_{n}=o(1)$ means $b_{n} \rightarrow 0$.
+
+Example 2.6 (i) Let $b_{n}=4+2 n+6 n^{2}$. Then $b_{n}=O\left(n^{2}\right)$ and $b_{n}= o\left(n^{2+\delta}\right)$ for every $\delta>0$. (ii) Let $b_{n}=(-1)^{n}$. Then $b_{n}=O(1)$ and $b_{n}= O\left(n^{\delta}\right)$ for every $\delta>0$. (iii) Let $b_{n}=\exp (-n)$. Then $b_{n}=o\left(n^{-\delta}\right)$ for every $\delta>0$ and $b_{n}=O\left(n^{-\delta}\right)$ for every $\delta>0$. (iv) Let $b_{n}=\exp (n)$. Then $b_{n} \neq O\left(n^{\kappa}\right)$ for any $\kappa \in \mathbb{R}$.
+
+If each element of a vector or matrix is $O\left(n^{\lambda}\right)$ or $o\left(n^{\lambda}\right)$, then that vector or matrix is $O\left(n^{\lambda}\right)$ or $o\left(n^{\lambda}\right)$.
+
+Some elementary facts about the orders of magnitude of sums and products of sequences are given by the next result.
+
+Proposition 2.7 Let $a_{n}$ and $b_{n}$ be scalars. (i) If $a_{n}=O\left(n^{\lambda}\right)$ and $b_{n}= O\left(n^{\mu}\right)$, then $a_{n} b_{n}=O\left(n^{\lambda+\mu}\right)$ and $a_{n}+b_{n}=O\left(n^{\kappa}\right)$, where $\kappa=\max [\lambda, \mu]$. (ii) If $a_{n}=o\left(n^{\lambda}\right)$ and $b_{n}=o\left(n^{\mu}\right)$, then $a_{n} b_{n}=o\left(n^{\lambda+\mu}\right)$ and $a_{n}+b_{n}= o\left(n^{\kappa}\right)$. (iii) If $a_{n}=O\left(n^{\lambda}\right)$ and $b_{n}=o\left(n^{\mu}\right)$, then $a_{n} b_{n}=o\left(n^{\lambda+\mu}\right)$ and $a_{n}+b_{n}=O\left(n^{\kappa}\right)$.
+
+Proof. (i) Since $a_{n}=O\left(n^{\lambda}\right)$ and $b_{n}=O\left(n^{\mu}\right)$, there exist a finite $\Delta>0$ and $N \in \mathbb{N}$ such that, for all $n>N,\left|n^{-\lambda} a_{n}\right|<\Delta$ and $\left|n^{-\mu} b_{n}\right|<\Delta$. Consider $a_{n} b_{n}$. Now $\left|n^{-\lambda-\mu} a_{n} b_{n}\right|=\left|n^{-\lambda} a_{n} n^{-\mu} b_{n}\right|=\left|n^{-\lambda} a_{n}\right| \cdot\left|n^{-\mu} b_{n}\right|<\Delta^{2}$ for all $n>N$. Hence $a_{n} b_{n}=O\left(n^{\lambda+\mu}\right)$. Consider $a_{n}+b_{n}$. Now $\left|n^{-\kappa}\left(a_{n}+b_{n}\right)\right|= \left|n^{-\kappa} a_{n}+n^{-\kappa} b_{n}\right|<\left|n^{-\kappa} a_{n}\right|+\left|n^{-\kappa} b_{n}\right|$ by the triangle inequality. Since $\kappa \geq \lambda$ and $\kappa>\mu,\left|n^{-\kappa}\left(a_{n}+b_{n}\right)\right| \leq\left|n^{-\kappa} a_{n}\right|+\left|n^{-\kappa} b_{n}\right| \leq\left|n^{-\lambda} a_{n}\right|+\left|n^{-\mu} b_{n}\right|<2 \Delta$ for all $n>N$. Hence $a_{n}+b_{n}=O\left(n^{\kappa}\right), \kappa=\max [\lambda, \mu]$.\\
+(ii) The proof is identical to that of (i), replacing $\Delta$ with every $\delta>0$ and $N$ with $N(\delta)$.\\
+(iii) Since $a_{n}=O\left(n^{\lambda}\right)$ there exist a finite $\Delta>0$ and $N^{\prime} \in \mathbb{N}$ such that for all $n>N^{\prime},\left|n^{-\lambda} a_{n}\right|<\Delta$. Given $\delta>0$, let $\delta^{\prime \prime}=\delta / \Delta$. Then since $b_{n}=o\left(n^{\mu}\right)$ there exists $N^{\prime \prime}\left(\delta^{\prime \prime}\right)$ such that $\left|n^{-\mu} b_{n}\right|<\delta^{\prime \prime}$ for $n>N^{\prime \prime}\left(\delta^{\prime \prime}\right)$. Now $\left|n^{-\lambda-\mu} a_{n} b_{n}\right|=\left|n^{-\lambda} a_{n} n^{-\mu} b_{n}\right|=\left|n^{-\lambda} a_{n}\right| \cdot\left|n^{-\mu} b_{n}\right|<\Delta \delta^{\prime \prime}=\delta$ for $n>N=\max \left(N^{\prime}, N^{\prime \prime}(\delta)\right)$. Hence $a_{n} b_{n}=o\left(n^{\lambda+\mu}\right)$. Since $b_{n}=o\left(n^{\mu}\right)$, it is also $O\left(n^{\mu}\right)$. That $a_{n}+b_{n}=O\left(n^{\kappa}\right)$ follows from (i). \(\square\)
+
+A particularly important special case is illustrated by the following exercise.
+
+Exercise 2.8 Let $\mathbf{A}_{n}$ be a $k \times k$ matrix and let $\mathbf{b}_{n}$ be a $k \times 1$ vector. If $\mathbf{A}_{n}=o(1)$ and $\mathbf{b}_{n}=O(1)$, verify that $\mathbf{A}_{n} \mathbf{b}_{n}=o(1)$.
+
+For the most part, econometrics is concerned not simply with sequences of real numbers, but rather with sequences of real-valued random scalars or vectors. Very often these are either averages, for example, $\overline{\mathcal{Z}}_{n}=\sum_{t=1}^{n} \mathcal{Z}_{t} / n$, or functions of averages, such as $\overline{\mathcal{Z}}_{n}^{2}$, where $\left\{\mathcal{Z}_{t}\right\}$ is, for example, a sequence of random scalars. Since the $\mathcal{Z}_{t}$ 's are random variables, we have to allow for a possibility that would not otherwise occur, that is, that different realizations of the sequence $\left\{\mathcal{Z}_{t}\right\}$ can lead to different limits for $\overline{\mathcal{Z}}_{n}$. Convergence to a particular value must now be considered as a random event and our interest centers on cases in which nonconvergence occurs only rarely in some appropriately defined sense.
+
+\subsection*{2.2 Almost Sure Convergence}
+The stochastic convergence concept most closely related to the limit notions previously discussed is that of almost sure convergence. Sequences that converge almost surely can be manipulated in almost exactly the same ways as nonrandom sequences.
+
+Random variables are best viewed as functions from an underlying space $\Omega$ to the real line. Thus, when discussing a real-valued random variable $b_{n}$, we are in fact talking about a mapping $b_{n}: \Omega \rightarrow \mathbb{R}$. We let $\omega$ be a typical element of $\Omega$ and call the real number $b_{n}(\omega)$ a realization of the random variable. Subsets of $\Omega$, for example $\left\{\omega \in \Omega: b_{n}(\omega)<a\right\}$, are events and we will assign a probability to these, e.g., $P\left\{\omega \in \Omega: b_{n}(\omega) \leq a\right\}$. We write $P\left[b_{n}<a\right]$ as a shorthand notation. There are additional details that we will consider more carefully in subsequent chapters, but this understanding will suffice for now.
+
+Interest will often center on averages such as
+
+$$
+b_{n}(\cdot)=n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{t}(\cdot)
+$$
+
+We write the parentheses with dummy argument ( ⋅ ) to emphasize that $b_{n}$ and $\mathcal{Z}_{t}$ are functions.
+
+Definition 2.9 Let $\left\{b_{n}(\cdot)\right\}$ be a sequence of real-valued random variables. We say that $b_{n}(\cdot)$ converges almost surely to $b$, written $b_{n}(\cdot) \xrightarrow{\text { a.s. }} b$ if there exists a real number $b$ such that $P\left\{\omega: b_{n}(\omega) \rightarrow b\right\}=1$.
+
+The probability measure $P$ determines the joint distribution of the entire sequence $\left\{\mathcal{Z}_{t}\right\}$. A sequence $b_{n}$ converges almost surely if the probability of obtaining a realization of the sequence $\left\{\mathcal{Z}_{t}\right\}$ for which convergence to $b$ occurs is unity. Equivalently, the probability of observing a realization of $\left\{\mathcal{Z}_{t}\right\}$ for which convergence to $b$ does not occur is zero. Failure to converge is possible but will almost never happen under this definition. Obviously, then, nonstochastic convergence implies almost sure convergence.
+
+Because the set of $\omega$ 's for which $b_{n}(\omega) \rightarrow b$ has probability one, $b_{n}$ is sometimes said to converge to $b$ with probability 1 , (w.p.1). Other common terminology is that $b_{n}$ converges almost everywhere (a.e.) in $\Omega$ or that $b_{n}$ is strongly consistent for $b$. When no ambiguity is possible, we drop the notation ( $\cdot$ ) and simply write $b_{n} \xrightarrow{\text { a.s. }} b$ instead of $b_{n}(\cdot) \xrightarrow{\text { a.s. }} b$.\\
+Example 2.10 Let $\overline{\mathcal{Z}}_{n} \equiv n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{t}$, where $\left\{\mathcal{Z}_{t}\right\}$ is a sequence of independent identically distributed (i.i.d.) random variables with $\mu \equiv E\left(\mathcal{Z}_{t}\right)< \infty$. Then $\overline{\mathcal{Z}}_{n} \xrightarrow{\text { a.s. }} \mu$, by the Kolmogorov strong law of large numbers (Theorem 3.1).
+
+The almost sure convergence of the sample mean illustrated by this example occurs under a wide variety of conditions on the sequence $\left\{\mathcal{Z}_{t}\right\}$. A discussion of these conditions is the subject of the next chapter.
+
+As with nonstochastic limits, the almost sure convergence concept extends immediately to vectors and matrices of finite dimension. Almost sure convergence element by element suffices for almost sure convergence of vectors and matrices.
+
+The behavior of continuous functions of almost surely convergent sequences is analogous to the nonstochastic case.
+
+Proposition 2.11 Given $\mathbf{g}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{l}(k, l \in \mathbb{N})$ and any sequence of random $k \times 1$ vectors $\left\{\mathbf{b}_{n}\right\}$ such that $\mathbf{b}_{n} \xrightarrow{\text { a.s. }} \mathbf{b}$, where $\mathbf{b}$ is $k \times 1$, if $\mathbf{g}$ is continuous at $\mathbf{b}$, then $\mathbf{g}\left(\mathbf{b}_{n}\right) \xrightarrow{\text { a.s. }} \mathbf{g}(\mathbf{b})$.
+
+Proof. Since $\mathbf{b}_{n}(\omega) \rightarrow \mathbf{b}$ implies $\mathbf{g}\left(\mathbf{b}_{n}(\omega)\right) \rightarrow \mathbf{g}(\mathbf{b})$,
+
+$$
+\left\{\omega: \mathbf{b}_{n}(\omega) \rightarrow \mathbf{b}\right\} \subset\left\{\omega: \mathbf{g}\left(\mathbf{b}_{n}(\omega)\right) \rightarrow \mathbf{g}(\mathbf{b})\right\}
+$$
+
+Hence
+
+$$
+1=P\left\{\omega: \mathbf{b}_{n}(\omega) \rightarrow \mathbf{b}\right\}<P\left\{\omega: \mathbf{g}\left(\mathbf{b}_{n}(\omega)\right) \rightarrow \mathbf{g}(\mathbf{b})\right\} \leq 1,
+$$
+
+so that $\mathbf{g}\left(\mathbf{b}_{n}\right) \xrightarrow{\text { a.s. }} \mathbf{g}(\mathbf{b})$.\\
+This result is one of the most important in this book, because consistency results for many of our estimators follow by simply applying Proposition 2.11.
+
+Theorem 2.12 Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\mathbf{X}^{\prime} \varepsilon / n \xrightarrow{\text { a.s. }} \mathbf{0}$;\\
+(iii) $\mathbf{X}^{\prime} \mathbf{X} / n \xrightarrow{\text { a.s. }} \mathbf{M}$, finite and positive definite.
+
+Then $\hat{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.\\
+Proof. Since $\mathbf{X}^{\prime} \mathbf{X} / n \xrightarrow{\text { a.s. }} \mathbf{M}$, it follows from Proposition 2.11 that
+
+$$
+\operatorname{det}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right) \xrightarrow{\text { a.s. }} \operatorname{det}(\mathbf{M}) .
+$$
+
+Because $\mathbf{M}$ is positive definite by (iii), $\operatorname{det}(\mathbf{M})>0$. It follows that for all $n$ sufficiently large $\operatorname{det}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)>0$ a.s., so $\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$ exists for all $n$ sufficiently large a.s. Hence $\hat{\boldsymbol{\beta}}_{n}=\boldsymbol{\beta}_{o}+\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{X}^{\prime} \varepsilon / n$ exists for all $n$ sufficiently large a.s.
+
+Now $\hat{\boldsymbol{\beta}}_{n}=\boldsymbol{\beta}_{o}+\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{X}^{\prime} \boldsymbol{\varepsilon} / n$ by (i). It follows from Proposition 2.11 that $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}+\mathbf{M}^{-1} \cdot \mathbf{0}=\boldsymbol{\beta}_{o}$, given (ii) and (iii). \(\square\)
+
+In the proof, we refer to events that occur a.s. Any event that occurs with probability one is said to occur almost surely (a.s.) (e.g., convergence to a limit or existence of the inverse).
+
+Theorem 2.12 is a fundamental consistency result for least squares estimation in many commonly encountered situations. Whether this result applies in a given situation depends on the nature of the data. For example, if our observations are randomly drawn from a population, as in a pure cross section, they may be taken to be i.i.d. The conditions of Theorem 2.12 hold for i.i.d. observations provided $E\left(\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right)=\mathbf{M}$, finite and positive definite, and $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$, since Kolmogorov's strong law of large numbers (Example 2.10) ensures that $\mathbf{X}^{\prime} \mathbf{X} / n=n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t} \mathbf{X}_{t}^{\prime} \xrightarrow{\text { a.s. }} \mathbf{M}$ and $\mathbf{X}^{\prime} \varepsilon / n=n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t} \varepsilon_{t} \xrightarrow{\text { a.s. }} \mathbf{0}$. If the observations are dependent (as in a time series), different laws of large numbers must be applied to guarantee that the appropriate conditions hold. These are given in the next chapter.
+
+A result for the IV estimator can be proven analogously.\\
+Exercise 2.13 Prove the following result. Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\mathbf{Z}^{\prime} \varepsilon / n \xrightarrow{\text { a.s. }} \mathbf{0}$;\\
+(iii) (a) $\mathbf{Z}^{\prime} \mathbf{X} / n \xrightarrow{\text { a.s. }} \mathbf{Q}$, finite with full column rank;\\
+(b) $\hat{\mathbf{P}}_{n} \xrightarrow{\text { a.s. }} \mathbf{P}$, finite and positive definite.
+
+Then $\tilde{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.\\
+This consistency result for the IV estimator precisely specifies the conditions that must be satisfied for a sequence of random vectors $\left\{\mathbf{Z}_{t}\right\}$ to act as a set of instrumental variables. They must be unrelated to the errors, as specified by assumption (ii), and they must be closely enough related to the explanatory variables that $\mathbf{Z}^{\prime} \mathbf{X} / n$ converges to a matrix with full column rank, as required by assumption (iii.a). Note that a necessary condition for this is that the order condition for identification holds (see Fisher, 1966, Chapter 2); that is, that $l>k$. (Recall that $\mathbf{Z}$ is $p n \times l$ and $\mathbf{X}$ is $p n \times k$.) For now, we simply treat the instrumental variables as given. In Chapter 4 we see how the instrumental variables may be chosen optimally.
+
+A potentially restrictive aspect of the consistency results just given for the least squares and IV estimators is that the matrices $\mathbf{X}^{\prime} \mathbf{X} / n, \mathbf{Z}^{\prime} \mathbf{X} / n$, and $\hat{\mathbf{P}}_{n}$ are each required to converge to a fixed limiting value. When the observations are not identically distributed (as in a stratified cross section, a panel, or certain time-series cases), these matrices need not converge, and the results of Theorem 2.12 and Exercise 2.13 do not necessarily apply.
+
+Nevertheless, it is possible to obtain more general versions of these results that do not require the convergence of $\mathbf{X}^{\prime} \mathbf{X} / n, \mathbf{Z}^{\prime} \mathbf{X} / n$, or $\hat{\mathbf{P}}_{n}$ by generalizing Proposition 2.11. To do this we make use of the notion of uniform continuity.
+
+Definition 2.14 Given $\mathbf{g}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{l}(k, l \in \mathbb{N})$, we say that $\mathbf{g}$ is uniformly continuous on a set $B \subset \mathbb{R}^{k}$ if for each $\varepsilon>0$ there is a $\delta(\varepsilon)>0$ such that if $\mathbf{a}$ and $\mathbf{b}$ belong to $B$ and $\left|a_{i}-b_{i}\right|<\delta(\varepsilon), i=1, \ldots, k$, then $\left|g_{j}(\mathbf{a})-g_{j}(\mathbf{b})\right|< \varepsilon, j=1, \ldots, l$.
+
+Note that uniform continuity implies continuity on $B$ but that continuity on $B$ does not imply uniform continuity. The essential aspect of uniform continuity that distinguishes it from continuity is that $\delta$ depends only on $\varepsilon$ and not on b. However, when $B$ is compact, continuity does imply uniform continuity, as formally stated in the next result.
+
+Theorem 2.15 (Uniform continuity theorem) Suppose $\mathbf{g}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{l}$ is a continuous function on $C \subset \mathbb{R}^{k}$. If $C$ is compact, then $\mathbf{g}$ is uniformly continuous on $C$.
+
+Proof. See Bartle (1976, p. 160).\\
+Now we extend Proposition 2.11 to cover situations where a random sequence $\left\{b_{n}\right\}$ does not necessarily converge to a fixed point but instead "follows" a nonrandom sequence $\left\{c_{n}\right\}$, in the sense that $b_{n}-c_{n} \xrightarrow{\text { a.s. }} 0$, where the sequence of real numbers $\left\{c_{n}\right\}$ does not necessarily converge.
+
+Proposition 2.16 Let $\mathbf{g}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{l}$ be continuous on a compact set $C \subset \mathbb{R}^{k}$. Suppose that $\left\{\mathbf{b}_{n}\right\}$ is a sequence of random $k \times 1$ vectors and $\left\{\mathbf{c}_{n}\right\}$ is a sequence of $k \times 1$ vectors such that $\mathbf{b}_{n}(\cdot)-\mathbf{c}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$ and there exists $\eta>0$ such that for all $n$ sufficiently large $\left\{\mathbf{c}:\left|c_{i}-c_{n i}\right|<\eta, i=1, \ldots, k\right\} \subset C$, i.e., for all $n$ sufficiently large, $\mathbf{c}_{n}$ is interior to $C$ uniformly in $n$. Then $\mathbf{g}\left(\mathbf{b}_{n}(\cdot)\right)-\mathbf{g}\left(\mathbf{c}_{n}\right) \xrightarrow{\text { a.s. }} \mathbf{0}$.
+
+Proof. Let $g_{j}$ be the $j$ th element of $\mathbf{g}$. Since $C$ is compact, $g_{j}$ is uniformly continuous on $C$ by Theorem 2.15. Let $F=\left\{\omega: \mathbf{b}_{n}(\omega)-\mathbf{c}_{n} \rightarrow \mathbf{0}\right\}$; then $P(F)=1$ since $\mathbf{b}_{n}-\mathbf{c}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$. Choose $\omega \in F$. Since $\mathbf{c}_{n}$ is interior to $C$ for all $n$ sufficiently large uniformly in $n$ and $\mathbf{b}_{n}(\omega)-\mathbf{c}_{n} \rightarrow \mathbf{0}, \mathbf{b}_{n}(\omega)$ is also interior to $C$ for all $n$ sufficiently large. By uniform continuity, for any $\varepsilon>0$ there exists $\delta(\varepsilon)>0$ such that if $\left|b_{n i}(\omega)-c_{n i}\right|<\delta(\varepsilon), i=1, \ldots, k$, then $\left|g_{j}\left(\mathbf{b}_{n}(\omega)\right)-g_{j}\left(\mathbf{c}_{n}\right)\right|<\varepsilon$. Hence $\mathbf{g}\left(\mathbf{b}_{n}(\omega)\right)-\mathbf{g}\left(\mathbf{c}_{n}\right) \rightarrow \mathbf{0}$. Since this is true for any $\omega \in F$ and $P(F)=1$, then $\mathbf{g}\left(\mathbf{b}_{n}\right)-\mathbf{g}\left(\mathbf{c}_{n}\right) \xrightarrow{\text { a.s. }} \mathbf{0}$.
+
+To state the results for the OLS and IV estimators below concisely, we define the following concepts, as given by White (1982, pp. 484-485).
+
+Definition 2.17 $A$ sequence of $k \times k$ matrices $\left\{\mathbf{A}_{n}\right\}$ is said to be uniformly nonsingular if for some $\delta>0$ and all $n$ sufficiently large $\left|\operatorname{det}\left(\mathbf{A}_{n}\right)\right|> \delta$. If $\left\{\mathbf{A}_{n}\right\}$ is a sequence of positive semidefinite matrices, then $\left\{\mathbf{A}_{n}\right\}$ is uniformly positive definite if $\left\{\mathbf{A}_{n}\right\}$ is uniformly nonsingular. If $\left\{\mathbf{A}_{n}\right\}$ is a sequence of $l \times k$ matrices, then $\left\{\mathbf{A}_{n}\right\}$ has uniformly full column rank if there exists a sequence of $k \times k$ submatrices $\left\{\mathbf{A}_{n}^{*}\right\}$ which is uniformly nonsingular.
+
+If a sequence of matrices is uniformly nonsingular, the elements of the sequence are prevented from getting "too close" to singularity. Similarly, if a sequence of matrices has uniformly full column rank, the elements of the sequence are prevented from getting "too close" to a matrix with less than full column rank.
+
+Next we state the desired extensions of Theorem 2.12 and Exercise 2.13.\\
+Theorem 2.18 Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\mathbf{X}^{\prime} \varepsilon / n \xrightarrow{\text { a.s. }} \mathbf{0}$;\\
+(iii) $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$, where $\mathbf{M}_{n}=O(1)$ and is uniformly positive definite.
+
+Then $\hat{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.
+
+Proof. Because $\mathrm{M}_{n}=O(1)$, it is bounded for all $n$ sufficiently large, and it follows from Proposition 2.16 that $\operatorname{det}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)-\operatorname{det}\left(\mathbf{M}_{n}\right) \xrightarrow{\text { a.s. }} 0$. Since $\operatorname{det}\left(\mathrm{M}_{n}\right)>\delta>0$ for all $n$ sufficiently large by Definition 2.17, it follows that $\operatorname{det}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)>\delta / 2>0$ for all $n$ sufficiently large a.s., so that $\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$ exists for all $n$ sufficiently large a.s. Hence $\hat{\boldsymbol{\beta}}_{n} \equiv \left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{X}^{\prime} \mathbf{Y} / n$ exists for all $n$ sufficiently large a.s.
+
+Now $\hat{\boldsymbol{\beta}}_{n}=\boldsymbol{\beta}_{o}+\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{X}^{\prime} \boldsymbol{\varepsilon} / n$ by (i). It follows from Proposition 2.16 that $\hat{\boldsymbol{\beta}}_{n}-\left(\boldsymbol{\beta}_{o}+\mathbf{M}_{n}^{-1} \cdot \mathbf{0}\right) \xrightarrow{\text { a.s. }} \mathbf{0}$ or $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$, given (ii) and (iii). \(\square\)
+
+Compared with Theorem 2.12, the present result relaxes the requirement that $\mathbf{X}^{\prime} \mathbf{X} / n \xrightarrow{\text { a.s. }} \mathbf{M}$ and instead requires that $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$, allowing for the possibility that $\mathbf{X}^{\prime} \mathbf{X} / n$ may not converge to a fixed limit. Note that the requirement $\operatorname{det}\left(\mathrm{M}_{n}\right)>\delta>0$ ensures the uniform continuity of the matrix inverse function.
+
+The proof of the IV result requires a demonstration that $\left\{\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right\}$ is uniformly positive definite under appropriate conditions. These conditions are provided by the following result.
+
+Lemma 2.19 If $\left\{\mathbf{A}_{n}\right\}$ is a $O(1)$ sequence of $l \times k$ matrices with uniformly full column rank and $\left\{\mathbf{B}_{n}\right\}$ is a $O(1)$ sequence of uniformly positive definite $l \times l$ matrices, then $\left\{\mathbf{A}_{n}^{\prime} \mathbf{B}_{n} \mathbf{A}_{n}\right\}$ and $\left\{\mathbf{A}_{n}^{\prime} \mathbf{B}_{n}^{-1} \mathbf{A}_{n}\right\}$ are $O(1)$ sequences of uniformly positive definite $k \times k$ matrices.
+
+Proof. See White (1982, Lemma A.3). \(\square\)
+
+Exercise 2.20 Prove the following result. Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\mathbf{Z}^{\prime} \varepsilon / n \xrightarrow{\text { a.s. }} \mathbf{0}$;\\
+(iii) (a) $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$, where $\mathbf{Q}_{n}=O(1)$ and has uniformly full column rank;\\
+(b) $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$, where $\mathbf{P}_{n}=O(1)$ and is symmetric and uniformly positive definite.
+
+Then $\tilde{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.\\
+The notion of orders of magnitude extends to almost surely convergent sequences in a straightforward way.
+
+Definition 2.21 (i) The random sequence $\left\{b_{n}\right\}$ is at most of order $n^{\lambda}$ almost surely denoted $b_{n}=O_{\text {a.s. }}\left(n^{\lambda}\right)$, if there exist $\Delta<\infty$ and $N<\infty$ such that $P\left[\left|n^{-\lambda} b_{n}\right|<\Delta\right.$ for all $\left.n>N\right]=1$. (ii) The sequence $\left\{b_{n}\right\}$ is of order smaller than $n^{\lambda}$ almost surely denoted $b_{n}=o_{\text {a.s. }}\left(n^{\lambda}\right)$ if $n^{-\lambda} b_{n} \xrightarrow{\text { a.s. }} 0$.
+
+A sufficient condition that $b_{n}=O_{\text {a.s. }}\left(n^{-\lambda}\right)$ is that $n^{-\lambda} b_{n}-a_{n} \xrightarrow{\text { a.s. }} 0$, where $a_{n}=O(1)$. The algebra of $O_{\text {a.s }}$. and $o_{\text {a.s }}$. is analogous to that for $O$ and $o$.
+
+Exercise 2.22 Prove the following. Let $a_{n}$ and $b_{n}$ be random scalars. (i) If $a_{n}=O_{a . s .}\left(n^{\boldsymbol{\lambda}}\right)$ and $b_{n}=O_{a . s .}\left(n^{\boldsymbol{\mu}}\right)$, then $a_{n} b_{n}=O_{a . s .}\left(n^{\boldsymbol{\lambda}+\boldsymbol{\mu}}\right)$ and $\left\{a_{n}+b_{n}\right\}$ is $O_{\text {a.s. }}\left(n^{\kappa}\right), \kappa=\max [\lambda, \mu]$. (ii) If $a_{n}=o_{\text {a.s. }}\left(n^{\lambda}\right)$ and $b_{n}=o_{\text {a.s. }}\left(n^{\mu}\right)$, then $a_{n} b_{n}=o_{a . s .}\left(n^{\lambda+\mu}\right)$ and $a_{n}+b_{n}=o_{a . s .}\left(n^{\kappa}\right)$. (iii) If $a_{n}=O_{a . s .}\left(n^{\lambda}\right)$ and $b_{n}=o_{a . s .}\left(n^{\mu}\right)$, then $a_{n} b_{n}=o_{a . s .}\left(n^{\lambda+\mu}\right)$ and $\left\{a_{n}+b_{n}\right\}$ is $O_{a . s .}\left(n^{\kappa}\right)$.
+
+\subsection*{2.3 Convergence in Probability}
+A weaker stochastic convergence concept is that of convergence in probability.
+
+Definition 2.23 Let $\left\{b_{n}\right\}$ be a sequence of real-valued random variables. If there exists a real number $b$ such that for every $\varepsilon>0, P\left(\omega:\left|b_{n}(\omega)-b\right|<\right. \varepsilon) \rightarrow 1$ as $n \rightarrow \infty$, then $b_{n}$ converges in probability to $b$, written $b_{n} \xrightarrow{p} b$.
+
+With almost sure convergence, the probability measure $P$ takes into account the joint distribution of the entire sequence $\left\{\mathcal{Z}_{t}\right\}$, but with convergence in probability, we only need concern ourselves sequentially with the joint distribution of the elements of $\left\{\mathcal{Z}_{t}\right\}$ that actually appear in $b_{n}$, typically the first $n$. When a sequence converges in probability, it becomes less and less likely that an element of the sequence lies beyond any specified distance $\varepsilon$ from $b$ as $n$ increases. The constant $b$ is called the probability limit of $b_{n}$. A common notation is $\operatorname{plim} b_{n}=b$.
+
+Convergence in probability is also referred to as weak consistency, and since this has been the most familiar stochastic convergence concept in econometrics, the word "weak" is often simply dropped. The relationship between convergence in probability and almost sure convergence is specified by the following result.
+
+Theorem 2.24 Let $\left\{b_{n}\right\}$ be a sequence of random variables. If $b_{n} \xrightarrow{\text { a.s. }} b$, then $b_{n} \xrightarrow{p} b$. If $b_{n} \xrightarrow{p} b$, then there exists a subsequence $\left\{b_{n_{j}}\right\}$ such that $b_{n_{j}} \xrightarrow{\text { a.s. }} b$.
+
+Proof. See Lukacs (1975, p. 480).\\
+Thus, almost sure convergence implies convergence in probability, but the converse does not hold. Nevertheless, a sequence that converges in probability always contains a subsequence that converges almost surely. Essentially,\\
+convergence in probability allows more erratic behavior in the converging sequence than almost sure convergence, and by simply disregarding the erratic elements of the sequence we can obtain an almost surely convergent subsequence. For an example of a sequence that converges in probability but not almost surely, see Lukacs (1975, pp. 34-35).
+
+Example 2.25 Let $\overline{\mathcal{Z}}_{n} \equiv n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{t}$, where $\left\{\mathcal{Z}_{t}\right\}$ is a sequence of random variables such that $E\left(\mathcal{Z}_{t}\right)=\mu, \operatorname{var}\left(\mathcal{Z}_{t}\right)=\sigma^{2}<\infty$ for all $t$ and $\operatorname{cov}\left(\mathcal{Z}_{t}, \mathcal{Z}_{\tau}\right)=0$ for $t \neq \tau$. Then $\overline{\mathcal{Z}}_{n} \xrightarrow{p} \mu$ by the Chebyshev weak law of large numbers, (see Rao, 1973, p. 112).
+
+Note that, in contrast to Example 2.10, the random variables here are not assumed either to be independent (simply uncorrelated) or identically distributed (except for having identical mean and variance). However, second moments are restricted by the present result, whereas they are completely unrestricted in Example 2.10.
+
+Note also that, under the conditions of Example 2.10, convergence in probability follows immediately from the almost sure convergence. In general, most weak consistency results have strong consistency analogs that hold under identical or closely related conditions. For example, strong consistency also obtains under the conditions of Example 2.25. These analogs typically require somewhat more sophisticated techniques for their proof.
+
+Vectors and matrices are said to converge in probability provided each element converges in probability.
+
+To show that continuous functions of weakly consistent sequences converge to the functions evaluated at the probability limit, we use the following result.
+
+Proposition 2.26 (The implication rule) Consider events $E$ and $F_{i}$, $i=1, \ldots, k$, such that $\left(\bigcap_{i=1}^{k} F_{i}\right) \subset E$. Then $\sum_{i=1}^{k} P\left(F_{i}^{c}\right)>P\left(E^{c}\right)$.
+
+Proof. See Lukacs (1975, p. 7).\\
+Proposition 2.27 Given $\mathbf{g}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{l}$ and any sequence $\left\{\mathbf{b}_{n}\right\}$ of $k \times 1$ random vectors such that $\mathbf{b}_{n} \xrightarrow{p} \mathbf{b}$, where $\mathbf{b}$ is a $k \times 1$ vector, if $\mathbf{g}$ is continuous at $\mathbf{b}$, then $\mathbf{g}\left(\mathbf{b}_{n}\right) \xrightarrow{p} \mathbf{g}(\mathbf{b})$.
+
+Proof. Let $g_{j}$ be an element of $\mathbf{g}$. For every $\varepsilon>0$, the continuity of $\mathbf{g}$ implies that there exists $\delta(\varepsilon)>0$ such that if $\left|b_{n i}(\omega)-b_{i}\right|<\delta(\varepsilon)$, $i=1, \ldots, k$, then $\left|g_{j}\left(\mathbf{b}_{n}(\omega)\right)-g_{j}(\mathbf{b})\right|<\varepsilon$. Define the events $F_{n i} \equiv\{\omega: \left.\left|b_{n i}(\omega)-b_{i}\right|<\delta(\varepsilon)\right\}$ and $E_{n} \equiv\left\{\omega:\left|g_{j}\left(\mathbf{b}_{n}(\omega)\right)-g_{j}(\mathbf{b})\right|<\varepsilon\right\}$. Then $\left(\bigcap_{i=1}^{k} F_{n i}\right) \subset E_{n}$. By the implication rule, $\sum_{i=1}^{k} P\left(F_{n i}^{c}\right)>P\left(E_{n}^{c}\right)$. Since\\
+$\mathbf{b}_{n} \xrightarrow{p} \mathbf{b}$, for arbitrary $\eta>0$, and all $n$ sufficiently large, $P\left(F_{n i}^{c}\right)<\eta$. Hence $P\left(E_{n}^{c}\right)<k \eta$, or $P\left(E_{n}\right) \geq 1-k \eta$. Since $P\left(E_{n}\right) \leq 1$ and $\eta$ is arbitrary, $P\left(E_{n}\right) \rightarrow 1$ as $n \rightarrow \infty$, hence $g_{j}\left(\mathbf{b}_{n}\right) \xrightarrow{p} g_{j}(\mathbf{b})$. Since this holds for all $j=1, \ldots, l, \mathbf{g}\left(\mathbf{b}_{n}\right) \xrightarrow{p} \mathbf{g}(\mathbf{b})$.
+
+This result allows us to establish direct analogs of Theorem 2.12 and Exercise 2.13.
+
+Theorem 2.28 Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\mathbf{X}^{\prime} \varepsilon / n \xrightarrow{p} \mathbf{0}$;\\
+(iii) $\mathbf{X}^{\prime} \mathbf{X} / n \xrightarrow{p} \mathbf{M}$, finite and positive definite.
+
+Then $\hat{\boldsymbol{\beta}}_{n}$ exists in probability, and $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{p} \boldsymbol{\beta}_{o}$.\\
+Proof. The proof is identical to that of Theorem 2.12 except that Proposition 2.27 is used instead of Proposition 2.11 and convergence in probability replaces convergence almost surely.
+
+The statement that $\hat{\boldsymbol{\beta}}_{n}$ "exists in probability" is understood to mean that there exists a subsequence $\left\{\hat{\boldsymbol{\beta}}_{n_{j}}\right\}$ such that $\hat{\boldsymbol{\beta}}_{n_{j}}$ exists for all $n_{j}$ sufficiently large a.s., by Theorem 2.24. In other words, $\mathrm{X}^{\prime} \mathrm{X} / n$ can converge to M in such a way that $\mathbf{X}^{\prime} \mathbf{X} / n$ does not have an inverse for each $n$, so that $\hat{\boldsymbol{\beta}}_{n}$ may fail to exist for particular values of $n$. However, a subsequence of $\left\{\mathbf{X}^{\prime} \mathbf{X} / n\right\}$ converges almost surely, and for that subsequence, $\hat{\boldsymbol{\beta}}_{n_{j}}$ will exist for all $n_{j}$ sufficiently large, almost surely.
+
+Exercise 2.29 Prove the following result. Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\mathbf{Z}^{\prime} \varepsilon / n \xrightarrow{p} \mathbf{0}$;\\
+(iii) (a) $\mathbf{Z}^{\prime} \mathbf{X} / n \xrightarrow{p} \mathbf{Q}$, finite with full column rank;\\
+(b) $\hat{\mathbf{P}}_{n} \xrightarrow{p} \mathbf{P}$, finite, symmetric, and positive definite.
+
+Then $\tilde{\boldsymbol{\beta}}_{n}$ exists in probability, and $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{p} \boldsymbol{\beta}_{o}$.\\
+Whether or not these results apply in particular situations depends on the nature of the data. As we mentioned before, for certain kinds of data it is restrictive to assume that $\mathbf{X}^{\prime} \mathbf{X} / n, \mathbf{Z}^{\prime} \mathbf{X} / n$, and $\hat{\mathbf{P}}_{n}$ converge to constant limits. We can relax this restriction by using an analog of Proposition 2.16. This result is also used heavily in later chapters.
+
+Proposition 2.30 Let $\mathrm{g}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{l}$ be continuous on a compact set $C \subset \mathbb{R}^{k}$. Suppose that $\left\{\mathbf{b}_{n}\right\}$ is a sequence of random $k \times 1$ vectors and $\left\{\mathbf{c}_{n}\right\}$ is a sequence of $k \times 1$ vectors such that $\mathbf{b}_{n}-\mathbf{c}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$, and for all $n$ sufficiently large, $\mathbf{c}_{n}$ is interior to $C$, uniformly in $n$. Then $\mathbf{g}\left(\mathbf{b}_{n}\right)-\mathbf{g}\left(\mathbf{c}_{n}\right) \xrightarrow{p} \mathbf{0}$.
+
+Proof. Let $g_{j}$ be an element of g . Since $C$ is compact, $g_{j}$ is uniformly continuous by Theorem 2.15, so that for every $\varepsilon>0$ there exists $\delta(\varepsilon)>0$ such that if $\left|b_{n i}-c_{n i}\right|<\delta(\varepsilon), i=1, \ldots, k$, then $\left|g_{j}\left(\mathbf{b}_{n}\right)-g_{j}\left(\mathbf{c}_{n}\right)\right|< \varepsilon$. Define the events $F_{n i} \equiv\left\{\omega:\left|b_{n i}(\omega)-c_{n i}\right|<\delta(\varepsilon)\right\}$ and $E_{n} \equiv\{\omega: \left.\left|g_{j}\left(\mathbf{b}_{n}(\omega)\right)-g_{j}\left(\mathbf{c}_{n}\right)\right|<\varepsilon\right\}$. Then $\left(\bigcap_{i=1}^{k} F_{n i}\right) \subset E_{n}$. By the implication rule, $\sum_{i=1}^{k} P\left(F_{n i}^{c}\right)>P\left(E_{n}^{c}\right)$. Since $\mathbf{b}_{n}-\mathbf{c}_{n} \xrightarrow{p} \mathbf{0}$, for arbitrary $\eta>0$ and all $n$ sufficiently large, $P\left(F_{n i}^{c}\right)<\eta$. Hence $P\left(E_{n}^{c}\right) \leq k \eta$, or $P\left(E_{n}\right) \geq 1-k \eta$. Since $P\left(E_{n}\right)<1$ and $\eta$ is arbitrary, $P\left(E_{n}\right) \rightarrow 1$ as $n \rightarrow \infty$, hence $g_{j}\left(\mathbf{b}_{n}\right)-g_{j}\left(\mathbf{c}_{n}\right) \xrightarrow{p} 0$. As this holds for all $j=1, \ldots, l, \mathbf{g}\left(\mathbf{b}_{n}\right)-\mathbf{g}\left(\mathbf{c}_{n}\right) \xrightarrow{p} \mathbf{0}$.
+
+Theorem 2.31 Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\mathbf{X}^{\prime} \varepsilon / n \xrightarrow{p} \mathbf{0}$;\\
+(iii) $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M}_{n} \xrightarrow{p} \mathbf{0}$, where $\mathbf{M}_{n}=O(1)$ and is uniformly positive definite.
+
+Then $\hat{\boldsymbol{\beta}}_{n}$ exists in probability, and $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{p} \boldsymbol{\beta}_{o}$.\\
+Proof. The proof is identical to that of Theorem 2.18 except that Proposition 2.30 is used instead of Proposition 2.16 and convergence in probability replaces convergence almost surely.
+
+Exercise 2.32 Prove the following result. Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{\boldsymbol{t}}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\mathbf{Z}^{\prime} \varepsilon / n \xrightarrow{p} \mathbf{0}$;\\
+(iii) (a) $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q}_{n} \xrightarrow{p} \mathbf{0}$, where $\mathbf{Q}_{n}=O(1)$ and has uniformly full column rank;\\
+(b) $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{p} \mathbf{0}$, where $\mathbf{P}_{n}=O(1)$ and is symmetric and uniformly positive definite.
+
+Then $\tilde{\boldsymbol{\beta}}_{n}$ exists in probability, and $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{p} \boldsymbol{\beta}_{o}$.
+
+As with convergence almost surely, the notion of orders of magnitude extends directly to convergence in probability.
+
+Definition 2.33 (i) The sequence $\left\{b_{n}\right\}$ is at most of order $n^{\lambda}$ in probability, denoted $b_{n}=O_{p}\left(n^{\lambda}\right)$, if for every $\varepsilon>0$ there exist a finite $\Delta_{\varepsilon}>0$ and $N_{\varepsilon} \in \mathbb{N}$, such that $P\left\{\omega:\left|n^{-\lambda} b_{n}(\omega)\right|>\Delta_{\varepsilon}\right\}<\varepsilon$ for all $n>N_{\varepsilon}$. (ii) The sequence $\left\{b_{n}\right\}$ is of order smaller than $n^{\boldsymbol{\lambda}}$ in probability, denoted $b_{n}=o_{p}\left(n^{\lambda}\right)$, if $n^{-\lambda} b_{n} \xrightarrow{p} 0$.
+
+When $b_{n}=O_{p}(1)$, we say $\left\{b_{n}\right\}$ is bounded in probability and when $b_{n}= o_{p}(1)$ we have $b_{n} \xrightarrow{p} 0$.
+
+Example 2.34 Let $b_{n}=\mathcal{Z}_{n}$, where $\left\{\mathcal{Z}_{t}\right\}$ is a sequence of identically distributed $N(0,1)$ random variables. Then $P\left(\omega:\left|b_{n}(\omega)\right|>\Delta\right)=P\left(\left|\mathcal{Z}_{n}\right|>\right. \Delta)=2 \Phi(-\Delta)$ for all $n>1$, where $\Phi$ is the standard normal cumulative distribution function (c.d.f.). By making $\Delta$ sufficiently large, we have $2 \Phi(-\Delta)<\delta$ for arbitrary $\delta>0$. Hence, $b_{n}=\mathcal{Z}_{n}=O_{p}(1)$.
+
+Note that $\Phi$ in this example can be replaced by any c.d.f. $F$ and the result still holds, i.e., any random variable $\mathcal{Z}$ with c.d.f. $F$ is $O_{p}(1)$.
+
+Exercise 2.35 Prove the following. Let $a_{n}$ and $b_{n}$ be random scalars. (i) If $a_{n}=O_{p}\left(n^{\lambda}\right)$ and $b_{n}=O_{p}\left(n^{\mu}\right)$, then $a_{n} b_{n}=O_{p}\left(n^{\lambda+\mu}\right)$ and $a_{n}+b_{n}= O_{p}\left(n^{\kappa}\right), \kappa=\max (\lambda, \mu)$. (ii) If $a_{n}=o_{p}\left(n^{\lambda}\right)$ and $b_{n}=o_{p}\left(n^{\mu}\right)$, then $a_{n} b_{n}= o_{p}\left(n^{\lambda+\mu}\right)$ and $a_{n}+b_{n}=o_{p}\left(n^{\kappa}\right)$. (iii) If $a_{n}=O_{p}\left(n^{\lambda}\right)$ and $b_{n}=o_{p}\left(n^{\mu}\right)$, then $a_{n} b_{n}=o_{p}\left(n^{\lambda+\mu}\right)$ and $a_{n}+b_{n}=O_{p}\left(n^{\kappa}\right)$. (Hint: Apply Proposition 2.30.)
+
+One of the most useful results in this chapter is the following corollary to this exercise, which is applied frequently in obtaining the asymptotic normality results of Chapter 4.
+
+Corollary 2.36 (Product rule) Let $\mathbf{A}_{n}$ be $l \times k$ and let $\mathbf{b}_{n}$ be $k \times 1$. If $\mathbf{A}_{n}=o_{p}(1)$ and $\mathbf{b}_{n}=O_{p}(1)$, then $\mathbf{A}_{n} \mathbf{b}_{n}=o_{p}(1)$.
+
+Proof. Let $\mathbf{a}_{n} \equiv \mathbf{A}_{n} \mathbf{b}_{n}$ with $\mathbf{A}_{n}=\left[A_{n i j}\right]$. Then $a_{n i}=\sum_{j=1}^{k} A_{n i j} b_{n j}$. As $A_{n i j}=o_{p}(1)$ and $b_{n j}=O_{p}(1), A_{n i j} b_{n j}=o_{p}(1)$ by Exercise 2.35 (iii). Hence, $a_{n}=o_{p}(1)$, since it is the sum of $k$ terms each of which is $o_{p}(1)$. It follows that $\mathbf{a}_{n} \equiv \mathbf{A}_{n} \mathbf{b}_{n}=o_{p}(1)$.
+
+\subsection*{2.4 Convergence in $r$ th Mean}
+The convergence notions of limits, almost sure limits, and probability limits are those most frequently encountered in econometrics, and most of the\\
+results in the literature are stated in these terms. Another convergence concept often encountered in the context of time series data is that of convergence in the $r$ th mean.
+
+Definition 2.37 Let $\left\{b_{n}\right\}$ be a sequence of real-valued random variables such that for some $r>0, E\left|b_{n}\right|^{r}<\infty$. If there exists a real number $b$ such that $E\left(\left|b_{n}-b\right|^{r}\right) \rightarrow 0$ as $n \rightarrow \infty$, then $b_{n}$ converges in the $r$ th mean to $b$, written $b_{n} \xrightarrow{\text { r.m. }} b$.
+
+The most commonly encountered situation is that in which $r=2$, in which case convergence is said to occur in quadratic mean, denoted $b_{n} \xrightarrow{q . m .}$ b. Alternatively, $b$ is said to be the limit in mean square of $b_{n}$, denoted l.i.m. $b_{n}=b$.
+
+A useful property of convergence in the $r$ th mean is that it implies convergence in the $s$ th mean for $s<r$. To prove this, we use Jensen's inequality, which we now state.
+
+Proposition 2.38 (Jensen's inequality) Let $g: \mathbb{R} \rightarrow \mathbb{R}$ be a convex function on an interval $B \subset \mathbb{R}$ and let $\mathcal{Z}$ be a random variable such that $P(\mathcal{Z} \in B)=1$. Then $g(E(\mathcal{Z}))<E(g(\mathcal{Z}))$. If $g$ instead is concave on $B$, then $g(E(\mathcal{Z}))>E(g(\mathcal{Z}))$.
+
+Proof. See Rao (1973, pp. 57-58). \(\square\)
+
+Example 2.39 Let $g(z)=|z|$. It follows from Jensen's inequality that $|E(\mathcal{Z})|<E(|\mathcal{Z}|)$. Let $g(z)=z^{2}$. It follows from Jensen's inequality that $(E(\mathcal{Z}))^{2}<E\left(\mathcal{Z}^{2}\right)$.
+
+Theorem 2.40 If $b_{n} \xrightarrow{r . m .} b$ and $r>s$, then $b_{n} \xrightarrow{s . m .} b$.\\
+Proof. Let $g(z)=z^{q}, q<1, z>0$. Then $g$ is concave. Set $z=\left|b_{n}-b\right|^{r}$ and $q=s / r$. From Jensen's inequality,
+
+$$
+E\left(\left|b_{n}-b\right|^{s}\right)=E\left(\left\{\left|b_{n}-b\right|^{r}\right\}^{q}\right)<\left\{E\left(\left|b_{n}-b\right|^{r}\right)\right\}^{q} .
+$$
+
+Since $E\left(\left|b_{n}-b\right|^{r}\right) \rightarrow 0$ it follows that $E\left(\left\{\left|b_{n}-b\right|^{r}\right\}^{q}\right)=E\left(\left|b_{n}-b\right|^{s}\right) \rightarrow 0$ and hence $b_{n} \xrightarrow{\text { s.m. }} b$. \(\square\)
+
+Convergence in the $r$ th mean is a stronger convergence concept than convergence in probability, and in fact implies convergence in probability. To show this, we use the generalized Chebyshev inequality.
+
+Proposition 2.41 (Generalized Chebyshev inequality) Let $\mathcal{Z}$ be a random variable such that $E|\mathcal{Z}|^{r}<\infty, r>0$. Then for every $\varepsilon>0$,
+
+$$
+P(|\mathcal{Z}| \geq \varepsilon) \leq E\left(|\mathcal{Z}|^{r}\right) / \varepsilon^{r} .
+$$
+
+Proof. See Lukacs (1975, pp. 8-9).\\
+When $r=1$ we have Markov's inequality and when $r=2$ we have the familiar Chebyshev inequality.
+
+Theorem 2.42 If $b_{n} \xrightarrow{r . m .} b$ for some $r>0$, then $b_{n} \xrightarrow{p} b$.\\
+Proof. Since $E\left(\left|b_{n}-b\right|^{r}\right) \rightarrow 0$ as $n \rightarrow \infty, E\left(\left|b_{n}-b\right|^{r}\right)<\infty$ for all $n$ sufficiently large. It follows from the generalized Chebyshev inequality that, for every $\varepsilon>0$,
+
+$$
+P\left(\omega:\left|b_{n}(\omega)-b\right| \geq \varepsilon\right) \leq E\left(\left|b_{n}-b\right|^{r}\right) / \varepsilon^{r}
+$$
+
+Hence $P\left(\omega:\left|b_{n}(\omega)-b\right|<\varepsilon\right)>1-E\left(\left|b_{n}-b\right|^{r}\right) / \varepsilon^{r} \rightarrow 1$ as $n \rightarrow \infty$, since $b_{n} \xrightarrow{r . m .} b$. It follows that $b_{n} \xrightarrow{p} b$.
+
+Without further conditions, no necessary relationship holds between convergence in the $r$ th mean and almost sure convergence. For further discussion, see Lukacs (1975, Ch. 2).
+
+Since convergence in the $r$ th mean will be used primarily in specifying conditions for later results rather than in stating their conclusions, we provide no analogs to the previous consistency results for the least squares or IV estimators.
+
+\section*{References}
+Bartle, R. G. (1976). The Elements of Real Analysis. Wiley, New York.\\
+Fisher, F. M. (1966). The Identification Problem in Econometrics. McGraw-Hill, New York.
+
+Lukacs, E. (1975). Stochastic Convergence. Academic Press, New York.\\
+Rao, C. R. (1973). Linear Statistical Inference and Its Applications. Wiley, New York.\\
+White, H. (1982). "Instrumental variables regression with independent observations." Econometrica, 50, 483-500.
+
+\section*{CHAPTER 3}
+
+\end{document}

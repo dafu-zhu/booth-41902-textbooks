@@ -1,0 +1,1161 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 18: Count, Fractional, and Other Nonnegative Responses}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsection*{18.1 Introduction}
+A count variable is a variable that takes on nonnegative integer values. Many variables that we would like to explain in terms of covariates come as counts. A few examples include the number of times someone is arrested during a given year, number of emergency room drug episodes during a given week, number of cigarettes smoked per day, and number of patents applied for by a firm during a year. These examples have two important characteristics in common: there is no natural a priori upper bound, and the outcome will be zero for at least some members of the population. Other count variables do have an upper bound. For example, for the number of children in a family who are high school graduates, the upper bound is number of children in the family.
+
+If $y$ is the count variable and $\mathbf{x}$ is a vector of explanatory variables, we are often interested in the population regression, $\mathrm{E}(y \mid \mathbf{x})$. Throughout this book we have discussed various models for conditional expectations, and we have discussed different methods of estimation. The most straightforward approach is a linear model, $\mathrm{E}(y \mid \mathbf{x})=\mathbf{x} \boldsymbol{\beta}$, estimated by ordinary least squares (OLS). For count data, linear models have shortcomings very similar to those for binary responses or corner solution responses: because $y \geq 0$, we know that $\mathrm{E}(y \mid \mathbf{x})$ should be nonnegative for all $\mathbf{x}$. If $\hat{\boldsymbol{\beta}}$ is the OLS estimator, there usually will be values of $\mathbf{x}$ such that $\mathbf{x} \hat{\boldsymbol{\beta}}<0$, so that the predicted value of $y$ is negative. Still, we have seen that the linear model, appropriately viewed as a linear projection, can sometime provide good estimates of average partial effects (APEs) on the conditional mean.
+
+For strictly positive variables, we often use the natural $\log$ transformation, $\log (y)$, and use a linear model. This approach is not possible in interesting count data applications, where $y$ takes on the value zero for a nontrivial fraction of the population. Transformations could be applied that are defined for all $y \geq 0$-for example, $\log (1+y)$-but $\log (1+y)$ itself is nonnegative, and it is not obvious how to recover $\mathrm{E}(y \mid \mathbf{x})$ from a linear model for $\mathrm{E}[\log (1+y) \mid \mathbf{x}]$. With count data, it is better to model $\mathrm{E}(y \mid \mathbf{x})$ directly and to choose functional forms that ensure positivity for any value of $\mathbf{x}$ and any parameter values. When $y$ has no upper bound, the most popular of these is the exponential function, $\mathrm{E}(y \mid \mathbf{x})=\exp (\mathbf{x} \boldsymbol{\beta})$.
+
+In Chapter 12 we discussed nonlinear least squares (NLS) as a general method for estimating nonlinear models of conditional means. NLS can certainly be applied to count data models, but it is not ideal: NLS is relatively inefficient unless $\operatorname{Var}(y \mid \mathbf{x})$ is constant (see Chapter 12), and all of the standard distributions for count data imply heteroskedasticity.
+
+In Section 18.2 we discuss the most popular model for count data, the Poisson regression model. As we will see, the Poisson regression model has some nice features. First, if $y$ given $\mathbf{x}$ has a Poisson distribution-which used to be the maintained assumption in count data contexts-then the conditional maximum likelihood estimators (CMLEs) are fully efficient. Second, the Poisson assumption turns out to be unnecessary for consistent estimation of the conditional mean parameters. As we will see in Section 18.2, the Poisson quasi-maximum likelihood estimator is fully robust to distributional misspecification. It also maintains certain efficiency properties even when the distribution is not Poisson.
+
+In Section 18.3 we discuss other count data models, including the binomial regression model when each count response has a known upper bound. Section 18.4 covers the gamma regression model, which is better suited to nonnegative, continuous responses (but, given the robustness of the quasi-MLE, can be applied to any nonnegative response). In Section 18.5 we discuss how to handle endogenous explanatory variables with an exponential response function; in particular, the methods apply to count data and other nonnegative, unbounded responses.
+
+Fractional response variables are treated in Section 18.6, where again we focus on quasi-likelihood methods. In Section 18.7 we cover panel data extensions of several of the quasi-likelihood methods.
+
+\subsection*{18.2 Poisson Regression}
+In Chapter 13 we used the basic Poisson regression model to illustrate maximum likelihood estimation. Here we study Poisson regression in much more detail, emphasizing the robustness properties of the estimator when the Poisson distributional assumption is incorrect.
+
+\subsection*{18.2.1 Assumptions Used for Poisson Regression and Quantities of Interest}
+The basic Poisson regression model assumes that $y$ given $\mathbf{x} \equiv\left(x_{1}, \ldots, x_{K}\right)$ has a Poisson distribution, as in El Sayyad (1973) and Maddala (1983, Section 2.15). The density of $y$ given $\mathbf{x}$ under the Poisson assumption is completely determined by the conditional mean $\mu(\mathbf{x}) \equiv \mathrm{E}(y \mid \mathbf{x})$ :
+
+
+\begin{equation*}
+f(y \mid \mathbf{x})=\exp [-\mu(\mathbf{x})][\mu(\mathbf{x})]^{y} / y!, \quad y=0,1, \ldots, \tag{18.1}
+\end{equation*}
+
+
+where $y!$ is $y$ factorial. Given a parametric model for $\mu(\mathbf{x})$ [such as $\mu(\mathbf{x})=\exp (\mathbf{x} \boldsymbol{\beta})$ ] and a random sample $\left\{\left(\mathbf{x}_{i}, y_{i}\right): i=1,2, \ldots, N\right\}$ on $(\mathbf{x}, y)$, it is fairly straightforward to obtain the CMLEs of the parameters. The statistical properties then follow from our treatment of MLE in Chapter 13.
+
+It has long been recognized that the Poisson distributional assumption imposes restrictions on the conditional moments of $y$ that are often violated in applications. The most important of these is equality of the conditional variance and mean:
+
+
+\begin{equation*}
+\operatorname{Var}(y \mid \mathbf{x})=\mathrm{E}(y \mid \mathbf{x}) \tag{18.2}
+\end{equation*}
+
+
+The variance-mean equality has been rejected in numerous applications, and later we show that assumption (18.2) is violated for fairly simple departures from the Poisson model. Importantly, whether or not assumption (18.2) holds has implications for how we carry out statistical inference. In fact, as we will see, it is assumption (18.2), not the Poisson assumption per se, that is important for large-sample inference; this point will become clear in Section 18.2.2. In what follows we refer to assumption (18.2) as the Poisson variance assumption.
+
+A weaker assumption allows the variance-mean ratio to be any positive constant:
+
+
+\begin{equation*}
+\operatorname{Var}(y \mid \mathbf{x})=\sigma^{2} \mathrm{E}(y \mid \mathbf{x}) \tag{18.3}
+\end{equation*}
+
+
+where $\sigma^{2}>0$ is the variance-mean ratio. This assumption is used in the generalized linear models (GLM) literature that we discussed in Section 13.11.3, and so we will refer to assumption (18.3) as the Poisson GLM variance assumption. The GLM literature is concerned with quasi-MLE of a class of nonlinear models that contains Poisson regression as a special case. Here, we work through the details for Poisson regression.
+
+The case $\sigma^{2}>1$ is empirically relevant because it implies that the variance is greater than the mean; this situation is called overdispersion (relative to the Poisson case). One distribution for $y$ given $\mathbf{x}$ where assumption (18.3) holds with overdispersion is what Cameron and Trivedi (1986) call NegBin I-a particular parameterization of the negative binomial distribution. When $\sigma^{2}<1$ we say there is underdispersion. Underdispersion is less common than overdispersion, but underdispersion has been found in some applications.
+
+There are plenty of count distributions for which assumption (18.3) does not hold-for example, the NegBin II model in Cameron and Trivedi (1986). Therefore, we are often interested in estimating the conditional mean parameters without specifying the conditional variance. As we will see, Poisson regression turns out to be well suited for this purpose.
+
+Given a parametric model $m(\mathbf{x}, \boldsymbol{\beta})$ for $\mu(\mathbf{x})$, where $\boldsymbol{\beta}$ is a $P \times 1$ vector of parameters, the log likelihood for observation $i$ is
+
+
+\begin{equation*}
+\ell_{i}(\boldsymbol{\beta})=y_{i} \log \left[m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]-m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right), \tag{18.4}
+\end{equation*}
+
+
+where we drop the term $\log \left(y_{i}!\right)$ because it does not depend on the parameters $\boldsymbol{\beta}$ (for computational reasons dropping this term is a good idea in practice, too, as $y_{i}!$ gets very large for even moderate $y_{i}$ ). We let $\mathscr{B} \subset \mathbb{R}^{P}$ denote the parameter space, which is needed for the theoretical development but is practically unimportant in most cases.
+
+The most common mean function in applications is the exponential:
+
+
+\begin{equation*}
+m(\mathbf{x}, \boldsymbol{\beta})=\exp (\mathbf{x} \boldsymbol{\beta}), \tag{18.5}
+\end{equation*}
+
+
+where $\mathbf{x}$ is $1 \times K$ and contains unity as its first element, and $\boldsymbol{\beta}$ is $K \times 1$. Under assumption (18.5) the log likelihood is $\ell_{i}(\boldsymbol{\beta})=y_{i} \mathbf{x}_{i} \boldsymbol{\beta}-\exp \left(\mathbf{x}_{i} \boldsymbol{\beta}\right)$. The parameters in model (18.5) are easy to interpret. If $x_{j}$ is continuous, then
+
+$$
+\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{j}}=\exp (\mathbf{x} \boldsymbol{\beta}) \beta_{j} .
+$$
+
+which shows that the partial effects on $\mathrm{E}(y \mid \mathbf{x})$ depend on $\mathbf{x}$. Further,
+
+$$
+\beta_{j}=\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{j}} \cdot \frac{1}{\mathrm{E}(y \mid \mathbf{x})}=\frac{\partial \log [\mathrm{E}(y \mid \mathbf{x})]}{\partial x_{j}}
+$$
+
+and so $100 \beta_{j}$ is the semielasticity of $\mathrm{E}(y \mid \mathbf{x})$ with respect to $x_{j}$ : for small changes $\Delta x_{j}$, the percentage change in $\mathrm{E}(y \mid \mathbf{x})$ is roughly $\left(100 \beta_{j}\right) \Delta x_{j}$. If we replace $x_{j}$ with $\log \left(x_{j}\right)$, $\beta_{j}$ is the elasticity of $\mathrm{E}(y \mid \mathbf{x})$ with respect to $x_{j}$. Using equation (18.5) as the model for $\mathrm{E}(y \mid \mathbf{x})$ is analogous to using $\log (y)$ as the dependent variable in linear regression analysis.
+
+Quadratic terms can be added with no additional effort, except in interpreting the parameters. In what follows, we will write the exponential function as in assumption (18.5), leaving transformations of $\mathbf{x}$-such as logs, quadratics, interaction terms, and so on-implicit.
+
+Naturally, $\mathbf{x}$ can also include dummy variables or other discrete variables. The change in the expected value when, say, $x_{K}$ goes from $a_{K}$ to $a_{K+1}$ is
+
+$$
+\begin{aligned}
+& \exp \left(\beta_{1}+\beta_{2} x_{2}+\cdots+\beta_{K-1} x_{K-1}+\beta_{K}\left(a_{K}+1\right)\right) \\
+& -\exp \left(\beta_{1}+\beta_{2} x_{2}+\cdots+\beta_{K-1} x_{K-1}+\beta a_{K}\right)
+\end{aligned}
+$$
+
+while the proportionate change (starting at $\left.x_{K}=a_{K}\right)$ is simply $\exp \left(\beta_{K}\right)$. Therefore, the percentage change in the expected value does not depend on the initial value of $x_{K}$ or the other covariates, and is simply $100 \cdot \exp \left(\beta_{K}\right)$.
+
+Computing average partial effects (APEs) of an explanatory variable on the mean is straightforward with Poisson regression and an exponential mean function. As we\\
+saw in Chapter 13-see also equation (18.4)-the first-order condition can be written as $\sum_{i=1}^{N} \mathbf{x}_{i}^{\prime}\left[y_{i}-\exp \left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right)\right]=\mathbf{0}$, and therefore, when $x_{i 1} \equiv 1$ (which should always be the case in practice), the residuals $y_{i}-\exp \left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right)$ sum to zero, or $\bar{y}=\overline{\hat{y}}$, where the fitted values are $\hat{y}_{i}=\exp \left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right)$. Because the estimated partial effect of a continuous variable is $\exp (\mathbf{x} \hat{\boldsymbol{\beta}}) \hat{\boldsymbol{\beta}}_{j}$, the average across the sample is simply $\bar{y} \hat{\boldsymbol{\beta}}_{j}$. Therefore, as a rough comparison with linear model estimates, the Poisson coefficients can be multiplied by the average outcome, $\bar{y}$. For discrete changes, the differences in predicted values (for the two chosen values of $x_{K}$ ) must be averaged across all $i$.
+
+Wooldridge (1997c) discusses functional forms other than the exponential that can be used in Poisson regression, including a model that nests the exponential, but an exponential regression function with flexible functions of the explanatory variables is often adequate.
+
+\subsection*{18.2.2 Consistency of the Poisson QMLE}
+Once we have specified a conditional mean function, we are interested in cases where, other than the conditional mean, the Poisson distribution can be arbitrarily misspecified (subject to regularity conditions). When $y_{i}$ given $\mathbf{x}_{i}$ does not have a Poisson distribution, we call the estimator $\hat{\boldsymbol{\beta}}$ that solves
+
+
+\begin{equation*}
+\max _{\boldsymbol{\beta} \in \mathscr{B}} \sum_{i=1}^{N} \ell_{i}(\boldsymbol{\beta}) \tag{18.6}
+\end{equation*}
+
+
+the Poisson quasi-maximum likelihood estimator (QMLE). A careful discussion of the consistency of the Poisson QMLE requires introduction of the true value of the parameter, as in Chapters 12 and 13. That is, we assume that for some value $\boldsymbol{\beta}_{\mathrm{o}}$ in the parameter space $\mathscr{B}$,\\
+$\mathrm{E}(y \mid \mathbf{x})=m\left(\mathbf{x}, \boldsymbol{\beta}_{\mathrm{o}}\right)$.
+
+To prove consistency of the Poisson QMLE under assumption (18.7), the key is to show that $\boldsymbol{\beta}_{\mathrm{o}}$ is the unique solution to\\
+$\max _{\boldsymbol{\beta} \in \mathscr{B}} \mathrm{E}\left[\ell_{i}(\boldsymbol{\beta})\right]$.
+
+Then, under the regularity conditions listed in Theorem 12.2, it follows from this theorem that the solution to equation (18.6) is weakly consistent for $\boldsymbol{\beta}_{\mathrm{o}}$.
+
+Wooldridge (1997c) provides a simple proof that $\boldsymbol{\beta}_{\mathrm{o}}$ is a solution to equation (18.8) when assumption (18.7) holds (see also Problem 18.1). As we discussed in Section 13.11.3, this finding follows from general results on QMLE in the linear exponential family by Gourieroux, Monfort, and Trognon (1984a) (hereafter GMT, 1984a).
+
+Uniqueness of $\boldsymbol{\beta}_{\mathrm{o}}$ must be assumed separately, as it depends on the distribution of $\mathbf{x}_{i}$. That is, in addition to assumption (18.7), identification of $\boldsymbol{\beta}_{\mathrm{o}}$ requires some restrictions on the distribution of explanatory variables, and these depend on the nature of the regression function $m$. In the linear regression case, we require full rank of $\mathrm{E}\left(\mathbf{x}_{i}^{\prime} \mathbf{x}_{i}\right)$. For Poisson QMLE with an exponential regression function $\exp (\mathbf{x} \boldsymbol{\beta})$, it can be shown that multiple solutions to equation (18.8) exist whenever there is perfect multicollinearity in $\mathbf{x}_{i}$, just as in the linear regression case. If we rule out perfect multicollinearity, we can usually conclude that $\boldsymbol{\beta}_{\mathrm{o}}$ is identified under assumption (18.7).
+
+It is important to remember that consistency of the Poisson QMLE does not require any additional assumptions concerning the distribution of $y_{i}$ given $\mathbf{x}_{i}$. In particular, $\operatorname{Var}\left(y_{i} \mid \mathbf{x}_{i}\right)$ can be virtually anything (subject to regularity conditions needed to apply the results of Chapter 12), and $y_{i}$ need not even be count variable.
+
+\subsection*{18.2.3 Asymptotic Normality of the Poisson QMLE}
+If the Poission QMLE is consistent for $\boldsymbol{\beta}_{\mathrm{o}}$ without any assumptions beyond (18.7), why did we introduce assumptions (18.2) and (18.3)? It turns out that whether these assumptions hold determines which asymptotic variance matrix estimators and inference procedures are valid, as we now show.
+
+The asymptotic normality of the Poisson QMLE follows from Theorem 12.3. The result is\\
+$\sqrt{N}\left(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}_{\mathrm{o}}\right) \xrightarrow{d} \operatorname{Normal}\left(0, \mathbf{A}_{\mathrm{o}}^{-1} \mathbf{B}_{\mathrm{o}} \mathbf{A}_{\mathrm{o}}^{-1}\right)$,\\
+where
+
+
+\begin{equation*}
+\mathbf{A}_{\mathrm{o}} \equiv \mathrm{E}\left[-\mathbf{H}_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)\right] \tag{18.10}
+\end{equation*}
+
+
+and\\
+$\mathbf{B}_{\mathrm{o}} \equiv \mathrm{E}\left[\mathbf{s}_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right) \mathbf{s}_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)^{\prime}\right]=\operatorname{Var}\left[\mathbf{s}_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)\right]$,\\
+where we define $\mathbf{A}_{\mathrm{o}}$ in terms of minus the Hessian because the Poisson QMLE solves a maximization rather than a minimization problem. Taking the gradient of equation (18.4) and transposing gives the score for observation $i$ as\\
+$\mathbf{s}_{i}(\boldsymbol{\beta})=\nabla_{\beta} m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)^{\prime}\left[y_{i}-m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right] / m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)$.
+
+It is easily seen that, under assumption (18.7), $\mathbf{s}_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)$ has a zero mean conditional on $\mathbf{x}_{i}$. The Hessian is more complicated but, under assumption (18.7), it can be shown that
+
+
+\begin{equation*}
+-\mathrm{E}\left[\mathbf{H}_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right) \mid \mathbf{x}_{i}\right]=\nabla_{\beta} m\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right)^{\prime} \nabla_{\beta} m\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right) / m\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right) . \tag{18.13}
+\end{equation*}
+
+
+Then $\mathbf{A}_{\mathrm{o}}$ is the expected value of this expression (over the distribution of $\mathbf{x}_{i}$ ). A fully robust asymptotic variance matrix estimator for $\hat{\boldsymbol{\beta}}$ follows from equation (12.49):
+
+
+\begin{equation*}
+\left(\sum_{i=1}^{N} \hat{\mathbf{A}}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \hat{\mathbf{s}}_{i} \hat{\mathbf{s}}_{i}^{\prime}\right)\left(\sum_{i=1}^{N} \hat{\mathbf{A}}_{i}\right)^{-1}, \tag{18.14}
+\end{equation*}
+
+
+where $\hat{\mathbf{s}}_{i}$ is obtained from equation (18.12) with $\hat{\boldsymbol{\beta}}$ in place of $\boldsymbol{\beta}$, and $\hat{\mathbf{A}}_{i}$ is the righthand side of equation (18.13) with $\hat{\boldsymbol{\beta}}$ in place of $\boldsymbol{\beta}_{\mathrm{o}}$. This is the fully robust variance matrix estimator in the sense that it requires only assumption (18.7) and the regularity conditions from Chapter 12.
+
+The asymptotic variance of $\hat{\boldsymbol{\beta}}$ simplifies under the GLM assumption (18.3). Maintaining assumption (18.3) (where $\sigma_{\mathrm{o}}^{2}$ now denotes the true value of $\sigma^{2}$ ) and defining $u_{i} \equiv y_{i}-m\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right)$, the law of iterated expectations implies that
+
+$$
+\begin{aligned}
+\mathbf{B}_{\mathrm{o}} & =\mathrm{E}\left[u_{i}^{2} \nabla_{\beta} m_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)^{\prime} \nabla_{\beta} m_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right) /\left\{m_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)\right\}^{2}\right] \\
+& =\mathrm{E}\left[\mathrm{E}\left(u_{i}^{2} \mid \mathbf{x}_{i}\right) \nabla_{\beta} m_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)^{\prime} \nabla_{\beta} m_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right) /\left\{m_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)\right\}^{2}\right]=\sigma_{\mathrm{o}}^{2} \mathbf{A}_{\mathrm{o}},
+\end{aligned}
+$$
+
+since $\mathrm{E}\left(u_{i}^{2} \mid \mathbf{x}_{i}\right)=\sigma_{\mathrm{o}}^{2} m_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)$ under assumptions (18.3) and (18.7). Therefore, $\mathbf{A}_{\mathrm{o}}^{-1} \mathbf{B}_{\mathrm{o}} \mathbf{A}_{\mathrm{o}}^{-1} =\sigma_{\mathrm{o}}^{2} \mathbf{A}_{\mathrm{o}}^{-1}$, so we only need to estimate $\sigma_{\mathrm{o}}^{2}$ in addition to obtaining $\hat{\mathbf{A}}$. A consistent estimator of $\sigma_{\mathrm{o}}^{2}$ is obtained from $\sigma_{\mathrm{o}}^{2}=\mathrm{E}\left[u_{i}^{2} / m_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)\right]$, which follows from assumption (18.3) and iterated expectations. The usual analogy principle argument gives the estimator
+
+
+\begin{equation*}
+\hat{\sigma}^{2}=N^{-1} \sum_{i=1}^{N} \hat{u}_{i}^{2} / \hat{m}_{i}=N^{-1} \sum_{i=1}^{N}\left(\hat{u}_{i} / \sqrt{\hat{m}_{i}}\right)^{2} . \tag{18.15}
+\end{equation*}
+
+
+The last representation shows that $\hat{\sigma}^{2}$ is simply the average sum of squared weighted residuals, where the weights are the inverse of the estimated nominal standard deviations. (As we discussed in Section 13.11.3, the weighted residuals $\tilde{u}_{i} \equiv \hat{u}_{i} / \sqrt{\hat{m}_{i}}$ are sometimes called the Pearson residuals. In earlier chapters we also called them standardized residuals.) In the GLM literature, a degrees-of-freedom adjustment is usually made by replacing $N^{-1}$ with $(N-P)^{-1}$ in equation (18.15); see also equation (13.91).
+
+Given $\hat{\sigma}^{2}$ and $\hat{\mathbf{A}}$, it is straightforward to obtain an estimate of $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$ under assumption (18.3). In fact, we can write
+
+
+\begin{equation*}
+\widehat{\operatorname{Avar}(\hat{\boldsymbol{\beta}})}=\hat{\sigma}^{2} \hat{\mathbf{A}}^{-1} / N=\hat{\sigma}^{2}\left(\sum_{i=1}^{N} \nabla_{\beta} \hat{m}_{i}^{\prime} \nabla_{\beta} \hat{m}_{i} / \hat{m}_{i}\right)^{-1} . \tag{18.16}
+\end{equation*}
+
+
+Note that the matrix is always positive definite when the inverse exists, so it produces well-defined standard errors (given, as usual, by the square roots of the diagonal elements). We call these the GLM standard errors.
+
+If the Poisson variance assumption (18.2) holds, things are even easier because $\sigma^{2}$ is known to be unity; the estimated asymptotic variance of $\hat{\boldsymbol{\beta}}$ is given in equation (18.16) but with $\hat{\sigma}^{2} \equiv 1$. The same estimator can be derived from the MLE theory in Chapter 13 as the inverse of the estimated information matrix (conditional on the $\mathbf{x}_{i}$ ); see Section 13.5.2.
+
+Under assumption (18.3) in the case of overdispersion ( $\sigma^{2}>1$ ), standard errors of the $\hat{\beta}_{j}$ obtained from equation (18.16) with $\hat{\sigma}^{2}=1$ will systematically underestimate the asymptotic standard deviations, sometimes by a large factor. For example, if $\sigma^{2}=2$, the correct GLM standard errors are, in the limit, 41 percent larger than the incorrect, nominal Poisson standard errors. It is common to see very significant coefficients reported for Poisson regressions-for example, Model (1993)-but we must interpret the standard errors with caution when they are obtained under assumption (18.2). The GLM standard errors are easily obtained by multiplying the Poisson standard errors by $\hat{\sigma} \equiv \sqrt{\hat{\sigma}^{2}}$. The most robust standard errors are obtained from expression (18.14), as these are valid under any conditional variance assumption. In practice, it is a good idea to report the fully robust standard errors along with the GLM standard errors and $\hat{\sigma}$.
+
+If $y$ given $\mathbf{x}$ has a Poisson distribution, it follows from the general efficiency of the conditional MLE-see Section 14.5.2-that the Poisson QMLE is fully efficient in the class of estimators that ignores information on the marginal distribution of $\mathbf{x}$.
+
+A nice property of the Poisson QMLE is that it retains some efficiency for certain departures from the Poisson assumption. The efficiency results of GMT (1984a) can be applied here: if the GLM assumption (18.3) holds for some $\sigma^{2}>0$, the Poisson QMLE is efficient in the class of all QMLEs in the linear exponential family of distributions. In particular, the Poisson QMLE is more efficient than the nonlinear least squares estimator (NLSE), as well as many other QMLEs in the LEF, some of which we cover in Sections 18.3 and 18.4.
+
+Wooldridge (1997c) gives an example of Poisson regression to an economic model of crime, where the response variable is number of arrests of a young man living in California during 1986. Wooldridge finds overdispersion: $\hat{\sigma}$ is either 1.228 or 1.172 , depending on the functional form for the conditional mean. The following example shows that underdispersion is possible.
+
+Example 18.1 (Effects of Education on Fertility): We use the data in FERTIL2. RAW to estimate the effects of education on women's fertility in Botswana. The re-
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 18.1\\
+OLS and Poisson Estimates of a Fertility Equation}
+\begin{tabular}{|l|l|l|}
+\hline
+\multicolumn{3}{|l|}{Dependent Variable: children} \\
+\hline
+Independent Variable & Linear (OLS) & Exponential (Poisson QMLE) \\
+\hline
+educ & -. 0644 (.0063) & -. 0217 (.0025) \\
+\hline
+age & . 272 (.017) & . 337 (.009) \\
+\hline
+age ${ }^{2}$ & -. 0019 (.0003) & -. 0041 (.0001) \\
+\hline
+evermarr & . 682 (.052) & . 315 (.021) \\
+\hline
+urban & -. 228 (.046) & -. 086 (.019) \\
+\hline
+electric & -. 262 (.076) & -. 121 (.034) \\
+\hline
+tv & -. 250 (.090) & -. 145 (.041) \\
+\hline
+constant & -3.394 (.245) & -5.375 (.141) \\
+\hline
+Log-likelihood value & - & -6,497.060 \\
+\hline
+$R$-squared & . 590 & . 598 \\
+\hline
+$\hat{\sigma}$ & 1.424 & . 867 \\
+\hline
+Number of observations & 4,358 & 4,358 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+sponse variable, children, is the number of living children. We use a standard exponential regression function, and the explanatory variables are years of schooling (educ), a quadratic in age, and binary indicators for ever married, living in an urban area, having electricity, and owning a television. The results are given in Table 18.1. A linear regression model is also included, with the usual OLS standard errors. For Poisson regression, the standard errors are the GLM standard errors. All of the coefficients are statistically significant at low significance levels. (You are invited to compute the fully robust standard errors in each case. Interestingly, the heteroskedasticity-robust standard errors for OLS do not differ substantively from the usual OLS standard errors, and the fully robust standard errors for the Poisson QMLE are similar to the GLM standard errors.)
+
+Not surprisingly, the signs of the coefficients are the same in the linear and exponential models, but their interpretations differ. For example, the coefficient on educ in the linear model implies that each year of education reduces the predicted number\\
+of children by about .064 . So, if 100 women each get another year of education, we estimate about six fewer children among them. The coefficient on educ in the exponential model implies that each year of education is estimated to reduce the expected number of children by 2.2 percent. To make the exponential coefficients roughly comparable to the linear model coefficients, we can multiply the former by the sample average of the dependent variable, $\overline{\text { children }}=2.268$, to obtain the APE. For educ, the APE is $2.268(-.0217)=-.0492$, which is somewhat smaller in magnitude than the linear model estimate. For the binary variable $t v$, we compute the predicted value for each woman by setting $t v$ equal to one and zero and taking the difference. The average across difference across all women is about -.309 , which means that the average effect of television ownership is almost one-third of a child less; this estimate is somewhat higher in magnitude than the linear model estimate.
+
+The estimate of $\sigma$ in the Poisson regression implies underdispersion: the variance is less than the mean. (Incidentally, the $\hat{\sigma}$ 's for the linear and Poisson models are not comparable.) One implication is that the GLM standard errors are actually less than the corresponding Poisson MLE standard errors.
+
+For the linear model, the $R$-squared is the usual one. For the exponential model, the $R$-squared is computed as the squared correlation coefficient between children ${ }_{i}$ and children $_{i}=\exp \left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right)$. The exponential regression function fits only slightly better.
+
+\subsection*{18.2.4 Hypothesis Testing}
+Classical hypothesis testing is fairly straightforward in a QMLE setting. Testing hypotheses about individual parameters is easily carried out using asymptotic $t$ statistics after computing the appropriate standard error, as we discussed in Section 18.2.3. Multiple hypotheses tests can be carried out using the Wald, quasi-likelihood ratio (QLR), or score test. We covered these generally in Sections 12.6 and 13.6, and they apply immediately to the Poisson QMLE.
+
+The Wald statistic for testing nonlinear hypotheses is computed as in equation (12.63), where $\hat{\mathbf{V}}$ is chosen appropriately depending on the degree of robustness desired, with expression (18.14) being the most robust. The Wald statistic is convenient for testing multiple exclusion restrictions in a robust fashion.
+
+When the GLM assumption (18.3) holds, the $Q L R$ statistic can be used. Let $\check{\boldsymbol{\beta}}$ be the restricted estimator, where $Q$ restrictions of the form $\mathbf{c}(\check{\boldsymbol{\beta}})=\mathbf{0}$ have been imposed. Let $\hat{\boldsymbol{\beta}}$ be the unrestricted QMLE. Let $\mathscr{L}(\boldsymbol{\beta})$ be the quasi-log likelihood for the sample of size $N$, given in expression (18.6). Let $\hat{\sigma}^{2}$ be given in equation (18.15) (with or without the degrees-of-freedom adjustment), where the $\hat{u}_{i}$ are the residuals from the unconstrained maximization. The QLR statistic,
+
+
+\begin{equation*}
+Q L R \equiv 2[\mathscr{L}(\hat{\boldsymbol{\beta}})-\mathscr{L}(\check{\boldsymbol{\beta}})] / \hat{\sigma}^{2}, \tag{18.17}
+\end{equation*}
+
+
+converges in distribution to $\chi_{Q}^{2}$ under $\mathrm{H}_{0}$, under the conditions laid out in Section 12.6.3. The division of the usual likelihood ratio statistic by $\hat{\sigma}^{2}$ provides for some degree of robustness. If we set $\hat{\sigma}^{2}=1$, we obtain the usual $L R$ statistic, which is valid only under assumption (18.2). There is no usable quasi- $L R$ statistic when the GLM assumption (18.3) does not hold.
+
+The score test can also be used to test multiple hypotheses. In this case we estimate only the restricted model. Partition $\boldsymbol{\beta}$ as $\left(\boldsymbol{a}^{\prime}, \boldsymbol{\gamma}^{\prime}\right)^{\prime}$, where $\boldsymbol{\alpha}$ is $P_{1} \times 1$ and $\boldsymbol{\gamma}$ is $P_{2} \times 1$, and assume that the null hypothesis is\\
+$\mathrm{H}_{0}: \gamma_{\mathrm{o}}=\bar{\gamma}$,\\
+where $\bar{\gamma}$ is a $P_{2} \times 1$ vector of specified constants (often, $\bar{\gamma}=\mathbf{0}$ ). Let $\check{\boldsymbol{\beta}}$ be the estimator of $\boldsymbol{\beta}$ obtained under the restriction $\gamma=\bar{\gamma}\left[\right.$ so $\left.\check{\boldsymbol{\beta}} \equiv\left(\check{\boldsymbol{a}}^{\prime}, \bar{\gamma}^{\prime}\right)^{\prime}\right]$, and define quantities under the restricted estimation as $\check{m}_{i} \equiv m\left(\mathbf{x}_{i}, \check{\boldsymbol{\beta}}\right), \check{u}_{i} \equiv y_{i}-\check{m}_{i}$, and $\nabla_{\beta} \check{m}_{i} \equiv\left(\nabla_{\alpha} \check{m}_{i}, \nabla_{\gamma} \check{m}_{i}\right) \equiv \nabla_{\beta} m\left(\mathbf{x}_{i}, \check{\boldsymbol{\beta}}\right)$. Now weight the residuals and gradient by the inverse of nominal Poisson standard deviation, estimated under the null, $1 / \sqrt{\check{m}_{i}}$ :\\
+$\tilde{u}_{i} \equiv \check{u}_{i} / \sqrt{\check{m}_{i}}, \quad \nabla_{\beta} \tilde{m}_{i} \equiv \nabla_{\beta} \check{m}_{i} / \sqrt{\check{m}_{i}}$,\\
+so that the $\tilde{u}_{i}$ here are the Pearson residuals obtained under the null. A form of the score statistic that is valid under the GLM assumption (18.3) (and therefore under assumption (18.2)) is $N R_{u}^{2}$ from the regression\\
+$\tilde{u}_{i}$ on $\nabla_{\beta} \tilde{m}_{i}, \quad i=1,2, \ldots, N$,\\
+where $R_{u}^{2}$ denotes the uncentered $R$-squared. Under $\mathrm{H}_{0}$ and assumption (18.3), $N R_{u}^{2} \stackrel{a}{\sim} \chi_{P_{2}}^{2}$. This is identical to the score statistic in equation (12.68) but where we use $\tilde{\mathbf{B}}=\tilde{\sigma}^{2} \tilde{\mathbf{A}}$, where the notation is self-explanatory. For more, see Wooldridge (1991a, 1997c).
+
+Following our development for nonlinear regression in Section 12.6.2, it is easy to obtain a test that is completely robust to variance misspecification. Let $\tilde{\mathbf{r}}_{i}$ denote the $1 \times P_{2}$ residuals from the regression\\
+$\nabla_{\gamma} \tilde{m}_{i}$ on $\nabla_{\alpha} \tilde{m}_{i}$.
+
+In other words, regress each element of the weighted gradient with respect to the restricted parameters on the weighted gradient with respect to the unrestricted parameters. The residuals are put into the $1 \times P_{2}$ vector $\tilde{\mathbf{r}}_{i}$. The robust score statistic is obtained as $N-$ SSR from the regression
+
+1 on $\tilde{u}_{i} \tilde{\mathbf{r}}_{i}, \quad i=1,2, \ldots, N$,\\
+where $\tilde{u}_{i} \tilde{\mathbf{r}}_{i}=\left(\tilde{u}_{i} \tilde{r}_{i 1}, \tilde{u}_{i} \tilde{r}_{i 2}, \ldots, \tilde{u}_{i} \tilde{r}_{i P_{2}}\right)$ is a $1 \times P_{2}$ vector. Alternatively, we can regress $\tilde{u}_{i}$ on $\tilde{\mathbf{r}}_{i}$ and use a heteroskedasticity-robust Wald statistic for joint significance of $\tilde{\mathbf{r}}_{i}$.
+
+As an example, consider testing $\mathrm{H}_{0}: \boldsymbol{\gamma}=\mathbf{0}$ in the exponential model $\mathrm{E}(y \mid \mathbf{x})= \exp (\mathbf{x} \boldsymbol{\beta})=\exp \left(\mathbf{x}_{1} \boldsymbol{\alpha}+\mathbf{x}_{2} \boldsymbol{\gamma}\right)$. Then $\nabla_{\beta} m(\mathbf{x}, \boldsymbol{\beta})=\exp (\mathbf{x} \boldsymbol{\beta}) \mathbf{x}$. Let $\check{\boldsymbol{\alpha}}$ be the Poisson QMLE obtained under $\boldsymbol{\gamma}=\mathbf{0}$, and define $\check{m}_{i} \equiv \exp \left(\mathbf{x}_{i l} \check{\boldsymbol{\alpha}}\right)$, with $\check{u}_{i}$ the residuals. Now $\nabla_{\alpha} \check{m}_{i}= \exp \left(\mathbf{x}_{i 1} \check{\boldsymbol{\alpha}}\right) \mathbf{x}_{i 1}, \nabla_{\gamma} \check{m}_{i}=\exp \left(\mathbf{x}_{i 1} \check{\boldsymbol{\alpha}}\right) \mathbf{x}_{i 2}$, and $\nabla_{\beta} \tilde{m}_{i}=\check{m}_{i} \mathbf{x}_{i} / \sqrt{\check{m}_{i}}=\sqrt{\check{m}_{i}} \mathbf{x}_{i}$. Therefore, the test that is valid under the GLM variance assumption is $N R_{u}^{2}$ from the OLS regression $\tilde{u}_{i}$ on $\sqrt{\check{m}_{i}} \mathbf{x}_{i}$, where the $\tilde{u}_{i}$ are the weighted residuals. For the robust test, first obtain the $1 \times P_{2}$ residuals $\tilde{\mathbf{r}}_{i}$ from the regression $\sqrt{\check{m}_{i}} \mathbf{x}_{i 2}$ on $\sqrt{\check{m}_{i}} \mathbf{x}_{i 1}$; then obtain the statistic from regression (18.22).
+
+\subsection*{18.2.5 Specification Testing}
+Various specification tests have been proposed in the context of Poisson regression. The two most important kinds are conditional mean specification tests and conditional variance specification tests. For conditional mean tests, we usually begin with a fairly simple model whose parameters are easy to interpret-such as $m(\mathbf{x}, \boldsymbol{\beta})= \exp (\mathbf{x} \boldsymbol{\beta})$-and then test this against other alternatives. Once the set of conditioning variables $\mathbf{x}$ has been specified, all such tests are functional form tests.
+
+A useful class of functional form tests can be obtained using the score principle, where the null model $m(\mathbf{x}, \boldsymbol{\beta})$ is nested in a more general model. Fully robust tests and less robust tests are obtained exactly as in the previous section. Wooldridge (1997c, Section 3.5) contains details and some examples, including an extension of RESET to exponential regression models.
+
+Conditional variance tests are more difficult to compute, especially if we want to maintain only that the first two moments are correctly specified under $\mathrm{H}_{0}$. For example, it is very natural to test the GLM assumption (18.3) as a way of determining whether the Poisson QMLE is efficient in the class of estimators using only assumption (18.7). Cameron and Trivedi (1986) propose tests of the stronger assumption (18.2) and, in fact, take the null to be that the Poisson distribution is correct in its entirety. These tests are useful if we are interested in whether $y$ given $\mathbf{x}$ truly has a Poisson distribution. However, assumption (18.2) is not necessary for consistency or relative efficiency of the Poisson QMLE.
+
+Wooldridge (1991b) proposes fully robust tests of conditional variances in the context of the linear exponential family, which contains Poisson regression as a special case. To test assumption (18.3), write $u_{i}=y_{i}-m\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right)$ and note that, under assumptions (18.3) and (18.7), $u_{i}^{2}-\sigma_{\mathrm{o}}^{2} m\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right)$ is uncorrelated with any function of\\
+$\mathbf{x}_{i}$. Let $\mathbf{h}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)$ be a $1 \times Q$ vector of functions of $\mathbf{x}_{i}$ and $\boldsymbol{\beta}$, and consider the alternative model\\
+$\mathrm{E}\left(u_{i}^{2} \mid \mathbf{x}_{i}\right)=\sigma_{\mathrm{o}}^{2} m\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right)+\mathbf{h}\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right) \boldsymbol{\delta}_{\mathrm{o}}$.
+
+For example, the elements of $\mathbf{h}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)$ can be powers of $m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)$. Popular choices are unity and $\left\{\mathrm{m}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right\}^{2}$. A test of $\mathrm{H}_{0}: \boldsymbol{\delta}_{\mathrm{o}}=\mathbf{0}$ is then a test of the GLM assumption. While there are several moment conditions that can be used, a fruitful one is to use the weighted residuals, as we did with the conditional mean tests. We base the test on\\
+$N^{-1} \sum_{i=1}^{N}\left(\hat{\mathbf{h}}_{i} / \hat{m}_{i}\right)^{\prime}\left\{\left(\hat{u}_{i}^{2}-\hat{\sigma}^{2} \hat{m}_{i}\right) / \hat{m}_{i}\right\}=N^{-1} \sum_{i=1}^{N} \tilde{\mathbf{h}}_{i}^{\prime}\left(\tilde{u}_{i}^{2}-\hat{\sigma}^{2}\right)$,\\
+where $\tilde{\mathbf{h}}_{i}=\hat{\mathbf{h}}_{i} / \hat{m}_{i}$ and $\tilde{u}_{i}=\hat{u}_{i} / \sqrt{\hat{m}_{i}}$. (Note that $\hat{\mathbf{h}}_{i}$ is weighted by $1 / \hat{m}_{i}$, not $1 / \sqrt{\hat{m}_{i}}$.) To turn this equation into a test statistic, we must confront the fact that its standardized limiting distribution depends on the limiting distributions of $\sqrt{N}\left(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}_{0}\right)$ and $\sqrt{N}\left(\hat{\sigma}^{2}-\sigma_{\mathrm{o}}^{2}\right)$. To handle this problem, we use a trick suggested by Wooldridge (1991b) that removes the dependence of the limiting distribution of the test statistic on that of $\sqrt{N}\left(\hat{\sigma}^{2}-\sigma_{\mathrm{o}}^{2}\right)$ : replace $\tilde{\mathbf{h}}_{i}$ in equation (18.24) with its demeaned counterpart, $\tilde{\mathbf{r}}_{i} \equiv \tilde{\mathbf{h}}_{i}-\overline{\mathbf{h}}$, where $\overline{\mathbf{h}}$ is just the $1 \times Q$ vector of sample averages of each element of $\tilde{\mathbf{h}}_{i}$. There is an additional purging that then leads to a simple regression-based statistic. Let $\nabla_{\beta} \hat{m}_{i}$ be the unweighted gradient of the conditional mean function, evaluated at the Poisson QMLE $\hat{\boldsymbol{\beta}}$, and define $\nabla_{\beta} \hat{m}_{i} \equiv \nabla_{\beta} \hat{m}_{i} / \sqrt{\hat{m}_{i}}$, as before. The following steps come from Wooldridge (1991b, Procedure 4.1):
+
+\begin{enumerate}
+  \item Obtain $\hat{\sigma}^{2}$ as in equation (18.15) and $\hat{\mathbf{A}}$ as in equation (18.16), and define the $P \times Q$ matrix $\hat{\mathbf{J}}=\hat{\sigma}^{2}\left(N^{-1} \sum_{i=1}^{N} \nabla_{\beta} \hat{m}_{i}^{\prime} \tilde{\mathbf{r}}_{i} / \hat{m}_{i}\right)$.
+  \item For each $i$, define the $1 \times Q$ vector\\
+$\hat{\mathbf{z}}_{i} \equiv\left(\tilde{u}_{i}^{2}-\hat{\sigma}^{2}\right) \tilde{\mathbf{r}}_{i}-\hat{\mathbf{s}}_{i}^{\prime} \hat{\mathbf{A}}^{-1} \hat{\mathbf{J}}$,\\
+where $\hat{\mathbf{s}}_{i} \equiv \nabla_{\beta} \tilde{m}_{i}^{\prime} \tilde{u}_{i}$ is the Poisson score for observation $i$.
+  \item Run the regression
+\end{enumerate}
+
+1 on $\hat{\mathbf{z}}_{i}, \quad i=1,2, \ldots, N$.
+
+Under assumptions (18.3) and (18.7), $N-$ SSR from this regression is distributed asymptotically as $\chi_{Q}^{2}$.
+
+The leading case occurs when $\hat{m}_{i}=\exp \left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right)$ and $\nabla_{\beta} \hat{m}_{i}=\exp \left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right) \mathbf{x}_{i}=\hat{m}_{i} \mathbf{x}_{i}$. The subtraction of $\hat{\mathbf{s}}_{i}^{\prime} \hat{\mathbf{A}}^{-1} \hat{\mathbf{J}}$ in equation (18.25) is a simple way of handling the fact that the\\
+limiting distribution of $\sqrt{N}\left(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}_{\mathrm{o}}\right)$ affects the limiting distribution of the unadjusted statistic in equation (18.24). This particular adjustment ensures that the tests are just as efficient as any maximum-likelihood-based statistic if $\sigma_{\mathrm{o}}^{2}=1$ and the Poisson assumption is correct. But this procedure is fully robust in the sense that only assumptions (18.3) and (18.7) are maintained under $\mathrm{H}_{0}$. For further discussion the reader is referred to Wooldridge (1991b).
+
+In practice, it is probably sufficient to choose the number of elements in $Q$ to be small. Setting $\hat{\mathbf{h}}_{i}=\left(1, \hat{m}_{i}^{2}\right)$, so that $\tilde{\mathbf{h}}_{i}=\left(1 / \hat{m}_{i}, \hat{m}_{i}\right)$, is likely to produce a fairly powerful two-degrees-of-freedom test against a fairly broad class of alternatives.
+
+The procedure is easily modified to test the more restrictive assumption (18.2). First, replace $\hat{\sigma}^{2}$ everywhere with unity. Second, there is no need to demean the auxiliary regressors $\tilde{\mathbf{h}}_{i}$ (so that now $\tilde{\mathbf{h}}_{i}$ can contain a constant); thus, wherever $\tilde{\mathbf{r}}_{i}$ appears, simply use $\tilde{\mathbf{h}}_{i}$. Everything else is the same. For the reasons discussed earlier, when the focus is on $\mathrm{E}(y \mid \mathbf{x})$, we are more interested in testing assumption (18.3) than assumption (18.2).
+
+\subsection*{18.3 Other Count Data Regression Models}
+\subsection*{18.3.1 Negative Binomial Regression Models}
+The Poisson regression model nominally maintains assumption (18.2) but retains some asymptotic efficiency under assumption (18.3). A popular alternative to the Poisson QMLE is full maximum likelihood analysis of the NegBin I model of Cameron and Trivedi (1986). NegBin I is a particular parameterization of the negative binomial distribution. An important restriction in the NegBin I model is that it implies assumption (18.3) with $\sigma^{2}>1$, so that there cannot be underdispersion. (We drop the "o" subscript in this section for notational simplicity.) Typically, NegBin I is parameterized through the mean parameters $\boldsymbol{\beta}$ and an additional parameter, $\eta^{2}>0$, where $\sigma^{2}=1+\eta^{2}$.
+
+What are the merits of using NegBin I? On the one hand, when $\boldsymbol{\beta}$ and $\eta^{2}$ are estimated jointly, the MLEs are generally inconsistent if the NegBin I assumption fails. On the other hand, if the NegBin I distribution holds, then the NegBin I MLE is more efficient than the Poisson QMLE (this conclusion follows from Section 14.5.2). Still, under assumption (18.3), the Poisson QMLE is more efficient than any estimator that requires only the conditional mean to be correctly specified for consistency. On balance, because of its robustness, the Poisson QMLE has the edge over NegBin I for estimating the parameters of the conditional mean. If conditional probabilities\\
+need to be estimated, then a more flexible model than the Poisson distribution is probably warranted.
+
+Other count data distributions imply a conditional variance other than assumption (18.3). A leading example is the NegBin II model of Cameron and Trivedi (1986). The NegBin II model can be derived from a model of unobserved heterogeneity in a Poisson model. Specifically, let $c_{i}>0$ be unobserved heterogeneity, and assume that\\
+$y_{i} \mid \mathbf{x}_{i}, c_{i} \sim \operatorname{Poisson}\left[c_{i} m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]$.\\
+If we further assume that $c_{i}$ is independent of $\mathbf{x}_{i}$ and has a gamma distribution with unit mean and $\operatorname{Var}\left(c_{i}\right)=\eta^{2}$, then the distribution of $y_{i}$ given $\mathbf{x}_{i}$ can be shown to be negative binomial, with conditional mean and variance\\
+$\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}\right)=m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)$,
+
+
+\begin{equation*}
+\operatorname{Var}\left(y_{i} \mid \mathbf{x}_{i}\right)=\mathrm{E}\left[\operatorname{Var}\left(y_{i} \mid \mathbf{x}_{i}, c_{i}\right) \mid \mathbf{x}_{i}\right]+\operatorname{Var}\left[\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}, c_{i}\right) \mid \mathbf{x}_{i}\right] \tag{18.27}
+\end{equation*}
+
+
+$=m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)+\eta^{2}\left[m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]^{2}$,\\
+so that the conditional variance of $y_{i}$ given $\mathbf{x}_{i}$ is a quadratic in the conditional mean. Because we can write equation (18.28) as $\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}\right)\left[1+\eta^{2} \mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}\right)\right]$, NegBin II also implies overdispersion, but where the amount of overdispersion increases with $\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}\right)$.
+
+The log-likelihood function for observation $i$ is
+
+
+\begin{align*}
+\ell_{i}\left(\boldsymbol{\beta}, \eta^{2}\right)= & \eta^{-2} \log \left[\frac{\eta^{-2}}{\eta^{-2}+m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)}\right]+y_{i} \log \left[\frac{m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)}{\eta^{-2}+m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)}\right] \\
+& +\log \left[\Gamma\left(y_{i}+\eta^{-2}\right) / \Gamma\left(\eta^{-2}\right)\right] \tag{18.29}
+\end{align*}
+
+
+where $\Gamma(\cdot)$ is the gamma function defined for $r>0$ by $\Gamma(r)=\int_{0}^{\infty} z^{r-1} \exp (-z) \mathrm{d} z$.\\
+You are referred to Cameron and Trivedi (1986) for details. The parameters $\boldsymbol{\beta}$ and $\eta^{2}$ can be jointly estimated using standard maximum likelihood methods.
+
+It turns out that, for fixed $\eta^{2}$, the log likelihood in equation (18.29) is in the linear exponential family; see GMT (1984a). Therefore, if we fix $\eta^{2}$ at any positive value, say $\bar{\eta}^{2}$, and estimate $\boldsymbol{\beta}$ by maximizing $\sum_{i=1}^{N} \ell_{i}\left(\boldsymbol{\beta}, \bar{\eta}^{2}\right)$ with respect to $\boldsymbol{\beta}$, then the resulting QMLE is consistent under the conditional mean assumption (18.27) only: for fixed $\eta^{2}$, the negative binomial QMLE has the same robustness properties as the Poisson QMLE. (Notice that when $\eta^{2}$ is fixed, the term involving the gamma function in equation (18.29) does not affect the QMLE.)
+
+The structure of the asymptotic variance estimators and test statistics is very similar to the Poisson regression case. Let
+
+
+\begin{equation*}
+\hat{v}_{i}=\hat{m}_{i}+\bar{\eta}^{2} \hat{m}_{i}^{2} \tag{18.30}
+\end{equation*}
+
+
+be the estimated nominal variance for the given value $\bar{\eta}^{2}$. We simply weight the residuals $\hat{u}_{i}$ and gradient $\nabla_{\beta} \hat{m}_{i}$ by $1 / \sqrt{\hat{v}_{i}}$ :\\
+$\tilde{u}_{i}=\hat{u}_{i} / \sqrt{\hat{v}_{i}}, \quad \nabla_{\beta} \tilde{m}_{i}=\nabla_{\beta} \hat{m}_{i} / \sqrt{\hat{v}_{i}}$.
+
+For example, under conditions (18.27) and (18.28), a valid estimator of $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$ is\\
+$\left(\sum_{i=1}^{N} \nabla_{\beta} \hat{m}_{i}^{\prime} \nabla_{\beta} \hat{m}_{i} / \hat{v}_{i}\right)^{-1}$.\\
+If we drop condition (18.28), the estimator in expression (18.14) should be used but with the standardized residuals and gradients given by equation (18.31). Score statistics are modified in the same way.
+
+When $\eta^{2}$ is set to unity, we obtain the geometric QMLE. A better approach is to replace $\eta^{2}$ by a first-stage estimate, say $\hat{\eta}^{2}$, and then estimate $\boldsymbol{\beta}$ by two-step QMLE. As we discussed in Chapters 12 and 13, sometimes the asymptotic distribution of the first-stage estimator needs to be taken into account. A nice feature of the two-step QMLE in this context is that the key condition, assumption (12.37), can be shown to hold under assumption (18.27). Therefore, we can ignore the first-stage estimation of $\eta^{2}$.
+
+Under assumption (18.28), a consistent estimator of $\eta^{2}$ is easy to obtain, given an initial estimator of $\boldsymbol{\beta}$ (such as the Poisson QMLE or the geometric QMLE). Given $\hat{\hat{\boldsymbol{\beta}}}$, form $\hat{\hat{\boldsymbol{m}}}_{i}$ and $\hat{\hat{u}}_{i}$ as the usual fitted values and residuals. One consistent estimator of $\eta^{2}$ is the coefficient on $\hat{\hat{m}}_{i}^{2}$ in the regression (through the origin) of $\hat{\hat{u}}_{i}^{2}-\hat{\hat{m}}_{i}$ on $\hat{\hat{m}}_{i}^{2}$; this is the estimator suggested by Gourieroux, Monfort, and Trognon (1984b) and Cameron and Trivedi (1986). An alternative estimator of $\eta^{2}$, which is closely related to the GLM estimator of $\sigma^{2}$ suggested in equation (18.15), is a weighted least squares (WLS) estimate, which can be obtained from the OLS regression $\tilde{\tilde{u}}_{i}^{2}-1$ on $\hat{\hat{m}}_{i}$, where the $\tilde{\tilde{u}}_{i}$ are residuals $\hat{\hat{u}}_{i}$ weighted by $\hat{\hat{m}}_{i}^{-1 / 2}$. The resulting two-step estimator of $\boldsymbol{\beta}$ is consistent under assumption (18.7) only, so it is just as robust as the Poisson QMLE. Because $\hat{\boldsymbol{\beta}}$ is consistent without (18.28), it makes sense to use fully robust standard errors and test statistics. If assumption (18.3) holds, the Poisson QMLE is asymptotically more efficient; if assumption (18.28) holds, the two-step negative binomial estimator is more efficient. Notice that neither variance assumption contains the other as a special case for all parameter values; see Wooldridge (1997c) for additional discussion.
+
+The variance specification tests discussed in Section 18.2.5 can be extended to the negative binomial QMLE; see Wooldridge (1991b).
+
+\subsection*{18.3.2 Binomial Regression Models}
+Sometimes we wish to analyze count data conditional on a known upper bound. For example, Thomas, Strauss, and Henriques (1990) study child mortality within families conditional on number of children ever born. Another example takes the dependent variable, $y_{i}$, to be the number of adult children in family $i$ who are high school graduates; the known upper bound, $n_{i}$, is the number of children in family $i$. By conditioning on $n_{i}$ we are, presumably, treating it as exogenous.
+
+Let $\mathbf{x}_{i}$ be a set of exogenous variables. A natural starting point is to assume that $y_{i}$ given ( $n_{i}, \mathbf{x}_{i}$ ) has a binomial distribution, denoted Binomial $\left[n_{i}, p\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]$, where $p\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)$ is a function bounded between zero and one. In this setup, usually, $y_{i}$ is viewed as the sum of $n_{i}$ independent Bernoulli (zero-one) random variables, and $p\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)$ is the (conditional) probability of success on each trial.
+
+The binomial assumption is too restrictive for all applications. The presence of an unobserved effect would invalidate the binomial assumption (after the effect is integrated out). For example, when $y_{i}$ is the number of children in a family graduating from high school, unobserved family effects may play an important role. Generally, the presence of unobserved heterogeneity within group $i$ violates the independence assumption (conditional on $\mathbf{x}_{i}$ ) that is used to derive the binomial distribution.
+
+As in the case of unbounded support, we assume that the conditional mean is correctly specified:\\
+$\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}, n_{i}\right)=n_{i} p\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right) \equiv m_{i}(\boldsymbol{\beta})$.
+
+This formulation ensures that $\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}, n_{i}\right)$ is between zero and $n_{i}$. Typically, $p\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right) =G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)$, where $G(\cdot)$ is a cumulative distribution function, such as the standard normal or logistic function.
+
+Given a parametric model $p(\mathbf{x}, \boldsymbol{\beta})$, the binomial quasi-log likelihood for observation $i$ is\\
+$\ell_{i}(\boldsymbol{\beta})=y_{i} \log \left[p\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]+\left(n_{i}-y_{i}\right) \log \left[1-p\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]$,\\
+and the binomial QMLE is obtained by maximizing the sum of $\ell_{i}(\boldsymbol{\beta})$ over all $N$ observations. From the results of GMT (1984a), the conditional mean parameters are consistently estimated under assumption (18.32) only. This conclusion follows from the general M-estimation results after showing that the true value of $\boldsymbol{\beta}$ maximizes the expected value of equation (18.33) under assumption (18.32) only.
+
+The binomial GLM variance assumption is\\
+$\operatorname{Var}\left(y_{i} \mid \mathbf{x}_{i}, n_{i}\right)=\sigma^{2} n_{i} p\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\left[1-p\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]=\sigma^{2} v_{i}(\boldsymbol{\beta})$,\\
+which generalizes the nominal binomial assumption with $\sigma^{2}=1$. (McCullagh and Nelder [1989, Section 4.5] discuss a model that leads to assumption (18.34) with $\sigma^{2}>1$. But underdispersion is also possible.) Even the GLM assumption can fail if the binary outcomes comprising $y_{i}$ are not independent conditional on $\left(\mathbf{x}_{i}, n_{i}\right)$. Therefore, it makes sense to use the fully robust asymptotic variance estimator for the binomial QMLE.
+
+Owing to the structure of LEF densities, and given our earlier analysis of the Poisson and negative binomial cases, it is straightforward to describe the econometric analysis for the binomial QMLE: simply take $\hat{m}_{i} \equiv n_{i} p\left(\mathbf{x}_{i}, \hat{\boldsymbol{\beta}}\right), \hat{u}_{i} \equiv y_{i}-\hat{m}_{i}, \nabla_{\beta} \hat{m}_{i} \equiv n_{i} \nabla_{\beta} \hat{p}_{i}$, and $\hat{v}_{i} \equiv n_{i} \hat{p}_{i}\left(1-\hat{p}_{i}\right)$ in equations (18.31). An estimator of $\sigma^{2}$ under assumption (18.34) is also easily obtained: replace $\hat{m}_{i}$ in equation (18.15) with $\hat{v}_{i}$. The structure of asymptotic variances and score tests is identical.
+
+\subsection*{18.4 Gamma (Exponential) Regression Model}
+It is becoming more popular to directly model the expected value of nonnegative, continuous response variables rather than using a transformation (usually the natural log) and specifying a model linear in parameters with an additive error. Wooldridge (1992) makes the case that if $\mathrm{E}(y \mid \mathbf{x})$ is the quantity of interest when $y \geq 0$, then it makes sense to model this expectation directly. More recently, Blackburn (2007) has suggested estimating models of E (wage $\mid \mathbf{x}$ ) directly, where wage is a measure of employee compensation, rather than using $\log ($ wage $)$ in a linear regression.
+
+We set out the reasons for directly modeling $\mathrm{E}(y \mid \mathbf{x})$ in Section 2.2.2. For concreteness, assume that $y>0$, and so $\log (y)$ is well defined. If we postulate the standard linear model $\log (y)=\mathbf{x} \boldsymbol{\beta}+u$, we can ask: when can we recover partial effects, semielasticities, and elasticities on $\mathrm{E}(y \mid \mathbf{x})$ ? A sufficient condition is to assume $u$ and $\mathbf{x}$ are independent, in which case $\mathrm{E}(y \mid \mathbf{x})=\alpha \exp (\mathbf{x} \boldsymbol{\beta})$, and $\alpha$ is identified from $\alpha=\mathrm{E}[\exp (u)]$. Duan's (1983) smearing estimate is the most common way to estimate $\alpha$ based on OLS residuals from the regression $\log \left(y_{i}\right)$ on $\mathbf{x}_{i}$. Alternatively, we can allow dependence between $u$ and $\mathbf{x}$ if we specify $D(u \mid x)$, for example, $u \mid x \sim \operatorname{Normal}(0, \exp (\mathbf{x} \boldsymbol{\gamma}))$, in which case $\mathrm{E}(y \mid \mathbf{x})=\exp (\mathbf{x} \boldsymbol{\beta}+\exp (\mathbf{x} \boldsymbol{\gamma}) / 2)$.
+
+Both previous approaches require restrictions on the conditional distribution $D(y \mid \mathbf{x})$ in addition to specifying the conditional mean, and each is a roundabout way of obtaining estimates of $\mathrm{E}(y \mid \mathbf{x})$. Just as when $y$ has some discreteness-for example, it is a count variable-it makes sense to specify simple, logically consistent models\\
+for $\mathrm{E}(y \mid \mathbf{x})$. Again, the leading case is an exponential model: $\mathrm{E}(y \mid \mathbf{x})=\exp (\mathbf{x} \boldsymbol{\beta})$ with $x_{1} \equiv 1$. We already know how to interpret the parameters of such a model.
+
+It is important to remember that, regardless of the nature of $y$-provided it is nonnegative and has no natural upper bound-we can always apply the Poisson QMLE. Thus, even if $y$ is continuous on $(0, \infty)$, Poisson regression delivers consistent, $\sqrt{N}$-asymptotically normal estimators of the parameters in $\mathrm{E}(y \mid \mathbf{x})=\exp (\mathbf{x} \boldsymbol{\beta})$ (or any other correctly specified mean function). Even for some continuous random variables the Poisson QMLE can be asymptotically efficient in the class of estimators that specify only the mean. Sufficient is that assumption (18.3) holds, and this variancemean relationship holds for certain parameterizations of the gamma distribution.
+
+Nevertheless, a constant variance-mean ratio is somewhat uncommon for nonnegative continuous variables. In the model $\log (y)=\mathbf{x} \boldsymbol{\beta}+u$ with $u$ independent of $\mathbf{x}, \operatorname{Var}(y \mid \mathbf{x})=\sigma^{2}[\exp (\mathbf{x} \boldsymbol{\beta})]^{2}$ where $\sigma^{2}=\operatorname{Var}[\exp (u)]$. A natural parameterization of the gamma distribution has the variance proportional to the square of the mean. As shown in GMT (1984a), for a fixed value of the variance/mean ratio, the log likelihood is in the LEF. In fact, for estimation purposes, we can set the ratio to unity, which gives us the log likelihood for the exponential distribution. With general mean function $m(\mathbf{x}, \boldsymbol{\beta})>0$, we have
+
+
+\begin{equation*}
+l_{i}(\boldsymbol{\beta})=-y_{i} / m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)-\log \left[m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right], \tag{18.35}
+\end{equation*}
+
+
+and the gamma QMLE (sometimes called the exponential QMLE) is the estimator that maximizes this quasi-log-likelihood function summed across the sample. It is easy to show directly that the score, $\nabla_{\beta} m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)^{\prime}\left\{y_{i} /\left[m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]^{2}-1 / m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right\}= \nabla_{\beta} m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)^{\prime}\left\{y_{i}-m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right\} / /\left[m\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]^{2}$ has zero conditional mean (technically, when evaluated at the "true" value of beta) whenever the mean is correctly specified. (Or, one can work with equation (18.35) directly, as in GMT (1984a).) In other words, just as with the Poisson QMLE, the gamma QMLE is fully robust to distributional misspecification other than the conditional mean. Specifying a conditional mean and estimating using the gamma QMLE is often called, as a shorthand, the gamma regression model.
+
+The gamma QMLE is efficient in the class of estimators that specify only $\mathrm{E}(y \mid \mathbf{x})$, including NLS and the Poisson QMLE, under the gamma GLM variance assumption, which we write as
+
+
+\begin{equation*}
+\operatorname{Var}(y \mid \mathbf{x})=\sigma^{2}[\mathrm{E}(y \mid \mathbf{x})]^{2} . \tag{18.36}
+\end{equation*}
+
+
+When $\sigma^{2}=1$, assumption (18.36) gives the variance-mean relationship for the exponential distribution. Under assumption (18.36), $\sigma$ is the coefficient of variation: it is the ratio of the conditional standard deviation of $y$ to its conditional mean.
+
+Whether or not assumption (18.36) holds, an asymptotic variance matrix can be estimated. The fully robust form is expression (18.14), but, in defining the score and expected Hessian, the residuals and gradients are weighted by $1 / \hat{m}_{i}$ rather than $\hat{m}_{i}^{-1 / 2}$. Under assumption (18.36), a valid estimator is\\
+$\hat{\sigma}^{2}\left(\sum_{i=1}^{N} \nabla_{\beta} \hat{m}_{i}^{\prime} \nabla_{\beta} \hat{m}_{i} / \hat{v}_{i}\right)^{-1}$,\\
+where $\hat{\sigma}^{2}=N^{-1} \sum_{i=1}^{N} \hat{u}_{i}^{2} / \hat{m}_{i}^{2}$ and $\hat{v}_{i}=\hat{m}_{i}^{2}$. Score tests and QLR tests can be computed just as in the Poisson case. Many statistical packages implement gamma regression with an exponential mean function, often as a feature of a GLM command.
+
+\subsection*{18.5 Endogeneity with an Exponential Regression Function}
+With all of the previous models, standard econometric problems can arise. In this section, we study the problem of endogenous explanatory variables with an exponential regression function.
+
+We approach the problem of endogenous explanatory variables from an omitted variables perspective. Let $y_{1}$ be the nonnegative, in principle unbounded variable to be explained, and let $\mathbf{z}$ and $\mathbf{y}_{2}$ be observable explanatory variables (of dimension $1 \times L$ and $1 \times G_{1}$, respectively). Let $c_{1}$ be an unobserved latent variable (or unobserved heterogeneity). We assume that the (structural) model of interest is an omitted variables model of exponential form, written in the population as\\
+$\mathrm{E}\left(y_{1} \mid \mathbf{z}, \mathbf{y}_{2}, c_{1}\right)=\exp \left(\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{y}_{2} \boldsymbol{\gamma}_{1}+c_{1}\right)$,\\
+where $\mathbf{z}_{1}$ is a $1 \times L_{1}$ subset of $\mathbf{z}$ containing unity; thus, the model (18.37) incorporates some exclusion restrictions. On the one hand, the elements in $\mathbf{z}$ are assumed to be exogenous in the sense that they are independent of $c_{1}$. On the other hand, $\mathbf{y}_{2}$ and $c_{1}$ are allowed to be correlated, so that $\mathbf{y}_{2}$ is potentially endogenous.
+
+To use a quasi-likelihood approach, we assume that $\mathbf{y}_{2}$ has a linear reduced form satisfying certain assumptions. Write\\
+$\mathbf{y}_{2}=\mathbf{z} \boldsymbol{\Pi}_{2}+\mathbf{v}_{2}$,\\
+where $\boldsymbol{\Pi}_{2}$ is an $L \times G_{1}$ matrix of reduced form parameters and $\mathbf{v}_{2}$ is a $1 \times G_{1}$ vector of reduced form errors. We assume that the rank condition for identification holds, which requires the order condition $L-L_{1} \geq G_{1}$. In addition, we assume that $\left(c_{1}, \mathbf{v}_{2}\right)$ is independent of $\mathbf{z}$, and that
+
+
+\begin{equation*}
+c_{1}=\mathbf{v}_{2} \boldsymbol{\rho}_{1}+e_{1}, \tag{18.39}
+\end{equation*}
+
+
+where $e_{1}$ is independent of $\mathbf{v}_{2}$ (and necessarily of $\mathbf{z}$ ). (We could relax the independence assumptions to some degree, but we cannot just assume that $\mathbf{v}_{2}$ is uncorrelated with $\mathbf{z}$ and that $e_{1}$ is uncorrelated with $\mathbf{v}_{2}$.) It is natural to assume that $\mathbf{v}_{2}$ has zero mean, but it is convenient to assume that $\mathrm{E}\left[\exp \left(e_{1}\right)\right]=1$ rather than $\mathrm{E}\left(e_{1}\right)=0$. This assumption is without loss of generality whenever a constant appears in $\mathbf{z}_{1}$, which should almost always be the case.
+
+If ( $c_{1}, \mathbf{v}_{2}$ ) has a multivariate normal distribution, then the representation in equation (18.39) under the stated assumptions always holds. We could also extend equation (18.39) by putting other functions of $\mathbf{v}_{2}$ on the right-hand side, such as squares and cross products, but we do not show these explicitly. Note that $\mathbf{y}_{2}$ is exogenous if and only if $\boldsymbol{\rho}_{1}=\mathbf{0}$.
+
+Under the maintained assumptions, we have
+
+
+\begin{equation*}
+\mathrm{E}\left(y_{1} \mid \mathbf{z}, \mathbf{y}_{2}, \mathbf{v}_{2}\right)=\exp \left(\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{y}_{2} \boldsymbol{\gamma}_{1}+\mathbf{v}_{2} \boldsymbol{\rho}_{1}\right), \tag{18.40}
+\end{equation*}
+
+
+and this equation suggests a strategy for consistently estimating $\boldsymbol{\delta}_{1}, \boldsymbol{\gamma}_{1}$, and $\boldsymbol{\rho}_{1}$. If $\mathbf{v}_{2}$ were observed, we could simply use this regression function in one of the QMLE earlier methods (for example, Poisson, two-step negative binomial, or gamma). Because these methods consistently estimate correctly specified conditional means, we can immediately conclude that the QMLEs would be consistent. (If $y_{1}$ conditional on $\left(\mathbf{z}, \mathbf{y}_{2}, c_{1}\right)$ has a Poisson distribution with mean in equation (18.37), then the distribution of $y_{1}$ given ( $\mathbf{z}, \mathbf{y}_{2}, \mathbf{v}_{2}$ ) has overdispersion of the type (18.28), so the two-step negative binomial estimator might be preferred in this context.)
+
+To operationalize this procedure, the unknown quantities $\mathbf{v}_{2}$ must be replaced with estimates. Let $\hat{\boldsymbol{\Pi}}_{2}$ be the $L \times G_{1}$ matrix of OLS estimates from the first-stage estimation of equation (18.38); these are consistent estimates of $\boldsymbol{\Pi}_{2}$. Define $\hat{\mathbf{v}}_{2}=\mathbf{y}_{2}$ $\mathbf{z} \hat{\boldsymbol{\Pi}}_{2}$ (where the observation subscript is suppressed). Then estimate the exponential regression model using regressors $\left(\mathbf{z}_{1}, \mathbf{y}_{2}, \hat{\mathbf{v}}_{2}\right)$ by one of the QMLEs. The estimates $\left(\hat{\boldsymbol{\delta}}_{1}, \hat{\gamma}_{1}, \hat{\boldsymbol{\rho}}_{1}\right)$ from this procedure are consistent using standard arguments from twostep estimation in Chapter 12.
+
+This method is similar in spirit to the methods we saw for binary response (Chapter 15) and Tobit regression models (Chapter 17). There is one difference: here, we do not need to make distributional assumptions about $y_{1}$ or $\mathbf{y}_{2}$. However, we do assume that the reduced-form errors $\mathbf{v}_{2}$ are independent of $\mathbf{z}$. In addition, we assume that $c_{1}$ and $\mathbf{v}_{2}$ are linearly related with $e_{1}$ in equation (18.39) independent of $\mathbf{v}_{2}$.
+
+Because $\hat{\mathbf{v}}_{2}$ depends on $\hat{\boldsymbol{\Pi}}_{2}$, the variance matrix estimators for $\hat{\boldsymbol{\delta}}_{1}, \hat{\boldsymbol{\gamma}}_{1}$, and $\hat{\boldsymbol{\rho}}_{1}$ should generally be adjusted to account for this dependence, as described in Sections 12.5.2\\
+and 14.1. The bootstrap is also attractive because the two-step procedure takes little computational time (unless the sample size is very large). Using the results from Section 12.5.2, it can be shown that estimation of $\boldsymbol{\Pi}_{2}$ does not affect the asymptotic variance of the QMLEs when $\boldsymbol{\rho}_{1}=\mathbf{0}$, just as we saw when testing for endogeneity in probit and Tobit models. Therefore, testing for endogeneity of $\mathbf{y}_{2}$ is relatively straightforward: simply test $\mathrm{H}_{0}: \boldsymbol{\rho}_{1}=\mathbf{0}$ using a Wald or $L M$ statistic. When $G_{1}=1$, the most convenient statistic is probably the $t$ statistic on $\hat{v}_{2}$, with the fully robust form being the most preferred (but the GLM form is also useful). The $L M$ test for omitted variables is convenient when $G_{1}>1$ because it can be computed after estimating the null model ( $\boldsymbol{\rho}_{1}=\mathbf{0}$ ) and then doing a variable addition test for $\hat{\mathbf{v}}_{2}$. The test has $G_{1}$ degrees of freedom in the chi-square distribution.
+
+There is a final comment worth making about this test. The null hypothesis is the same as $\mathrm{E}\left(y_{1} \mid \mathbf{z}, \mathbf{y}_{2}\right)=\exp \left(\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{y}_{2} \boldsymbol{\gamma}_{1}\right)$. The test for endogeneity of $\mathbf{y}_{2}$ simply looks for whether a particular linear combination of $\mathbf{y}_{2}$ and $\mathbf{z}$ appears in this conditional expectation. For the purposes of getting a limiting chi-square distribution, it does not matter where the linear combination $\hat{\mathbf{v}}_{2}$ comes from. In other words, under the null hypothesis none of the assumptions we made about ( $c_{1}, \mathbf{v}_{2}$ ) need to hold: $\mathbf{v}_{2}$ need not be independent of $\mathbf{z}$, and $e_{1}$ in equation (18.39) need not be independent of $\mathbf{v}_{2}$. Therefore, as a test, this procedure is very robust, and it can be applied when $\mathbf{y}_{2}$ contains binary, count, or other discrete variables. Unfortunately, if $\mathbf{y}_{2}$ is endogenous, the correction does not work without something like the assumptions made previously.
+
+Example 18.2 (Is Education Endogenous in the Fertility Equation?): We test for endogeneity of educ in Example 18.1. The IV for educ is a binary indicator for whether the woman was born in the first half of the year (frsthalf), which we assume is exogenous in the fertility equation. In the reduced-form equation for $e d u c$, the coefficient on frsthalf is -.636 (se $=.104$ ), and so there is a significant negative partial relationship between years of schooling and being born in the first half of the year.
+
+When we add the first-stage residuals, $\hat{v}_{2}$, to the Poisson regression, its coefficient is .025 , and its GLM standard error is .028 . Therefore, there is little evidence against the null hypothesis that educ is exogenous. The coefficient on educ actually becomes larger in magnitude (-.046), but it is much less precisely estimated.
+
+It is straightforward to allow general nonlinear functions of $\left(\mathbf{z}_{1}, \mathbf{y}_{2}\right)$ in the exponential model because including the control function $\mathbf{v}_{2}$ accounts for endogeneity quite generally. Further, it might be that $\mathbf{y}_{2}$, as it appears in equation (18.37), might not have a linear representation as in (18.38), with $\mathbf{v}_{2}$ having the requisite properties. If the elements of $\mathbf{y}_{2}$ are continuous, we can often find a strictly monotonic transfor-\\
+mation such that a linear reduced form, with an additive error independent of $\mathbf{z}$, is sensible. So, in the scalar case, if $0<y_{2}<1$, we might use $\log \left[y_{2} /\left(1-y_{2}\right)\right]= \mathbf{z} \boldsymbol{\pi}_{2}+v_{2}$ as the reduced form, even though $y_{2}$ itself appears in the structural equation. Because we can write $y_{2}=\exp \left(\mathbf{z} \boldsymbol{\pi}_{2}+v_{2}\right) /\left[1+\exp \left(\mathbf{z} \boldsymbol{\pi}_{2}+v_{2}\right)\right]$, adding $\hat{v}_{2}$ to a QMLE analysis controls for the endogeneity of $y_{2}$.
+
+In addition to the parameters, one might want the partial effect on the mean, rather than just an elasticity or semielasticity. We can estimate the average partial effects by using the general approach for probit, ordered probit, and Tobit models. The estimated average structural function is
+
+
+\begin{equation*}
+\widehat{\operatorname{ASF}}\left(\mathbf{x}_{1}\right)=N^{-1} \sum_{i=1}^{N} \exp \left(\mathbf{x}_{1} \hat{\boldsymbol{\beta}}_{1}+\hat{\mathbf{v}}_{i 2} \hat{\boldsymbol{\rho}}_{1}\right), \tag{18.41}
+\end{equation*}
+
+
+and then we take derivatives or changes with respect to the elements in $\mathbf{x}_{1} \equiv \mathbf{g}_{1}\left(\mathbf{z}_{1}, y_{2}\right)$ for a known function $\mathbf{g}_{1}(\cdot)$. The bootstrap can be applied to obtain valid standard errors and confidence intervals.
+
+Recent theoretical work on linear models (for example, Bekker (1994)) as well as simulations (for example, Flores-Lagunes (2007)) suggest a single-step estimation method might have better finite-sample properties than two-step estimation, particularly with weak instruments or many overidentifying restrictions. It is easy to obtain a one-step version of the control function method just described. Suppose we decide to use the Poisson QMLE for the structural part of the model, and assume, for simplicity, that we have a single endogenous explanatory variable and that the linear reduced form is stated in terms of $y_{2}$ (the extension to $h_{2}\left(y_{2}\right)$ is straightforward). Then, we can estimate both sets of parameters simultaneously by solving
+
+$$
+\begin{aligned}
+\min _{\boldsymbol{\theta}} & \sum_{i=1}^{N}\left\{\exp \left(\mathbf{x}_{i 1} \boldsymbol{\beta}_{1}+\rho_{1}\left(y_{i 2}-\mathbf{z}_{i} \boldsymbol{\pi}_{2}\right)\right)-y_{i 1}\left[\mathbf{x}_{i 1} \boldsymbol{\beta}_{1}+\rho_{1}\left(y_{i 2}-\mathbf{z}_{i} \boldsymbol{\pi}_{2}\right)\right]\right. \\
+& \left.+\left(y_{i 2}-\mathbf{z}_{i} \boldsymbol{\pi}_{2}\right)^{2} / \tau_{2}^{2}+\log \left(\tau_{2}^{2}\right)\right\}
+\end{aligned}
+$$
+
+where $\boldsymbol{\theta}$ is the full set of parameters, including the reduced form variance parameter $\tau_{2}^{2}$, and $\mathbf{x}_{i 1}$ is whatever function of $\left(\mathbf{z}_{i 1}, y_{i 2}\right)$ that appears in the model. (If we assume that $y_{2} \mid \mathbf{z} \sim \operatorname{Normal}\left(\mathbf{z} \boldsymbol{\pi}_{o 2}, \tau_{o 2}^{2}\right)$, and $y_{1} \mid y_{2}, \mathbf{z}$ follows a Poisson distribution, then the minimization problem is the same as the limited information maximum liklelihood (LIML) estimator. The "limited information" identifier comes from the fact that we use a reduced form for $y_{2}$.) This is a standard M-estimation problem, and its consistency holds provided the true values of the parameters solve the corresponding population problem. To this end, we label the population parameters by using the " $o$ "\\
+subscript. Then we know $\boldsymbol{\pi}_{o 2}$ minimizes $\mathrm{E}\left[\left(y_{2}-\mathbf{z} \boldsymbol{\pi}_{2}\right)^{2} / \tau_{2}^{2}\right]$ for any $\tau_{2}^{2}>0$ (even if $\boldsymbol{\pi}_{o 2}$ simply indexes the linear projection), and then the "true" value $\tau_{o 2}^{2}$ is the variance of $y_{2}-\mathbf{z} \boldsymbol{\pi}_{o 2}$. Further, because we assume $\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right)=\exp \left(\mathbf{x}_{1} \boldsymbol{\beta}_{o 1}+\rho_{o 1}\left(y_{2}-\mathbf{z} \boldsymbol{\pi}_{o 2}\right)\right)$, it follows that $\left(\boldsymbol{\beta}_{o 1}, \rho_{o 1}, \boldsymbol{\pi}_{o 2}\right)$ minimize\\
+$\mathrm{E}\left\{\exp \left(\mathbf{x}_{i 1} \boldsymbol{\beta}_{1}+\rho_{1}\left(y_{i 2}-\mathbf{z}_{i} \boldsymbol{\pi}_{2}\right)\right)-y_{i 1}\left[\mathbf{x}_{i 1} \boldsymbol{\beta}_{1}+\rho_{1}\left(y_{i 2}-\mathbf{z}_{i} \boldsymbol{\pi}_{2}\right)\right]\right\}$.
+
+Therefore, $\left(\boldsymbol{\beta}_{o 1}, \rho_{o 1}, \boldsymbol{\pi}_{o 2}, \tau_{o 2}^{2}\right)$ minimizes the sum of the expected values. After M estimation, we would use a fully robust sandwich estimator for the asymptotic variance because the Poisson distribution for $\mathrm{D}\left(y_{1} \mid \mathbf{z}, y_{2}\right)$ is almost certainly wrong. Plus, we may not wish to think $v_{2}$ is independent of $\mathbf{z}$ in $y_{2}=\mathbf{z} \boldsymbol{\pi}_{o 2}+v_{2}$ (even though obtaining the form of $\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right)$ uses something like it). If we write $q_{i 1}(\boldsymbol{\theta})= \exp \left(\mathbf{x}_{i 1} \boldsymbol{\beta}_{1}+\rho_{1}\left(y_{i 2}-\mathbf{z}_{i} \boldsymbol{\pi}_{2}\right)\right)-y_{i 1}\left[\mathbf{x}_{i 1} \boldsymbol{\beta}_{1}+\rho_{1}\left(y_{i 2}-\mathbf{z}_{i} \boldsymbol{\pi}_{2}\right)\right]$ and $q_{i 2}(\boldsymbol{\theta})=\left(y_{i 2}-\mathbf{z}_{i} \boldsymbol{\pi}_{2}\right)^{2} / \tau_{2}^{2} +\log \left(\tau_{2}^{2}\right)$, then the scores evaluated at the true parameters are uncorrelated because $\mathrm{E}\left[\nabla_{\boldsymbol{\theta}} q_{i 1}\left(\boldsymbol{\theta}_{o}\right) \mid y_{i 2}, \mathbf{z}_{i}\right]=\mathbf{0}$ and $\nabla_{\boldsymbol{\theta}} q_{i 2}\left(\boldsymbol{\theta}_{o}\right)$ depends only on $\left(y_{i 2}, \mathbf{z}_{i}\right)$.
+
+The assumption that $e_{1}$ in (18.39) is independent of $\mathbf{v}_{2}$ and $\mathbf{z}$ rules out most cases where $\mathbf{y}_{2}$ has some discreteness, such as with binary, count, or corner responses. (In particular, the independence assumption likewise fails unless $\mathbf{v}_{2}$ is independent of $\mathbf{z}$, and it would be very unusual for a discrete variable to be expressible as a linear equation with additive error independent of $\mathbf{z}$.) Terza (1998) considered the case where $y_{2}$ is a binary endogenous explanatory variable and follows a reduced form probit:
+
+
+\begin{equation*}
+y_{2}=1\left[\mathbf{z} \boldsymbol{\pi}_{2}+v_{2} \geq 0\right], \quad v_{2} \mid \mathbf{z} \sim \operatorname{Normal}(0,1) \tag{18.43}
+\end{equation*}
+
+
+As shown by Terza (1998), a control function (CF) method can be applied when $\left(a_{1}, v_{2}\right)$ has a joint normal distribution and is independent of $\mathbf{z}$. To implement a CF approach, we need to find $\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right)=\exp \left(\mathbf{x}_{1} \boldsymbol{\beta}_{1}\right) \mathrm{E}\left[\exp \left(c_{1}\right) \mid \mathbf{z}, y_{2}\right]$ where $\mathbf{x}_{1}$ is a function of $\left(\mathbf{z}_{1}, y_{2}\right)$, which would almost certainly include $y_{2}$ linearly and possibly interact with elements of $\mathbf{z}_{1}$. Now, suppose ( $c_{1}, v_{2}$ ) is independent of $\mathbf{z}$ with mean zero and jointly normal. Let $\tau_{1}^{2}=\operatorname{Var}\left(c_{1}\right)$ and $\rho_{1}=\operatorname{Cov}\left(v_{2}, c_{1}\right)$, so that $c_{1}=\rho_{1} v_{2}+e_{1}$, where $e_{1} \mid \mathbf{z}, v_{2} \sim \operatorname{Normal}\left(0, \tau_{1}^{2}-\rho_{1}^{2}\right)$. Then
+
+
+\begin{align*}
+\mathrm{E}\left(y_{1} \mid \mathbf{z}, v_{2}\right) & =\mathrm{E}\left[\exp \left(e_{1}\right)\right] \exp \left(\mathbf{x}_{1} \boldsymbol{\beta}_{1}+\rho_{1} v_{2}\right) \\
+& =\exp \left(\left(\tau_{1}^{2}-\rho_{1}^{2}\right) / 2\right) \exp \left(\mathbf{x}_{1} \boldsymbol{\beta}_{1}+\rho_{1} v_{2}\right) \\
+& =\exp \left(\left(\tau_{1}^{2}-\rho_{1}^{2}\right) / 2+\mathbf{x}_{1} \boldsymbol{\beta}_{1}\right) \exp \left(\rho_{1} v_{2}\right) \tag{18.44}
+\end{align*}
+
+
+To find $\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right)$, we have
+
+
+\begin{equation*}
+\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right)=\exp \left(\left(\tau_{1}^{2}-\rho_{1}^{2}\right) / 2\right) \exp \left(\mathbf{x}_{1} \boldsymbol{\beta}_{1}\right) \mathrm{E}\left[\exp \left(\rho_{1} v_{2}\right) \mid \mathbf{z}, y_{2}\right] \tag{18.45}
+\end{equation*}
+
+
+As shown by Terza (1998), and as is used in the two-part model in Section 17.6.3,
+
+
+\begin{align*}
+\mathrm{E}\left[\exp \left(\rho_{1} v_{2}\right) \mid \mathbf{z}, y_{2}=1\right] & =\mathrm{E}\left[\exp \left(\rho_{1} v_{2}\right) \mid \mathbf{z}, v_{2}>-\mathbf{z} \boldsymbol{\pi}_{2}\right] \\
+& =\exp \left(\rho_{1}^{2} / 2\right) \Phi\left(\rho_{1}+\mathbf{z} \boldsymbol{\pi}_{2}\right) / \Phi\left(\mathbf{z} \boldsymbol{\pi}_{2}\right) \tag{18.46}
+\end{align*}
+
+
+Similarly,\\
+$\mathrm{E}\left[\exp \left(\rho_{1} v_{2}\right) \mid \mathbf{z}, y_{2}=0\right]=\exp \left(\rho_{1}^{2} / 2\right)\left[1-\Phi\left(\rho_{1}+\mathbf{z} \boldsymbol{\pi}_{2}\right)\right] /\left[1-\Phi\left(\mathbf{z} \boldsymbol{\pi}_{2}\right)\right]$.
+
+It follows from (18.45), (18.46), and (18.47) that
+
+
+\begin{align*}
+\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right)= & \exp \left(\tau_{1}^{2} / 2+\mathbf{x}_{1} \boldsymbol{\beta}_{1}\right)\left\{\Phi\left(\rho_{1}+\mathbf{z} \boldsymbol{\pi}_{2}\right) / \Phi\left(\mathbf{z} \boldsymbol{\pi}_{2}\right)\right\}^{y_{2}} \\
+& \cdot\left\{\left[1-\Phi\left(\rho_{1}+\mathbf{z} \boldsymbol{\pi}_{2}\right)\right] /\left[1-\Phi\left(\mathbf{z} \boldsymbol{\pi}_{2}\right)\right]\right\}^{\left(1-y_{2}\right)} . \tag{18.48}
+\end{align*}
+
+
+Notice that, if $\mathbf{x}_{1}$ contains unity, as it should, then only $\tau_{1}^{2} / 2+\beta_{11}$ is identified, along with the other elements of $\boldsymbol{\beta}_{1}, \rho_{1}$, and $\boldsymbol{\pi}_{2}$. This is just fine because the average structural function is $\left.\operatorname{ASF}\left(\mathbf{z}_{1}, y_{2}\right)=\mathrm{E}_{c_{1}}\left[\exp \left(\mathbf{x}_{1} \boldsymbol{\beta}_{1}+c_{1}\right)\right]=\exp \left(\tau_{1}^{2} / 2+\mathbf{x}_{1} \boldsymbol{\beta}_{1}\right)\right]$, and so the intercept that is identified is exactly what we want for computing APEs. Thus, in what follows we just absorb $\tau_{1}^{2} / 2$ into the intercept.
+
+In the first step of Terza's two-step method we estimate the probit model of $y_{2}$ on $\mathbf{z}$ to obtain the MLE, $\hat{\boldsymbol{\pi}}_{2}$. In the second step we estimate the mean function in (18.48) with $\hat{\boldsymbol{\pi}}_{2}$ in place of $\boldsymbol{\pi}_{2}$. We can use NLS or a quasi-MLE, such as the Poisson or gamma QMLE. Either way, our inference should account for the two-step estimation, using either the delta method or bootstrap.
+
+A simple test of $H_{0}: \rho_{1}=0$ is available. The derivative of the mean function with respect to $\rho_{1}$, evaluated at $\rho_{1}=0$, is $\exp \left(\mathbf{x}_{1} \boldsymbol{\beta}_{1}\right)\left[\lambda\left(\mathbf{z} \boldsymbol{\pi}_{2}\right)\right]^{y_{2}}\left[-\lambda\left(-\mathbf{z} \boldsymbol{\pi}_{2}\right)\right]^{\left(1-y_{2}\right)}$, where $\lambda(\cdot)$ is the inverse Mills ratio. (We use the fact that $\phi(a) /[1-\Phi(a)]=\phi(-a) / \Phi(-a)$.) Therefore, a simple variable addition test of $\rho_{1}=0$ can be obtained by adding the variable $y_{2} \log \left[\lambda\left(\mathbf{z} \hat{\boldsymbol{\pi}}_{2}\right)\right]-\left(1-y_{2}\right) \log \left[\lambda\left(-\mathbf{z} \hat{\boldsymbol{\pi}}_{2}\right)\right]$ to the exponential model $\exp \left(\mathbf{x}_{1} \boldsymbol{\beta}_{1}\right)$. That is, for each $i$ define $\hat{r}_{i 2}=y_{i 2} \log \left[\lambda\left(\mathbf{z}_{i} \hat{\boldsymbol{\pi}}_{2}\right)\right]-\left(1-y_{i 2}\right) \log \left[\lambda\left(-\mathbf{z}_{i} \hat{\boldsymbol{\pi}}_{2}\right)\right]$, and then use a QMLE or NLS to estimate the artificial mean function $\exp \left(\mathbf{x}_{i 1} \boldsymbol{\beta}_{1}+\rho_{1} \hat{r}_{i 2}\right)$, and use a robust $t$ statistic for $\hat{\rho}_{1}$ (which is not the estimate we obtain from Terza's two-step method).
+
+Mullahy (1997) has shown how to estimate exponential models when some explanatory variables are endogenous without making assumptions about the reduced form of $\mathbf{y}_{2}$. This approach is especially attractive for dummy endogenous and other discrete explanatory variables, where the linearity in equation (18.39), coupled with independence of $\mathbf{z}$ and $\mathbf{v}_{2}$, is unrealistic. To sketch Mullahy's approach, write $\mathbf{x}_{1}= \left(\mathbf{z}_{1}, \mathbf{y}_{2}\right)$ and $\boldsymbol{\beta}_{1}=\left(\boldsymbol{\delta}_{1}^{\prime}, \boldsymbol{\gamma}_{1}^{\prime}\right)^{\prime}$. Then, under the model (18.37), we can write\\
+$y_{1} \exp \left(-\mathbf{x}_{1} \boldsymbol{\beta}_{1}\right)=\exp \left(c_{1}\right) a_{1}, \quad \mathrm{E}\left(a_{1} \mid \mathbf{z}, \mathbf{y}_{2}, c_{1}\right)=1$.
+
+If we assume that $c_{1}$ is independent of $\mathbf{z}$-a standard assumption concerning unobserved heterogeneity and exogenous variables-and use the normalization $\mathrm{E}\left[\exp \left(c_{1}\right)\right]=1$, we have the conditional moment restriction\\
+$\mathrm{E}\left[y_{1} \exp \left(-\mathbf{x}_{1} \boldsymbol{\beta}_{1}\right) \mid \mathbf{z}\right]=1$.
+
+Because $y_{1}, \mathbf{x}_{1}$ and $\mathbf{z}$ are all observable, condition (18.50) can be used as the basis for generalized method of moments (GMM) estimation. The function $g\left(y_{1}, \mathbf{y}_{2}, \mathbf{z}_{1} ; \boldsymbol{\beta}_{1}\right) \equiv y_{1} \exp \left(-\mathbf{x}_{1} \boldsymbol{\beta}_{1}\right)-1$, which depends on observable data and the parameters, is uncorrelated with any function of $\mathbf{z}$ (at the true value of $\boldsymbol{\beta}_{1}$ ). GMM estimation can be used as in Section 14.2 once a vector of instrumental variables has been chosen.
+
+An important feature of Mullahy's approach is that no assumptions, other than the standard rank condition for identification in nonlinear models, are made about the distribution of $\mathbf{y}_{2}$ given $\mathbf{z}$ : we need not assume the existence of a linear reduced form for $\mathbf{y}_{2}$ with errors independent of $\mathbf{z}$. Mullahy's procedure is computationally more difficult, and testing for endogeneity in his framework is harder than in the QMLE approach. Therefore, we might first use the two-step quasi-likelihood method proposed earlier for testing, and if endogeneity seems to be important, Mullahy's GMM estimator can be implemented. See Mullahy (1997) for details and an empirical example.
+
+\subsection*{18.6 Fractional Responses}
+We now consider models and estimation methods when the response variable, $y_{i}$, takes values in the unit interval, $[0,1]$. Because we have already thoroughly covered binary response models in Chapter 15, we are thinking of cases where $y_{i}$ is not a binary response.
+
+\subsection*{18.6.1 Exogenous Explanatory Variables}
+In Section 17.8 we covered the two-limit Tobit model, which can be applied to fractional response variables when the limits are zero and one. Having estimated the twolimit Tobit given a set of explanatory variables, $\mathbf{x}_{i}$, we can estimate the conditional mean, $\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}\right)$, as well as various probabilities. But there are two drawbacks to using Tobit to model fractional responses. First, it does not apply unless there is a pileup at both zero and one. Fractional responses that have continuous distributions in ( 0,1 ) cannot follow at two-limit Tobit, nor can responses that have a mass point at zero or one but not both. Second, the two-limit Tobit imposes a parametric model on\\
+the density for $D\left(y_{i} \mid \mathbf{x}_{i}\right)$. If we are interested primarily in the effects on the conditional mean, then the two-limit Tobit-even when it logically applies-will generally produce inconsistent estimates of $\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}\right)$. (How serious the problem might be has not been seriously investigated.)
+
+One can always search for other distributions that are logically consistent with the nature of the response variable. For example, if $y_{i}$ is a continuous fractional response on ( 0,1 ), a conditional beta distribution is one possibility, and we can apply standard MLE methods for estimation. Kieschnick and McCullough (2003) suggest this approach. Like the two-limit Tobit approach, MLE using the beta distribution is inconsistent for all parameters if any aspect of the distribution is misspecified. Consequently, if one is primarily interested in the conditional mean, specifying a beta distribution is not robust. It not only rules out applications where $y_{i}$ has a mass point at zero or one, but it is inconsistent when $y_{i}$ is continuous on $(0,1)$ but follows a distribution other than the beta distribution.
+
+When $y$ is strictly between zero and one, an alternative approach is to assume the log-odds transformation of $y, \log [y /(1-y)]$, has a conditional expectation of the form $\mathbf{x} \boldsymbol{\beta}$. Then, a simple estimator of $\boldsymbol{\beta}$ is the OLS estimator from the regression $w_{i}$ on $\mathbf{x}_{i}$, where $w_{i} \equiv \log \left[y_{i} /\left(1-y_{i}\right)\right]$. While simple, the log-odds approach has a couple of drawbacks. First, it cannot be applied to corner solution responses unless we make some arbitrary adjustments. Because $\log [y /(1-y)] \rightarrow-\infty$ as $y \rightarrow 0$ and $\log [y /(1-y)] \rightarrow \infty$ as $y \rightarrow 1$, we might worry that our estimates are sensitive to the adjustment. Second, even if $y$ is strictly in the unit interval, $\boldsymbol{\beta}$ is difficult to interpret: without further assumptions, it is not possible to estimate $\mathrm{E}(y \mid \mathbf{x})$ from a model for $E\{\log [y /(1-y)] \mid \mathbf{x}\}$. See Papke and Wooldridge (1996) for further discussion.
+
+One possibility is to assume the log-odds transformation yields a linear model with an additive error independent of $\mathbf{x}$, so
+
+
+\begin{equation*}
+\log [y /(1-y)]=\mathbf{x} \boldsymbol{\beta}+e, \quad D(e \mid \mathbf{x})=D(e), \tag{18.51}
+\end{equation*}
+
+
+where we take $\mathrm{E}(e)=0$ (and assume that $x_{1}=1$ ). Then, we can write
+
+
+\begin{equation*}
+y=\exp (\mathbf{x} \boldsymbol{\beta}+e) /[1+\exp (\mathbf{x} \boldsymbol{\beta}+e)] . \tag{18.52}
+\end{equation*}
+
+
+Now, if $e$ and $\mathbf{x}$ are independent, then
+
+
+\begin{equation*}
+\mathrm{E}(y \mid \mathbf{x})=\int \exp (\mathbf{x} \boldsymbol{\beta}+e) /[1+\exp (\mathbf{x} \boldsymbol{\beta}+e)] d F(e) \tag{18.53}
+\end{equation*}
+
+
+where $F(\cdot)$ is the distribution function of $e$ (and we use $e$ as the dummy argument in the integration). As shown by Duan (1983) in a general retransformation context, for given $\mathbf{x}$ this expectation can be consistently estimated as\\
+$\hat{\mathrm{E}}(y \mid \mathbf{x})=N^{-1} \sum_{i=1}^{N} \exp \left(\mathbf{x} \hat{\boldsymbol{\beta}}+\hat{e}_{i}\right) /\left[1+\exp \left(\mathbf{x} \hat{\boldsymbol{\beta}}+\hat{e}_{i}\right)\right]$,\\
+where $\hat{\boldsymbol{\beta}}$ is the OLS estimator from $w_{i}$ on $\mathbf{x}_{i}$ and $\hat{e}_{i}=w_{i}-\mathbf{x}_{i} \hat{\boldsymbol{\beta}}$ are the OLS residuals from the log-odds regression. A similar analysis applies if we replace the log-odds transformation in (18.51) with $\Phi^{-1}(y)$, where $\Phi^{-1}(\cdot)$ is the inverse function of the standard normal cdf, in which case we average $\Phi\left(\mathbf{x} \hat{\boldsymbol{\beta}}+\hat{e}_{i}\right)$ across $i$ to estimate $\mathrm{E}(y \mid \mathbf{x})$.
+
+When it is applicable, Duan's method imposes fewer assumptions than a fully parametric model for $D(y \mid \mathbf{x})$. Nevertheless, it still is a roundabout way of estimating partial effects on $\mathrm{E}(y \mid \mathbf{x})$. An alternative is to directly specify models for $\mathrm{E}(y \mid \mathbf{x})$ that ensure predicted values are in $(0,1)$. For example, we can specify $\mathrm{E}(y \mid \mathbf{x})$ as a logistic function:\\
+$\mathrm{E}(y \mid \mathbf{x})=\exp (\mathbf{x} \boldsymbol{\beta}) /[1+\exp (\mathbf{x} \boldsymbol{\beta})]$,\\
+or as a probit function,\\
+$\mathrm{E}(y \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{\beta})$.
+
+In each case the fitted values will be in $(0,1)$ and, of course, each allows $y$ to take on any values in $[0,1]$, including at the endpoints zero and one. Also, just as in logit and probit models for binary responses, the partial effects diminish as $\mathbf{x} \boldsymbol{\beta} \rightarrow \infty$. We can compute these partial effects just as in the binary response case, and compute APEs for continuous and discrete variables as in Chapter 15. The difference is that now these are partial effects on the expected value of a fractional response, not on a conditional probability of a binary response. As with the linear probability model for binary response, the APEs in the nonlinear models can be compared with coefficients from a linear regression of $y_{i}$ on $\mathbf{x}_{i}$.
+
+Of course, nothing requires us to choose a model for $\mathrm{E}(y \mid \mathbf{x})$ that depends on a cumulative distribution function; any function bounded in $(0,1)$ would do. But the formulations in (18.55) and (18.56) are convenient for estimation and interpretation. In the next subsection, we will see that (18.56) easily allows certain kinds of endogenous explanatory variables.
+
+Given that (18.55) and (18.56) specify a conditional mean function-say, $G(\mathbf{x} \boldsymbol{\beta})$ one approach to estimation is NLS. NLS is consistent and inference is straightforward, provided we use the fully robust sandwich variance matrix estimator that does not restrict $\operatorname{Var}(y \mid \mathbf{x})$. Nevertheless, as in estimating models of conditional means for unbounded, nonnegative responses, NLS is unlikely to be efficient because common\\
+distributions for a fractional response imply heteroskedasticity; this is true of the twolimit Tobit and beta distributions, among others. Instead, we could specify a flexible variance function and use weighted NLS in a two-step procedure, as in Chapter 12. A simpler, one-step strategy is to use a quasi-likelihood approach. Papke and Wooldridge (1996) note that, because the Bernoulli log likelihood is in the linear exponential family, the results of GMT (1984a) can be applied to conclude that the QMLE that solves
+
+
+\begin{equation*}
+\max _{\mathbf{b}} \sum_{i=1}^{N}\left\{\left(1-y_{i}\right) \log \left[1-G\left(\mathbf{x}_{i} \mathbf{b}\right)\right]+y_{i} \log \left[G\left(\mathbf{x}_{i} \mathbf{b}\right)\right]\right\} \tag{18.57}
+\end{equation*}
+
+
+is consistent whenever the conditional mean is correctly specified. (A careful statement of the result requires distinguishing a generic value of the parameter vector from the "true" value.) Notice that (18.57) is well defined for any $y_{i}$ in $[0,1]$ and functions $G(\cdot) \in(0,1)$. Plus, it is a standard estimation problem because it is identical to estimating binary response models. We call estimation of (18.55) by Bernoulli QMLE fractional logit regression and (18.56) estimated by Bernoulli QMLE fractional probit regression.
+
+There has been some confusion in the literature about the nature of the robustness of the Bernoulli QMLE from (18.57) and how it compares with other methods. For example, when $0<y<1$, Kieschnick and McCullough (2003) recommend that researchers choose the fully parametric beta MLE over the Bernoulli QMLE "unless their sample size is large enough to justify the asymptotic arguments underlying the quasi-likelihood approach" (p. 193). This statement is highly misleading. The robustness of the Bernoulli QMLE arises because the population version of the objective function in (18.57) identifies the parameters in a correctly specified conditional mean, without any extra assumptions. By contrast, the beta log-likelihood function does not have this feature unless the full beta distribution is correctly specified. The sample size is irrelevant for choosing between the two approaches because in each case the statistical properties are based on asymptotic analysis, and there is no evidence that the beta MLE is better behaved in small samples than the Bernoulli QMLE. Generally, it is important to remember that the notion of robustness for identifying parameters, with or without various misspecifications, is a population issue.
+
+As we know from Chapter 15, the variance associated with the log likelihood in (18.57) is $G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)\left[1-G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)\right]$. Therefore, it is natural to specify the Bernoulli GLM
+
+\footnotetext{variance assumption as
+}
+$\operatorname{Var}(y \mid \mathbf{x})=\sigma^{2} \mathrm{E}(y \mid \mathbf{x})[1-\mathrm{E}(y \mid \mathbf{x})]$.
+
+If $\sigma^{2}=1$, then we can actually use the usual estimated inverse information matrix for inference. However, if (18.58) holds, it is often with $\sigma^{2}<1$, and so, in this case, inference based on the usual binary response statistics will be too conservative-often, much too conservative. If assumption (18.58) does hold, we estimate the asymptotic variance as in (18.37) with $\hat{v}_{i}=G\left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right)\left[1-G\left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right)\right], \nabla_{\beta} \hat{m}_{i} \equiv g\left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right) \mathbf{x}_{i}$ (where $g(\cdot)$ is the derivative of $G(\cdot))$, and
+
+
+\begin{equation*}
+\hat{\sigma}^{2}=(N-K)^{-1} \sum_{i=1}^{N} \hat{u}_{i}^{2} / \hat{v}_{i} \tag{18.59}
+\end{equation*}
+
+
+where $K$ is the number of parameters and $\hat{u}_{i}=y_{i}-G\left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right)$. Not surprisingly, if (18.58) holds, the Bernoulli QMLE is asymptotically efficient among estimators that specify only $\mathrm{E}(y \mid \mathbf{x})$, assuming, as always, that the mean is correctly specified. (Algebraic properties for the Beroulli log likelihood obtained for the binary case apply in the current situation. In particular, for fractional logit, if $\mathbf{x}_{i}$ includes a constant, as it almost always should, the residuals $\hat{u}_{i}$ sum to zero, while this is not true for fractional probit.)
+
+When does (18.58) hold for fractional responses? One case is when $y_{i}$ is a proportion, say, $y_{i}=s_{i} / n_{i}$, where $s_{i}$ is the number of "successes" in $n_{i}$ Bernoulli draws. Suppose that $s_{i}$ given ( $n_{i}, \mathbf{x}_{i}$ ) follows a binomial distribution, as in Section 18.3.2 with $p(\mathbf{x}, \boldsymbol{\beta})=G(\mathbf{x} \boldsymbol{\beta})$. Then $\mathrm{E}\left(y_{i} \mid n_{i}, \mathbf{x}_{i}\right)=n_{i}^{-1} \mathrm{E}\left(s_{i} \mid n_{i}, \mathbf{x}_{i}\right)=G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)$ and $\operatorname{Var}\left(y_{i} \mid n_{i}, \mathbf{x}_{i}\right)= n_{i}^{-2} \operatorname{Var}\left(s_{i} \mid n_{i}, \mathbf{x}_{i}\right)=n_{i}^{-1} G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)\left[1-G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)\right]$. Now, suppose that $n_{i}$ is independent of $\mathbf{x}_{i}$. Then
+
+
+\begin{align*}
+\operatorname{Var}\left(y_{i} \mid \mathbf{x}_{i}\right) & =\operatorname{Var}\left[\mathrm{E}\left(y_{i} \mid n_{i}, \mathbf{x}_{i}\right) \mid \mathbf{x}_{i}\right]+\mathrm{E}\left[\operatorname{Var}\left(y_{i} \mid n_{i}, \mathbf{x}_{i}\right) \mid \mathbf{x}_{i}\right] \\
+& =0+\mathrm{E}\left(n_{i}^{-1} \mid \mathbf{x}_{i}\right) G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)\left[1-G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)\right] \\
+& \equiv \sigma^{2} G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)\left[1-G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)\right] \tag{18.60}
+\end{align*}
+
+
+where $\sigma^{2} \equiv \mathrm{E}\left(n_{i}^{-1}\right) \leq 1$ (with strict inequality unless $n_{i}=1$ with probability one). Therefore, if $y_{i}$ is obtained as a proportion of Bernoulli successes, we can expect underdispersion in (18.58). Further, if we are given data on proportions but do not know $n_{i}$, it makes sense to use a fractional logit or probit analysis. If we observe the $n_{i}$, we might use a binomial regression model instead.
+
+It is easy to think of cases where the GLM assumption (18.58) fails. For example, it is unlikely that $n_{i}$ and $\mathbf{x}_{i}$ are independent in all applications. For example, in Papke\\
+and Wooldridge (1996), $n_{i}$ is number of workers at firm $i, y_{i}$ is the fraction participation in a $401(\mathrm{k})$ pension plan, and $\mathbf{x}_{i}$ includes firm characteristics. Continuing with this example, if the probability of participating in a pension plan depends on unobserved worker and firm characteristics, this within-firm correlation generally invalidates $\operatorname{Var}\left(s_{i} \mid n_{i}, \mathbf{x}_{i}\right)=n_{i} G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)\left[1-G\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)\right]$, in which case (18.58) also fails. Therefore, Papke and Wooldridge (1996) recommend fully robust sandwich standard errors and test statistics, which are easy to compute using GLM routines in popular software packages.
+
+Variable addition tests for functional form are easily obtained. For example, after obtaining fractional regression estimates, we can add powers of $\mathbf{x}_{i} \hat{\boldsymbol{\beta}}$-say, the square and cube-to a subsequent fractional regression and carry out a robust joint test. See Papke and Wooldridge (1996) for further discussion and an application to $401(\mathrm{k})$ plan participation rates, and also Problem 18.14.
+
+\subsection*{18.6.2 Endogenous Explanatory Variables}
+The fractional probit model can easily handle certain kinds of continuous endogenous explanatory variables. As in Section 18.5, we consider a specification with an unobserved factor that we would like to condition on:
+
+
+\begin{equation*}
+\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}, c_{1}\right)=\mathrm{E}\left(y_{1} \mid \mathbf{z}_{1}, y_{2}, c_{1}\right)=\Phi\left(\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\gamma_{1} y_{2}+c_{1}\right) \tag{18.61}
+\end{equation*}
+
+
+$y_{2}=\mathbf{z} \boldsymbol{\pi}_{2}+v_{2}=\mathbf{z}_{1} \boldsymbol{\pi}_{21}+\mathbf{z}_{2} \boldsymbol{\pi}_{22}+v_{2}$,\\
+where $c_{1}$ is an omitted factor thought to be correlated with $y_{2}$ but independent of the exogenous variables $\mathbf{z}$. Ideally, we could simply assume that the linear equation for $y_{2}$ simply represents a linear projection; unfortunately, we need to assume more, and here we effectively assume that $v_{2}$ is independent of $\mathbf{z}$. More specifically, we assume\\
+$c_{1}=\rho_{1} v_{2}+e_{1}, \quad e_{1} \mid \mathbf{z}, v_{2} \sim \operatorname{Normal}\left(0, \sigma_{e 1}^{2}\right)$,\\
+where a sufficient, though not necessary, condition is that ( $c_{1}, v_{2}$ ) is bivariate normal and independent of $\mathbf{z}$. Under (18.61), (18.62), and (18.63), we can show that\\
+$\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right)=\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}, v_{2}\right)=\Phi\left(\mathbf{z}_{1} \boldsymbol{\delta}_{e 1}+\gamma_{e 1} y_{2}+\rho_{e 1} v_{2}\right)$,\\
+where the " $e$ " subscript denotes multiplication by the scale factor $1 /\left(1+\sigma_{e 1}^{2}\right)^{1 / 2}$. Fortunately, as discussed in Wooldridge (2005a), equation (18.64) can be used as the basis for estimating APEs. The CF approach is now fairly clear. In the first step, obtain the OLS residuals $\hat{v}_{i 2}$ from the regression $y_{i 2}$ on $\mathbf{z}_{i}$. Next, use fractional probit of $y_{i 1}$ on $\mathbf{z}_{i 1}, y_{i 2}, \hat{v}_{i 2}$ to estimate the scaled coefficients.
+
+A simple test of the null hypothesis that $y_{2}$ is exogenous is the fully robust $t$ statistic on $\hat{v}_{i 2}$; as with other tests based on adding residuals, the first-step estimation can be ignored under the null. If $\rho_{1} \neq 0$, then the robust sandwich variance matrix estimator of the scaled coefficients is not valid because it does not account for the firststep estimation. The formulas for two-step estimation from Chapter 12 can be used. Bootstrapping the two-step procedure is quite feasible because computational time for each sample is minimal.
+
+The average structural function is consistently estimated as
+
+
+\begin{equation*}
+\widehat{\operatorname{ASF}}\left(\mathbf{z}_{1}, y_{2}\right)=N^{-1} \sum_{i=1}^{N} \Phi\left(\mathbf{z}_{1} \hat{\boldsymbol{d}}_{e 1}+\hat{\gamma}_{e 1} y_{2}+\hat{\rho}_{e 1} \hat{v}_{i 2}\right), \tag{18.65}
+\end{equation*}
+
+
+and this can be used to obtain APEs with respect to $y_{2}$ or $\mathbf{z}_{1}$. Bootstrapping the standard errors and test statistics is a sensible way to proceed with inference.
+
+As discussed in Wooldridge (2005c), the basic model can be extended in many ways. For example, if the $y_{2}$ we want to appear in (18.65) might not naturally have a linear reduced form with an independent error, we might use a strictly monotonic transformation of it in (18.62): that is, replace $y_{2}$ with $h_{2}\left(y_{2}\right)$. If $y_{2}>0$ then $h_{2}\left(y_{2}\right)= \log \left(y_{2}\right)$ is natural; if $0<y_{2}<1$, we might use the log-odds transformation in (18.62), $h_{2}\left(y_{2}\right)=\log \left[y_{2} /\left(1-y_{2}\right)\right]$. Unfortunately, if $y_{2}$ has a mass point-such as a binary response, or corner response, or count variable-a transformation yielding an additive, independent error probably does not exist.
+
+More generally, we can let $\mathbf{x}_{1}=\mathbf{k}_{1}\left(\mathbf{z}_{1}, \mathbf{y}_{2}\right)$ for a vector of functions $\mathbf{k}_{1}(\cdot, \cdot)$, and allow a set of reduced forms for strictly monotonic functions $h_{2 g}\left(y_{2 g}\right), g=1, \ldots, G_{1}$, where $G_{1}$ is the dimension of $\mathbf{y}_{2}$. Further, if we are willing to assume that $D\left(c_{1} \mid \mathbf{z}, v_{2}\right)$ is independent of $\mathbf{z}$ with mean a polynomial in $v_{2}$, where $v_{2}$ is a scalar for simplicity, then we are justified in adding nonlinear functions of $\hat{v}_{2}$ to the fractional probit. For example, we could use the control functions $\hat{v}_{i 2}$ and $\left(\hat{v}_{i 2}^{2}-\hat{\tau}_{2}^{2}\right)$, where $\hat{\tau}_{2}^{2}$ is the usual estimated error variance from the first-stage regression. See Wooldridge (2005c) for further discussion and extensions.
+
+The previous method relies on $y_{2}$ being continuous because we require that a strictly monotonic transformation of $y_{2}$ can be written in a linear fashion with additive error independent of $\mathbf{z}$. We can handle a binary $y_{2}$ rather easily if we maintain that $\mathrm{D}\left(y_{2} \mid \mathbf{z}\right)$ follows a probit. In fact, we can maximize the same log likelihood as we derived in Section 15.7.3, even though $y_{1}$ is a fractional response. To see why this works, first note that the average structural function in (18.61) is $\Phi\left(\mathbf{x}_{1} \boldsymbol{\beta}_{1} /\left(1+\sigma_{c_{1}}^{2}\right)^{1 / 2}\right)$, and so we hope to estimate $\boldsymbol{\beta}_{c 1} \equiv \boldsymbol{\beta}_{1} /\left(1+\sigma_{c_{1}}^{2}\right)^{1 / 2}$ (and cannot estimate $\boldsymbol{\beta}_{1}$ and $\sigma_{c_{1}}^{2}$ separately, anyway-see also Section 15.7.1). Next, note that we\\
+can obtain $\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}, c_{1}\right)$ as $\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}, c_{1}\right)=E\left\{1\left[\mathbf{x}_{1} \boldsymbol{\beta}_{1}+c_{1}+r_{1} \geq 0\right] \mid \mathbf{z}, y_{2}, c_{1}\right\}$, where $D\left(r_{1} \mid \mathbf{z}, y_{2}, c_{1}\right)=\operatorname{Normal}(0,1)$. By iterated expectations,
+
+
+\begin{align*}
+\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right) & =E\left\{1\left[\mathbf{x}_{1} \boldsymbol{\beta}_{1}+c_{1}+r_{1} \geq 0\right] \mid \mathbf{z}, y_{2}\right\} \\
+& =E\left\{1\left[\mathbf{x}_{1} \boldsymbol{\beta}_{c 1}+e_{1} \geq 0\right] \mid \mathbf{z}, y_{2}\right\}, \tag{18.66}
+\end{align*}
+
+
+where $e_{1}=\left(c_{1}+r_{1}\right) /\left(1+\sigma_{c_{1}}^{2}\right)^{1 / 2}$ is independent of $\mathbf{z}$ with a standard normal distribution. If\\
+$y_{2}=1\left[\mathbf{z} \boldsymbol{\pi}_{2}+v_{2} \geq 0\right]$,\\
+and we assume ( $c_{1}, v_{2}$ ) is independent of $\mathbf{z}$ with a zero mean bivariate normal distribution, then $\left(e_{1}, v_{2}\right)$ is independent of $\mathbf{z}$ with a bivariate normal distribution where each is standard normal. Let $\rho_{1}=\operatorname{Corr}\left(v_{2}, e_{1}\right)$. It follows from (18.66) and (18.67) that $\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right)$ has exactly the form of $P\left(w_{1}=1 \mid \mathbf{z}, y_{2}\right)$, where $w_{1}=1\left[\mathbf{x}_{1} \boldsymbol{\beta}_{c 1}+e_{1} \geq\right. 0]$. In other words, even though $y_{1}$ is not binary, its expected value given ( $\mathbf{z}, y_{2}$ ) is the same as the response probability implied by the bivariate probit model from Section 15.7.3. Because the Bernoulli log likelihood is in the linear exponential family, it identifies the correctly specified conditional mean. Further, we are assuming that $\mathrm{D}\left(y_{2} \mid \mathbf{z}\right)$ follows a probit. To be technically precise, if we add " $o$ " subscripts to denote the true population values, $\boldsymbol{\pi}_{o 2}$ maximizes $\mathrm{E}\left[\log f\left(y_{i 2} \mid \mathbf{z}_{i} ; \boldsymbol{\pi}_{2}\right)\right]$ and $\left(\boldsymbol{\beta}_{o c 1}, \rho_{o 1}, \boldsymbol{\pi}_{o 2}\right)$ maximizes $\mathrm{E}\left[\log f\left(y_{i 1} \mid y_{i 2}, \mathbf{z}_{i} ; \boldsymbol{\beta}_{c 1}, \rho_{1}, \boldsymbol{\pi}_{2}\right)\right]$. It follows that the true parameters maximize\\
+$\mathrm{E}\left[\log f\left(y_{i 1} \mid y_{i 2}, \mathbf{z}_{i} ; \boldsymbol{\beta}_{c 1}, \rho_{1}, \boldsymbol{\pi}_{2}\right)\right]+\mathrm{E}\left[\log f\left(y_{i 2} \mid \mathbf{z}_{i} ; \boldsymbol{\pi}_{2}\right)\right]$,\\
+and so the quasi-MLE using the usual bivariate probit log likelihood is consistent and asymptotically normal. The scores for the two quasi-log likelihoods are still uncorrelated, but the information matrix equality would not hold for the first part of the quasi-log likelihood because $\log f\left(y_{i 1} \mid y_{i 2}, \mathbf{z}_{i} ; \boldsymbol{\beta}_{c 1}, \rho_{1}, \boldsymbol{\pi}_{2}\right)$ is not a true density. An M-estimator sandwich covariance matrix estimator-see equations (12.47) and (12.48)-is required and is straightforward to compute in this setting. Naturally, the bootstrap can be used, too.
+
+\subsection*{18.7 Panel Data Methods}
+In this final section, we discuss estimation of panel data models, primarily focusing on count data. Our main interest is in models that contain unobserved effects, but we initially cover pooled estimation when the model does not explicitly contain an unobserved effect.
+
+The pioneering work in unobserved effects count data models was done by Hausman, Hall, and Griliches (1984) (HHG), who were interested in explaining patent applications by firms in terms of spending on research and development. HHG developed random and fixed effects (FE) models under full distributional assumptions. Wooldridge (1999a) has shown that one of the approaches suggested by HHG, which is typically called the fixed effects Poisson model, has some nice robustness properties. We will study those here.
+
+Other count panel data applications include (with response variable in parentheses) Rose (1990) (number of airline accidents), Papke (1991) (number of firm births in an industry), Downes and Greenstein (1996) (number of private schools in a public school district), and Page (1995) (number of housing units shown to individuals). The time series dimension in each of these studies allows us to control for unobserved heterogeneity in the cross section units, and to estimate certain dynamic relationships.
+
+As with the rest of the book, we explicitly consider the case with $N$ large relative to $T$, as the asymptotics hold with $T$ fixed and $N \rightarrow \infty$.
+
+\subsection*{18.7.1 Pooled QMLE}
+We begin by discussing pooled estimation after specifying a model for a conditional mean. Let $\left\{\left(\mathbf{x}_{t}, y_{t}\right): t=1,2, \ldots, T\right\}$ denote the time series observations for a random draw from the cross section population. We assume that, for some $\boldsymbol{\beta}_{\mathrm{o}} \in \mathscr{B}$,
+
+
+\begin{equation*}
+\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right)=m\left(\mathbf{x}_{t}, \boldsymbol{\beta}_{\mathrm{o}}\right), \quad t=1,2, \ldots, T . \tag{18.68}
+\end{equation*}
+
+
+This assumption simply means that we have a correctly specified parametric model for $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right)$. For notational convenience only, we assume that the function $m$ itself does not change over time. Relaxing this assumption just requires a notational change, or we can include time dummies in $\mathbf{x}_{t}$. For $y_{t} \geq 0$ and unbounded from above, the most common conditional mean is $\exp \left(\mathbf{x}_{t} \boldsymbol{\beta}\right)$. There is no restriction on the time dependence of the observations under assumption (18.68), and $\mathbf{x}_{t}$ can contain any observed variables. For example, a static model has $\mathbf{x}_{t}=\mathbf{z}_{t}$, where $\mathbf{z}_{t}$ is dated contemporaneously with $y_{t}$. A finite distributed lag has $\mathbf{x}_{t}$ containing lags of $\mathbf{z}_{t}$. Strict exogeneity of $\left(\mathbf{x}_{1}, \ldots, \mathbf{x}_{T}\right)$, that is, $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{1}, \ldots, \mathbf{x}_{T}\right)=\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right)$, is not assumed. In particular, $\mathbf{x}_{t}$ can contain lagged dependent variables, although how these might appear in nonlinear models is not obvious (see Wooldridge (1997c) for some possibilities). A limitation of model (18.68) is that it does not explicitly incorporate an unobserved effect.
+
+For each $i=1,2, \ldots, N,\left\{\left(\mathbf{x}_{i t}, y_{i t}\right): t=1,2, \ldots, T\right\}$ denotes the time series observations for cross section unit $i$. We assume random sampling from the cross section.
+
+One approach to estimating $\boldsymbol{\beta}_{\mathrm{o}}$ is pooled NLS, which was introduced in Section 12.9. When $y$ is a count variable, a Poisson QMLE can be used. This approach is completely analogous to pooled probit and pooled Tobit estimation with panel data. Note, however, that we are not assuming that the Poisson distribution is true.
+
+For each $i$, the quasi-log likelihood for pooled Poisson estimation is (up to additive constants)
+
+
+\begin{equation*}
+\ell_{i}(\boldsymbol{\beta})=\sum_{t=1}^{T}\left\{y_{i t} \log \left[m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right)\right]-m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right)\right\} \equiv \sum_{t=1}^{T} \ell_{i t}(\boldsymbol{\beta}) . \tag{18.69}
+\end{equation*}
+
+
+The pooled Poisson QMLE then maximizes the sum of $\ell_{i}(\boldsymbol{\beta})$ across $i=1, \ldots, N$. Consistency and asymptotic normality of this estimator follows from the Chapter 12 results, once we use the fact that $\boldsymbol{\beta}_{\mathrm{o}}$ maximizes $\mathrm{E}\left[\ell_{i}(\boldsymbol{\beta})\right]$; this follows from GMT (1984a). Thus, pooled Poisson estimation is robust in the sense that it consistently estimates $\boldsymbol{\beta}_{\mathrm{o}}$ under assumption (18.68) only.
+
+Without further assumptions we must be careful in estimating the asymptotic variance of $\hat{\boldsymbol{\beta}}$. Let $\mathbf{s}_{i}(\boldsymbol{\beta})$ be the $P \times 1$ score of $\ell_{i}(\boldsymbol{\beta})$, which can be written as $\mathbf{s}_{i}(\boldsymbol{\beta})= \sum_{t=1}^{T} \mathbf{s}_{i t}(\boldsymbol{\beta})$, where $\mathbf{s}_{i t}(\boldsymbol{\beta})$ is the score of $\ell_{i t}(\boldsymbol{\beta})$; each $\mathbf{s}_{i t}(\boldsymbol{\beta})$ has the form (18.12) but with $\left(\mathbf{x}_{i t}, y_{i t}\right)$ in place of $\left(\mathbf{x}_{i}, y_{i}\right)$.
+
+The asymptotic variance of $\sqrt{N}\left(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}_{\mathrm{o}}\right)$ has the usual form $\mathbf{A}_{\mathrm{o}}^{-1} \mathbf{B}_{\mathrm{o}} \mathbf{A}_{\mathrm{o}}^{-1}$, where $\mathbf{A}_{\mathrm{o}} \equiv \sum_{t=1}^{T} \mathrm{E}\left[\nabla_{\beta} m_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)^{\prime} \nabla_{\beta} m_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right) / m_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)\right]$ and $\mathbf{B}_{\mathrm{o}} \equiv \mathrm{E}\left[\mathbf{s}_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right) \mathbf{s}_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)^{\prime}\right]$. Consistent estimators are
+
+
+\begin{align*}
+& \hat{\mathbf{A}}=N^{-1} \sum_{i=1}^{N} \sum_{t=1}^{T} \nabla_{\beta} \hat{m}_{i t}^{\prime} \nabla_{\beta} \hat{m}_{i t} / \hat{m}_{i t}  \tag{18.70}\\
+& \hat{\mathbf{B}}=N^{-1} \sum_{i=1}^{N} \mathbf{s}_{i}(\hat{\boldsymbol{\beta}}) \mathbf{s}_{i}(\hat{\boldsymbol{\beta}})^{\prime} \tag{18.71}
+\end{align*}
+
+
+and we can use $\hat{\mathbf{A}}^{-1} \hat{\mathbf{B}} \hat{\mathbf{A}}^{-1} / N$ for $\operatorname{Ava}(\hat{\boldsymbol{\beta}})$. This procedure is fully robust to the presence of serial correlation in the score and arbitrary conditional variances. It should be used in the construction of standard errors and Wald statistics. The quasi- $L R$ statistic is not usually valid in this setup because of neglected time dependence and possible violations of the Poisson variance assumption.
+
+If the conditional mean is dynamically complete in the sense that
+
+
+\begin{equation*}
+\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, y_{t-1}, \mathbf{x}_{t-1}, \ldots, y_{1}, \mathbf{x}_{1}\right)=\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}\right), \tag{18.72}
+\end{equation*}
+
+
+then $\left\{\mathbf{s}_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right): t=1,2, \ldots, T\right\}$ is serially uncorrelated. Consequently, under assumption (18.72), a consistent estimator of $\mathbf{B}$ is\\
+$\hat{\mathbf{B}}=N^{-1} \sum_{i=1}^{N} \sum_{t=1}^{T} \mathbf{s}_{i t}(\hat{\boldsymbol{\beta}}) \mathbf{s}_{i t}(\hat{\boldsymbol{\beta}})^{\prime}$.
+
+Using this equation along with $\hat{\mathbf{A}}$ produces the asymptotic variance that results from treating the observations as one long cross section, but without the Poisson or GLM variance assumptions. Thus, equation (18.73) affords a certain amount of robustness, but it requires the dynamic completeness assumption (18.72).
+
+There are many other possibilities. If we impose the GLM assumption\\
+$\operatorname{Var}\left(y_{i t} \mid \mathbf{x}_{i t}\right)=\sigma_{\mathrm{o}}^{2} m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}_{\mathrm{o}}\right), \quad t=1,2, \ldots, T$,\\
+along with dynamic completeness, then $\operatorname{Avar}(\hat{\boldsymbol{\beta}})$ can be estimated by\\
+$\hat{\sigma}^{2}\left(\sum_{i=1}^{N} \sum_{t=1}^{T} \nabla_{\beta} \hat{m}_{i t}^{\prime} \nabla_{\beta} \hat{m}_{i t} / \hat{m}_{i t}\right)^{-1}$,\\
+where $\hat{\sigma}^{2}=(N T-P)^{-1} \sum_{i=1}^{N} \sum_{t=1}^{T} \tilde{u}_{i t}^{2}, \quad \tilde{u}_{i t}=\hat{u}_{i t} / \sqrt{\hat{m}_{i t}}$, and $\hat{u}_{i t}=y_{i t}-m_{i t}(\hat{\boldsymbol{\beta}})$. This estimator results in a standard GLM analysis on the pooled data.
+
+A very similar analysis holds for pooled gamma QMLE by simply changing the quasi-log likelihood and associated statistics.
+
+\subsection*{18.7.2 Specifying Models of Conditional Expectations with Unobserved Effects}
+We now turn to models that explicitly contain an unobserved effect. The issues that arise here are similar to those that arose in linear panel data models. First, we must know whether the explanatory variables are strictly exogenous conditional on an unobserved effect. Second, we must decide how the unobserved effect should appear in the conditional mean.
+
+Given conditioning variables $\mathbf{x}_{t}$, strict exogeneity conditional on the unobserved effect $c$ is defined just as in the linear case:\\
+$\mathrm{E}\left(y_{t} \mid \mathbf{x}_{1}, \ldots, \mathbf{x}_{T}, c\right)=\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, c\right)$.
+
+As always, this definition rules out lagged values of $y$ in $\mathbf{x}_{t}$, and it can rule out feedback from $y_{t}$ to future explanatory variables. In static models, where $\mathbf{x}_{t}=\mathbf{z}_{t}$ for variables $\mathbf{z}_{t}$ dated contemporaneously with $y_{t}$, assumption (18.76) implies that neither past nor future values of $\mathbf{z}$ affect the expected value of $y_{t}$, once $\mathbf{z}_{t}$ and $c$ have been controlled for. This can be too restrictive, but it is often the starting point for analyzing static models.
+
+A finite distributed lag relationship assumes that\\
+$\mathrm{E}\left(y_{t} \mid \mathbf{z}_{t}, \mathbf{z}_{t-1}, \ldots, \mathbf{z}_{1}, c\right)=\mathrm{E}\left(y_{t} \mid \mathbf{z}_{t}, \mathbf{z}_{t-1}, \ldots, \mathbf{z}_{t-Q}, c\right), \quad t>Q$,\\
+where $Q$ is the length of the distributed lag. Under assumption (18.77), the strict exogeneity assumption conditional on $c$ becomes\\
+$\mathrm{E}\left(y_{t} \mid \mathbf{z}_{1}, \mathbf{z}_{2}, \ldots, \mathbf{z}_{T}, c\right)=\mathrm{E}\left(y_{t} \mid \mathbf{z}_{1}, \ldots, \mathbf{z}_{t}, c\right)$,\\
+which is less restrictive than in the purely static model because lags of $\mathbf{z}_{t}$ explicitly appear in the model; it still rules out general feedback from $y_{t}$ to $\left(\mathbf{z}_{t+1}, \ldots, \mathbf{z}_{T}\right)$.
+
+With count variables, a multiplicative unobserved effect is an attractive functional form:\\
+$\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, c\right)=c \cdot m\left(\mathbf{x}_{t}, \boldsymbol{\beta}_{\mathrm{o}}\right)$,\\
+where $m\left(\mathbf{x}_{t}, \boldsymbol{\beta}\right)$ is a parametric function known up to the $P \times 1$ vector of parameters $\boldsymbol{\beta}_{\mathrm{o}}$. Equation (18.79) implies that the partial effect of $\mathbf{x}_{t j}$ on $\log \mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, c\right)$ does not depend on the unobserved effect $c$. Thus, quantities such as elasticities and semielasticities depend only on $\mathbf{x}_{t}$ and $\boldsymbol{\beta}_{\mathrm{o}}$. The most popular special case is the exponential model $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, a\right)=\exp \left(a+\mathbf{x}_{t} \boldsymbol{\beta}\right)$, which is obtained by taking $c=\exp (a)$.
+
+\subsection*{18.7.3 Random Effects Methods}
+A multiplicative random effects model maintains, at a minimum, two assumptions for a random draw $i$ from the population:
+
+
+\begin{equation*}
+\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}, c_{i}\right)=c_{i} m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}_{\mathrm{o}}\right), \quad t=1,2, \ldots, T \tag{18.80}
+\end{equation*}
+
+
+$\mathrm{E}\left(c_{i} \mid \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}\right)=\mathrm{E}\left(c_{i}\right)=1$,\\
+where $c_{i}$ is the unobserved, time-constant effect and the observed explanatory variables, $\mathbf{x}_{i t}$, may be time constant or time varying. Assumption (18.80) is the strict exogeneity assumption of the $\mathbf{x}_{i t}$ conditional on $c_{i}$, combined with a regression function multiplicative in $c_{i}$. When $y_{i t} \geq 0$, such as with a count variable, the most popular choice of the parametric regression function is $m\left(\mathbf{x}_{t}, \boldsymbol{\beta}\right)=\exp \left(\mathbf{x}_{t} \boldsymbol{\beta}\right)$, in which case $\mathbf{x}_{i t}$ would typically contain a full set of time dummies. Assumption (18.81) says that the unobserved effect, $c_{i}$, is mean independent of $\mathbf{x}_{i}$; we normalize the mean to be one, a step which is without loss of generality for common choices of $m$, including the exponential function with unity in $\mathbf{x}_{t}$. Under assumptions (18.80) and (18.81), we can "integrate out" $c_{i}$ by using the law of iterated expectations:\\
+$\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}\right)=\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i t}\right)=m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}_{\mathrm{o}}\right), \quad t=1,2, \ldots, T$.
+
+Equation (18.82) shows that $\boldsymbol{\beta}_{\mathrm{o}}$ can be consistently estimated by the pooled Poisson method discussed in Section 19.6.1. The robust variance matrix estimator that allows for an arbitrary conditional variance and serial correlation produces valid inference.
+
+Just as in a linear random effects model, the presence of the unobserved heterogeneity causes the $y_{i t}$ to be correlated over time, conditional on $\mathbf{x}_{i}$.
+
+When we introduce an unobserved effect explicitly, a random effects analysis typically accounts for the overdispersion and serial dependence implied by assumptions (18.80) and (18.81). For count data, the Poisson random effects model is given by
+
+
+\begin{equation*}
+y_{i t} \mid \mathbf{x}_{i}, c_{i} \sim \operatorname{Poisson}\left[c_{i} m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}_{\mathrm{o}}\right)\right] \tag{18.83}
+\end{equation*}
+
+
+$y_{i t}, y_{i r}$ are independent conditional on $\mathbf{x}_{i}, c_{i}, \quad t \neq r$\\
+$c_{i}$ is independent of $\mathbf{x}_{i}$ and distributed as $\operatorname{Gamma}\left(\delta_{\mathrm{O}}, \delta_{\mathrm{O}}\right)$,\\
+where we parameterize the gamma distribution so that $\mathrm{E}\left(c_{i}\right)=1$ and $\operatorname{Var}\left(c_{i}\right)= 1 / \delta_{\mathrm{o}} \equiv \eta_{\mathrm{o}}^{2}$. While $\operatorname{Var}\left(y_{i t} \mid \mathbf{x}_{i}, c_{i}\right)=\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}, c_{i}\right)$ under assumption (18.83), by equation (18.28), $\operatorname{Var}\left(y_{i t} \mid \mathbf{x}_{i}\right)=\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}\right)\left[1+\eta_{\mathrm{o}}^{2} \mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}\right)\right]$, and so assumptions (18.81) and (18.85) imply overdispersion in $\operatorname{Var}\left(y_{i t} \mid \mathbf{x}_{i}\right)$. Although other distributional assumptions for $c_{i}$ can be used, the gamma distribution leads to a tractable density for $\left(y_{i 1}, \ldots, y_{i T}\right)$ given $\mathbf{x}_{i}$, which is obtained after $c_{i}$ has been integrated out. (See HHG, p. 917, and Problem 18.11.) Maximum likelihood analysis (conditional on $\mathbf{x}_{i}$ ) is relatively straightforward and is implemented by some econometrics packages.
+
+If assumptions (18.81), (18.82), and (18.83) all hold, the conditional MLE is efficient among all estimators that do not use information on the distribution of $\mathbf{x}_{i}$; see Section 14.5.2. The main drawback with the random effects Poisson model is that it is sensitive to violations of the maintained assumptions, any of which could be false. (Problem 18.5 covers some ways to allow $c_{i}$ and $\overline{\mathbf{x}}_{i}$ to be correlated, but they still rely on stronger assumptions than the FE Poisson estimator, which we cover in Section 18.7.4.)
+
+A quasi-MLE random effects analysis keeps some of the key features of assumptions (18.83)-(18.85) but produces consistent estimators under just the conditional mean assumptions (18.80) and (18.81). Nominally, we maintain assumptions (18.83)(18.85). Define $u_{i t} \equiv y_{i t}-\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i t}\right)=y_{i t}-m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right)$. Then we can write $u_{i t}= c_{i} m_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)+e_{i t}-m_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)=e_{i t}+m_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)\left(c_{i}-1\right)$, where $e_{i t} \equiv y_{i t}-\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i t}, c_{i}\right)$. As we showed in Section 19.3.1,\\
+$\mathrm{E}\left(u_{i t}^{2} \mid \mathbf{x}_{i}\right)=m_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)+\eta_{\mathrm{o}}^{2} m_{i t}^{2}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)$.
+
+Further, for $t \neq r$,\\
+$\mathrm{E}\left(u_{i t} u_{i r} \mid \mathbf{x}_{i}\right)=\mathrm{E}\left[\left(c_{i}-1\right)^{2}\right] m_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right) m_{i r}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)=\eta_{\mathrm{o}}^{2} m_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right) m_{i r}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)$,\\
+where $\eta_{\mathrm{o}}^{2}=\operatorname{Var}\left(c_{i}\right)$. The serial correlation in equation (18.87) is reminiscent of the serial correlation that arises in linear random effects models under standard assump-\\
+tions. This shows explicitly that we must correct for serial dependence in computing the asymptotic variance of the pooled Poisson QMLE in Section 18.7.1. The overdispersion in equation (18.86) is analogous to the variance of the composite error in a linear model. A QMLE random effects analysis exploits these nominal variance and covariance expressions but does not rely on either of them for consistency. If we use equation (18.86) while ignoring equation (18.87), we are led to a pooled negative binomial analysis, which is very similar to the pooled Poisson analysis except that the quasi-log likelihood for each time period is the negative binomial discussed in Section 18.3.1. See Wooldridge (1997c) for details.
+
+If condition (18.87) holds, it is more efficient-perhaps much more efficient-to use the weighted multivariate nonlinear least squares estimator (WMNLS) discussed in Section 12.9.2. We simply construct an estimate of the conditional variance matrix based on (18.86) and (18.87). To implement the method, we would obtain the pooled Poisson QMLE of $\boldsymbol{\beta}$, say, $\check{\boldsymbol{\beta}}$. We can use this estimator to estimate $\eta_{o}^{2}$. One possibility is to note that $\mathrm{E}\left[\left(u_{i t}^{2}-m_{i t}\left(\boldsymbol{\beta}_{o}\right)\right) / m_{i t}\left(\boldsymbol{\beta}_{o}\right) \mid \mathbf{x}_{i}\right]=\eta_{o}^{2} m_{i t}\left(\boldsymbol{\beta}_{o}\right)$. Let $\check{u}_{i t}^{2}=\left(y_{i t}-m_{i t}(\check{\boldsymbol{\beta}})\right)^{2}$ be the squared residuals from the pooled Poisson QMLE. Then obtain $\hat{\eta}^{2}$ from the pooled simple regression (through the origin) $\left[\check{u}_{i t}^{2} / m_{i t}(\check{\boldsymbol{\beta}})\right]-1$ on $\left.m_{i t}(\check{\boldsymbol{\beta}})\right], t=1, \ldots$, $T, i=1, \ldots, N$. Now, given $\hat{\eta}^{2}$ and $\check{\boldsymbol{\beta}}$, we can estimate the conditional variance and conditional covariances in (18.86) and (18.87). Call the resulting $T \times T$ matrix $\hat{\mathbf{W}}_{i}$. Then recall that the WMNLS estimator, $\hat{\boldsymbol{\beta}}$, solves
+
+$$
+\min _{\boldsymbol{\beta}} \sum_{i=1}^{N}\left[\mathbf{y}_{i}-\mathbf{m}_{i}(\boldsymbol{\beta})\right]^{\prime} \hat{\mathbf{W}}_{i}^{-1}\left[\mathbf{y}_{i}-\mathbf{m}_{i}(\boldsymbol{\beta})\right]^{\prime} .
+$$
+
+Under assumptions (18.86) and (18.87), the WMNLS estimator is relatively efficient among estimators that only require a correct conditional mean for consistency, and its asymptotic variance can be estimated as\\
+$\operatorname{Avar}(\hat{\boldsymbol{\beta}})=\left(\sum_{i=1}^{N} \nabla_{\beta} \hat{\mathbf{m}}_{i}^{\prime} \hat{\mathbf{W}}_{i}^{-1} \nabla_{\beta} \hat{\mathbf{m}}_{i}\right)^{-1}$.\\
+As with the other QMLEs, the WMNLS estimator is consistent under assumptions (18.80) and (18.81) only, but if assumption (18.86) or (18.87) is violated, the variance matrix needs to be made robust. Letting $\hat{\mathbf{u}}_{i} \equiv \mathbf{y}_{i}-\mathbf{m}_{i}(\hat{\boldsymbol{\beta}})$ (a $T \times 1$ vector), the robust estimator is\\
+$\left(\sum_{i=1}^{N} \nabla_{\beta} \hat{\mathbf{m}}_{i}^{\prime} \hat{\mathbf{W}}_{i}^{-1} \nabla_{\beta} \hat{\mathbf{m}}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \nabla_{\beta} \hat{\mathbf{m}}_{i}^{\prime} \hat{\mathbf{W}}_{i}^{-1} \hat{\mathbf{u}}_{i} \hat{\mathbf{u}}_{i}^{\prime} \hat{\mathbf{W}}_{i}^{-1} \nabla_{\beta} \hat{\mathbf{m}}_{i}\right)\left(\sum_{i=1}^{N} \nabla_{\beta} \hat{\mathbf{m}}_{i}^{\prime} \hat{\mathbf{W}}_{i}^{-1} \nabla_{\beta} \hat{\mathbf{m}}_{i}\right)^{-1}$.
+
+This expression gives a way to obtain fully robust inference while having a relatively efficient estimator under the random effects assumptions (18.86) and (18.87).
+
+GMT (1984b) cover a model that suggests an alternative form of $\hat{\mathbf{W}}_{i}$. The matrix $\hat{\mathbf{W}}_{i}$ can be modified for other nominal distributional assumptions, such as the gamma (which would be natural to apply to continuous, nonnegative $y_{i t}$.) Further, a typical generalized estimating equation (GEE) approach would choose a different estimator of the variance matrix. The GEE approach associated with the Poisson QMLE would be to maintain the nominal Poisson variance assumption, $\operatorname{Var}\left(y_{i t} \mid \mathbf{x}_{i}\right)=\sigma^{2} m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}_{o}\right)$, along with a constant working correlation matrix. The resulting variance-covariance matrix cannot be derived from an unobserved effects model; generally, it will be inefficient under (18.83) to (18.85). See Section 12.9.2 for further discussion on GEE.
+
+We must remember that none of the suggested WMNLS methods that allow nonzero correlation is consistent if $\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}\right) \neq m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}_{o}\right)$. In the context of an unobserved effects model, we usually think of a misspecified conditional mean as coming either from lack of strict exogeneity of $\left\{\mathbf{x}_{i t}: t=1, \ldots, T\right\}$ (conditional on $c_{i}$ ) or from correlation between $c_{i}$ and $\mathbf{x}_{i}$.
+
+\subsection*{18.7.4 Fixed Effects Poisson Estimation}
+HHG first showed how to do an FE type of analysis of count panel data models, which allows for arbitrary dependence between $c_{i}$ and $\mathbf{x}_{i}$. Their FE Poisson assumptions are (18.83) and (18.84), with the conditional mean given still by assumption (18.80). The key is that neither assumption (18.85) nor assumption (18.81) is maintained; in other words, arbitrary dependence between $c_{i}$ and $\mathbf{x}_{i}$ is allowed. HHG take $m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right)=\exp \left(\mathbf{x}_{i t} \boldsymbol{\beta}\right)$, which is by far the leading case.
+
+HHG use Andersen's (1970) conditional ML methodology to estimate $\boldsymbol{\beta}$. Let $n_{i} \equiv \sum_{t=1}^{T} y_{i t}$ denote the sum across time of the counts across $t$. Using standard results on obtaining a joint distribution conditional on the sum of its components, HHG show that\\
+$\mathbf{y}_{i} \mid n_{i}, \mathbf{x}_{i}, c_{i} \sim \operatorname{Multinomial}\left\{n_{i}, p_{1}\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right), \ldots, p_{T}\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right)\right\}$,\\
+where\\
+$p_{t}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right) \equiv m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right) /\left[\sum_{r=1}^{T} m\left(\mathbf{x}_{i r}, \boldsymbol{\beta}\right)\right]$.
+
+Because this distribution does not depend on $c_{i}$, equation (18.88) is also the distribution of $\mathbf{y}_{i}$ conditional on $n_{i}$ and $\mathbf{x}_{i}$. Therefore, $\boldsymbol{\beta}_{\mathrm{o}}$ can be estimated by standard con-\\
+ditional MLE techniques using the multinomial log likelihood. The conditional log likelihood for observation $i$, apart from terms not depending on $\boldsymbol{\beta}$, is\\
+$\ell_{i}(\boldsymbol{\beta})=\sum_{t=1}^{T} y_{i t} \log \left[p_{t}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]$.
+
+The estimator $\hat{\boldsymbol{\beta}}$ that maximizes $\sum_{i=1}^{N} \ell_{i}(\boldsymbol{\beta})$ will be called the fixed effects Poisson (FEP) estimator. (Note that when $y_{i t}=0$ for all $t$, the cross section observation $i$ does not contribute to the estimation.)
+
+Obtaining the FEP estimator is computationally fairly easy, especially when $m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right)=\exp \left(\mathbf{x}_{i t} \boldsymbol{\beta}\right)$. But the assumptions used to derive the conditional log likelihood in equation (18.90) can be restrictive in practice. Fortunately, the FEP estimator has very strong robustness properties for estimating the parameters in the conditional mean. As shown in Wooldridge (1999a), the FEP estimator is consistent for $\boldsymbol{\beta}_{\mathrm{o}}$ under the conditional mean assumption (18.80) only. Except for the conditional mean, the distribution of $y_{i t}$ given ( $\mathbf{x}_{i}, c_{i}$ ) is entirely unrestricted; in particular, there can be overdispersion or underdispersion in the latent variable model. The distribution of $y_{i t}$ need not be discrete; it could be continuous or have discrete and continuous features. Also, there is no restriction on the dependence between $y_{i t}$ and $y_{i r}, t \neq r$. This is another case where the QMLE derived under fairly strong nominal assumptions turns out to have very desirable robustness properties.
+
+The argument that the FEP estimator is consistent under assumption (18.80) hinges on showing that $\boldsymbol{\beta}_{\mathrm{o}}$ maximizes the expected value of equation (18.90) under assumption (18.80) only. This result is shown in Wooldridge (1999a). Uniqueness holds under general identification assumptions, but certain kinds of explanatory variables are ruled out. For example, when the conditional mean has an exponential form, it is easy to see that the coefficients on time-constant explanatory variables drop out of equation (18.89), just as in the linear case. Interactions between timeconstant and time-varying explanatory variables are allowed.
+
+Consistent estimation of the asymptotic variance of $\hat{\boldsymbol{\beta}}$ follows from the results on M-estimation in Chapter 12. The score for observation $i$ can be written as
+
+
+\begin{align*}
+\mathbf{s}_{i}(\boldsymbol{\beta}) & \equiv \nabla_{\beta} \ell_{i}(\boldsymbol{\beta})=\sum_{t=1}^{T} y_{i t}\left[\nabla_{\beta} p_{t}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)^{\prime} / p_{t}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right] \\
+& \equiv \nabla_{\beta} \mathbf{p}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)^{\prime} \mathbf{W}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\left\{\mathbf{y}_{i}-\mathbf{p}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right) n_{i}\right\} \tag{18.91}
+\end{align*}
+
+
+where $\mathbf{W}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right) \equiv\left[\operatorname{diag}\left\{p_{1}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right), \ldots, p_{T}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right\}\right]^{-1}, \mathbf{u}_{i}(\boldsymbol{\beta}) \equiv \mathbf{y}_{i}-\mathbf{p}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right) n_{i}, \mathbf{p}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right) \equiv\left[p_{1}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right), \ldots, p_{T}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]^{\prime}$, and $p_{t}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)$ is given by equation (18.89).
+
+The expected Hessian for observation $i$ can be shown to be\\
+$\mathbf{A}_{\mathrm{o}} \equiv \mathrm{E}\left[n_{i} \nabla_{\beta} \mathbf{p}\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right)^{\prime} \mathbf{W}\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right) \nabla_{\beta} \mathbf{p}\left(\mathbf{x}_{i}, \boldsymbol{\beta}_{\mathrm{o}}\right)\right]$.\\
+The asymptotic variance of $\hat{\boldsymbol{\beta}}$ is $\mathbf{A}_{\mathrm{o}}^{-1} \mathbf{B}_{\mathrm{o}} \mathbf{A}_{\mathrm{o}}^{-1} / N$, where $\mathbf{B}_{\mathrm{o}} \equiv \mathrm{E}\left[\mathbf{s}_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right) \mathbf{s}_{i}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)^{\prime}\right]$. A consistent estimate of $\mathbf{A}$ is
+
+
+\begin{equation*}
+\hat{\mathbf{A}}=N^{-1} \sum_{i=1}^{N} n_{i} \nabla_{\beta} \mathbf{p}\left(\mathbf{x}_{i}, \hat{\boldsymbol{\beta}}\right)^{\prime} \mathbf{W}\left(\mathbf{x}_{i}, \hat{\boldsymbol{\beta}}\right) \nabla_{\beta} \mathbf{p}\left(\mathbf{x}_{i}, \hat{\boldsymbol{\beta}}\right) \tag{18.92}
+\end{equation*}
+
+
+and $\mathbf{B}$ is estimated as
+
+
+\begin{equation*}
+\hat{\mathbf{B}}=N^{-1} \sum_{i=1}^{N} \mathbf{s}_{i}(\hat{\boldsymbol{\beta}}) \mathbf{s}_{i}(\hat{\boldsymbol{\beta}})^{\prime} \tag{18.93}
+\end{equation*}
+
+
+The robust variance matrix estimator, $\hat{\mathbf{A}^{-1}} \hat{\mathbf{B}} \hat{\mathbf{A}}^{-1} / N$, is valid under assumption (18.80); in particular, it allows for any deviations from the Poisson distribution and arbitrary time dependence. The usual ML estimate, $\hat{\mathbf{A}}^{-1} / N$, is valid under assumptions (18.83) and (18.84). For more details, including methods for specification testing, see Wooldridge (1999a).
+
+Applications of the FEP estimator, which compute the robust variance matrix and some specification test statistics, are given in Papke (1991), Page (1995), and Gordy (1999). We must emphasize that, while the leading application is to count data, the FEP estimator works whenever assumption (18.80) holds. Therefore, $y_{i t}$ could be a nonnegative continuous variable, or even a binary response if we believe the unobserved effect is multiplicative (in contrast to the models in Sections 15.8.2 and 15.8.3).
+
+Because the FEP estimator relies heavily on strict exogeneity of $\left\{\mathbf{x}_{i t}: t=1, \ldots\right.$, $T\}$, conditional on $c_{i}$, it is helpful to have a simple test of this assumption. A straightforward approach is to simply add $\mathbf{w}_{i, t+1}$ to the model, usually an exponential model, where $\mathbf{w}_{i t} \subset \mathbf{x}_{i t}$. Then, using the FEP estimator, a fully robust joint signifiance test for $\mathbf{w}_{i, t+1}$ can be used. A significant statistic indicates that the strict exogeneity assumption fails. Naturally, we lose the last time period in carrying out the test. One could even interact $\mathbf{w}_{i, t+1}$ with certain elements of $\mathbf{x}_{i t}$ and include these interaction terms in the joint test.
+
+\subsection*{18.7.5 Relaxing the Strict Exogeneity Assumption}
+If the test in the previous subsection rejects, we probably need to relax the strict exogeneity assumption. In place of assumption (18.80) we assume
+
+
+\begin{equation*}
+\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i t}, c_{i}\right)=c_{i} m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}_{\mathrm{o}}\right), \quad t=1,2, \ldots, T . \tag{18.94}
+\end{equation*}
+
+
+These are sequential moment restrictions of the kind we discussed in Chapter 11. The model (18.94) is applicable to static and distributed lag models with possible feedback, as well as to models with lagged dependent variables. Again, $y_{i t}$ need not be a count variable here.
+
+Chamberlain (1992b) and Wooldridge (1997a) have suggested residual functions that lead to conditional moment restrictions. Assuming that $m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right)>0$, define\\
+$r_{i t}(\boldsymbol{\beta}) \equiv y_{i t}-y_{i, t+1}\left[m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right) / m\left(\mathbf{x}_{i, t+1}, \boldsymbol{\beta}\right)\right], \quad t=1, \ldots, T-1$.
+
+Under assumption (18.95), we can use iterated expectations to show that $\mathrm{E}\left[r_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right) \mid \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i t}\right]=0$. This expression means that any function of $\mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i t}$ is uncorrelated with $r_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)$ and is the basis for a GMM estimation. One can easily test the strict exogeneity assumption in a GMM framework. For further discussion and details on implementation, as well as an alternative residual function, see Wooldridge (1997a).
+
+Blundell, Griffith, and Windmeijer (1998) consider variants of moment conditions in a linear feedback model, where the mean function contains a lagged dependent variable, which enters additively, in addition to an exponential regression function in other conditioning variables with a multiplicated unobserved effect. They apply their model to the patents and R\&D relationship.
+
+A different approach is conditional maximum likelihood, as we discussed in Sections 15.8.4 and 17.8.3-see Section 13.9 for a general discussion. For example, if we want to estimate a model for $y_{i t}$ given $\left(\mathbf{z}_{i t}, y_{i, t-1}, c_{i}\right)$, where $\mathbf{z}_{i t}$ contains contemporaneous variables, we can model it as a Poisson variable with exponential mean $c_{i} \exp \left(\mathbf{z}_{i t} \boldsymbol{\beta}_{\mathrm{o}}+\rho_{\mathrm{o}} y_{i, t-1}\right)$. Then, assuming that $\mathrm{D}\left(y_{i t} \mid \mathbf{z}_{i}, y_{i, t-1}, \ldots, y_{i 0}, c_{i}\right)=\mathrm{D}\left(y_{i t} \mid \mathbf{z}_{i t}\right.$, $y_{i, t-1}, c_{i}$ ), we can obtain the density of ( $y_{i 1}, \ldots, y_{i T}$ ) given ( $y_{i 0}, \mathbf{z}_{i}, c_{i}$ ) by multiplication; see equation (13.60). Given a density specification for $\mathrm{D}\left(c_{i} \mid y_{i 0}, \mathbf{z}_{i}\right)$, we can obtain the conditional $\log$ likelihood for each $i$ as in equation (13.62). A very convenient specification is $c_{i}=\exp \left(\alpha_{\mathrm{o}}+\xi_{\mathrm{o}} y_{i 0}+\mathbf{z}_{i} \gamma_{\mathrm{o}}\right) a_{i}$, where $a_{i}$ is independent of $\left(y_{i 0}, \mathbf{z}_{i}\right)$ and distributed as $\operatorname{Gamma}\left(\delta_{\mathrm{o}}, \delta_{\mathrm{o}}\right)$. Then, for each $t, y_{i t}$ given $\left(y_{i, t-1}, \ldots, y_{i 0}, \mathbf{z}_{i}, a_{i}\right)$ has a Poisson distribution with mean\\
+$a_{i} \exp \left(\alpha_{\mathrm{o}}+\mathbf{z}_{i t} \boldsymbol{\beta}_{\mathrm{o}}+\rho_{\mathrm{o}} y_{i, t-1}+\xi_{\mathrm{o}} y_{i 0}+\mathbf{z}_{i} \boldsymbol{\gamma}_{\mathrm{o}}\right)$.\\
+(As always, we would probably want aggregate time dummies included in this equation.) It is easy to see that the distribution of $\left(y_{i 1}, \ldots, y_{i T}\right)$ given $\left(y_{i 0}, \mathbf{z}_{i}\right)$ has the random effects Poisson form with gamma heterogeneity; therefore, standard random effects Poisson software can be used to estimate $\alpha_{\mathrm{o}}, \boldsymbol{\beta}_{\mathrm{o}}, \rho_{\mathrm{o}}, \xi_{\mathrm{o}}, \gamma_{\mathrm{o}}$, and $\delta_{\mathrm{o}}$. The usual conditional MLE standard errors, $t$ statistics, Wald statistics, and $L R$ statistics are asymptotically valid for large $N$. See Wooldridge (2005b) for further details.
+
+With an exponential mean, Windmeijer (2000) shows how to modify the moment conditions in (18.95) to estimate models with contemporaneously endogenous explanatory variables. Alternatively, in some cases a control function method would be available. For example, if we start with $\mathrm{E}\left(y_{i t 1} \mid \mathbf{z}_{i}, y_{i t 2}, c_{i 1}, r_{i t 1}\right)=\exp \left(\mathbf{z}_{i t 1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{i t 2}+\right. \left.c_{i 1}+r_{i t 1}\right)$, where $c_{i 1}$ is unobserved heterogeneity and $r_{i t 1}$ is a time-varying omitted variable, then for continuous $y_{i t 2}$ we might specify $y_{i t 2}=\psi_{2}+\mathbf{z}_{i t} \boldsymbol{\pi}_{2}+\overline{\mathbf{z}}_{i} \boldsymbol{\xi}_{2}+v_{i t 2}$, where we have imposed the Chamberlain-Mundlak device to allow heterogeneity affecting $y_{i t 2}$ to be correlated with $\mathbf{z}_{i}$ through the time average, $\overline{\mathbf{z}}_{i}$. Further, if we specify $c_{i 1}=\psi_{1}+\overline{\mathbf{z}}_{i} \boldsymbol{\xi}_{1}+a_{i 1}$, then we can write $\mathrm{E}\left(y_{i t 1} \mid \mathbf{z}_{i}, y_{i t 2}, v_{i t 1}\right)=\exp \left(\psi_{1}+\right. \left.\mathbf{z}_{i t 1} \boldsymbol{\delta}_{1}+\overline{\mathbf{z}}_{i} \boldsymbol{\xi}_{1}+\alpha_{1} y_{i t 2}+v_{i t 1}\right)$, where $v_{i t 1}=a_{i 1}+r_{i t 1}$. While it is hardly general, it is not unreasonable to assume $\left(v_{i t 1}, v_{i t 2}\right)$ is independent of $\mathbf{z}_{i}$. If we specify $\mathrm{E}\left[\exp \left(v_{i t 1}\right) \mid v_{i t 2}\right]=\exp \left(\eta_{1}+\rho_{1} v_{i t 2}\right)$ (as would be true under joint normality), we obtain the estimating equation\\
+$\mathrm{E}\left(y_{i t 1} \mid \mathbf{z}_{i}, y_{i t 2}, v_{i t 2}\right)=\exp \left(\alpha_{1}+z_{i t 1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{i t 2}+\overline{\mathbf{z}}_{i} \boldsymbol{\xi}_{1}+\rho_{1} v_{i t 2}\right)$.
+
+A two-step method is the following: (1) Obtain the residuals $\hat{v}_{i t 2}$ from the pooled OLS estimation $y_{i t 2}$ on $1, \mathbf{z}_{i t}, \overline{\mathbf{z}}_{i}$ across $t$ and $i$. (2) Use a pooled NLS or QMLE (perhaps the Poisson) to estimate the exponential function, where $\left(\overline{\mathbf{z}}_{i}, \hat{v}_{i t 2}\right)$ are explanatory variables along with $\left(\mathbf{z}_{i t 1}, y_{i t 2}\right)$. (As usual, a full set of time period dummies is a good idea in the first and second steps.) Alternatively, WMNLS can be used or GMM. One should adjust for the first-stage estimation, using the delta method or possibly the panel bootstrap, unless $\rho_{1}=0$. Rather than just obtain coefficient estimates, the APEs can be obtained by averaging the exponential function across $\left(\overline{\mathbf{z}}_{i}, \hat{v}_{i t 2}\right)$. The details are quite similar to the probit case in Section 15.8.5.
+
+Terza's (1998) approach when $y_{i t 2}$ is binary can be modified along similar lines using the Chamberlain-Mundlak device. Once one specifies a probit model of the form $y_{i t 2}=1\left[\psi_{2}+\mathbf{z}_{i t 2} \boldsymbol{\pi}_{2}+\overline{\mathbf{z}}_{i} \boldsymbol{\xi}_{2}+v_{i t 2} \geq 0\right]$, where $v_{i t 2}$ is independent of $\mathbf{z}_{i}$ with a standard normal distribution, and combines this with (18.96), obtaining pooled estimation methods or GMM methods is straightforward.
+
+\subsection*{18.7.6 Fractional Response Models for Panel Data}
+We can also specify and estimate models with unobserved heterogeneity for fractional response variables. Following Papke and Wooldridge (2008), and for reasons similar to those in Section 18.6.2, it is easiest to work with the probit response function, as specified in
+
+
+\begin{equation*}
+\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i t}, c_{i}\right)=\Phi\left(\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}\right), \quad t=1, \ldots, T \tag{18.97}
+\end{equation*}
+
+
+The APEs that we are interested in are just as in the probit case, except that these are partial effects on a mean response (not a probability).
+
+Without further assumptions, neither $\boldsymbol{\beta}$ nor the APEs are known to be identified. As with previous nonlinear models, a strict exogeneity assumption, conditional on the unobserved effect, is useful:\\
+$\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}, c_{i}\right)=\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i t}, c_{i}\right), \quad t=1, \ldots, T$,\\
+where $\mathbf{x}_{i} \equiv\left(\mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}\right)$ is the set of covariates in all time periods. A second useful assumption (which could be made more flexible) is conditional normality using the Chamberlain-Mundlak approach:\\
+$c_{i} \mid\left(\mathbf{x}_{i 1}, \mathbf{x}_{i 2}, \ldots, \mathbf{x}_{i T}\right) \sim \operatorname{Normal}\left(\psi+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}, \sigma_{a}^{2}\right)$,\\
+where, as always, $\overline{\mathbf{x}}_{i}$ is the $1 \times K$ vector of time averages. For some purposes, it is useful to write $c_{i}=\psi+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}$, where $a_{i} \mid \mathbf{x}_{i} \sim \operatorname{Normal}\left(0, \sigma_{a}^{2}\right)$. (Note that $\sigma_{a}^{2}= \operatorname{Var}\left(c_{i} \mid \mathbf{x}_{i}\right)$, the conditional variance of $c_{i}$.) Naturally, if we include time-period dummies in $\mathbf{x}_{i t}$, as is usually desirable, we do not include the time averages of these in $\overline{\mathbf{x}}_{i}$. Also, we may include time-constant variables in $\mathbf{x}_{i t}$ (omitting them from $\overline{\mathbf{x}}_{i}$ ), provided we understand that we may not be consistently estimating their partial effects.
+
+Assumptions (18.97), (18.98), and (18.99) impose no additional distributional assumptions on $D\left(y_{i t} \mid \mathbf{x}_{i}, c_{i}\right)$, and they place no restrictions on the serial dependence in $\left\{y_{i t}\right\}$ across time. Nevertheless, the elements of $\boldsymbol{\beta}$ are easily shown to be identified up to a positive scale factor, and the APEs are identified. A simple way to establish identification is to write\\
+$\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}, a_{i}\right)=\Phi\left(\psi+\mathbf{x}_{i t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}\right)$,\\
+and so\\
+$\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}\right)=\mathrm{E}\left[\Phi\left(\psi+\mathbf{x}_{i t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}\right) \mid \mathbf{x}_{i}\right]=\Phi\left[\left(\psi+\mathbf{x}_{i t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}\right) /\left(1+\sigma_{a}^{2}\right)^{1 / 2}\right]$\\
+or\\
+$\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}\right) \equiv \Phi\left(\psi_{a}+\mathbf{x}_{i t} \boldsymbol{\beta}_{a}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}_{a}\right)$,\\
+where the $a$ subscript denotes division of the orginal coefficient by $\left(1+\sigma_{a}^{2}\right)^{1 / 2}$. Because we observe a random sample on $\left(y_{i t}, \mathbf{x}_{i t}, \overline{\mathbf{x}}_{i}\right)$, (18.101) implies that the scaled coefficients, $\psi_{a}, \beta_{a}$, and $\xi_{a}$ are identified, provided there are no perfect linear relationships among the elements of $\mathbf{x}_{i t}$ and that there is some time variation in all elements of $\mathbf{x}_{i t}$. (The latter requirement ensures that $\mathbf{x}_{i t}$ and $\overline{\mathbf{x}}_{i}$ are not perfectly collinear for all $t$.) In addition, it follows from the same arguments in Section 15.8.2 that the average structural function is
+
+
+\begin{equation*}
+E_{\overline{\mathbf{x}}_{i}}\left[\Phi\left(\psi_{a}+\mathbf{x}_{t} \boldsymbol{\beta}_{a}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}_{a}\right)\right] \tag{18.102}
+\end{equation*}
+
+
+with respect to the elements of $\mathbf{x}_{t}$. A consistent estimator, for given $\mathbf{x}_{t}$, is\\
+$\widehat{\operatorname{ASF}}\left(\mathbf{x}_{t}\right)=N^{-1} \sum_{i=1}^{N} \Phi\left(\hat{\psi}_{a}+\mathbf{x}_{t} \hat{\boldsymbol{\beta}}_{a}+\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}_{a}\right)$,\\
+where $\hat{\boldsymbol{\beta}}_{a}$ is consistent for $\boldsymbol{\beta}_{a}$, and so on. APEs are obtained by differentiating or taking differences with respect to elements of $\mathbf{x}_{t}$. The panel data bootstrap is particularly convenient for obtaining standard errors or confidence intervals for the APEs.
+
+The simplest $\sqrt{N}$-consistent, asymptotically normal estimators are just the pooled Bernoulli quasi-MLEs, where the explanatory variables are a constant, a full set of time dummies (probably), $\mathbf{x}_{i t}$, and $\overline{\mathbf{x}}_{i}$. Alternatively, we could also use pooled NLS. In either case, fully robust inference should be used because the variance associated with the Bernoulli distribution is likely to be wrong, and the variance is unlikely to be constant. More important, there is neglected serial correlation.
+
+Perhaps more efficient estimators can be obtained using the GEE approach as described in Section 12.9.2; see also Section 15.8.2. Papke and Wooldridge (2008) describe implementation in the current setup. An even better strategy is to use a minimum distance approach as described in Section 14.6.2. (And, of course, for additional flexibility, we can replace $\overline{\mathbf{x}}_{i} \boldsymbol{\xi}_{a}$ with $\mathbf{x}_{i} \boldsymbol{\xi}_{a}$.)
+
+If some elements of $\mathbf{x}_{i t}$ are not strictly exogenous, a control function method can be combined with the Chamberlain-Mundlak device. Papke and Wooldridge (2008) show how the same control function estimator described in the binary response probit model in Section 15.8.5 applies to fractional responses with a continuous endogenous explanatory variable. (The consistency of the estimator again relies on the Bernoulli distribution being in the linear exponential family.) Briefly, if we assume that the reduced form of the endogenous explanatory variable, $y_{i t 2}$, can be expressed as $y_{i t 2}=\mathbf{z}_{i t} \boldsymbol{\delta}_{2}+\psi_{2}+\overline{\mathbf{z}}_{i} \boldsymbol{\xi}_{2}+v_{i t 2}$ (where we impose the Chamberlain-Mundlak device), and we assume joint normality of all unobservables, including $v_{i t 2}$, then we can derive an estimating equation of the form\\
+$\mathrm{E}\left(y_{i t 1} \mid \mathbf{z}_{i}, y_{i t 2}, v_{i t 2}\right)=\Phi\left(\alpha_{e 1} y_{i t 2}+\mathbf{z}_{i t 1} \boldsymbol{\delta}_{e 1}+\psi_{e 1}+\overline{\mathbf{z}}_{i} \xi_{e 1}+\eta_{e 1} v_{i t 2}\right)$,\\
+where the " $e$ " subscript indicates the original parameters have been scaled-similar to the development in Section 18.6.2. As shown by Papke and Wooldridge (2008), these scaled coefficients appear in the APEs. Therefore, after obtaining the residuals $\hat{v}_{i t 2}$, these can be inserted in the pooled "probit" estimation in a second step to obtain consistent, $\sqrt{N}$-asymptotically normal estimators. The APEs with respect to $\left(y_{t 2}, \mathbf{z}_{t 1}\right)$ are obtained by averaging the derivatives or changes across $\left(\overline{\mathbf{z}}_{i}, \hat{v}_{i t 2}\right)$. Standard errors\\
+are easily obtained using the panel data bootstrap. See Papke and Wooldridge (2008) for more discussion.
+
+\section*{Problems}
+18.1. a. For estimating the mean of a nonnegative random variable $y$, the Poisson quasi-log likelihood for a random draw is\\
+$\ell_{i}(\mu)=y_{i} \log (\mu)-\mu, \quad \mu>0$\\
+(where terms not depending on $\mu$ have been dropped). Letting $\mu_{\mathrm{o}} \equiv \mathrm{E}\left(y_{i}\right)$, we have $\mathrm{E}\left[\ell_{i}(\mu)\right]=\mu_{\mathrm{o}} \log (\mu)-\mu$. Show that this function is uniquely maximized at $\mu=\mu_{\mathrm{o}}$. This simple result is the basis for the consistency of the Poisson QMLE in the general case.\\
+b. The gamma (exponential) quasi-log likelihood is\\
+$\ell_{i}(\mu)=-y_{i} / \mu-\log (\mu), \quad \mu>0$\\
+Show that $\mathrm{E}\left[\ell_{i}(\mu)\right]$ is uniquely maximized at $\mu=\mu_{\mathrm{o}}$.\\
+18.2. Carefully write out the robust variance matrix estimator (18.14) when $m(\mathbf{x}, \boldsymbol{\beta})=\exp (\mathbf{x} \boldsymbol{\beta})$.\\
+18.3. Use the data in SMOKE.RAW to answer this question.\\
+a. Use a linear regression model to explain cigs, the number of cigarettes smoked per day. Use as explanatory variables $\log$ (cigpric), $\log$ (income), restaurn, white, $e d u c, a g e$, and $a g e^{2}$. Are the price and income variables significant? Does using heteroskedasticity-robust standard errors change your conclusions?\\
+b. Now estimate a Poisson regression model for cigs, with an exponential conditional mean and the same explanatory variables as in part a. Using the usual MLE standard errors, are the price and income variables each significant at the 5 percent level? Interpret their coefficients.\\
+c. Find $\hat{\sigma}$. Is there evidence of overdispersion? Using the GLM standard errors, discuss the significance of $\log$ (cigpric) and $\log$ (income).\\
+d. Compare the usual MLE $L R$ statistic for joint significance of $\log$ (cigpric) and $\log$ (income) with the $Q L R$ statistic in equation (18.17).\\
+e. Compute the fully robust standard errors, and compare these with the GLM standard errors.\\
+f. In the model estimated from part b , at what point does the effect of age on expected cigarette consumption become negative?\\
+g. Do you think a two-part, or double-hurdle, model for count variables is a better way to model cigs?\\
+18.4. Show that under the conditional moment restriction $\mathrm{E}(y \mid \mathbf{x})=m\left(\mathbf{x}, \boldsymbol{\beta}_{\mathrm{o}}\right)$ the Poisson QMLE achieves the efficiency bound in equation (14.60) when the GLM variance assumption holds.\\
+18.5. Consider an unobserved effects model for count data with exponential regression function\\
+$\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}, c_{i}\right)=c_{i} \exp \left(\mathbf{x}_{i t} \boldsymbol{\beta}\right)$.\\
+a. If $\mathrm{E}\left(c_{i} \mid \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}\right)=\exp \left(\alpha+\overline{\mathbf{x}}_{i} \boldsymbol{\gamma}\right)$, find $\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}\right)$.\\
+b. Use part a to derive a test of mean independence between $c_{i}$ and $\overline{\mathbf{x}}_{i}$. Assume under $\mathrm{H}_{0}$ that $\operatorname{Var}\left(y_{i t} \mid \mathbf{x}_{i}, c_{i}\right)=\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}, c_{i}\right)$, that $y_{i t}$ and $y_{i r}$ are uncorrelated conditional on $\left(\mathbf{x}_{i}, c_{i}\right)$, and that $c_{i}$ and $\mathbf{x}_{i}$ are independent. (Hint: You should devise a test in the context of multivariate weighted nonlinear least squares.)\\
+c. Suppose now that assumptions (18.83) and (18.84) hold, with $m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right)= \exp \left(\mathbf{x}_{i t} \boldsymbol{\beta}\right)$, but assumption (18.85) is replaced by $c_{i}=a_{i} \exp \left(\alpha+\overline{\mathbf{x}}_{i} \boldsymbol{\gamma}\right)$, where $a_{i} \mid \mathbf{x} \sim \operatorname{Gamma}(\delta, \delta)$. Now how would you estimate $\boldsymbol{\beta}, \alpha$, and $\gamma$, and how would you test $\mathrm{H}_{0}: \gamma=0 ?$\\
+18.6. A model with an additive unobserved effect, strictly exogenous regressors, and a nonlinear regression function is\\
+$\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}, c_{i}\right)=c_{i}+m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}_{\mathrm{o}}\right), \quad t=1, \ldots, T$.\\
+a. For each $i$ and $t$ define the time-demeaned variables $\ddot{y}_{i t} \equiv y_{i t}-\bar{y}_{i}$ and, for each $\boldsymbol{\beta}, \ddot{m}_{i t}(\boldsymbol{\beta})=m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right)-(1 / T) \sum_{r=1}^{T} m\left(\mathbf{x}_{i r}, \boldsymbol{\beta}\right)$. Argue that, under standard regularity conditions, the pooled NLS estimator of $\boldsymbol{\beta}_{\mathrm{o}}$ that solves
+
+
+\begin{equation*}
+\min _{\boldsymbol{\beta}} \sum_{i=1}^{N} \sum_{t=1}^{T}\left[\ddot{y}_{i t}-\ddot{m}_{i t}(\boldsymbol{\beta})\right]^{2} \tag{18.104}
+\end{equation*}
+
+
+is generally consistent and $\sqrt{N}$-asymptotically normal (with $T$ fixed). (Hint: Show that $\mathrm{E}\left(\ddot{y}_{i t} \mid \mathbf{x}_{i}\right)=\ddot{m}_{i t}\left(\boldsymbol{\beta}_{\mathrm{o}}\right)$ for all $t$.)\\
+b. If $\operatorname{Var}\left(\mathbf{y}_{i} \mid \mathbf{x}_{i}, c_{i}\right)=\sigma_{\mathrm{o}}^{2} \mathbf{I}_{T}$, how would you estimate the asymptotic variance of the pooled NLS estimator?\\
+c. If the variance assumption in part $b$ does not hold, how would you estimate the asymptotic variance?\\
+d. Show that the NLS estimator based on time demeaning from part a is in fact identical to the pooled NLS estimator that estimates $\left\{c_{1}, c_{2}, \ldots, c_{N}\right\}$ along with $\boldsymbol{\beta}_{0}$ :
+
+
+\begin{equation*}
+\min _{\left\{c_{1}, c_{2}, \ldots, c_{N}, \boldsymbol{\beta}\right\}} \sum_{i=1}^{N} \sum_{t=1}^{T}\left[y_{i t}-c_{i}-m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right)\right]^{2} \tag{18.105}
+\end{equation*}
+
+
+Thus, this is another case where treating the unobserved effects as parameters to estimate does not result in an inconsistent estimator of $\boldsymbol{\beta}_{\mathrm{o}}$. (Hint: It is easiest to concentrate out the $c_{i}$ from the sum of square residuals; see Section 12.7.4. In the current context, for given $\boldsymbol{\beta}$, find $\hat{c}_{i}$ as functions of $\mathbf{y}_{i}, \mathbf{x}_{i}$, and $\boldsymbol{\beta}$. Then plug these back into equation (18.105) and show that the concentrated sum of squared residuals function is identical to equation (18.104).)\\
+18.7. Assume that the standard FEP assumptions hold, so that, conditional on $\left(\mathbf{x}_{i}, c_{i}\right), y_{i 1}, \ldots, y_{i T}$ are independent Poisson random variables with means $c_{i} m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}_{\mathrm{o}}\right)$. a. Show that, if we treat the $c_{i}$ as parameters to estimate along with $\boldsymbol{\beta}_{\mathrm{o}}$, then the conditional $\log$ likelihood for observation $i$ (apart from terms not depending on $c_{i}$ or $\boldsymbol{\beta}$ ) is\\
+$\ell_{i}\left(c_{i}, \boldsymbol{\beta}\right) \equiv \log \left[f\left(y_{i 1}, \ldots, y_{i T} \mid \mathbf{x}_{i} ; c_{i}, \boldsymbol{\beta}\right)\right]$
+
+$$
+=\sum_{t=1}^{T}\left\{-c_{i} m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right)+y_{i t}\left[\log \left(c_{i}\right)\right]+\log \left[m\left(\mathbf{x}_{i t}, \boldsymbol{\beta}\right)\right]\right\},
+$$
+
+where we now group $c_{i}$ with $\boldsymbol{\beta}$ as a parameter to estimate. (Note that $c_{i}>0$ is a needed restriction.)\\
+b. Let $n_{i}=y_{i 1}+\cdots+y_{i T}$, and assume that $n_{i}>0$. For given $\boldsymbol{\beta}$, maximize $\ell_{i}\left(c_{i}, \boldsymbol{\beta}\right)$ only with respect to $c_{i}$. Find the solution, $c_{i}(\boldsymbol{\beta})>0$.\\
+c. Plug the solution from part b into $\ell_{i}\left[c_{i}(\boldsymbol{\beta}), \boldsymbol{\beta}\right]$, and show that\\
+$\ell_{i}\left[c_{i}(\boldsymbol{\beta}), \boldsymbol{\beta}\right]=\sum_{t=1}^{T} y_{i t} \log \left[p_{t}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]+\left(n_{i}-1\right) \log \left(n_{i}\right)$.\\
+d. Conclude from part c that the log-likelihood function for all $N$ cross section observations, with $\left(c_{1}, \ldots, c_{N}\right)$ concentrated out, is\\
+$\sum_{i=1}^{N} \sum_{t=1}^{T} y_{i t} \log \left[p_{t}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)\right]+\sum_{i=1}^{N}\left(n_{i}-1\right) \log \left(n_{i}\right)$.
+
+What does this mean about the conditional MLE from Section 18.7.4 and the estimator that treats the $c_{i}$ as parameters to estimate along with $\boldsymbol{\beta}_{\mathrm{o}}$ ?\\
+18.8. Let $y$ be a fractional response, so that $0 \leq y \leq 1$.\\
+a. Suppose that $0<y<1$, so that $w \equiv \log [y /(1-y)]$ is well defined. If we assume the linear model $\mathrm{E}(w \mid \mathbf{x})=\mathbf{x} \boldsymbol{\alpha}$, does $\mathrm{E}(y \mid \mathbf{x})$ have any simple relationship to $\mathbf{x} \boldsymbol{\alpha}$ ? What would we need to know to obtain $\mathrm{E}(y \mid \mathbf{x})$ ? Let $\hat{\boldsymbol{\alpha}}$ be the OLS estimator from the regression $w_{i}$ on $\mathbf{x}_{i}, i=1, \ldots, N$.\\
+b. If we estimate the fractional logit model for $\mathrm{E}(y \mid \mathbf{x})$ from Section 18.6.1, should we expect the estimated parameters, $\hat{\boldsymbol{\beta}}$, to be close to $\hat{\boldsymbol{\alpha}}$ from part a? Explain.\\
+c. Now suppose that $y$ takes on the values zero and one with positive probability. To model this population feature we use a latent variable model:
+
+$$
+\begin{aligned}
+& y^{*} \mid \mathbf{x} \sim \operatorname{Normal}\left(\mathbf{x} \gamma, \sigma^{2}\right) \\
+& y=0, \quad y^{*} \leq 0 \\
+& =y^{*}, \quad 0<y^{*}<1 \\
+& =1, \quad y^{*} \geq 1
+\end{aligned}
+$$
+
+How should we estimate $\gamma$ and $\sigma^{2}$ ?\\
+d. Given the estimate $\hat{\gamma}$ from part c , does it make sense to compare the magnitude of $\hat{\gamma}_{j}$ to the corresponding $\hat{\alpha}_{j}$ from part a or the $\hat{\beta}_{j}$ from part b ? Explain.\\
+e. How might we choose between the models estimated in parts b and c ? (Hint: Think about goodness of fit for the conditional mean.)\\
+f. Now suppose that $0 \leq y<1$. Suppose we apply fractional logit, as in part b , and fractional logit to the subsample with $0<y_{i}<1$. Should we necessarily get similar answers?\\
+g. With $0 \leq y<1$ suppose that $\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}, y_{i}>0\right)=\exp \left(\mathbf{x}_{i} \boldsymbol{\delta}\right) /\left[1+\exp \left(\mathbf{x}_{i} \boldsymbol{\delta}\right)\right]$. How should we estimate $\boldsymbol{\delta}$ in this case?\\
+h. To the assumptions from part g add $\mathrm{P}\left(y_{i}=0 \mid \mathbf{x}_{i}\right)=1-G\left(\mathbf{x}_{i} \boldsymbol{\eta}\right)$, where $G(\cdot)$ is a differentiable, strictly increasing cumulative distribution function. How should we estimate $\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}\right)$ ?\\
+18.9. Use the data in ATTEND.RAW to answer this question.\\
+a. Estimate a linear regression relating atndrte to $A C T$, priGPA, frosh, and soph; compute the usual OLS standard errors. Interpret the coefficients on $A C T$ and priGPA. Are any fitted values outside the unit interval?\\
+b. Model E(atndrte $\mid \mathbf{x}$ ) as a logistic function, as in Section 18.6.1. Use the QMLE for the Bernoulli log likelihood, and compute the GLM standard errors. What is $\hat{\sigma}$, and how does it affect the standard errors?\\
+c. For priGPA $=3.0$ and frosh $=$ soph $=0$, estimate the effect of increasing $A C T$ from 25 to 30 using the estimated equation from part b. How does the estimate compare with that from the linear model?\\
+d. Does a linear model or a logistic model provide a better fit to $\mathrm{E}($ atndrte $\mid \mathbf{x})$ ?\\
+18.10. Use the data in PATENT.RAW for this exercise.\\
+a. Estimate a pooled Poisson regression model relating patents to lsales $=\log ($ sales $)$ and current and four lags of lrnd $=\log (1+r n d)$, where we add one before taking the log to account for the fact that rnd is zero for some firms in some years. Use an exponential mean function and include a full set of year dummies. Which lags of lrnd are significant using the usual Poisson MLE standard errors?\\
+b. Give two reasons why the usual Poisson MLE standard errors from part a might be invalid.\\
+c. Obtain $\hat{\sigma}$ for the pooled Poisson estimation. Using the GLM standard errors (but without an adjustment for possible serial dependence), which lags of lrnd are significant?\\
+d. Obtain the QLR statistic for joint significance of lags one through four of lrnd. (Be careful here; you must use the same set of years in estimating the restricted version of the model.) How does it compare to the usual $L R$ statistic?\\
+e. Compute the standard errors that are robust to an arbitrary conditional variance and serial dependence. How do they compare with the standard errors from parts a and c ?\\
+f. What is the estimated long-run elasticity of expected patents with respect to R\&D spending? (Ignore the fact that one has been added to the R\&D numbers before taking the log.) Obtain a fully robust standard error for the long-run elasticity.\\
+g. Now use the FEP estimator, and compare the estimated lag coefficients to those from the pooled Poisson analysis. Estimate the long-run elasticity, and obtain the usual FEP and fully robust standard errors.\\
+18.11. a. For a random draw $i$ from the cross section, assume that (1) for each time period $t, y_{i t} \mid \mathbf{x}_{i}, c_{i} \sim \operatorname{Poisson}\left(c_{i} m_{i t}\right)$, where $c_{i}>0$ is unobserved heterogeneity and $m_{i t}>0$ is typically a function of only $\mathbf{x}_{i t}$; and (2) $\left(y_{i 1}, \ldots, y_{i T}\right)$ are independent conditional on $\left(\mathbf{x}_{i}, c_{i}\right)$. Derive the density of $\left(y_{i 1}, \ldots, y_{i T}\right)$ conditional on $\left(\mathbf{x}_{i}, c_{i}\right)$.\\
+b. To the assumptions from part a, add the assumption that $c_{i} \mid \mathbf{x}_{i} \sim \operatorname{Gamma}(\delta, \delta)$, so that $\mathrm{E}\left(c_{i}\right)=1$ and $\operatorname{Var}\left(c_{i}\right)=1 / \delta$. (The density of $c_{i}$ is $h(c)=\left[\delta^{\delta} / \Gamma(\delta)\right] c^{\delta-1} \exp (-\delta c)$, where $\Gamma(\delta)$ is the gamma function.) Let $s=y_{1}+\cdots+y_{T}$ and $M_{i}=m_{i 1}+\cdots+m_{i T}$. Show that the density of $\left(y_{i 1}, \ldots, y_{i T}\right)$ given $\mathbf{x}_{i}$ is\\
+$\left(\prod_{t=1}^{T} m_{i t}^{y_{t}} / y_{t}!\right)\left[\delta^{\delta} / \Gamma(\delta)\right]\left[\Gamma\left(M_{i}+s\right) /\left(M_{i}+\delta\right)^{(s+\delta)}\right]$.\\
+(Hint: The easiest way to show this result is to turn the integral into one involving a Gamma $\left(s+\delta, M_{i}+\delta\right)$ density and a multiplicative term. Naturally, the density must integrate to unity, and so what is left over is the density we seek.)\\
+18.12. For a random draw $i$ from the cross section, assume that (1) for each $t$, $y_{i t} \mid \mathbf{x}_{i}, c_{i} \sim \operatorname{Gamma}\left(m_{i t}, 1 / c_{i}\right)$, where $c_{i}>0$ is unobserved heterogeneity and $m_{i t}>0$; and (2) $\left(y_{i 1}, \ldots, y_{i T}\right)$ are independent conditional on $\left(\mathbf{x}_{i}, c_{i}\right)$. The gamma distribution is parameterized so that $\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i}, c_{i}\right)=c_{i} m_{i t}$ and $\operatorname{Var}\left(y_{i t} \mid \mathbf{x}_{i}, c_{i}\right)=c_{i}^{2} m_{i t}$.\\
+a. Let $s_{i}=y_{i 1}+\cdots+y_{i T}$. Show that the density of $\left(y_{i 1}, y_{i 2}, \ldots, y_{i T}\right)$ conditional on $\left(s_{i}, \mathbf{x}_{i}, c_{i}\right)$ is
+
+$$
+\begin{aligned}
+f\left(y_{1}, \ldots, y_{T} \mid s_{i}, \mathbf{x}_{i}, c_{i}\right)= & {\left[\Gamma\left(m_{i 1}+\cdots+m_{i T}\right) / \prod_{t=1}^{T} \Gamma\left(m_{i t}\right)\right] } \\
+& \times\left[\left(\prod_{t=1}^{T} y_{t}^{m_{i t}-1}\right) / s_{i}^{\left\{\left(m_{i 1}+\cdots+m_{i T}\right)-1\right\}}\right]
+\end{aligned}
+$$
+
+where $\Gamma(\cdot)$ is the gamma function. Note that the density does not depend on $c_{i}$. \{Hint: If $Y_{1}, \ldots, Y_{T}$ are independent random variables and $S=Y_{1}+\cdots+Y_{T}$, the joint density of $Y_{1}, \ldots, Y_{T}$ given $S=s$ is $f_{1}\left(y_{1}\right) \cdots f_{T-1}\left(y_{T-1}\right) f_{T}\left(s-y_{1}-\cdots-y_{T-1}\right) / g(s)$, where $g(s)$ is the density of $S$. When $Y_{t}$ has a $\operatorname{Gamma}\left(\alpha_{t}, \lambda\right)$ distribution for each $t$, so that $f_{t}\left(y_{t}\right)=\left[\lambda^{\alpha_{t}} / \Gamma\left(\alpha_{t}\right)\right] y_{t}^{\left(\alpha_{t}-1\right)} \exp \left(-\lambda y_{t}\right), S \sim \operatorname{Gamma}\left(\alpha_{1}+\cdots+\alpha_{T}, \lambda\right)$.\}\\
+b. Let $m_{t}\left(\mathbf{x}_{i}, \boldsymbol{\beta}\right)$ be a parametric function for $m_{i t}$-for example, $\exp \left(\mathbf{x}_{i t} \boldsymbol{\beta}\right)$. Write down the log-likelihood function for observation $i$. The conditional MLE in this case is called the fixed effects gamma estimator.\\
+18.13 Let $y$ be a continuous fractional response variable, that is, $y$ can take on any value in ( 0,1 ). For a $1 \times K$ vector of conditioning variables $\mathbf{x}$, where $x_{1}=1$, suppose that the conditional density of $y_{i}$ given $\mathbf{x}_{i}=\mathbf{x}$ is\\
+$f\left(y \mid \mathbf{x} ; \boldsymbol{\beta}_{o}\right)=\exp \left(\mathbf{x} \boldsymbol{\beta}_{o}\right) y^{\left[\exp \left(\mathbf{x} \boldsymbol{\beta}_{o}\right)-1\right]}, \quad 0<y<1$.
+
+It can be shown that, for this density, $\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}\right)=\exp \left(\mathbf{x}_{i} \boldsymbol{\beta}_{o}\right) /\left[1+\exp \left(\mathbf{x}_{i} \boldsymbol{\beta}_{o}\right)\right]$-that is, it is the logistic function evaluated at $\mathbf{x}_{i} \boldsymbol{\beta}_{o}$.\\
+a. For a random draw $i$ from the population, write down the log-likelihood function as a function of $\boldsymbol{\beta}$.\\
+b. Find the $K \times 1$ score vector, $\mathbf{s}_{i}(\boldsymbol{\beta})$.\\
+c. For this density, it can be shown that $\mathrm{E}\left[\log \left(y_{i}\right) \mid \mathbf{x}_{i}\right]=-1 / \exp \left(\mathbf{x}_{i} \boldsymbol{\beta}_{o}\right)$. Why does it makes sense for the conditional expectation to be negative?\\
+d. Verify that $\mathrm{E}\left[\mathbf{s}_{i}\left(\boldsymbol{\beta}_{o}\right) \mid \mathbf{x}_{i}\right]=0$.\\
+e. Find $-\mathrm{E}\left[\mathbf{H}_{i}\left(\boldsymbol{\beta}_{o}\right) \mid \mathbf{x}_{i}\right]$.\\
+f. How would you estimate Avar $\sqrt{N}\left(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}_{o}\right)$ ? Be very specific.\\
+g. Is the MLE consistent for $\boldsymbol{\beta}_{o}$ if we only assume the conditional mean is correctly specified, that is, $\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}\right)=\exp \left(\mathbf{x}_{i} \boldsymbol{\beta}_{o}\right) /\left[1+\exp \left(\mathbf{x}_{i} \boldsymbol{\beta}_{o}\right)\right]$ ? (Hint: Look at $\mathrm{E}\left[\mathbf{s}_{i}\left(\boldsymbol{\beta}_{o}\right) \mid \mathbf{x}_{i}\right]$.)\\
+h . If you are only interested in $\mathrm{E}\left(y_{i} \mid \mathbf{x}_{i}\right)$, what might you do instead of MLE?\\
+18.14. Use data in 401KPART. RAW for this question; it is similar to the data set used in Papke and Wooldridge (1996), except it includes the number of employees eligible to participate in the $401(\mathrm{k})$ pension plan.\\
+a. Let $y_{i}=$ partic $_{i}$ and $n_{i}=$ employ $_{i}$, and use binomial QMLE to estimate $\mathrm{E}\left(y_{i} \mid n_{i}, \mathbf{x}_{i}\right)=n_{i} \Lambda\left(\mathbf{x}_{i} \boldsymbol{\beta}\right)$, where $\Lambda(\cdot)$ is the logistic function and $\mathbf{x}$ includes a constant, mrate, ltotemp, age, agesq, and sole. Obtain three sets of standard errors: those based on (18.34) with $\sigma^{2}=1$ (which holds if the distribution is actually binomial), those from (18.34) with $\sigma^{2}$ estimated, and the fully robust standard errors. Comment on how they compare.\\
+b. Now use prate in a fractional logit analysis using the same vector $\mathbf{x}$ in part a. Again, compute three sets of standard errors and discuss how they compare.\\
+c. Explain why it makes sense to compare the coefficient estimates from parts a and\\
+b. Are their important differences in the coefficients, particularly for the key variable mrate? Which approach produces the more precise estimate?\\
+d. Compute the APE for mrate on $\mathrm{E}($ prate $\mid \mathbf{x})$ using the estimates from parts a and b.\\
+e. Using fractional logit, estimate the APE on $\mathrm{E}($ prate $\mid \mathbf{x})$ when mrate goes from .25 to . 50 .\\
+f. Add $m r a t e^{2}$ to the fractional logit estimation. Is there a strong case for including it? Explain.\\
+18.15. For $0<y_{i t}<1$ consider the model\\
+$\log \left[y_{i t} /\left(1-y_{i t}\right)\right]=\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}+u_{i t}$\\
+$\mathrm{E}\left(u_{i t} \mid \mathbf{x}_{i}, c_{i}\right)=0, \quad t=1, \ldots, T$.\\
+a. Assuming the $\left\{\mathbf{x}_{i t}: t=1, \ldots, T\right\}$ are time varying, how would you estimate $\boldsymbol{\beta}$ ?\\
+b. Let $v_{i t}=c_{i}+u_{i t}$ and write $y_{i t}$ in terms of $\mathbf{x}_{i t} \boldsymbol{\beta}+v_{i t}$. Find the average structural function for $y_{i t}$ (as a function of $\mathbf{x}_{t}$ ) as an expectation over the distribution of $v_{i t}$.\\
+c. Without further assumptions, can you consistently estimate the ASF? Explain.\\
+d. Assume that $c_{i}=\psi+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}$ where $r_{i t} \equiv a_{i}+u_{i t}$ is independent of $\mathbf{x}_{i}$. Explain how to consistently estimate the ASF in this case.
+
+\section*{19 Censored Data, Sample Selection, and Attrition}
+
+\end{document}

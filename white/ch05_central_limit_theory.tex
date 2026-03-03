@@ -1,0 +1,739 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{03C4}{\ifmmode\tau\else{$\tau$}\fi}
+\title{Chapter 5: Central Limit Theory}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+In this chapter we study different versions of the central limit theorem that provide conditions guaranteeing the asymptotic normality of $n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon}$ or $n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon$ required for the results of the previous chapter. As with laws of large numbers, different conditions will apply to different kinds of economic data. Central limit results are generally available for each of the situations considered in Chapter 3, and we shall pay particular attention to the parallels involved.
+
+The central limit theorems we consider are all of the following form.\\
+Proposition 5.0 Given restrictions on the moments, dependence, and heterogeneity of a scalar sequence $\left\{\mathcal{Z}_{t}\right\},\left(\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n}\right) /\left(\bar{\sigma}_{n} / \sqrt{n}\right)=\sqrt{n}\left(\overline{\mathcal{Z}}_{n}-\right. \left.\bar{\mu}_{n}\right) / \bar{\sigma}_{n} \stackrel{A}{\sim} N(0,1)$, where $\bar{\mu}_{n} \equiv E\left(\overline{\mathcal{Z}}_{n}\right)$ and $\bar{\sigma}_{n}^{2} / n \equiv \operatorname{var}\left(\overline{\mathcal{Z}}_{n}\right)$.
+
+In other words, under general conditions the sample average of a sequence has a limiting unit normal distribution when appropriately standardized. The results that follow specify precisely the restrictions that are sufficient to imply asymptotic normality. As with the laws of large numbers, there are natural trade-offs among these restrictions. Typically, greater dependence or heterogeneity is allowed at the expense of imposing more stringent moment requirements.
+
+Although the results of the preceding chapter imposed the asymptotic normality requirement on the joint distribution of vectors such as $n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon$ or $n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon$, it is actually only necessary to study central limit theory for sequences of scalars. This simplicity is a consequence of the following result.
+
+Proposition 5.1 (Cramér-Wold device) Let $\left\{\mathbf{b}_{n}\right\}$ be a sequence of random $k \times 1$ vectors and suppose that for any real $k \times 1$ vector $\boldsymbol{\lambda}$ such that $\boldsymbol{\lambda}^{\prime} \boldsymbol{\lambda}=1, \boldsymbol{\lambda}^{\prime} \mathbf{b}_{n} \stackrel{A}{\sim} \boldsymbol{\lambda}^{\prime} \mathcal{Z}$, where $\mathcal{Z}$ is a $k \times 1$ vector with joint distribution function $F$. Then the limiting distribution function of $\mathbf{b}_{n}$ exists and equals $F$.
+
+Proof. See Rao (1973, p. 123).\\
+We shall apply this result by showing that under general conditions,
+
+$$
+n^{-1 / 2} \sum_{t=1}^{n} \lambda^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t} \stackrel{A}{\sim} \lambda^{\prime} \mathcal{Z}
+$$
+
+or
+
+$$
+n^{-1 / 2} \sum_{t=1}^{n} \lambda^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \stackrel{A}{\sim} \lambda^{\prime} \mathcal{Z}
+$$
+
+where $\mathcal{Z} \sim N(\mathbf{0}, \mathbf{I})$, which, by Proposition 5.1, allows us to obtain the desired conclusion, i.e.,
+
+$$
+\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I}) \text { or } \mathbf{V}_{n}{ }^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})
+$$
+
+When used in this context below, the vector $\boldsymbol{\lambda}$ will always be understood to have unit norm, i.e., $\boldsymbol{\lambda}^{\prime} \boldsymbol{\lambda}=1$.
+
+\subsection*{5.1 Independent Identically Distributed Observations}
+As with laws of large numbers, the case of independent identically distributed observations is the simplest.
+
+Theorem 5.2 (Lindeberg-Lévy) Let $\left\{\mathcal{Z}_{t}\right\}$ be a sequence of i.i.d. random scalars, with $\mu \equiv E\left(\mathcal{Z}_{t}\right)$ and $\sigma^{2} \equiv \operatorname{var}\left(\mathcal{Z}_{t}\right)<\infty$. If $\sigma^{2} \neq 0$, then
+
+$$
+\begin{aligned}
+\sqrt{n}\left(\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n}\right) / \bar{\sigma}_{n} & =\sqrt{n}\left(\overline{\mathcal{Z}}_{n}-\mu\right) / \sigma \\
+& =n^{-1 / 2} \sum_{t=1}^{n}\left(\mathcal{Z}_{t}-\mu\right) / \sigma \stackrel{A}{\sim} N(0,1)
+\end{aligned}
+$$
+
+Proof. Let $f(\lambda)$ be the characteristic function of $\mathcal{Z}_{t}-\mu$ and let $f_{n}(\lambda)$ be the characteristic function of $\sqrt{n}\left(\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n}\right) / \bar{\sigma}_{n}=n^{-1 / 2} \sum_{t=1}^{n}\left(\mathcal{Z}_{t}-\mu\right) / \sigma$. From Propositions 4.13 and 4.14 we have
+
+$$
+f_{n}(\lambda)=f(\lambda /(\sigma \sqrt{n}))^{n}
+$$
+
+or
+
+$$
+\log f_{n}(\lambda)=n \log f(\lambda /(\sigma \sqrt{n}))
+$$
+
+Taking a Taylor expansion of $f(\lambda)$ around $\lambda=0$ gives $f(\lambda)=1-\sigma^{2} \lambda^{2} / 2+ o\left(\lambda^{2}\right)$ since $\sigma^{2}<\infty$, by Proposition 4.15. Hence
+
+$$
+\log f_{n}(\lambda)=n \log \left[1-\lambda^{2} /(2 n)+o\left(\lambda^{2} / n\right)\right] \rightarrow-\lambda^{2} / 2
+$$
+
+as $n \rightarrow \infty$. Hence $f_{n}(\lambda) \rightarrow \exp \left(-\lambda^{2} / 2\right)$. Since this is continuous at zero, it follows from the continuity theorem (Theorem 4.17), the uniqueness theorem (Theorem 4.11), and Example 4.10 (i) that $\sqrt{n}\left(\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n}\right) / \bar{\sigma}_{n} \stackrel{A}{\sim} N(0,1)$.
+
+Compared with the law of large numbers for i.i.d. observations, we impose a single additional requirement, i.e., that $\sigma^{2} \equiv \operatorname{var}\left(\mathcal{Z}_{t}\right)<\infty$. Note that this implies $E\left|\mathcal{Z}_{t}\right|<\infty$. (Why?) Also note that without loss of generality, we can set $E\left(\mathcal{Z}_{t}\right)=0$.
+
+We can apply Theorem 5.2 to give conditions that ensure that the conditions of Theorem 4.25 and Exercise 4.26 are satisfied.
+
+Theorem 5.3 Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is an i.i.d. sequence;\\
+(iii) (a) $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$;\\
+(b) $E\left|X_{t h i} \varepsilon_{t h}\right|^{2}<\infty, h=1, \ldots, p, i=l, \ldots, k$;\\
+(c) $\mathbf{V}_{\boldsymbol{n}} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\epsilon}\right)=\mathbf{V}$ is positive definite;\\
+(iv) (a) $E\left|X_{\text {thi }}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, k$;\\
+(b) $\mathbf{M} \equiv E\left(\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right)$ is positive definite.
+
+Then $\mathbf{D}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where $\mathbf{D} \equiv \mathbf{M}^{-1} \mathbf{V M}^{-1}$. Suppose in addition that\\
+(v) there exists $\hat{\mathbf{V}}_{n}$ symmetric and positive semidefinite such that $\hat{\mathbf{V}}_{n}$ $\mathbf{V} \xrightarrow{p} \mathbf{0}$.
+
+Then $\hat{\mathbf{D}}_{n}-\mathbf{D} \xrightarrow{\boldsymbol{p}} \mathbf{0}$, where $\hat{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \hat{\mathbf{V}}_{n}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$.\\
+Proof. We verify the conditions of Theorem 4.25. We apply Theorem 5.2 and set $\mathcal{Z}_{t}=\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}$. The summands $\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}$ are i.i.d. given (ii), with $E\left(\mathcal{Z}_{t}\right)=0$ given (iii.a), and $\operatorname{var}\left(\mathcal{Z}_{t}\right)=1$ given (iii.b) and (iii.c). Hence $n^{-1 / 2} \sum_{t=1}^{n} \mathcal{Z}_{t}=n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{X}_{t} \epsilon_{t} \stackrel{A}{\sim} N(0,1)$\\
+by the Lindeberg-Lévy Theorem 5.2. It follows from Proposition 5.1 that $\mathbf{V}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where $\mathbf{V}$ is $O(1)$ given (iii.b) and positive definite given (iii.c). It follows from Kolmogorov's strong law of large numbers, Theorem 3.1, and from Theorem 2.24 that $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M} \xrightarrow{p} \mathbf{0}$ given (ii) and (iv). Since the rest of the conditions of Theorem 4.25 are satisfied by assumption, the result follows. \(\square\)
+
+In many cases $\mathbf{V}$ may simplify. For example, it may be known that $E\left(\varepsilon_{t}^{2} \mid \mathbf{X}_{t}\right)=\sigma_{o}^{2}(p=1)$. If so,
+
+$$
+\begin{aligned}
+\mathbf{V} & \equiv E\left(\mathbf{X}_{t} \varepsilon_{t} \varepsilon_{t} \mathbf{X}_{t}^{\prime}\right)=E\left(\varepsilon_{t}^{2} \mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right)=E\left(E\left(\varepsilon_{t}^{2} \mathbf{X}_{t} \mathbf{X}_{t}^{\prime} \mid \mathbf{X}_{t}\right)\right) \\
+& =E\left(E\left(\varepsilon_{t}^{2} \mid \mathbf{X}_{t}\right) \mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right)=\sigma_{o}^{2} E\left(\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right)=\sigma_{o}^{2} \mathbf{M}
+\end{aligned}
+$$
+
+The obvious estimator for $\mathbf{V}$ is then $\hat{\mathbf{V}}_{n}=\hat{\sigma}_{n}^{2}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$, where $\hat{\sigma}_{n}^{2}$ is consistent for $\sigma_{o}^{2}$. A similar result holds for systems of equations in which it is known that $E\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathbf{X}_{t}\right)=\mathbf{I}$ (after suitable transformation of an underlying DGP). Then $\mathbf{V}=\mathbf{M}$ and a consistent estimator is $\hat{\mathbf{V}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$. Consistency results for more general cases are studied in the next chapter.
+
+In comparison with the consistency result for the OLS estimator, we have obtained the asymptotic normality result by imposing the additional second moment conditions of (iii.b) and (iii.c). Otherwise, the conditions are identical. A similar result holds for the IV estimator.
+
+Exercise 5.4 Prove the following result. Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is an i.i.d. sequence;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}$;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{\text {th }}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \boldsymbol{\varepsilon}\right)=\mathbf{V}$ is positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|<\infty, h=1, \ldots, p, i=1, \ldots, l$, and $j=1, \ldots, k$;\\
+(b) $\mathbf{Q} \equiv E\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ has full column rank;\\
+(c) $\hat{\mathbf{P}}_{n} \xrightarrow{p} \mathbf{P}$, finite, symmetric, and positive definite.
+
+Then $\mathbf{D}^{-1 / 2} \sqrt{n}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D} \equiv\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)^{-1} \mathbf{Q}^{\prime} \mathbf{P} \mathbf{V P Q}\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)^{-1}
+$$
+
+Suppose further that\\
+(v) there exists $\hat{\mathbf{V}}_{n}$ symmetric and positive semidefinite such that $\hat{\mathbf{V}}_{n}$ $\mathbf{V} \xrightarrow{p} \mathbf{0}$.
+
+Then $\hat{\mathbf{D}}_{n}-\mathbf{D} \xrightarrow{\boldsymbol{p}} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \hat{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+Exercise 5.5 If $p=1$ and $E\left(\varepsilon_{t}^{2} \mid \mathbf{Z}_{t}\right)=\sigma_{o}^{2}$, what is the efficient IV estimator? What is the natural estimator for $\mathbf{V}$ ? What additional conditions ensure that $\hat{\mathbf{P}}_{n}-\mathbf{P} \xrightarrow{p} \mathbf{0}$ and $\hat{\mathrm{V}}_{n}-\mathrm{V} \xrightarrow{p} \mathbf{0}$ ?
+
+These results apply to observations from a random sample. However, they do not apply to situations such as the standard regression model with fixed regressors, or to stratified cross sections, because in these situations the elements of the sum $n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t} \varepsilon_{t}$ are no longer identically distributed. For example, with $\mathbf{X}_{t}$ fixed and $E\left(\varepsilon_{t}^{2}\right)=\sigma_{o}^{2}, \operatorname{var}\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\sigma_{o}^{2} \mathbf{X}_{t} \mathbf{X}_{t}^{\prime}$, which depends on $\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}$ and hence differs from observation to observation. For these cases we need to relax the identical distribution assumption.
+
+\subsection*{5.2 Independent Heterogeneously Distributed Observations}
+Several different central limit theorems are available for the case in which our observations are not identically distributed. The most general result is in fact the centerpiece of all asymptotic distribution theory.
+
+Theorem 5.6 (Lindeberg-Feller) Let $\left\{\mathcal{Z}_{t}\right\}$ be a sequence of independent random scalars with $\mu_{t} \equiv E\left(\mathcal{Z}_{t}\right), \sigma_{t}^{2} \equiv \operatorname{var}\left(\mathcal{Z}_{t}\right)<\infty, \sigma_{t}^{2} \neq 0$ and distribution functions $F_{t}, t=1,2, \ldots$. Then
+
+$$
+\sqrt{n}\left(\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n}\right) / \bar{\sigma}_{n} \stackrel{A}{\sim} N(0,1)
+$$
+
+and
+
+$$
+\lim _{n \rightarrow \infty} \max _{1 \leq t \leq n} n^{-1}\left(\sigma_{t}^{2} / \bar{\sigma}_{n}^{2}\right)=0
+$$
+
+if and only if for every $\varepsilon>0$,
+
+$$
+\lim _{n \rightarrow \infty} \bar{\sigma}_{n}^{-2} n^{-1} \sum_{t=1}^{n} \int_{\left(z-\mu_{t}\right)^{2}>\varepsilon n \bar{\sigma}_{n}^{2}}\left(z-\mu_{t}\right)^{2} d F_{t}(z)=0
+$$
+
+Proof. See Loeve (1977, pp. 292-294).\\
+The last condition of this result is called the Lindeberg condition. It essentially requires the average contribution of the extreme tails to the\\
+variance of $\mathcal{Z}_{t}$ to be zero in the limit. When the Lindeberg condition holds, not only does asymptotic normality follow, but the uniform asymptotic negligibility condition $\max _{1 \leq t \leq n} n^{-1}\left(\sigma_{t}^{2} / \bar{\sigma}_{n}^{2}\right) \rightarrow 0$ as $n \rightarrow \infty$ also holds. This condition says that none of the $\mathcal{Z}_{t}$ has a variance so great that it dominates the variance of $\overline{\mathcal{Z}}_{n}$. Further, the case $\sigma_{t}^{2}=0$ for all $t$ is ruled out by the Lindeberg condition. Thus $\max _{1 \leq t \leq n} \sigma_{t}^{2}>0$, which by the Lindeberg conditions implies that $n \bar{\sigma}_{n}^{2} \rightarrow \infty$, so $n \bar{\sigma}_{n}^{2}=\sum_{t=1}^{n} \sigma_{t}^{2}$ is prevented from converging to some finite value. Together, asymptotic normality and uniform asymptotic negligibility imply the Lindeberg condition.
+
+Example 5.7 Let $\sigma_{t}^{2}=\rho^{t}, 0<\rho<1$. Then $n \bar{\sigma}_{n}^{2}=\sum_{t=1}^{n} \rho^{t} \rightarrow \rho /(1-\rho)$ as $n \rightarrow \infty$, and
+
+$$
+\max _{1 \leq t \leq n} n^{-1}\left(\sigma_{t}^{2} / \bar{\sigma}_{n}^{2}\right)=\rho /[\rho /(1-\rho)]=1-\rho \neq 0
+$$
+
+Hence $\left\{\mathcal{Z}_{t}\right\}$ is not uniformly asymptotically negligible. It follows that the Lindeberg condition is not satisfied, so asymptotic normality may or may not hold for such a sequence.
+
+Example 5.8 Let $\left\{\mathcal{Z}_{t}\right\}$ be i.i.d. with $\sigma^{2} \equiv \operatorname{var}\left(\mathcal{Z}_{t}\right)<\infty$. By Theorem 5.2, $\sqrt{n}\left(\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n}\right) / \bar{\sigma}_{n} \stackrel{A}{\sim} N(0,1)$. Further, $\bar{\sigma}_{n}^{2}=\sigma^{2}$, so
+
+$$
+\max _{1 \leq t \leq n} n^{-1}\left(\sigma_{t}^{2} / \bar{\sigma}_{n}^{2}\right)=n^{-1}\left(\sigma^{2} / \sigma^{2}\right) \rightarrow 0
+$$
+
+It follows that the Lindeberg condition is satisfied.\\
+Exercise 5.9 Give a direct demonstration that the Lindeberg condition is satis fied for identically distributed $\left\{\mathcal{Z}_{t}\right\}$ with $\sigma^{2} \equiv \operatorname{var}\left(\mathcal{Z}_{t}\right)<\infty$, so that Theorem 5.2 follows as a corollary to Theorem 5.6. Hint: apply the Monotone Convergence Theorem (Rao, 1973, p. 135).
+
+In general, the Lindeberg condition can be somewhat difficult to verify, so it is convenient to have a simpler condition that implies the Lindeberg condition. This is provided by the following result.
+
+Theorem 5.10 (Liapounov ${ }^{1}$ ) Let $\left\{\mathcal{Z}_{t}\right\}$ be a sequence of independent random scalars with $\mu_{t} \equiv E\left(\mathcal{Z}_{t}\right), \sigma_{t}^{2} \equiv \operatorname{var}\left(\mathcal{Z}_{t}\right)$, and $E\left|\mathcal{Z}_{t}-\mu_{t}\right|^{2+\delta}<\Delta<\infty$ for some $\delta>0$ and all $t$. If $\bar{\sigma}_{n}^{2}>\delta^{\prime}>0$ for all $n$ sufficiently large, then $\sqrt{n}\left(\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n}\right) / \bar{\sigma}_{n} \stackrel{A}{\sim} N(0,1)$.
+
+\footnotetext{${ }^{1}$ As stated, this result is actually a corollary to Liapounov's original theorem. See Loeve (1977, p. 287).
+}Proof. We verify that the Lindeberg condition is satisfied. Define $A=\{z$ : $\left.\left(z-\mu_{t}\right)^{2}>\varepsilon n \bar{\sigma}_{n}^{2}\right\}$; then
+
+$$
+\int_{A}\left(z-\mu_{t}\right)^{2} d F_{t}(z)=\int_{A}\left|z-\mu_{t}\right|^{\delta}\left|z-\mu_{t}\right|^{-\delta}\left(z-\mu_{t}\right)^{2} d F_{t}(z)
+$$
+
+Whenever $\left(z-\mu_{t}\right)^{2}>\varepsilon n \bar{\sigma}_{n}^{2}$, it follows that $\left|z-\mu_{t}\right|^{-\delta}<\left(\varepsilon n \bar{\sigma}_{n}^{2}\right)^{-\delta / 2}$, so
+
+$$
+\begin{aligned}
+\int_{A}\left(z-\mu_{t}\right)^{2} d F_{t}(z) & <\left(\varepsilon n \bar{\sigma}_{n}^{2}\right)^{-\delta / 2} \int_{A}\left|z-\mu_{t}\right|^{2+\delta} d F_{t}(z) \\
+& \leq\left(\varepsilon n \bar{\sigma}_{n}^{2}\right)^{-\delta / 2} E\left|\mathcal{Z}_{t}-\mu_{t}\right|^{2+\delta} \\
+& <\left(\varepsilon n \bar{\sigma}_{n}^{2}\right)^{-\delta / 2} \Delta
+\end{aligned}
+$$
+
+Hence for any $\varepsilon>0$,
+
+$$
+\bar{\sigma}_{n}^{-2} n^{-1} \sum_{t=1}^{n} \int_{A}\left(z-\mu_{t}\right)^{2} d F_{t}(z)<\bar{\sigma}_{n}^{-2}\left(\varepsilon n \bar{\sigma}_{n}^{2}\right)^{-\delta / 2} \Delta=n^{-\delta / 2} \bar{\sigma}_{n}^{-2-\delta} \varepsilon^{-\delta / 2} \Delta
+$$
+
+Since $\bar{\sigma}_{n}^{2}>\delta^{\prime}, \bar{\sigma}_{n}^{-2-\delta}<\left(\delta^{\prime}\right)^{-1-\delta / 2}$ for all $n$ sufficiently large. It follows that
+
+$$
+\bar{\sigma}_{n}^{-2} n^{-1} \sum_{t=1}^{n} \int_{A}\left(z-\mu_{t}\right)^{2} d F_{t}(z)<n^{-\delta / 2}\left(\delta^{\prime}\right)^{-1-\delta / 2} \varepsilon^{-\delta / 2} \Delta \rightarrow 0 \quad \text { as } n \rightarrow \infty
+$$
+
+This result allows us to substitute the requirement that some moment of order slightly greater than two is uniformly bounded in place of the more complicated Lindeberg condition. Note that $E\left|\mathcal{Z}_{t}\right|^{2+\delta}<\Delta$ also implies that $E\left|\mathcal{Z}_{t}-\mu_{t}\right|^{2+\delta}$ is uniformly bounded. Note also the analogy with Corollary 3.9. There we obtained a law of large numbers for independent random variables by imposing a uniform bound on $E\left|\mathcal{Z}_{t}\right|^{1+\delta}$. Now we can obtain a central limit theorem imposing a uniform bound on $E\left|\mathcal{Z}_{t}\right|^{2+\delta}$.
+
+We seek an asymptotic normality result analogous to Theorem 5.3 for independent heterogeneous random variables. If we apply Theorem 5.10 instead of Theorem 5.2, we run into a small difficulty. Recall that we applied the Cramér-Wold device to the sums $n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}$, where $\mathbf{V}= \operatorname{var}\left(n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon}\right)$. In the present case the random variables $\mathbf{X}_{t} \boldsymbol{\varepsilon}_{t}$ are no longer identically distributed, and there is now no reason to suppose that $\mathbf{V}_{n}$ is a constant or has a constant limit, in general. By analogy, we would like to apply the Cramér-Wold device to $n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{X}_{t} \boldsymbol{\varepsilon}_{t}$. But the summands $\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}$ now depend explicitly on $n$, a possibility not covered by Theorem 5.10. Nevertheless, the needed generalization is readily available.
+
+Theorem 5.11 Let $\left\{\mathcal{Z}_{n t}\right\}$ be a sequence of independent random scalars with $\mu_{n t} \equiv E\left(\mathcal{Z}_{n t}\right), \sigma_{n t}^{2} \equiv \operatorname{var}\left(\mathcal{Z}_{n t}\right)$, and $E\left|\mathcal{Z}_{n t}\right|^{2+\delta}<\Delta<\infty$ for some $\delta>0$ and all $n$ and $t$. Define $\overline{\mathcal{Z}}_{n} \equiv n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{n t}, \bar{\mu}_{n} \equiv n^{-1} \sum_{t=1}^{n} \mu_{n t}$ and $\bar{\sigma}_{n}^{2} \equiv \operatorname{var}\left(\sqrt{n} \overline{\mathcal{Z}}_{n}\right)=n^{-1} \sum_{t=1}^{n} \sigma_{n t}^{2}$. If $\bar{\sigma}_{n}^{2}>\delta^{\prime}>0$ for all $n$ sufficiently large, then $\sqrt{n}\left(\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n}\right) / \bar{\sigma}_{n} \stackrel{A}{\sim} N(0,1)$.
+
+Proof. See Loeve (1977, pp. 287-290). \(\square\)
+
+Exercise 5.12 Prove the following result. Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\left(\mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is an independent sequence;\\
+(iii) (a) $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}, \quad t=1,2, \ldots$;\\
+(b) $E\left|X_{\text {thi }} \varepsilon_{\text {th }}\right|^{2+\delta}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, k$, and $t$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon}\right)$ is uniformly positive definite;\\
+(iv) (a) $E\left|X_{\text {thi }}^{2}\right|^{1+\delta}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, k$, and $t$;\\
+(b) $\mathbf{M}_{n} \equiv E\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ is uniformly positive definite.
+
+Then $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where $\mathbf{D}_{n} \equiv \mathbf{M}_{n}^{-1} \mathbf{V}_{n} \mathbf{M}_{n}^{-1}$. Suppose in addition that\\
+(v) there exists $\hat{\mathbf{V}}_{n}$ symmetric and positive semidefinite such that $\hat{\mathbf{V}}_{n}$ $\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$.
+
+Then $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where $\hat{\mathbf{D}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \hat{\mathbf{V}}_{n}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$.\\
+Note the general applicability of this result. We can let $\mathbf{X}_{t}$ be fixed or stochastic (although independence is required), and the errors may be homoskedastic or heteroskedastic. A similarly general result holds for instrumental variables estimators.
+
+Theorem 5.13 Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is an independent sequence;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}, \quad t=1,2, \ldots$;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{t h}\right|^{2+\delta}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, l$, and $t$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \boldsymbol{\varepsilon}\right)$ is uniformly positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{1+\delta}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, l, j=1, \ldots, k$, and $t$;\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has uniformly full column rank;\\
+(c) $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{p} \mathbf{0}$, where $\mathbf{P}_{n}=O(1)$ and is symmetric and uniformly positive definite.
+
+Then $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D}_{n} \equiv\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{V}_{n} \mathbf{P}_{n} \mathbf{Q}_{n}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+Suppose in addition that\\
+(v) there exists $\hat{\mathbf{V}}_{n}$ symmetric and positive semidefinite such that $\hat{\mathbf{V}}_{n}$ $\mathbf{V}_{\boldsymbol{n}} \xrightarrow{p} \mathbf{0}$.\\
+Then $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\mathbf{D}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \hat{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+Proof. We verify the conditions of Exercise 4.26. To apply Theorem 5.11, let $\mathcal{Z}_{n t} \equiv \boldsymbol{\lambda}^{\prime} \boldsymbol{V}_{n}^{-1 / 2} \boldsymbol{Z}_{t} \varepsilon_{t}$ and consider $n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \boldsymbol{V}_{n}^{-1 / 2} \boldsymbol{Z}_{t} \varepsilon_{t}$. The summands $\mathcal{Z}_{n t}$ are independent given (ii) with $E\left(\mathcal{Z}_{n t}\right)=0$ given (iii.a), $\bar{\sigma}_{n}^{2}=1$ given (iii.c), and $E\left|\mathcal{Z}_{n t}\right|^{2+\delta}$ uniformly bounded (apply Minkowski's inequality) given (iii.b). Hence
+
+$$
+n^{-1 / 2} \sum_{t=1}^{n} \mathcal{Z}_{n t}=n^{-1 / 2} \sum_{t=1}^{n} \lambda^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \stackrel{A}{\sim} N(0,1)
+$$
+
+by Theorem 5.11 and $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$ by the Cramér-Wold device, Proposition 5.1.
+
+Assumptions (ii), (iv.a), and (iv.b) ensure that $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ by Corollary 3.9 and Theorem 2.24. Since the remaining conditions of Exercise 4.26 are satisfied by assumption, the result follows.
+
+Note the close similarity of the present result to that of Exercise 5.4. We have dropped the identical distribution assumption made there at the expense of imposing just slightly more in the way of moment requirements in (iii.b) and (iv.a). Otherwise, the conditions are identical. This relatively minor trade-off has greatly increased the applicability of the results. Not only do the present results apply to situations with fixed regressors and either homoskedastic or heteroskedastic disturbances, but they also apply to cross-sectional data with either homoskedastic or heteroskedastic disturbances. Further, by setting $1<p<\infty$, the present results apply to\\
+panel data (i.e., time-series cross-sectional data) when $p$ observations are available for each individual.
+
+As previously discussed, the independence assumption is not generally appropriate in time-series applications, so we now turn to central limit results applicable to time-series data.
+
+\subsection*{5.3 Dependent Identically Distributed Observations}
+In the last two sections we saw that obtaining central limit theorems for independent processes typically required strengthening the moment restrictions beyond what was sufficient for obtaining laws of large numbers. In the case of stationary ergodic processes, not only will we strengthen the moment requirements, but we will also impose stronger conditions on the memory of the process.
+
+To motivate the memory conditions that we add, consider a random scalar $\mathcal{Z}_{t}$, and let $\mathcal{F}_{t}$ be a $\sigma$-algebra such that $\left\{\mathcal{Z}_{t}, \mathcal{F}_{t}\right\}$ is an adapted stochastic sequence ( $\mathcal{Z}_{t}$ is measurable with respect to $\mathcal{F}_{t}$ and $\mathcal{F}_{t-1} \subset \mathcal{F}_{t} \subset \mathcal{F}_{\text {.) We can think of }} \mathcal{F}_{t}$ as being the $\sigma$-algebra generated by the entire current and past history of $\mathcal{Z}_{t}$ or, more generally, as the $\sigma$-algebra generated by the entire current and past history of $\mathcal{Z}_{t}$ as well as other random variables, say $\mathcal{Y}_{t}$. Given $E\left|\mathcal{Z}_{t}\right|<\infty$, we can write
+
+$$
+\mathcal{Z}_{t}=\mathcal{Z}_{t}-E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-1}\right)+E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-1}\right) .
+$$
+
+Similarly,
+
+$$
+\mathcal{Z}_{t}=\mathcal{Z}_{t}-E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-1}\right)+E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-1}\right)-E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-2}\right)+E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-2}\right) .
+$$
+
+Proceeding in this way we can write
+
+$$
+\mathcal{Z}_{t}=\sum_{j=0}^{m-1} \mathcal{R}_{t j}+E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right), m=1,2, \ldots,
+$$
+
+where $\mathcal{R}_{t j}$ is the revision made in forecasting $\mathcal{Z}_{t}$ when information becomes available at time $t-j$ :
+
+$$
+\mathcal{R}_{t j} \equiv E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-j}\right)-E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-j-1}\right) .
+$$
+
+Note that for fixed $j,\left\{\mathcal{R}_{t j}, \mathcal{F}_{t-j}\right\}$ is a martingale difference sequence, because it is an adapted stochastic sequence and
+
+$$
+\begin{aligned}
+E\left(\mathcal{R}_{t j} \mid \mathcal{F}_{t-j-1}\right) & =E\left[E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-j}\right)-E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-j-1}\right) \mid \mathcal{F}_{t-j-1}\right] \\
+& =E\left[E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-j}\right) \mid \mathcal{F}_{t-j-1}\right]-E\left[E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-j-1}\right) \mid \mathcal{F}_{t-j-1}\right] \\
+& =E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-j-1}\right)-E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-j-1}\right)=0
+\end{aligned}
+$$
+
+where we have applied the linearity property and the law of iterated expectations, Proposition 3.71.
+
+Thus we have written $\mathcal{Z}_{t}$ as a sum of martingale differences plus a remainder. The validity of the central limit theorem we discuss rests on the ability to write
+
+$$
+\mathcal{Z}_{t}=\sum_{j=0}^{\infty} \mathcal{R}_{t j} .
+$$
+
+In this form, $\mathcal{Z}_{t}$ is expressed as a "telescoping sum," because adjacent elements of $\mathcal{R}_{t j}$ cancel out. Among other things, the validity of this expression requires that $E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right)$ tend appropriately to zero as $m \rightarrow \infty$. Remember that $E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right)$ is a random variable, so the convergence to zero must be stochastic. In fact, the condition we impose will imply that
+
+$$
+E\left(\left[E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right)\right]^{2}\right) \rightarrow 0 \text { as } m \rightarrow \infty,
+$$
+
+which can be stated in terms of convergence in quadratic mean as defined in Chapter 2, i.e.,
+
+$$
+E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right) \xrightarrow{q . m .} 0 \text { as } m \rightarrow \infty .
+$$
+
+One way of interpreting this condition is that as we forecast $\mathcal{Z}_{t}$ based only on the information available at more and more distant points in the past, our forecast approaches zero (in a mean squared error sense). Further, this condition actually implies that $E\left(\mathcal{Z}_{t}\right)=0$ as we prove next, so that as our forecast becomes based on less and less information, it approaches the forecast we would make with no information, i.e., the unconditional expectation $E\left(\mathcal{Z}_{t}\right)$.
+
+Lemma 5.14 Let $\left\{\mathcal{Z}_{t}, \mathcal{F}_{t}\right\}$ be an adapted stochastic sequence such that $E\left(\mathcal{Z}_{t}^{2}\right)<\infty, t=1,2 \ldots$, and suppose $E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right) \xrightarrow{\text { q.m. }} 0$ as $m \rightarrow \infty$. Then $E\left(\mathcal{Z}_{t}\right)=0$.
+
+Proof. By Theorem $2.40 E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right) \xrightarrow{\text { q.m. }} 0$ as $m \rightarrow \infty$ implies that $E\left(\left|E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right)\right|\right) \xrightarrow{q . m .} 0$ as $m \rightarrow \infty$. Hence, for every $\varepsilon>0$ there exists\\
+$M(\varepsilon)$ such that $0<E\left(\left|E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right)\right|\right)<\varepsilon$ for all $m>M(\varepsilon)$. By Jensen's inequality, $\left|E\left[E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right)\right]\right|<E\left(\left|E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right)\right|\right)$, so $0 \leq\left|E\left[E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right)\right]\right|< \varepsilon$ for all $m>M(\varepsilon)$. But by the law of iterated expectations, $E\left(\mathcal{Z}_{t}\right)= E\left[E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right)\right]$, so $0<\left|E\left(\mathcal{Z}_{t}\right)\right|<\varepsilon$. Since $\varepsilon$ is arbitrary, it follows that $E\left(\mathcal{Z}_{t}\right)=0$.
+
+In establishing the central limit result, it is necessary to have $\bar{\sigma}_{n}^{2}= \operatorname{var}\left(\sqrt{n} \overline{\mathcal{Z}}_{n}\right)$ finite. However, for this it does not suffice simply to have $\sigma^{2}= \operatorname{var}\left(\mathcal{Z}_{t}\right)$ finite. Inspecting $\bar{\sigma}_{n}^{2}$, we see that
+
+$$
+\begin{aligned}
+\bar{\sigma}_{n}^{2} & =n \operatorname{var}\left(\overline{\mathcal{Z}}_{n}\right) \\
+& =n E\left(\left(n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{t}\right)^{2}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E\left(\mathcal{Z}_{t}^{2}\right)+2 n^{-1} \sum_{\tau=1}^{n-1} \sum_{t=\tau+1}^{n} E\left(\mathcal{Z}_{t} \mathcal{Z}_{t-\tau}\right)
+\end{aligned}
+$$
+
+When $\mathcal{Z}_{t}$ is stationary, $\rho_{\tau} \equiv E\left(\mathcal{Z}_{t} \mathcal{Z}_{t-\tau}\right) / \sigma^{2}$ does not depend on $t$. Hence,
+
+$$
+\begin{aligned}
+\bar{\sigma}_{n}^{2} & =\sigma^{2}+2 \sigma^{2} n^{-1} \sum_{\tau=1}^{n-1}(n-\tau) \rho_{\tau} \\
+& =\sigma^{2}+2 \sigma^{2} \sum_{\tau=1}^{n-1} \rho_{\tau}(1-\tau / n)
+\end{aligned}
+$$
+
+This last term contains a growing number of terms as $n \rightarrow \infty$, and without further conditions is not guaranteed to converge. It turns out that the condition
+
+$$
+\sum_{m=0}^{\infty}\left(E\left[E\left(\mathcal{Z}_{0} \mid \mathcal{F}_{-m}\right)^{2}\right]\right)^{1 / 2}<\infty
+$$
+
+is sufficient to ensure that $\rho_{\tau}$ declines fast enough that $\bar{\sigma}_{n}^{2}$ converges to a finite limit, say, $\bar{\sigma}^{2}$, as $n \rightarrow \infty$ and that this, together with stationarity and ergodicity, provides enough structure to obtain a central limit result.
+
+In order to give a convenient statement of an ergodic central limit theorem, we introduce the notion of an adapted mixingale process.
+
+Definition 5.15 Let $\left\{\mathcal{Z}_{t}, \mathcal{F}_{t}\right\}$ be an adapted stochastic sequence with $E\left(\mathcal{Z}_{t}^{2}\right) <\infty$. Then $\left\{\mathcal{Z}_{t}, \mathcal{F}_{t}\right\}$ is an adapted mixingale if there exist finite nonnegative sequences $\left\{c_{t}\right\}$ and $\left\{\gamma_{m}\right\}$ such that $\gamma_{m} \rightarrow 0$ as $m \rightarrow \infty$ and
+
+$$
+\left(E\left(E\left(\mathcal{Z}_{t} \mid \mathcal{F}_{t-m}\right)^{2}\right)\right)^{1 / 2} \leq c_{t} \gamma_{m}
+$$
+
+We say $\gamma_{m}$ is of size $-a$ if $\gamma_{m}=O\left(m^{-a-\varepsilon}\right)$ for some $\varepsilon>0$.\\
+The notion of a mixingale is due to McLeish (1974). Note that in this definition $\left\{\mathcal{Z}_{t}\right\}$ need not be stationary or ergodic, but may be heterogeneous. In the mixingale definition of McLeish, $\mathcal{F}_{t}$ need not be adapted to $\mathcal{Z}_{t}$. Nevertheless, we impose this because it simplifies matters nicely and is sufficient for all our applications. As the name is intended to suggest, mixingale processes have attributes of both mixing processes and martingale difference processes. They can be thought of as processes that behave "asymptotically" like martingale difference processes, analogous to mixing processes, which behave "asymptotically" like independent processes.
+
+Theorem 5.16 (Scott) Let $\left\{\mathcal{Z}_{t}, \mathcal{F}_{t}\right\}$ be a stationary ergodic adapted mixingale with $\gamma_{m}$ of size -1 . Then $\bar{\sigma}_{n}^{2} \equiv \operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathcal{Z}_{t}\right) \rightarrow \bar{\sigma}^{2}<\infty$ as $n \rightarrow \infty$ and if $\bar{\sigma}^{2}>0$, then $n^{-1 / 2} \overline{\mathcal{Z}}_{n} / \bar{\sigma} \stackrel{A}{\sim} N(0,1)$.
+
+Proof. Under the conditions given, the result follows from Theorem 3 of Scott (1973), provided that
+
+$$
+\sum_{m=1}^{\infty}\left\{\left(E\left[E\left(\mathcal{Z}_{0} \mid \mathcal{F}_{-m}\right)^{2}\right]\right)^{1 / 2}+\left(E\left[\mathcal{Z}_{0}-E\left(\mathcal{Z}_{0} \mid \mathcal{F}_{m}\right)\right]^{2}\right)^{1 / 2}\right\}<\infty .
+$$
+
+Because $\mathcal{Z}_{0}$ is $\mathcal{F}_{m}$-measurable for each $m>1, E\left(\mathcal{Z}_{0} \mid \mathcal{F}_{m}\right)=\mathcal{Z}_{0}$ and the second term in the summation vanishes. It suffices then that
+
+$$
+\sum_{m=1}^{\infty}\left(E\left[E\left(\mathcal{Z}_{0} \mid \mathcal{F}_{-m}\right)^{2}\right]\right)^{1 / 2}<\infty
+$$
+
+Applying the mixingale and stationarity conditions we have
+
+$$
+\begin{aligned}
+\sum_{m=1}^{\infty}\left(E\left[E\left(\mathcal{Z}_{0} \mid \mathcal{F}_{-m}\right)^{2}\right]\right)^{1 / 2} & \leq c_{0} \sum_{m=1}^{\infty} \gamma_{m} \\
+& \leq c_{0} \Delta \sum_{m=1}^{\infty} m^{-(1+\varepsilon)} \\
+& <\infty
+\end{aligned}
+$$
+
+with $\Delta<\infty$, as $\gamma_{m}$ is of size -1 .\\
+A related but more general result is given by Heyde (1975), where the interested reader can find further details of the underlying mathematics.
+
+Applying Theorem 5.16 and Proposition 5.1 we obtain the following result for the OLS estimator.
+
+Theorem 5.17 Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{X}_{\boldsymbol{t}}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is a stationary ergodic sequence;\\
+(iii) (a) $\left\{X_{\text {thi }} \varepsilon_{t h}, \mathcal{F}_{t}\right\}$ is an adapted mixingale of size $-1, h=1, \ldots, p$, $i=1, \ldots, k ;$\\
+(b) $E\left|X_{\text {thi }} \varepsilon_{t h}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, k$;\\
+(c) $\mathbf{V}_{\boldsymbol{n}} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon}\right)$ is uniformly positive definite;\\
+(iv) (a) $E\left|X_{\text {thi }}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, k$;\\
+(b) $\mathbf{M} \equiv E\left(\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right)$ is positive definite;
+
+Then $\mathbf{V}_{\boldsymbol{n}} \rightarrow \mathbf{V}$ finite and positive definite as $n \rightarrow \infty$, and $\mathbf{D}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{\boldsymbol{n}}-\right. \left.\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where $\mathbf{D}=\mathbf{M}^{-1} \mathbf{V} \mathbf{M}^{-1}$.
+
+Suppose in addition that\\
+(v) there exists $\hat{\mathbf{V}}_{n}$ symmetric and positive semidefinite such that $\hat{\mathbf{V}}_{n}$ $\mathbf{V}_{\boldsymbol{n}} \xrightarrow{p} \mathbf{0}$.
+
+Then $\hat{\mathbf{D}}_{\boldsymbol{n}}-\mathbf{D} \xrightarrow{p} \mathbf{0}$, where $\hat{\mathbf{D}}_{\boldsymbol{n}}=\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \hat{\mathbf{V}}_{\boldsymbol{n}}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$.\\
+Proof. We verify the conditions of Theorem 4.25. First we apply Theorem 5.16 and Proposition 5.1 to show that $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$. Consider $n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}$, where $\mathbf{V}$ is any finite positive definite matrix. By Theorem 3.35, $\left\{\mathcal{Z}_{t} \equiv \boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}\right\}$ is a stationary ergodic sequence given ( $i i$ ), and $\left\{\mathcal{Z}_{t}, \mathcal{F}_{t}\right\}$ is an adapted stochastic sequence because $\mathcal{Z}_{t}$ is measurable with respect to $\mathcal{F}_{t}$ by Proposition 3.23, and $\mathcal{F}_{t-1} \subset \mathcal{F}_{t} \subset \mathcal{F}$. To see that $E\left(\mathcal{Z}_{t}^{2}\right)<\infty$, note that we can write
+
+$$
+\begin{aligned}
+\mathcal{Z}_{t} & =\lambda^{\prime} \mathbf{V}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t} \\
+& =\sum_{h=1}^{p} \lambda^{\prime} \mathbf{V}^{-1 / 2} \mathbf{X}_{t h} \varepsilon_{t h} \\
+& =\sum_{h=1}^{p} \sum_{i=1}^{k} \tilde{\lambda}_{i} X_{t h i} \varepsilon_{t h}
+\end{aligned}
+$$
+
+where $\tilde{\lambda}_{i}$ is the $i$ th element of the $k \times 1$ vector $\tilde{\boldsymbol{\lambda}} \equiv \mathbf{V}^{-1 / 2} \boldsymbol{\lambda}$. By definition of $\boldsymbol{\lambda}$ and $\mathbf{V}$, there exists $\Delta<\infty$ such that $\left|\tilde{\lambda}_{i}\right|<\Delta$ for all $i$. It follows from
+
+Minkowski's inequality that
+
+$$
+\begin{aligned}
+E\left(\mathcal{Z}_{t}^{2}\right) & \leq\left[\sum_{h=1}^{p} \sum_{i=1}^{k}\left(E\left|\tilde{\lambda}_{i} X_{t h i} \varepsilon_{t h}\right|^{2}\right)^{1 / 2}\right]^{2} \\
+& \leq\left[\Delta \sum_{h=1}^{p} \sum_{i=1}^{k}\left(E\left|X_{t h i} \varepsilon_{t h}\right|^{2}\right)^{1 / 2}\right]^{2} \\
+& \leq\left[\Delta p k \Delta^{1 / 2}\right]^{2}<\infty,
+\end{aligned}
+$$
+
+since for $\Delta$ sufficiently large, $E\left|X_{\text {thi }} \varepsilon_{t h}\right|^{2}<\Delta<\infty$ given (iii.b) and the stationarity assumption. Next, we show $\left\{\mathcal{Z}_{t}, \mathcal{F}_{t}\right\}$ is a mixingale of size -1 . Using the expression for $\mathcal{Z}_{t}$ just given, we can write
+
+$$
+\begin{aligned}
+E\left(\left[E\left(\mathcal{Z}_{0} \mid \mathcal{F}_{-m}\right)\right]^{2}\right) & =E\left(\left[E\left(\sum_{h=1}^{p} \sum_{i=1}^{k} \tilde{\lambda}_{i} X_{0 h i} \varepsilon_{0 h} \mid \mathcal{F}_{-m}\right)\right]^{2}\right) \\
+& =E\left(\left[\sum_{h=1}^{p} \sum_{i=1}^{k} E\left(\tilde{\lambda}_{i} X_{0 h i} \varepsilon_{0 h} \mid \mathcal{F}_{-m}\right)\right]^{2}\right)
+\end{aligned}
+$$
+
+Applying Minkowski's inequality it follows that
+
+$$
+\begin{aligned}
+E\left(\left[E\left(\mathcal{Z}_{0} \mid \mathcal{F}_{-m}\right)\right]^{2}\right) & \leq\left[\sum_{h=1}^{p} \sum_{i=1}^{k}\left(E\left[E\left(\tilde{\lambda}_{i} X_{0 h i} \varepsilon_{0 h} \mid \mathcal{F}_{-m}\right)^{2}\right]\right)^{1 / 2}\right]^{2} \\
+& \leq\left[\Delta \sum_{h=1}^{p} \sum_{i=1}^{k}\left(E\left[E\left(X_{0 h i} \varepsilon_{0 h} \mid \mathcal{F}_{-m}\right)^{2}\right]\right)^{1 / 2}\right]^{2} \\
+& \leq\left[\Delta \sum_{h=1}^{p} \sum_{i=1}^{k} c_{0 h i} \gamma_{m h i}\right]^{2} \\
+& \leq\left[\Delta p k \bar{c}_{0} \bar{\gamma}_{m}\right]^{2}
+\end{aligned}
+$$
+
+where $\bar{c}_{0}=\max _{h, i} c_{0 h i}<\infty$ and $\bar{\gamma}_{m}=\max _{h, i} \gamma_{m h i}$ is of size -1 . Thus, $\left\{\mathcal{Z}_{t}, \mathcal{F}_{t}\right\}$ is a mixingale of size -1 as required.
+
+By Theorem 5.16, it follows that
+
+$$
+\begin{aligned}
+\operatorname{var}\left(\sqrt{n} \overline{\mathcal{Z}}_{n}\right) & =\operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t}\right) \\
+& =\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{V}_{n} \mathbf{V}^{-1 / 2} \boldsymbol{\lambda} \rightarrow \bar{\sigma}^{2}<\infty
+\end{aligned}
+$$
+
+Hence $\mathbf{V}_{\boldsymbol{n}}$ converges to a finite matrix. Now set $\mathbf{V}=\lim _{n \rightarrow+\infty} \mathbf{V}_{\boldsymbol{n}}$, which is positive definite given (iii.c). Then $\bar{\sigma}^{2}=\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{V} \mathbf{V}^{-1 / 2} \boldsymbol{\lambda}=1$. It then follows from Theorem 5.16 that $n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{X}_{t} \varepsilon_{t} \stackrel{A}{\sim} N(0,1)$. Since this holds for every $\boldsymbol{\lambda}$ such that $\boldsymbol{\lambda}^{\prime} \boldsymbol{\lambda}=1$, it follows from Proposition 5.1 that $\mathbf{V}^{-1 / 2} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t} \varepsilon_{t} \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$. Now
+
+$$
+\begin{aligned}
+& \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t} \varepsilon_{t}-\mathbf{V}^{-1 / 2} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t} \varepsilon_{t} \\
+= & \left(\mathbf{V}_{n}^{-1 / 2} \mathbf{V}^{1 / 2}-\mathbf{I}\right) \mathbf{V}^{-1 / 2} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t} \varepsilon_{t} \xrightarrow{p} \mathbf{0}
+\end{aligned}
+$$
+
+since $\mathbf{V}_{n}^{-1 / 2} \mathbf{V}^{1 / 2}-\mathbf{I}$ is $o(1)$ by Definition 2.5 and
+
+$$
+\mathbf{V}^{-1 / 2} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t} \varepsilon_{t} \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})
+$$
+
+which allows application of Lemma 4.6. Hence by Lemma 4.7,
+
+$$
+\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})
+$$
+
+Next, $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M} \xrightarrow{p} \mathbf{0}$ by the ergodic theorem (Theorem 3.34) and Theorem 2.24 given (ii) and (iv), where $\mathbf{M}$ is finite and positive definite. Since the conditions of Theorem 4.25 are satisfied, it follows that $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\right. \left.\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where $\mathbf{D}_{n} \equiv \mathbf{M}^{-1} \mathbf{V}_{n} \mathbf{M}^{-1}$. Because $\mathbf{D}_{n}-\mathbf{D} \rightarrow \mathbf{0}$ as $n \rightarrow \infty$, it follows that
+
+$$
+\begin{aligned}
+& \mathbf{D}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)-\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \\
+= & \left(\mathbf{D}^{-1 / 2} \mathbf{D}_{n}^{1 / 2}-\mathbf{I}\right) \mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \xrightarrow{p} \mathbf{0}
+\end{aligned}
+$$
+
+by Lemma 4.6. Hence, by Lemma 4.7,
+
+$$
+\mathbf{D}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{\boldsymbol{A}}{\sim} N(\mathbf{0}, \mathbf{I})
+$$
+
+Comparing this result with the OLS result in Theorem 5.3 for i.i.d. regressors, we have replaced the i.i.d. assumption with stationarity, ergodicity, and the mixingale requirements of (iii.a). Because these conditions are always satisfied for i.i.d. sequences, Theorem 5.3 is in fact a direct corollary of Theorem 5.16. (Condition (iii.a) is satisfied because for i.i.d. sequences\\
+$E\left(X_{0 h i} \varepsilon_{0 h} \mid \mathcal{F}_{-m}\right)=0$ for all $m>0$.) Note that these conditions impose the restrictions placed on $\mathcal{Z}_{t}$ in Theorem 5.16 for each regressor-error cross product $X_{\text {thi }} \varepsilon_{\text {th }}$.
+
+Although the present result now allows for the possibility that $\mathbf{X}_{t}$ contains lagged dependent variables $Y_{t-1}, Y_{t-2}, \ldots$, it does not allow $\varepsilon_{t}$ to be serially correlated at the same time. This is ruled out by (iii.a) which implies $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$ by Lemma 5.14. This condition will be violated if lagged dependent variables are present when $\varepsilon_{t}$ is serially correlated. Also note that if lagged dependent variables are present in $\mathbf{X}_{t}$, condition (iv.a) requires that $E\left(Y_{t}^{2}\right)$ is finite. This in turn places restrictions on the possible values allowed for $\boldsymbol{\beta}_{o}$.
+
+Exercise 5.18 Suppose that the data are generated as $Y_{t}^{\prime}=\beta_{o 1} Y_{t-1}+ \beta_{o 2} Y_{t-2}+\varepsilon_{t}$. State general conditions on $\left\{Y_{t}\right\}$ and $\left(\beta_{o 1}, \beta_{o 2}\right)$ which ensure the consistency and asymptotic normality of the $O L S$ estimator for $\beta_{o 1}$ and $\beta_{o 2}$.
+
+As just mentioned, OLS is inappropriate when the model contains lagged dependent variables in the presence of serially correlated errors. However, useful instrumental variables estimators are often available.
+
+Exercise 5.19 Prove the following result. Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is a stationary ergodic sequence;\\
+(iii) (a) $\left\{Z_{\text {thi }} \varepsilon_{\text {th }}, \mathcal{F}_{t}\right\}$ is an adapted mixingale of size $-1, h=1, \ldots, p$, $i=1, \ldots, l ;$\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{\text {th }}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon\right)$ is uniformly positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {th } j}\right|<\infty, h=1, \ldots, p, i=1, \ldots, l$, and $j=1, \ldots, k$;\\
+(b) $\mathbf{Q} \equiv E\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ has full column rank;\\
+(c) $\hat{\mathbf{P}}_{n} \xrightarrow{p} \mathbf{P}$ finite, symmetric, and positive definite.
+
+Then $\mathbf{V}_{n} \rightarrow \mathbf{V}$ finite and positive definite as $n \rightarrow \infty$, and $\mathbf{D}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\right. \left.\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D} \equiv\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)^{-1} \mathbf{Q}^{\prime} \mathbf{P V P Q}\left(\mathbf{Q}^{\prime} \mathbf{P Q}\right)^{-1}
+$$
+
+Suppose further that\\
+(v) there exists $\hat{\mathbf{V}}_{n}$ symmetric and positive semidefinite such that $\hat{\mathbf{V}}_{n}$ $\mathbf{V} \xrightarrow{p} \mathbf{0}$.
+
+Then $\hat{\mathbf{D}}_{n}-\mathbf{D} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \hat{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+This result follows as a corollary to a more general theorem for nonlinear equations given by Hansen (1982). However, all the essential features of his assumptions are illustrated in the present result.
+
+Since the results of this section are based on a stationarity assumption, unconditional heteroskedasticity is explicitly ruled out. However, conditional heteroskedasticity is nevertheless a possibility, so efficiency improvements along the lines of Theorem 4.55 may be obtained by accounting for conditional heteroskedasticity.
+
+\subsection*{5.4 Dependent Heterogeneously Distributed Observations}
+To allow for situations in which the errors exhibit unconditional heteroskedasticity, or the explanatory variables contain fixed as well as lagged dependent variables, we apply central limit results for sequences of mixing random variables. A convenient version of the Liapounov theorem for mixing processes is the following.
+
+Theorem 5.20 (Wooldridge-White) Let $\left\{\mathcal{Z}_{n t}\right\}$ be a double array of scalars with $\mu_{n t} \equiv E\left(\mathcal{Z}_{n t}\right)=0$ and $\sigma_{n t}^{2} \equiv \operatorname{var}\left(\mathcal{Z}_{n t}\right)$ such that $E\left|\mathcal{Z}_{n t}\right|^{r}< \Delta<\infty$ for some $r>2$, and all $n$ and $t$, and having mixing coefficients $\phi$ of size $-r / 2(r-1)$, or $\alpha$ of size $-r /(r-2), r>2$. If $\bar{\sigma}_{n}^{2} \equiv \operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathcal{Z}_{t}\right)>\delta>0$ for all $n$ sufficiently large, then $\sqrt{n}\left(\overline{\mathcal{Z}}_{n}-\right. \left.\bar{\mu}_{n}\right) / \bar{\sigma}_{n} \stackrel{A}{\sim} N(0,1)$.
+
+Proof. The result follows from Corollary 3.1 of Wooldridge and White (1988) applied to the random variables $\tilde{\mathcal{Z}}_{n t} \equiv \mathcal{Z}_{n t} / \bar{\sigma}_{n}$. See also Wooldridge (1986, Ch. 3, Corollary 4.4.)
+
+Compared with Theorem 5.11, the moment requirements are now potentially stronger to allow for considerably more dependence in $\mathcal{Z}_{t}$. Note, however, that if $\phi(m)$ or $\alpha(m)$ decrease exponentially in $m$, we can set $r$ arbitrarily close to two, implying essentially the same moment restrictions as in the independent case.
+
+The analog to Exercise 5.12 is as follows.
+
+Exercise 5.21 Prove the following result. Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a mixing sequence with either $\phi$ of size $-r / 2(r-1), r>2$ or $\alpha$ of size $-r /(r-2), r>2$;\\
+(iii) (a) $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}, \quad t=1,2, \ldots$;\\
+(b) $E\left|X_{\text {thi }} \varepsilon_{t h}\right|^{r}<\Delta<\infty$ for $h=1, \ldots, p, i=1, \ldots, k$, and all $t$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathbf{X}_{t} \varepsilon_{t}\right)$ is uniformly positive definite;\\
+(iv) (a) $E\left|X_{\text {thi }}^{2}\right|^{(r / 2)+\delta}<\Delta<\infty$ for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, k$, and $t$;\\
+(b) $\mathbf{M}_{\boldsymbol{n}} \equiv E\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ is uniformly positive definite.
+
+Then $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where $\mathbf{D}_{n}=\mathbf{M}_{n}^{-1} \mathbf{V}_{n} \mathbf{M}_{n}^{-1}$. Suppose in addition that\\
+(v) there exists $\hat{\mathbf{V}}_{n}$ symmetric and positive semidefinite such that $\hat{\mathbf{V}}_{n}$ $\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$.\\
+Then $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where $\hat{\mathbf{D}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \hat{\mathbf{V}}_{n}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$.\\
+Compared with Exercise 5.12, we have relaxed the memory requirement from independence to mixing (asymptotic independence). Depending on the amount of dependence the observations exhibit, the moment conditions may or may not be stronger than those of Exercise 5.12.
+
+The flexibility gained by dispensing with the stationarity assumption of Theorem 5.17 is that the present result can accommodate the inclusion of fixed regressors as well as lagged dependent variables in the explanatory variables of the model. The price paid is an increase in the moment restrictions, as well as an increase in the strength of the memory conditions.
+
+Exercise 5.22 Suppose the data are generated as $Y_{t}=\beta_{o 1} Y_{t-1}+\beta_{o 2} W_{t}+ \varepsilon_{t}$, where $W_{t}$ is a fixed scalar. Let $\mathbf{X}_{t}=\left(Y_{t-1}, W_{t}\right)$ and provide conditions on $\left\{\left(\mathbf{X}_{t}, \varepsilon_{t}\right)^{\prime}\right\}$ and $\left(\beta_{o 1}, \beta_{o 2}\right)$ that ensure that the OLS estimator of $\beta_{o 1}$ and $\beta_{o 2}$ is consistent and asymptotically normal.
+
+The result for the instrumental variables estimator is the following.\\
+Theorem 5.23 Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a mixing sequence with either $\phi$ of size $-r / 2(r-1)$, $r>2$ or $\alpha$ of size $-r /(r-2), r>2$;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}, \quad t=1,2, \ldots$;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{t h}\right|^{r}<\Delta<\infty$ for $h=1, \ldots, p, i=1, \ldots, l$, and all $t$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t}\right)$, is uniformly positive definite;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{(r / 2)+\delta}<\Delta<\infty$ for $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, l, j=1, \ldots, k$, and $t$;\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has uniformly full column rank;\\
+(c) $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{p} \mathbf{0}$, where $\mathbf{P}_{n}=O(1)$ and is symmetric and uniformly positive definite.
+
+Then $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D}_{n} \equiv\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{V}_{n} \mathbf{P}_{n} \mathbf{Q}_{n}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+Suppose further that\\
+(v) there exists $\hat{\mathbf{V}}_{n}$ symmetric and positive semidefinite such that $\hat{\mathbf{V}}_{n}$ $\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$.
+
+Then $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \hat{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+Proof. We verify that the conditions of Exercise 4.26 hold. First we apply Proposition 5.1 to show $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$. Consider
+
+$$
+n^{-1 / 2} \sum_{t=1}^{n} \lambda^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}
+$$
+
+By Theorem 3.49, $\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \boldsymbol{\varepsilon}_{t}$ is a sequence of mixing random variables with either $\phi$ of size $-r / 2(r-1), r>2$ or $\alpha$ of size $-r /(r-1), r>2$, given (ii). Further, $E\left(\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}\right)=0$ given (iii.a), $E\left|\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}\right|^{r}<\Delta< \infty$ for all $t$ given (iii.b), and
+
+$$
+\bar{\sigma}_{n}^{2} \equiv \operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}\right)=\boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{V}_{n} \mathbf{V}_{n}^{-1 / 2} \boldsymbol{\lambda}=1
+$$
+
+It follows from Theorem 5.20 that $n^{-1 / 2} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$. Since this holds for every $\boldsymbol{\lambda}, \boldsymbol{\lambda}^{\prime} \boldsymbol{\lambda}=1$, it follows from Proposition 5.1 that $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t} \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$.
+
+Next, $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q}_{n} \xrightarrow{p} \mathbf{0}$ by Corollary 3.48 given (iv.a), where $\left\{\mathbf{Q}_{n}\right\}$ is $O(1)$ and has uniformly full column rank by (iv.a) and (iv.b). Since (iv.c) also holds, the desired result now follows from Exercise 4.26. \(\square\)
+
+This result is in a sense the most general of all the results that we have obtained, because it contains so many special cases. Specifically, it covers every situation previously considered (i.i.d., i.h.d., and d.i.d. observations), although at the explicit cost of imposing slightly stronger conditions in various respects. Note, too, this result applies to systems of equations or panel data since we can choose $p>1$.
+
+\subsection*{5.5 Martingale Difference Sequences}
+In Chapter 3 we discussed laws of large numbers for martingale difference sequences and mentioned that economic theory is often used to justify the martingale diffe.ence assumption. If the martingale difference assumption is valid, then it often allows us to simplify or weaken some of the other conditions imposed in establishing the asymptotic normality of our estimators.
+
+There are a variety of central limit theorems available for martingale difference sequences. One version that is relatively convenient is an extension of the Lindeberg-Feller theorem (Theorem 5.6). In stating it, we consider sequences of random variables $\left\{\mathcal{Z}_{n t}\right\}$ and associated $\sigma$-algebras $\left\{\mathcal{F}_{n t}, 1<t \leq n\right\}$, where $\mathcal{F}_{n t-1} \subset \mathcal{F}_{n t}$ and $\mathcal{Z}_{n t}$ is measurable with respect to $\mathcal{F}_{n t}$. We can think of $\mathcal{F}_{n t}$ as being the $\sigma$-field generated by the current and past of $\mathcal{Z}_{n t}$ as well as any other relevant random variables.
+
+Theorem 5.24 Let $\left\{\mathcal{Z}_{n t}, \mathcal{F}_{n t}\right\}$ be a martingale difference sequence such that $\sigma_{n t}^{2} \equiv E\left(\mathcal{Z}_{n t}^{2}\right)<\infty, \sigma_{n t}^{2} \neq 0$, and let $F_{n t}$ be the distribution function of $\mathcal{Z}_{n t}$. Define $\overline{\mathcal{Z}}_{n} \equiv n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{n t}$ and $\bar{\sigma}_{n}^{2} \equiv \operatorname{var}\left(\sqrt{n} \overline{\mathcal{Z}}_{n}\right)=n^{-1} \sum_{t=1}^{n} \sigma_{n t}^{2}$. If for every $\varepsilon>0$
+
+$$
+\lim _{n \rightarrow \infty} \tilde{\sigma}_{n}^{-2} n^{-1} \sum_{t=1}^{n} \int_{z^{2}>\varepsilon n \bar{\sigma}_{n}^{2}} z^{2} d F_{n t}(z)=0,
+$$
+
+and
+
+$$
+n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{n t}^{2} / \bar{\sigma}_{n}^{2}-1 \xrightarrow{p} 0,
+$$
+
+then $\sqrt{n} \overline{\mathcal{Z}}_{n} / \bar{\sigma}_{n} \stackrel{A}{\sim} N(0,1)$.
+
+Proof. This follows immediately as a corollary to Theorem 2.3 of McLeish (1974). \(\square\)
+
+Comparing this result with the Lindeberg-Feller theorem, we see that both impose the Lindeberg condition, whereas the independence assumption has here been weakened to the martingale difference assumption. The present result also imposes a condition not explicit in the Lindeberg-Feller theorem, i.e., essentially that the sample variance $n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{n t}^{2}$ is a consistent estimator for $\bar{\sigma}_{n}^{2}$. This condition is unnecessary in the independent case because it is implied there by the Lindeberg condition. Without independence, we make use of additional conditions, e.g., stationarity and ergodicity or mixing, to ensure that the sample variance is indeed consistent for $\bar{\sigma}_{n}^{2}$.
+
+To illustrate how use of the martingale difference assumption allows us to simplify our results, consider the IV estimator in the case of stationary observations. We have the following result.
+
+Theorem 5.25 Suppose conditions (i), (ii), (iv) and (v) of Exercise 5.19 hold, and replace condition (iii) with\\
+$\left(i i i^{\prime}\right)(a) E\left(Z_{\text {thi }} \varepsilon_{t h} \mid \mathcal{F}_{t-1}\right)=0$ for all $t$, where $\left\{\mathcal{F}_{t}\right\}$ is adapted to $\left\{Z_{\text {thi }} \varepsilon_{t h}\right\}$, $h=1, \ldots, p, i=1, \ldots, l$;\\
+(b) $E\left|Z_{t h i} \varepsilon_{t h}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, l$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon\right)=\operatorname{var}\left(\mathbf{Z}_{t} \varepsilon_{t}\right) \equiv \mathbf{V}$ is nonsingular.
+
+Then the conclusions of Exercise 5.19 hold.\\
+Proof. One way to prove this is to show that ( $i i i^{\prime}$ ) implies ( $i i i$ ). This is direct, and it is left to the reader to verify.\\
+Alternatively, we can apply Proposition 5.1 and Theorem 5.24 to verify that $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$. Since $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ is a stationary martingale difference sequence,
+
+$$
+\operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon\right)=n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime}\right)=\mathbf{V},
+$$
+
+finite by ( $i i i^{\prime} . b$ ) and positive definite by ( $i i i^{\prime} . c$ ). Hence, consider
+
+$$
+n^{-1 / 2} \sum_{t=1}^{n} \lambda^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} .
+$$
+
+By Proposition 3.23, $\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}$ is measurable with respect to $\mathcal{F}_{t}$ given ( $i i i^{\prime} . a$ ). Writing $\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}=\sum_{h=1}^{p} \sum_{i=1}^{l} \tilde{\lambda}_{i} Z_{\text {thi }} \varepsilon_{\text {th }}$, it follows from the\\
+linearity of condition expectations that
+
+$$
+E\left(\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \mid \mathcal{F}_{t-1}\right)=\sum_{h=1}^{p} \sum_{i=1}^{l} \tilde{\lambda}_{i} E\left(Z_{t h i} \varepsilon_{t h} \mid \mathcal{F}_{t-1}\right)=0
+$$
+
+given ( $i i i^{\prime} . a$ ). Hence $\left\{\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence. As a consequence of stationarity, $\operatorname{var}\left(\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}\right)=\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{V} \mathbf{V}^{-1 / 2} \boldsymbol{\lambda}=$ 1 for all $t$, and for all $t, F_{n t}=F$, the distribution function of $\lambda^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t}$. It follows from Exercise 5.9 that the Lindeberg condition is satisfied. Since $\left\{\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \mathbf{V}^{-1 / 2} \boldsymbol{\lambda}\right\}$ is a stationary and ergodic sequence by Proposition 3.30 with finite expected absolute values given ( $i i i^{\prime} . b$ ) and ( $i i i^{\prime} . c$ ), the ergodic theorem (Theorem 3.34) and Theorem 2.24 imply
+
+$$
+\begin{aligned}
+& n^{-1} \sum_{t=1}^{n} \lambda^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \mathbf{V}^{-1 / 2} \boldsymbol{\lambda}-\boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{V} \mathbf{V}^{-1 / 2} \boldsymbol{\lambda} \\
+= & n^{-1} \sum_{t=1}^{n} \boldsymbol{\lambda}^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{\prime} \mathbf{V}^{-1 / 2} \boldsymbol{\lambda}-1 \xrightarrow{\boldsymbol{p}} 0
+\end{aligned}
+$$
+
+Hence, by Theorem $5.24 n^{-1 / 2} \sum_{t=1}^{n} \lambda^{\prime} \mathbf{V}^{-1 / 2} \mathbf{Z}_{t} \varepsilon_{t} \stackrel{A}{\sim} N(0,1)$. It follows from Proposition 5.1 that $\mathbf{V}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, and since $\mathbf{V}=\mathbf{V}_{n}$, $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$. The rest of the results follow as before.
+
+Whereas use of the martingale difference assumption allows us to state simpler conditions for stationary ergodic processes, it also allows us to state weaker conditions on certain aspects of the behavior of mixing processes. To do this conveniently, we apply a Liapounov-like corollary to the central limit theorem just given.
+
+Corollary 5.26 Let $\left\{\mathcal{Z}_{n t}, \mathcal{F}_{n t}\right\}$ be a martingale difference sequence such that $E\left|\mathcal{Z}_{n t}\right|^{2+\delta}<\Delta<\infty$ for some $\delta>0$ and all $n$ and $t$. If $\bar{\sigma}_{n}^{2}>\delta^{\prime}>0$ for all $n$ sufficiently large and $n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{n t}^{2}-\bar{\sigma}_{n}^{2} \xrightarrow{p} 0$, then $\sqrt{n} \overline{\mathcal{Z}}_{n} / \bar{\sigma}_{n} \stackrel{A}{\sim} N(0,1)$.
+
+Proof. Given $E\left|\mathcal{Z}_{n t}\right|^{2+\delta}<\Delta<\infty$, the Lindeberg condition holds as shown in the proof of Theorem 5.10. Since $\bar{\sigma}_{n}^{2}>\delta^{\prime}>0, \bar{\sigma}_{n}^{-2}$ is $O(1)$, so $n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{n t}^{2} / \bar{\sigma}_{n}^{2}-1=\bar{\sigma}_{n}^{-2}\left(n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{n t}^{2}-\bar{\sigma}_{n}^{2}\right) \xrightarrow{p} 0$ by Exercise 2.35. The conditions of Theorem 5.24 hold and the result follows.
+
+We use this result to obtain an analog to Theorem 5.25.\\
+Exercise 5.27 Prove the following. Suppose conditions (i), (ii), (iv), and (v) of Theorem 5.23 hold, and replace (iii) with\\
+(iii') (a) $E\left(Z_{\text {thi }} \varepsilon_{t h} \mid \mathcal{F}_{t-1}\right)=0$ for all $t$, where $\left\{\mathcal{F}_{t}\right\}$ is adapted to $\left\{Z_{\text {thi }} \varepsilon_{t h}\right\}$, $h=1, \ldots, p, i=1, \ldots, l$;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{t h}\right|^{r}<\Delta<\infty$ for all $h=1, \ldots, p, i=1, \ldots, l$ and all $t$;\\
+(c) $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon\right)$ is uniformly positive definite.
+
+Then the conclusions of Theorem 5.23 hold.\\
+Note that although the assumption (iii.a) has been strengthened from $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}$ to the martingale difference assumption, we have maintained the moment requirements of (iii.b).
+
+\section*{References}
+Hansen, L. P. (1982). "Large sample properties of generalized method of moments estimators." Econometrica, 50, 1029-1054.\\
+Heyde, C. C. (1975). "On the central limit theorem and iterated logarithm law for stationary processes." Bulletin of the Australian Mathematical Society, 12, 1-8.\\
+Loeve, M. (1977). Probability Theory. Springer-Verlag, New York.\\
+McLeish, D. L. (1974). "Dependent central limit theorems and invariance principles." Annals of Probability, 2, 620-628.\\
+Rao, C. R. (1973). Linear Statistical Inference and Its Applications. Wiley, New York.\\
+Scott, D. J. (1973). "Central limit theorems for martingales and for processes with stationary increments using a Skorokhod representation approach." Advances in Applied Probability, 5, 119-137.\\
+Wooldridge, J. M. (1986). Asymptotic Properties of Econometric Estimators. Unpublished Ph.D. dissertation. University of California, San Diego.\\
+and H. White (1988). "Some invariance principles and central limit theorems for dependent heterogeneous processes." Econometric Theory, 4, 210-230.
+
+\section*{Estimating Asymptotic Covariance Matrices}
+
+\end{document}

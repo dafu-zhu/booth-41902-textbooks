@@ -1,0 +1,750 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 6: Additional Single-Equation Topics}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsection*{6.1 Estimation with Generated Regressors and Instruments}
+In this section we discuss the large-sample properties of OLS and 2SLS estimators when some regressors or instruments have been estimated in a first step.
+
+\subsection*{6.1.1 Ordinary Least Squares with Generated Regressors}
+We often need to draw on results for OLS estimation when one or more of the regressors have been estimated from a first-stage procedure. To illustrate the issues, consider the model\\
+$y=\beta_{0}+\beta_{1} x_{1}+\cdots+\beta_{K} x_{K}+\gamma q+u$.
+
+We observe $x_{1}, \ldots, x_{K}$, but $q$ is unobserved. However, suppose that $q$ is related to observable data through the function $q=f(\mathbf{w}, \boldsymbol{\delta})$, where $f$ is a known function and $\mathbf{w}$ is a vector of observed variables, but the vector of parameters $\boldsymbol{\delta}$ is unknown (which is why $q$ is not observed). Often, but not always, $q$ will be a linear function of $\mathbf{w}$ and $\boldsymbol{\delta}$. Suppose that we can consistently estimate $\boldsymbol{\delta}$, and let $\hat{\boldsymbol{\delta}}$ be the estimator. For each observation $i, \hat{q}_{i}=f\left(\mathbf{w}_{i}, \hat{\boldsymbol{\delta}}\right)$ effectively estimates $q_{i}$. Pagan (1984) calls $\hat{q}_{i}$ a generated regressor. It seems reasonable that, replacing $q_{i}$ with $\hat{q}_{i}$ in running the OLS regression\\
+$y_{i}$ on $1, x_{i 1}, x_{i 2}, \ldots, x_{i k}, \hat{q}_{i}, \quad i=1, \ldots, N$,\\
+should produce consistent estimates of all parameters, including $\gamma$. The question is, What assumptions are sufficient?
+
+While we do not cover the asymptotic theory needed for a careful proof until Chapter 12 (which treats nonlinear estimation), we can provide some intuition here. Because plim $\hat{\boldsymbol{\delta}}=\boldsymbol{\delta}$, by the law of large numbers it is reasonable that\\
+$N^{-1} \sum_{i=1}^{N} \hat{q}_{i} u_{i} \xrightarrow{p} \mathrm{E}\left(q_{i} u_{i}\right), \quad N^{-1} \sum_{i=1}^{N} x_{i j} \hat{q}_{i} \xrightarrow{p} \mathrm{E}\left(x_{i j} q_{i}\right)$.\\
+From these results it is easily shown that the usual OLS assumption in the populationthat $u$ is uncorrelated with $\left(x_{1}, x_{2}, \ldots, x_{K}, q\right)$-suffices for the two-step procedure to be consistent (along with the rank condition of Assumption OLS. 2 applied to the expanded vector of explanatory variables). In other words, for consistency, replacing $q_{i}$ with $\hat{q}_{i}$ in an OLS regression causes no problems.
+
+Things are not so simple when it comes to inference: the standard errors and test statistics obtained from regression (6.2) are generally invalid because they ignore the sampling variation in $\hat{\boldsymbol{\delta}}$. Because $\hat{\boldsymbol{\delta}}$ is also obtained using data-usually the same sample of data-uncertainty in the estimate should be accounted for in the second step. Nevertheless, there is at least one important case where the sampling variation\\
+of $\hat{\boldsymbol{\delta}}$ can be ignored, at least asymptotically: if\\
+$\mathrm{E}\left[\nabla_{\delta} f(\mathbf{w}, \boldsymbol{\delta})^{\prime} u\right]=\mathbf{0}$,\\
+$\gamma=0$,\\
+then the $\sqrt{N}$-limiting distribution of the OLS estimators from regression (6.2) is the same as the OLS estimators when $q$ replaces $\hat{q}$. Condition (6.3) is implied by the zero conditional mean condition,\\
+$\mathrm{E}(u \mid \mathbf{x}, \mathbf{w})=0$,\\
+which frequently holds in generated regressor contexts.\\
+We often want to test the null hypothesis $\mathrm{H}_{0}: \gamma=0$ before including $\hat{q}$ in the final regression. Fortunately, the usual $t$ statistic on $\hat{q}$ has a limiting standard normal distribution under $\mathrm{H}_{0}$, so it can be used to test $\mathrm{H}_{0}$. It simply requires the usual homoskedasticity assumption, $\mathrm{E}\left(u^{2} \mid \mathbf{x}, q\right)=\sigma^{2}$. The heteroskedasticity-robust statistic works if heteroskedasticity is present in $u$ under $\mathrm{H}_{0}$.
+
+Even if condition (6.3) holds, if $\gamma \neq 0$, then an adjustment is needed for the asymptotic variances of all OLS estimators that are due to estimation of $\boldsymbol{\delta}$. Thus, standard $t$ statistics, $F$ statistics, and $L M$ statistics will not be asymptotically valid when $\gamma \neq 0$. Using the methods of Chapter 3, it is not difficult to derive an adjustment to the usual variance matrix estimate that accounts for the variability in $\hat{\boldsymbol{\delta}}$ (and also allows for heteroskedasticity). It is not true that replacing $q_{i}$ with $\hat{q}_{i}$ simply introduces heteroskedasticity into the error term; this is not the correct way to think about the generated regressors issue. Accounting for the fact that $\hat{\boldsymbol{\delta}}$ depends on the same random sample used in the second-stage estimation is much different from having heteroskedasticity in the error. Of course, we might want to use a heteroskedasticity-robust standard error for testing $\mathrm{H}_{0}: \gamma=0$ because heteroskedasticity in the population error $u$ can always be a problem. However, just as with the usual OLS standard error, this is generally justified only under $\mathrm{H}_{0}: \gamma=0$.
+
+A general formula for the asymptotic variance of 2SLS in the presence of generated regressors is given in the appendix to this chapter; this covers OLS with generated regressors as a special case. A general framework for handling these problems is given in Newey (1984) and Newey and McFadden (1994), but we must hold off until Chapter 14 to give a careful treatment.
+
+\subsection*{6.1.2 Two-Stage Least Squares with Generated Instruments}
+In later chapters we will need results on 2SLS estimation when the instruments have been estimated in a preliminary stage. Write the population model as\\
+$y=\mathbf{x} \boldsymbol{\beta}+u$,\\
+$\mathrm{E}\left(\mathbf{z}^{\prime} u\right)=\mathbf{0}$,\\
+where $\mathbf{x}$ is a $1 \times K$ vector of explanatory variables and $\mathbf{z}$ is a $1 \times L(L \geq K)$ vector of intrumental variables. Assume that $\mathbf{z}=\mathbf{g}(\mathbf{w}, \boldsymbol{\lambda})$, where $\mathbf{g}(\cdot, \boldsymbol{\lambda})$ is a known function but $\boldsymbol{\lambda}$ needs to be estimated. For each $i$, define the generated instruments $\hat{\mathbf{z}}_{i} \equiv \mathbf{g}\left(\mathbf{w}_{i}, \hat{\boldsymbol{\lambda}}\right)$. What can we say about the 2SLS estimator when the $\hat{\mathbf{z}}_{i}$ are used as instruments?
+
+By the same reasoning for OLS with generated regressors, consistency follows under weak conditions. Further, under conditions that are met in many applications, we can ignore the fact that the instruments were estimated in using 2SLS for inference. Sufficient are the assumptions that $\hat{\boldsymbol{\lambda}}$ is $\sqrt{N}$-consistent for $\lambda$ and that\\
+$\mathrm{E}\left[\nabla_{\lambda} \mathbf{g}(\mathbf{w}, \lambda)^{\prime} u\right]=\mathbf{0}$.
+
+Under condition (6.8), which holds when $\mathrm{E}(u \mid \mathbf{w})=0$, the $\sqrt{N}$-asymptotic distribution of $\hat{\boldsymbol{\beta}}$ is the same whether we use $\boldsymbol{\lambda}$ or $\hat{\boldsymbol{\lambda}}$ in constructing the instruments. This fact greatly simplifies calculation of asymptotic standard errors and test statistics. Therefore, if we have a choice, there are practical reasons for using 2SLS with generated instruments rather than OLS with generated regressors. We will see some examples in Section 6.4 and Part IV.
+
+One consequence of this discussion is that, if we add the 2SLS homoskedasticity assumption (2SLS.3), the usual 2SLS standard errors and test statistics are asymptotically valid. If Assumption 2SLS. 3 is violated, we simply use the heteroskedasticityrobust standard errors and test statistics. Of course, the finite sample properties of the estimator using $\hat{\mathbf{z}}_{i}$ as instruments could be notably different from those using $\mathbf{z}_{i}$ as instruments, especially for small sample sizes. Determining whether this is the case requires either more sophisticated asymptotic approximations or simulations on a case-by-case basis.
+
+\subsection*{6.1.3 Generated Instruments and Regressors}
+We will encounter examples later where some instruments and some regressors are estimated in a first stage. Generally, the asymptotic variance needs to be adjusted because of the generated regressors, although there are some special cases where the usual variance matrix estimators are valid. As a general example, consider the model\\
+$y=\mathbf{x} \boldsymbol{\beta}+\gamma f(\mathbf{w}, \boldsymbol{\delta})+u, \quad \mathrm{E}(u \mid \mathbf{z}, \mathbf{w})=0$,\\
+and we estimate $\boldsymbol{\delta}$ in a first stage. If $\gamma=0$, then the 2SLS estimator of $\left(\boldsymbol{\beta}^{\prime}, \gamma\right)^{\prime}$ in the equation
+
+$$
+y_{i}=\mathbf{x}_{i} \boldsymbol{\beta}+\gamma \hat{f}_{i}+\text { error }_{i}
+$$
+
+using instruments ( $\mathbf{z}_{i}, \hat{f}_{i}$ ), has a limiting distribution that does not depend on the limiting distribution of $\sqrt{N}(\hat{\boldsymbol{\delta}}-\boldsymbol{\delta})$ under conditions (6.3) and (6.8). Therefore, the usual 2SLS $t$ statistic for $\hat{\gamma}$, or its heteroskedsticity-robust version, can be used to test $\mathrm{H}_{0}: \gamma=0$.
+
+\subsection*{6.2 Control Function Approach to Endogeneity}
+For several reasons, including handling endogeneity in nonlinear models-which we will encounter often in Part IV-it is very useful to have a different approach for dealing with endogenous explanatory variables. Generally, the control function approach uses extra regressors to break the correlation between endogenenous explanatory variables and unobservables affecting the response. As we will see, the method still relies on the availability of exogenous variables that do not appear in the structural equation. For notational clarity, $y_{1}$ denotes the response variable, $y_{2}$ is the endogenous explanatory variable (a scalar for simplicity), and $\mathbf{z}$ is the $1 \times L$ vector of exogenous variables (which includes unity as its first element). Consider the model
+
+
+\begin{equation*}
+y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+u_{1}, \tag{6.9}
+\end{equation*}
+
+
+where $\mathbf{z}_{1}$ is a $1 \times L_{1}$ strict subvector of $\mathbf{z}$ that also includes a constant. The sense in which $\mathbf{z}$ is exogenous is given by the $L$ orthogonality (zero covariance) conditions
+
+
+\begin{equation*}
+\mathrm{E}\left(\mathbf{z}^{\prime} u_{1}\right)=\mathbf{0} . \tag{6.10}
+\end{equation*}
+
+
+Of course, this is the same exogeneity condition we use for consistency of the 2SLS estimator, and we can consistently estimate $\boldsymbol{\delta}_{1}$ and $\alpha_{1}$ by 2SLS under (6.10) and the rank condition, Assumption 2SLS.2.
+
+Just as with 2SLS, the reduced form of $y_{2}$-that is, the linear projection of $y_{2}$ onto the exogenous variables-plays a critical role. Write the reduced form with an error term as
+
+
+\begin{equation*}
+y_{2}=\mathbf{z} \boldsymbol{\pi}_{2}+v_{2}, \tag{6.11}
+\end{equation*}
+
+
+$\mathrm{E}\left(\mathbf{z}^{\prime} v_{2}\right)=\mathbf{0}$,\\
+where $\pi_{2}$ is $L \times 1$. From equations (6.11) and (6.12), endogeneity of $y_{2}$ arises if and only if $u_{1}$ is correlated with $v_{2}$. Write the linear projection of $u_{1}$ on $v_{2}$, in error form, as
+
+
+\begin{equation*}
+u_{1}=\rho_{1} v_{2}+e_{1}, \tag{6.13}
+\end{equation*}
+
+
+where $\rho_{1}=\mathrm{E}\left(v_{2} u_{1}\right) / \mathrm{E}\left(v_{2}^{2}\right)$ is the population regression coefficient. By definition, $\mathrm{E}\left(v_{2} e_{1}\right)=0$, and $\mathrm{E}\left(\mathbf{z}^{\prime} e_{1}\right)=\mathbf{0}$ because $u_{1}$ and $v_{2}$ are both uncorrelated with $\mathbf{z}$.
+
+Plugging (6.13) into equation (6.9) gives\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\rho_{1} v_{2}+e_{1}$,\\
+where we now view $v_{2}$ as an explanatory variable in the equation. As just noted, $e_{1}$, is uncorrelated with $v_{2}$ and $\mathbf{z}$. Plus, $y_{2}$ is a linear function of $\mathbf{z}$ and $v_{2}$, and so $e_{1}$ is also uncorrelated with $y_{2}$.
+
+Because $e_{1}$ is uncorrelated with $\mathbf{z}_{1}, y_{2}$, and $v_{2}$, equation (6.14) suggests a simple procedure for consistently estimating $\boldsymbol{\delta}_{1}$ and $\alpha_{1}$ (as well as $\rho_{1}$ ): run the OLS regression of $y_{1}$ on $\mathbf{z}_{1}, y_{2}$, and $v_{2}$ using a random sample. (Remember, OLS consistently estimates the parameters in any equation where the error term is uncorrelated with the right-hand-side variables.) The only problem with this suggestion is that we do not observe $v_{2}$; it is the error in the reduced-form equation for $y_{2}$. Nevertheless, we can write $v_{2}=y_{2}-\mathbf{z} \boldsymbol{\pi}_{2}$, and, because we collect data on $y_{2}$ and $\mathbf{z}$, we can consistently estimate $\boldsymbol{\pi}_{2}$ by OLS. Therefore, we can replace $v_{2}$ with $\hat{v}_{2}$, the OLS residuals from the first-stage regression of $y_{2}$ on $\mathbf{z}$. Simple substitution gives\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\rho_{1} \hat{v}_{2}+$ error,\\
+where, for each $i$, $\operatorname{error}_{i}=e_{i 1}+\rho_{1} \mathbf{z}_{i}\left(\hat{\boldsymbol{\pi}}_{2}-\boldsymbol{\pi}_{2}\right)$, which depends on the sampling error in $\hat{\boldsymbol{\pi}}_{2}$ unless $\rho_{1}=0$. We can now use the consistency result for generated regressors from Section 6.1.1 to conclude that the OLS estimators from equation (6.15) will be consistent for $\boldsymbol{\delta}_{1}, \alpha_{1}$, and $\rho_{1}$.
+
+The OLS estimator from equation (6.15) is an example of a control function (CF) estimator. The inclusion of the residuals $\hat{v}_{2}$ "controls" for the endogeneity of $y_{2}$ in the original equation (although it does so with sampling error because $\hat{\boldsymbol{\pi}}_{2} \neq \boldsymbol{\pi}_{2}$ ).
+
+How does the CF approach compare with the standard instrumental variables (IV) approach, which, for now, means 2SLS? Interestingly, as you are asked to show in Problem 5.1 (using least squares algebra), the OLS estimates of $\boldsymbol{\delta}_{1}$ and $\alpha_{1}$ from equation (6.15) are identical to the 2SLS estimates. In other words, the two approaches lead to the same place. Equation (6.15) contains a generated regressor, and so obtaining the appropriate standard errors for the CF estimators requires applying the correction derived in Appendix 6A. Why, then, have we introduced the control function approach when it leads to the same place as 2SLS?
+
+There are a couple of reasons. First, as we will see in the next section, equation (6.15) leads to a straightforward test of the null hypothesis that $y_{2}$ is exogenous. Second, and perhaps more important, the CF approach can be adapted to certain\\
+nonlinear models in cases where analogues of 2SLS have undesirable properties. In fact, in Part IV we will rely heavily on CF approaches for handling endogeneity in a variety of nonlinear models.
+
+You have perhaps already figured out where the CF approach relies on having at least one element in $\mathbf{z}$ not also in $\mathbf{z}_{1}$-as also required by 2SLS. We can easily see this from equation (6.15) and the expression $\hat{v}_{i 2}=y_{i 2}-\mathbf{z}_{i} \hat{\boldsymbol{\pi}}_{2}, i=1, \ldots, N$. If $\mathbf{z}_{i}=\mathbf{z}_{i 1}$, then the $\hat{v}_{i 2}$ are exact linear functions of $y_{i 2}$ and $\mathbf{z}_{i 1}$, in which case equation (6.15) suffers from perfect collinearity. If $\mathbf{z}_{i}$ contains at least one element not in $\mathbf{z}_{i}$, this breaks the perfect collinearity (at least in the sample). If we write $\mathbf{z}=\left(\mathbf{z}_{1}, \mathbf{z}_{2}\right)$ and $\boldsymbol{\pi}_{22}=\mathbf{0}$, then, asymptotically, the CF approach suffers from perfect collinearity, and $\alpha_{1}$ and $\boldsymbol{\delta}_{1}$ are not identified, as we already know from our 2SLS analysis.
+
+Although we just argued that the CF approach is identical to 2SLS in a linear model, this equivalence does not carry over to models containing more than one function of $y_{2}$. A simple extension of (6.9) is\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\gamma_{1} y_{2}^{2}+u_{1}$,\\
+$\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=0$.
+
+For simplicity, assume that we have a scalar, $z_{2}$, that is not also in $\mathbf{z}_{1}$. Then, under assumption (6.17), we can use, say, $z_{2}^{2}$ as an instrument for $y_{2}^{2}$ because any function of $z_{2}$ is uncorrelated with $u_{1}$. (We must exclude the case where $z_{2}$ is binary, because then $z_{2}^{2}=z_{2}$.) In other words, we can apply the standard IV estimator with explanatory variables $\left(\mathbf{z}_{1}, y_{2}, y_{2}^{2}\right)$ and instruments $\left(\mathbf{z}_{1}, z_{2}, z_{2}^{2}\right)$; note that we have two endogenous explanatory variables, $y_{2}$ and $y_{2}^{2}$.
+
+What would the CF approach entail in this case? To implement the CF approach in equation (6.16), we obtain the conditional expectation $\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right)$-a linear projection argument no longer works because of the nonlinearity-and that requires an assumption about $\mathrm{E}\left(u_{1} \mid \mathbf{z}, y_{2}\right)$. A standard assumption is\\
+$\mathrm{E}\left(u_{1} \mid \mathbf{z}, y_{2}\right)=\mathrm{E}\left(u_{1} \mid \mathbf{z}, v_{2}\right)=\mathrm{E}\left(u_{1} \mid v_{2}\right)=\rho_{1} v_{2}$,\\
+where the first equality follows because $y_{2}$ and $v_{2}$ are one-to-one functions of each other (given $\mathbf{z}$ ) and the second would hold if ( $u_{1}, v_{2}$ ) is independent of $\mathbf{z}$-a nontrivial restriction on the reduced-form error in equation (6.11), not to mention the structural error $u_{1}$. The final assumption is linearity of the conditional expectation $\mathrm{E}\left(u_{1} \mid v_{2}\right)$, which is more restrictive than simply defining a linear projection. Under (6.18),
+
+
+\begin{align*}
+\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right) & =\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\gamma_{1} y_{2}^{2}+\mathrm{E}\left(u_{1} \mid \mathbf{z}, y_{2}\right) \\
+& =\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\gamma_{1} y_{2}^{2}+\rho_{1} v_{2} \tag{6.19}
+\end{align*}
+
+
+Implementing the CF approach means running the OLS regression $y_{1}$ on $\mathbf{z}_{1}, y_{2}, y_{2}^{2}$, $\hat{v}_{2}$, where $\hat{v}_{2}$ still represents the reduced-form residuals. The CF estimates are not the same as the 2SLS estimates using any choice of instruments for $\left(y_{2}, y_{2}^{2}\right)$.
+
+We will study models such as (6.16) in more detail in Chapter 9-in particular, we will discuss identification and choice of instruments-but a few comments are in order. First, if the standard IV and CF approaches no longer lead to the same estimates, do we prefer one over the other? Not surprisingly, there is a trade-off between robustness and efficiency. For the 2SLS estimator using instruments ( $\mathbf{z}_{1}, z_{2}, z_{2}^{2}$ ), the key assumption is (6.17), along with partial correlation between $y_{2}$ and $z_{2}$ in the RF for $y_{2}$. (This almost certainly ensures that $y_{2}^{2}$ is appropriately partially correlated with $z_{2}^{2}$.) But the CF estimator requires these two assumptions and, in addition, the last two equalities in (6.18). As shown in Problem 6.13, equations (6.17) and (6.18) imply that $\mathrm{E}\left(v_{2} \mid \mathbf{z}\right)=0$, which means that $\mathrm{E}\left(y_{2} \mid \mathbf{z}\right)=\mathbf{z} \boldsymbol{\pi}_{2}$. A linear conditional expectation for $y_{2}$ is a substantive restriction on the conditional distribution of $y_{2}$. Therefore, the CF estimator will be inconsistent in cases where the 2SLS estimator will be consistent. On the other hand, because the CF estimator solves the endogeneity of $y_{2}$ and $y_{2}^{2}$ by adding the scalar $\hat{v}_{2}$ to the regression, it will generally be more precise-perhaps much more precise-than the 2SLS estimator. But a systematic analysis comparing the two approaches in models such as (6.16) has yet to be done. Assumptions such as (6.18) are typically avoided if possible, but this could be costly in terms of inference. In Section 9.5 we will further explore models nonlinear in endogenous variables.
+
+\subsection*{6.3 Some Specification Tests}
+In Chapters 4 and 5 we covered what is usually called classical hypothesis testing for OLS and 2SLS. We now turn to testing some of the assumptions underlying consistency of either OLS or 2SLS; these are typically called specification tests. These tests, including ones robust to arbitrary heteroskedasticity, are easy to obtain and should be routinely reported in applications.
+
+\subsection*{6.3.1 Testing for Endogeneity}
+There are various ways to motivate tests for whether some explanatory variables are endogenous. If the null hypothesis is that all explanatory variables are exogenous, and we allow one or more to be endogenous under the alternative, then we can base a test on the difference between the 2SLS and OLS estimators, provided we have sufficient exogenous instruments to identify the parameters by 2SLS. Tests for endogeneity have been derived independently by Durbin (1954), Wu (1973), and Hausman\\
+(1978). In the general equation $y=\mathbf{x} \boldsymbol{\beta}+u$ with instruments $\mathbf{z}$, the Durbin-WuHausman (DWH) test is based on the difference $\hat{\boldsymbol{\beta}}_{2 S L S}-\hat{\boldsymbol{\beta}}_{O L S}$. If all elements of $\mathbf{x}$ are exogenous (and $\mathbf{z}$ is also exogenous-a maintained assumption), then 2SLS and OLS should differ only due to sampling error. Of course, to determine whether this is so, we need to estimate the asymptotic variance of $\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\hat{\boldsymbol{\beta}}_{O L S}\right)$. Generally, the calculation is cumbersome, but it simplifies considerably if we maintain homoskedasticity under the null hypothesis. Problem 6.12 asks you to verify that, under the null hypothesis $\mathrm{E}\left(\mathbf{x}^{\prime} u\right)=\mathbf{0}$, and the appropriate homoskedasticity assumption,\\
+$\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\hat{\boldsymbol{\beta}}_{O L S}\right)\right]=\sigma^{2}\left[\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}^{*}\right)\right]^{-1}-\sigma^{2}\left[\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)\right]^{-1}$,\\
+which is simply the difference between the asymptotic variances. (Hausman (1978) shows this kind of result holds more generally when one estimator, OLS in this case, is asymptotically efficient under the null.)
+
+Once we estimate each component in equation (6.20) we can construct a quadratic form in $\hat{\boldsymbol{\beta}}_{2 S L S}-\hat{\boldsymbol{\beta}}_{O L S}$ that has an asymptotic chi-square distribution. The estimators of the moment matrices are the usual ones, with the first-stage fitted values $\hat{\mathbf{x}}_{i}=\mathbf{z}_{i} \hat{\boldsymbol{\Pi}}$ replacing $\mathbf{x}_{i}^{*}$, as usual. For $\sigma^{2}$, there are three possibilities. The first is to estimate the error variances separately for 2SLS and OLS and insert these in the first and second occurrences of $\sigma^{2}$, respectively. Or we can just use the 2SLS estimate or just use the OLS estimate in both places. Using the latter, we obtain one version of the DWH statistic:\\
+$\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\hat{\boldsymbol{\beta}}_{O L S}\right)^{\prime}\left[\left(\hat{\mathbf{X}}^{\prime} \hat{\mathbf{X}}\right)^{-1}-\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}\right]^{-}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\hat{\boldsymbol{\beta}}_{O L S}\right) / \hat{\sigma}_{O L S}^{2}$,\\
+where we must use a generalized inverse, except in the very unusual case that all elements of $\mathbf{x}$ are allowed to be endogenous under the alternative. In fact, the rank of $\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\hat{\boldsymbol{\beta}}_{O L S}\right)\right]$ is equal to the number of elements of $\mathbf{x}$ allowed to be endogenous under the alternative. The singularity of the matrix in expression (6.21) makes computing the statistic cumbersome. Nevertheless, some variant of the statistic is routinely computed by several popular econometrics packages. See Baum, Schaffer, and Stillman (2003) for a detailed survey and recently written software.
+
+A more serious drawback with any statistic based on equation (6.20) is that it is not robust to heteroskedasticity. A robust variance matrix estimator for $\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\hat{\boldsymbol{\beta}}_{O L S}\right)\right]$ can be obtained (see Problem 6.12 and Baum, Schaffer, and Stillman (2003)). Unfortunately, calculating robust DWH statistics is done much less frequently than computing standard errors and classical test statistics that are robust to heteroskedasticity. Infrequent use of a fully robust DWH statistic may be partly due to misunderstandings of when the principle of comparing estimators applies. It is commonly thought that one estimator should be asymptotically ef-\\
+ficient under the null hypothesis, but this is not necessary-indeed, it is essentially irrelevant. The principle applies whenever two estimators are consistent under the null hypothesis and one estimator, 2SLS in this case, retains consistency under the alternative. Asymptotic efficiency only simplifies the asymptotic variance estimation. In fact, while the standard form of the DWH test maintains OLS. 3 and 2SLS. 3 in order to have the correct asymptotic size, it has no systematic power for detecting heteroskedasticity.
+
+Regression-based endogeneity tests are very convenient because they are easily computed and almost trivial to make robust to heteroskedasticity. As pointed out by Hausman (1978, 1983), there is a regression-based statistic asymptotically equivalent to equation (6.21). Suppose initially that we have a single potentially endogenous explanatory variable, as in equation (6.9). We maintain assumption (6.10)-that is, each element of $\mathbf{z}$ is exogenous. We want to test
+
+
+\begin{equation*}
+\mathrm{H}_{0}: \operatorname{Cov}\left(y_{2}, u_{1}\right)=0 \tag{6.22}
+\end{equation*}
+
+
+against the alternative that $y_{2}$ is correlated with $u_{1}$. Given the reduced-form equation (6.11), equation (6.22) is equivalent to $\operatorname{Cov}\left(v_{2}, u_{1}\right)=\mathrm{E}\left(v_{2} u_{1}\right)=0$, or $\mathrm{H}_{0}: \rho_{1}=0$, where $\rho_{1}$ is the regression coefficient defined in equation (6.13). Even though $u_{1}$ and $v_{2}$ are not observed, we can use equation (6.15) to test that $\rho_{1}=0$. In fact, when we estimate equation (6.15) by OLS, we obtain an OLS coefficient on $\hat{v}_{2}, \hat{\rho}_{1}$. Conveniently, using the results from Section 6.1.1, when $\rho_{1}=0$ we do not have to adjust the standard error of $\hat{\rho}_{1}$ for the first-stage estimation of $\boldsymbol{\pi}_{2}$. Therefore, if the homoskedasticity assumption $\mathrm{E}\left(u_{1}^{2} \mid \mathbf{z}, y_{2}\right)=\mathrm{E}\left(u_{1}^{2}\right)$ holds under $\mathrm{H}_{0}$, we can use the usual $t$ statistic for $\hat{\rho}_{1}$ as an asymptotically valid test. Conveniently, we can simply use a heteroskedasticity-robust $t$ statistic if heteroskedasticity is suspected under $\mathrm{H}_{0}$.
+
+We should remember that the OLS standard errors that would be reported from equation (6.15) are not valid unless $\rho_{1}=0$, because $\hat{v}_{2}$ is a generated regressor. In practice, if we reject $\mathrm{H}_{0}: \rho_{1}=0$, then, to get the appropriate standard errors and other test statistics, we estimate equation (6.9) by 2SLS.
+
+Example 6.1 (Testing for Endogeneity of Education in a Wage Equation): Consider the wage equation
+
+
+\begin{equation*}
+\log (\text { wage })=\delta_{0}+\delta_{1} \text { exper }+\delta_{2} \text { exper }^{2}+\alpha_{1} \text { educ }+u_{1} \tag{6.23}
+\end{equation*}
+
+
+for working women, where we believe that $e d u c$ and $u_{1}$ may be correlated. The instruments for educ are parents' education and husband's education. So, we first regress educ on 1, exper, exper ${ }^{2}$, motheduc, fatheduc, and huseduc and obtain the residuals, $\hat{v}_{2}$. Then we simply include $\hat{v}_{2}$ along with unity, exper, exper ${ }^{2}$, and educ in\\
+an OLS regression and obtain the $t$ statistic on $\hat{v}_{2}$. Using the data in MROZ.RAW gives the result $\hat{\rho}_{1}=.047$ and $t_{\hat{\rho}_{1}}=1.65$. We find evidence of endogeneity of educ at the 10 percent significance level against a two-sided alternative, and so 2SLS is probably a good idea (assuming that we trust the instruments). The correct 2SLS standard errors are given in Example 5.3.
+
+With only a single suspected endogenous explanatory variable, it is straightforward to compute a Hausman (1978) statistic that directly compares 2SLS and OLS, at least when the homoskedasticity assumption holds (for 2SLS and OLS). Then, $\operatorname{Avar}\left(\hat{\alpha}_{1,2 S L S}-\hat{\alpha}_{1, O L S}\right)=\operatorname{Avar}\left(\hat{\alpha}_{1,2 S L S}\right)-\operatorname{Avar}\left(\hat{\alpha}_{1, O L S}\right)$. Therefore, the Hausman $t$ statistic is simply $\left(\hat{\alpha}_{1,2 S L S}-\hat{\alpha}_{1, O L S}\right) /\left(\left[\operatorname{se}\left(\hat{\alpha}_{1,2 S L S}\right)\right]^{2}-\left[\operatorname{se}\left(\hat{\alpha}_{1, O L S}\right)\right]^{2}\right)^{1 / 2}$. Under the null hypothesis, the $t$ statistic has an asymptotically standard normal distribution. Unfortunately, there is no simple correction if one allows heteroskedasticity: the asymptotic variance of the difference is no longer the difference in asymptotic variances.
+
+Extending the regression-based Hausman test to several potentially endogenous explanatory variables is straightforward. Let $\mathbf{y}_{2}$ denote a $1 \times G_{1}$ vector of possible endogenous variables in the population model\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{y}_{2} \boldsymbol{\alpha}_{1}+u_{1}, \quad \mathrm{E}\left(\mathbf{z}^{\prime} u_{1}\right)=\mathbf{0}$,\\
+where $\boldsymbol{\alpha}_{1}$ is now $G_{1} \times 1$. Again, we assume the rank condition for 2SLS. Write the reduced form as $\mathbf{y}_{2}=\mathbf{z} \boldsymbol{\Pi}_{2}+\mathbf{v}_{2}$, where $\boldsymbol{\Pi}_{2}$ is $L \times G_{1}$ and $\mathbf{v}_{2}$ is the $1 \times G_{1}$ vector of population reduced form errors. For a generic observation, let $\hat{\mathbf{v}}_{2}$ denote the $1 \times G_{1}$ vector of OLS residuals obtained from each reduced form. (In other words, take each element of $\mathbf{y}_{2}$ and regress it on $\mathbf{z}$ to obtain the RF residuals, then collect these in the row vector $\hat{\mathbf{v}}_{2}$.) Now, estimate the model\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{y}_{2} \boldsymbol{\alpha}_{1}+\hat{\mathbf{v}}_{2} \boldsymbol{\rho}_{1}+$ error\\
+and do a standard $F$ test of $\mathrm{H}_{0}: \boldsymbol{\rho}_{1}=\mathbf{0}$, which tests $G_{1}$ restrictions in the unrestricted model (6.25). The restricted model is obtained by setting $\boldsymbol{\rho}_{1}=\mathbf{0}$, which means we estimate the original model (6.24) by OLS. The test can be made robust to heteroskedasticity in $u_{1}$ (since $u_{1}=e_{1}$ under $\mathrm{H}_{0}$ ) by applying the heteroskedasticity-robust Wald statistic in Chapter 4. In some regression packages, such as Stata, the robust test is implemented as an F-type test. More precisely, the robust Wald statistic, which has an asymptotic chi-square distribution, is divided by $G_{1}$ to give a statistic that can be compared with $F$ critical values.
+
+An alternative to the $F$ test is an $L M$-type test. Let $\hat{u}_{1}$ be the OLS residuals from the regression $y_{1}$ on $\mathbf{z}_{1}, \mathbf{y}_{2}$ (the residuals obtained under the null hypothesis that $\mathbf{y}_{2}$ is exogenous). Then, obtain the usual $R$-squared (assuming that $\mathbf{z}_{1}$ contains a constant),\\
+say $R_{u}^{2}$, from the regression\\
+$\hat{u}_{1}$ on $\mathbf{z}_{1}, \mathbf{y}_{2}, \hat{\mathbf{v}}_{2}$\\
+and use $N R_{u}^{2}$ as asymptotically $\chi_{G_{1}}^{2}$. This test again maintains homoskedasticity under $\mathrm{H}_{0}$. The test can be made heteroskedasticity-robust using the method described in equation (4.17): take $\mathbf{x}_{1}=\left(\mathbf{z}_{1}, \mathbf{y}_{2}\right)$ and $\mathbf{x}_{2}=\hat{\mathbf{v}}_{2}$. See also Wooldridge (1995b).
+
+Example 6.2 (Endogeneity of Education in a Wage Equation, continued): We add the interaction term black•educ to the $\log$ (wage) equation estimated by Card (1995); see also Problem 5.4. Write the model as\\
+$\log ($ wage $)=\alpha_{1}$ educ $+\alpha_{2}$ black ⋅ educ $+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+u_{1}$,\\
+where $\mathbf{z}_{1}$ contains a constant, exper, exper ${ }^{2}$, black, smsa, 1966 regional dummy variables, and a 1966 SMSA indicator. If educ is correlated with $u_{1}$, then we also expect black•educ to be correlated with $u_{1}$. If nearc4, a binary indicator for whether a worker grew up near a four-year college, is valid as an instrumental variable for educ, then a natural instrumental variable for black•educ is black•nearc4. Note that black•nearc4 is uncorrelated with $u_{1}$ under the conditional mean assumption $\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=0$, where $\mathbf{z}$ contains all exogenous variables.
+
+The equation estimated by OLS is
+
+$$
+\widehat{\log (\text { wage })}=\underset{(0.75)}{4.81}+\underset{(.004)}{.071} \text { educ }+\underset{(.006)}{.018} \text { black } \cdot \text { educ }-\underset{(.079)}{.419} \text { black }+\cdots .
+$$
+
+Therefore, the return to education is estimated to be about 1.8 percentage points higher for blacks than for nonblacks, even though wages are substantially lower for blacks at all but unrealistically high levels of education. (It takes an estimated 23.3 years of education before a black worker earns as much as a nonblack worker.)
+
+To test whether educ is exogenous, we must test whether educ and black•educ are uncorrelated with $u_{1}$. We do so by first regressing educ on all instrumental variables: those elements in $\mathbf{z}_{1}$ plus nearc4 and black-nearc4. (The interaction black-nearc4 should be included because it might be partially correlated with educ.) Let $\hat{v}_{21}$ be the OLS residuals from this regression. Similarly, regress black•educ on $\mathbf{z}_{1}$, nearc4, and black‧nearc4, and save the residuals $\hat{v}_{22}$. By the way, the fact that the dependent variable in the second reduced-form regression, black•educ, is zero for a large fraction of the sample has no bearing on how we test for endogeneity.
+
+Adding $\hat{v}_{21}$ and $\hat{v}_{22}$ to the OLS regression and computing the joint $F$ test yields $F=$ 0.54 and $p$-value $=0.581$; thus we do not reject exogeneity of educ and black•educ.
+
+Incidentally, the reduced-form regressions confirm that educ is partially correlated with nearc4 (but not black•nearc4) and black•educ is partially correlated with black‧nearc4 (but not nearc4). It is easily seen that these findings mean that the rank condition for 2SLS is satisfied-see Problem 5.15c. Even though educ does not appear to be endogenous in equation (6.27), we estimate the equation by 2SLS:
+
+$$
+\widehat{\log (\widehat{\text { wage }})}=\underset{(0.97)}{3.84}+\underset{(.057)}{.127 \text { educ }}+\underset{(.040)}{.011 \text { black } \cdot \text { educ }}-\underset{(.506)}{.283} \text { black }+\cdots
+$$
+
+The 2SLS point estimates certainly differ from the OLS estimates, but the standard errors are so large that the 2SLS and OLS estimates are not statistically different.
+
+Sometimes we may want to test the null hypothesis that a subset of explanatory variables is exogenous while allowing another set of variables to be endogenous. As described in Davidson and MacKinnon (1993, Section 7.9), it is straightforward to obtain the test based on equation (6.25). Write an expanded model as\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{y}_{2} \boldsymbol{\alpha}_{1}+\mathbf{y}_{3} \boldsymbol{\gamma}_{1}+u_{1}$,\\
+where $\boldsymbol{\alpha}_{1}$ is $G_{1} \times 1$ and $\gamma_{1}$ is $J_{1} \times 1$. We allow $\mathbf{y}_{2}$ to be endogenous and test $\mathrm{H}_{0}: \mathrm{E}\left(\mathbf{y}_{3}^{\prime} u_{1}\right)=\mathbf{0}$. The relevant equation is now $y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{y}_{2} \boldsymbol{\alpha}_{1}+\mathbf{y}_{3} \boldsymbol{\gamma}_{1}+\mathbf{v}_{3} \boldsymbol{\rho}_{1}+e_{1}$, or, when we operationalize it,\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{y}_{2} \boldsymbol{\alpha}_{1}+\mathbf{y}_{3} \gamma_{1}+\hat{\mathbf{v}}_{3} \boldsymbol{\rho}_{1}+$ error,\\
+where $\boldsymbol{\rho}_{1}$ now represents the vector of population regression coefficients from $u_{1}$ on $\mathbf{v}_{3}$. Because $\mathbf{y}_{2}$ is allowed to be endogenous under $\mathrm{H}_{0}$, we cannot estimate equation (6.29) by OLS in order to test $\mathrm{H}_{0}: \boldsymbol{\rho}_{1}=\mathbf{0}$. Instead, we apply 2SLS to equation (6.29) with instruments $\left(\mathbf{z}, \mathbf{y}_{3}, \hat{\mathbf{v}}_{3}\right)$; remember, $\left(\mathbf{y}_{3}, \mathbf{v}_{3}\right)$ are exogenous in the augmented equation. In effect, we still instrument for $\mathbf{y}_{2}$, but $\mathbf{y}_{3}$ and $\hat{\mathbf{v}}_{3}$ act as their own instruments. Using the results on IV estimation with generated regressors and instruments in Section 6.1.3, the usual Wald statistic (possibly implemented as an $F$ statistic) for testing $\mathrm{H}_{0}: \boldsymbol{\rho}_{1}=\mathbf{0}$ is asymptotically valid under $\mathrm{H}_{0}$. As usual, it may be prudent to allow heteroskedasticity of unknown form under $\mathrm{H}_{0}$, and this is easily done using econometric software that computes heteroskedasticity-robust tests of exclusion restrictions after 2SLS estimation.
+
+\subsection*{6.3.2 Testing Overidentifying Restrictions}
+When we have more instruments than we need to identify an equation, we can test whether the additional instruments are valid in the sense that they are uncorrelated with $u_{1}$. To explain the various procedures, write the equation in the form\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{y}_{2} \boldsymbol{\alpha}_{1}+u_{1}$,\\
+where $\mathbf{z}_{1}$ is $1 \times L_{1}$ and $\mathbf{y}_{2}$ is $1 \times G_{1}$. The $1 \times L$ vector of all exogenous variables is again $\mathbf{z}$; partition this as $\mathbf{z}=\left(\mathbf{z}_{1}, \mathbf{z}_{2}\right)$ where $\mathbf{z}_{2}$ is $1 \times L_{2}$ and $L=L_{1}+L_{2}$. Because the model is overidentified, $L_{2}>G_{1}$. Under the usual identification conditions we could use any $1 \times G_{1}$ subset of $\mathbf{z}_{2}$ as instruments for $\mathbf{y}_{2}$ in estimating equation (6.30) (remember the elements of $\mathbf{z}_{1}$ act as their own instruments). Following his general principle, Hausman (1978) suggested comparing the 2SLS estimator using all instruments to 2SLS using a subset that just identifies equation (6.30). If all instruments are valid, the estimates should differ only as a result of sampling error. As with testing for endogeneity, the Hausman (1978) test based on a quadratic form in the coefficient differences can be cumbersome to compute. Fortunately, a regression-based test, originally due to Sargan (1958), is available.
+
+The Sargan test maintains homoskedasticity (Assumption 2SLS.3) under the null hypothesis. It is easily obtained as $N R_{u}^{2}$ from the OLS regression\\
+$\hat{u}_{1}$ on $\mathbf{z}$,\\
+where $\hat{u}_{1}$ are the 2SLS residuals using all of the instruments $\mathbf{z}$ and $R_{u}^{2}$ is the usual $R$ squared (assuming that $\mathbf{z}_{1}$ and $\mathbf{z}$ contain a constant; otherwise it is the uncentered $R$ squared). In other words, simply estimate regression (6.30) by 2SLS and obtain the 2SLS residuals, $\hat{u}_{1}$. Then regress these on all exogenous variables (including a constant). Under the null that $\mathrm{E}\left(\mathbf{z}^{\prime} u_{1}\right)=\mathbf{0}$ and Assumption 2SLS.3, $N R_{u}^{2} \stackrel{a}{\sim} \chi_{Q_{1}}^{2}$, where $Q_{1} \equiv L_{2}-G_{1}$ is the number of overidentifying restrictions.
+
+The usefulness of the Sargan-Hausman test is that, if we reject the null hypothesis, then our logic for choosing the IVs must be reexamined. Unfortunately, the test does not tell us which IVs fail the exogeneity requirement; it could be one of them or all of them. (The symmetric way that all exogenous variables appear in regression in (6.31) makes it clear the test cannot single out faulty instruments.) If we fail to reject the null hypothesis, then we can have some confidence in the set of instruments used-up to a point. Even if we do not reject the null hypothesis, it is possible that more than one instrument is endogenous, and that the 2SLS estimators using a full and reduced set of instruments are asymptotically biased in similar ways. For example, suppose we have a single endogenous explanatory variable, years of schooling (educ), in a wage equation, and we propose two instruments, mother's and father's years of schooling, motheduc and fatheduc. The test of overidentifying restrictions is the same as comparing two IV estimates of the return to schooling: one uses motheduc as the only instrument for educ and the other uses fatheduc as the only instrument. We can easily think neither instrument is truly exogenous, and each is likely to be positively\\
+correlated with unobserved cognitive ability. Therefore, we might expect the two IV estimates to give similar answers (and maybe even similar to OLS). But we should not take the similarity in the estimates to mean that the IVs are definitely exogenous; both could be leading us astray in the same direction with roughly the same bias magnitude. Even in cases where the point estimates are practically different, we might fail to reject exogenous instruments simply because the standard errors of the two IV estimates are large.
+
+It is straightforward to obtain a heteroskedasticity-robust test of the overidentifying restrictions, but we need to separate the instrumental variables into two groups. Let $\mathbf{z}_{2}$ be the $1 \times L_{2}$ vector of exogenous variables excluded from equation (6.24) and write $\mathbf{z}_{2}=\left(\mathbf{g}_{2}, \mathbf{h}_{2}\right)$, where $\mathbf{g}_{2}$ is $1 \times G_{1}$-the same dimension as $\mathbf{y}_{2}$-and $\mathbf{h}_{2}$ is $1 \times Q_{1}$-the number of overidentifying restrictions. It turns out not to matter how we do this division, provided $\mathbf{h}_{2}$ has $Q_{1}$ elements. Wooldridge (1995b) shows that the following procedure is valid. As in equation (6.31), let $\hat{u}_{1}$ be the 2SLS residuals from estimating equation (6.24), and let $\hat{\mathbf{y}}_{2}$ denote the fitted values from the first stage regression, $\mathbf{y}_{2}$ on $\mathbf{z}$ (each element of $\mathbf{y}_{2}$ onto $\mathbf{z}$ ). Next, regress each element of $\mathbf{h}_{2}$ onto ( $\mathbf{z}_{1}, \hat{\mathbf{y}}_{2}$ ) and save the residuals, say $\hat{\mathbf{r}}_{2}\left(1 \times Q_{1}\right.$ for each observation). Then the LM statistic is obtained as $N-\mathrm{SSR}_{0}$, where $\mathrm{SSR}_{0}$ is the sum of squared residuals from the regression 1 on $\hat{u}_{1} \hat{\mathbf{r}}_{2}$. Under $\mathrm{H}_{0}$, and without assuming homoskedasticity, $N-\mathrm{SSR}_{0} \stackrel{a}{\sim} \chi_{Q_{1}}^{2}$. Alternatively, one may use a heteroskedasticity-robust Wald test of $\mathrm{H}_{0}: \boldsymbol{\eta}_{1}=\mathbf{0}$ in the auxiliary model\\
+$\hat{u}_{1}=\hat{\mathbf{r}}_{2} \boldsymbol{\eta}_{1}+$ error .
+
+This approach differs from the LM statistic in that residuals $\hat{e}_{1} \equiv \hat{u}_{1}-\hat{\mathbf{r}}_{2} \hat{\boldsymbol{\eta}}_{1}$ are used in the implicit variance matrix estimator, rather than $\hat{u}_{1}$. Under the null hypothesis (and local alternatives), $\hat{\boldsymbol{\eta}}_{1} \xrightarrow{p} \mathbf{0}$, and so the statistics are asymptotically equivalent.
+
+Example 6.3 (Overidentifying Restrictions in the Wage Equation): In estimating equation (6.23) by 2SLS, we used (motheduc, fatheduc, huseduc) as instruments for educ. Therefore, there are two overidentifying restrictions. Letting $\hat{u}_{1}$ be the 2SLS residuals from equation (6.23) using all instruments, the test statistic is $N$ times the $R$ squared from the OLS regression\\
+$\hat{u}_{1}$ on 1, exper, exper ${ }^{2}$, motheduc, fatheduc, huseduc\\
+Under $\mathrm{H}_{0}$ and homoskedasticity, $N R_{u}^{2} \stackrel{a}{\sim} \chi_{2}^{2}$. Using the data on working women in MROZ.RAW gives $R_{u}^{2}=.0026$, and so the overidentification test statistic is about\\
+1.11. The $p$-value is about .574 , so the overidentifying restrictions are not rejected at any reasonable level.
+
+For the heteroskedasticity-robust version, one approach is to obtain the residuals, $\hat{r}_{1}$ and $\hat{r}_{2}$, from the OLS regressions motheduc on 1 , exper, exper ${ }^{2}$, and $\widehat{\text { educ }}$ and fatheduc on 1, exper, exper ${ }^{2}$, and $\widehat{e d u c}$, where $\widehat{e d u c}$ are the first-stage fitted values from the regression educ on 1, exper, exper ${ }^{2}$, motheduc, fatheduc, and huseduc. Then obtain $N-$ SSR from the OLS regression 1 on $\hat{u}_{1} \cdot \hat{r}_{1}, \hat{u}_{1} \cdot \hat{r}_{2}$. Using only the 428 observations on working women to obtain $\hat{r}_{1}$ and $\hat{r}_{2}$, the value of the robust test statistic is about 1.04 with $p$-value $=.595$, which is similar to the $p$-value for the nonrobust test.
+
+\subsection*{6.3.3 Testing Functional Form}
+Sometimes we need a test with power for detecting neglected nonlinearities in models estimated by OLS or 2SLS. A useful approach is to add nonlinear functions, such as squares and cross products, to the original model. This approach is easy when all explanatory variables are exogenous: $F$ statistics and $L M$ statistics for exclusion restrictions are easily obtained. It is a little tricky for models with endogenous explanatory variables because we need to choose instruments for the additional nonlinear functions of the endogenous variables. We postpone this topic until Chapter 9, when we discuss simultaneous equation models. See also Wooldridge (1995b).
+
+Putting in squares and cross products of all exogenous variables can consume many degrees of freedom. An alternative is Ramsey's (1969) RESET, which has degrees of freedom that do not depend on $K$. Write the model as
+
+
+\begin{equation*}
+y=\mathbf{x} \boldsymbol{\beta}+u, \tag{6.33}
+\end{equation*}
+
+
+
+\begin{equation*}
+\mathrm{E}(u \mid \mathbf{x})=0 . \tag{6.34}
+\end{equation*}
+
+
+(You should convince yourself that it makes no sense to test for functional form if we only assume that $\mathrm{E}\left(\mathbf{x}^{\prime} u\right)=\mathbf{0}$. If equation (6.33) defines a linear projection, then, by definition, functional form is not an issue.) Under condition (6.34) we know that any function of $\mathbf{x}$ is uncorrelated with $u$ (hence the previous suggestion of putting squares and cross products of $\mathbf{x}$ as additional regressors). In particular, if condition (6.34) holds, then $(\mathbf{x} \boldsymbol{\beta})^{p}$ is uncorrelated with $u$ for any integer $p$. Since $\boldsymbol{\beta}$ is not observed, we replace it with the OLS estimator, $\hat{\boldsymbol{\beta}}$. Define $\hat{y}_{i}=\mathbf{x}_{i} \hat{\boldsymbol{\beta}}$ as the OLS fitted values and $\hat{u}_{i}$ as the OLS residuals. By definition of OLS, the sample covariance between $\hat{u}_{i}$ and $\hat{y}_{i}$ is zero. But we can test whether the $\hat{u}_{i}$ are sufficiently correlated with low-order polynomials in $\hat{y}_{i}$, say $\hat{y}_{i}^{2}, \hat{y}_{i}^{3}$, and $\hat{y}_{i}^{4}$, as a test for neglected nonlinearity. There are a couple of ways to do so. Ramsey suggests adding these terms to equation (6.33) and\\
+doing a standard $F$ test (which would have an approximate $\mathscr{F}_{3, N-K-3}$ distribution under equation (6.33) and the homoskedasticity assumption $\mathrm{E}\left(u^{2} \mid \mathbf{x}\right)=\sigma^{2}$ ). Another possibility is to use an $L M$ test: Regress $\hat{u}_{i}$ onto $\mathbf{x}_{i}, \hat{y}_{i}^{2}, \hat{y}_{i}^{3}$, and $\hat{y}_{i}^{4}$ and use $N$ times the $R$-squared from this regression as $\chi_{3}^{2}$. The methods discussed in Chapter 4 for obtaining heteroskedasticity-robust statistics can be applied here as well. Ramsey's test uses generated regressors, but the null hypothesis is that each generated regressor has zero population coefficient, and so the usual limit theory applies. (See Section 6.1.1.)
+
+There is some misunderstanding in the testing literature about the merits of RESET. It has been claimed that RESET can be used to test for a multitude of specification problems, including omitted variables and heteroskedasticity. In fact, RESET is generally a poor test for either of these problems. It is easy to write down models where an omitted variable, say $q$, is highly correlated with each $\mathbf{x}$, but RESET has the same distribution that it has under $\mathrm{H}_{0}$. A leading case is seen when $\mathrm{E}(q \mid \mathbf{x})$ is linear in $\mathbf{x}$. Then $\mathrm{E}(y \mid \mathbf{x})$ is linear in $\mathbf{x}[$ even though $\mathrm{E}(y \mid \mathbf{x}) \neq \mathrm{E}(y \mid \mathbf{x}, q)]$, and the asymptotic power of RESET equals its asymptotic size. See Wooldridge (1995b) and Problem 6.4a. The following is an empirical illustration.
+
+Example 6.4 (Testing for Neglected Nonlinearities in a Wage Equation): We use OLS and the data in NLS80.RAW to estimate the equation from Example 4.3:
+
+$$
+\begin{aligned}
+\log (\text { wage })= & \beta_{0}+\beta_{1} \text { exper }+\beta_{2} \text { tenure }+\beta_{3} \text { married }+\beta_{4} \text { south } \\
+& +\beta_{5} \text { urban }+\beta_{6} \text { black }+\beta_{7} \text { educ }+u .
+\end{aligned}
+$$
+
+The null hypothesis is that the expected value of $u$ given the explanatory variables in the equation is zero. The $R$-squared from the regression $\hat{u}$ on $\mathbf{x}, \hat{y}^{2}$, and $\hat{y}^{3}$ yields $R_{u}^{2}=.0004$, so the chi-square statistic is .374 with $p$-value $\approx .83$. (Adding $\hat{y}^{4}$ only increases the $p$-value.) Therefore, RESET provides no evidence of functional form misspecification.
+
+Even though we already know IQ shows up very significantly in the equation ( $t$ statistic $=3.60$; see Example 4.3), RESET does not, and should not be expected to, detect the omitted variable problem. It can only test whether the expected value of $y$ given the variables actually in the regression is linear in those variables.
+
+\subsection*{6.3.4 Testing for Heteroskedasticity}
+As we have seen for both OLS and 2SLS, heteroskedasticity does not affect the consistency of the estimators, and it is only a minor nuisance for inference. Nevertheless, sometimes we want to test for the presence of heteroskedasticity in order to justify use\\
+of the usual OLS or 2SLS statistics. If heteroskedasticity is present, more efficient estimation is possible.
+
+We begin with the case where the explanatory variables are exogenous in the sense that $u$ has zero mean given $\mathbf{x}$ :\\
+$y=\beta_{0}+\mathbf{x} \boldsymbol{\beta}+u, \quad \mathrm{E}(u \mid \mathbf{x})=0$.\\
+The reason we do not assume the weaker assumption $\mathrm{E}\left(\mathbf{x}^{\prime} u\right)=\mathbf{0}$ is that the following class of tests we derive-which encompasses all of the widely used tests for heteroskedasticity-are not valid unless $\mathrm{E}(u \mid \mathbf{x})=0$ is maintained under $\mathrm{H}_{0}$. Thus, we maintain that the mean $\mathrm{E}(y \mid \mathbf{x})$ is correctly specified, and then we test the constant conditional variance assumption. If we do not assume correct specification of $\mathrm{E}(y \mid \mathbf{x})$, a significant heteroskedasticity test might just be detecting misspecified functional form in $\mathrm{E}(y \mid \mathbf{x})$; see Problem 6.4c.
+
+Because $\mathrm{E}(u \mid \mathbf{x})=0$, the null hypothesis can be stated as $\mathrm{H}_{0}: \mathrm{E}\left(u^{2} \mid \mathbf{x}\right)=\sigma^{2}$. Under the alternative, $\mathrm{E}\left(u^{2} \mid \mathbf{x}\right)$ depends on $\mathbf{x}$ in some way. Thus, it makes sense to test $\mathrm{H}_{0}$ by looking at covariances
+
+
+\begin{equation*}
+\operatorname{Cov}\left[\mathbf{h}(\mathbf{x}), u^{2}\right] \tag{6.35}
+\end{equation*}
+
+
+for some $1 \times Q$ vector function $\mathbf{h}(\mathbf{x})$. Under $\mathrm{H}_{0}$, the covariance in expression (6.35) should be zero for any choice of $\mathbf{h}(\cdot)$.
+
+Of course, a general way to test zero correlation is to use a regression. Putting $i$ subscripts on the variables, write the model\\
+$u_{i}^{2}=\delta_{0}+\mathbf{h}_{i} \boldsymbol{\delta}+v_{i}$,\\
+where $\mathbf{h}_{i} \equiv \mathbf{h}\left(\mathbf{x}_{i}\right)$; we make the standard rank assumption that $\operatorname{Var}\left(\mathbf{h}_{i}\right)$ has rank $Q$, so that there is no perfect collinearity in $\mathbf{h}_{i}$. Under $\mathrm{H}_{0}, \mathrm{E}\left(v_{i} \mid \mathbf{h}_{i}\right)=\mathrm{E}\left(v_{i} \mid \mathbf{x}_{i}\right)=0, \boldsymbol{\delta}=\mathbf{0}$, and $\delta_{0}=\sigma^{2}$. Thus, we can apply an $F$ test or an $L M$ test for the null $\mathrm{H}_{0}: \boldsymbol{\delta}=\mathbf{0}$ in equation (6.36). One thing to notice is that $v_{i}$ cannot have a normal distribution under $\mathrm{H}_{0}$ : because $v_{i}=u_{i}^{2}-\sigma^{2}, v_{i} \geq-\sigma^{2}$. This does not matter for asymptotic analysis; the OLS regression from equation (6.36) gives a consistent, $\sqrt{N}$-asymptotically normal estimator of $\boldsymbol{\delta}$ whether or not $\mathrm{H}_{0}$ is true. But to apply a standard $F$ or $L M$ test, we must assume that, under $\mathrm{H}_{0}, \mathrm{E}\left(v_{i}^{2} \mid \mathbf{x}_{i}\right)$ is constant-that is, the errors in equation (6.36) are homoskedastic. In terms of the original error $u_{i}$, this assumption implies that\\
+$\mathrm{E}\left(u_{i}^{4} \mid \mathbf{x}_{i}\right)=$ constant $\equiv \kappa^{2}$\\
+under $\mathrm{H}_{0}$. This is called the homokurtosis (constant conditional fourth moment)\\
+assumption. Homokurtosis always holds when $u$ is independent of $\mathbf{x}$, but there are conditional distributions for which $\mathrm{E}(u \mid \mathbf{x})=0$ and $\operatorname{Var}(u \mid \mathbf{x})=\sigma^{2}$ but $\mathrm{E}\left(u^{4} \mid \mathbf{x}\right)$ depends on $\mathbf{x}$.
+
+As a practical matter, we cannot test $\boldsymbol{\delta}=\mathbf{0}$ in equation (6.36) directly because $u_{i}$ is not observed. Since $u_{i}=y_{i}-\mathbf{x}_{i} \boldsymbol{\beta}$ and we have a consistent estimator of $\boldsymbol{\beta}$, it is natural to replace $u_{i}^{2}$ with $\hat{u}_{i}^{2}$, where the $\hat{u}_{i}$ are the OLS residuals for observation $i$. Doing this step and applying, say, the LM principle, we obtain $N R_{c}^{2}$ from the regression\\
+$\hat{u}_{i}^{2}$ on $1, \mathbf{h}_{i}, \quad i=1,2, \ldots, N$,\\
+where $R_{c}^{2}$ is just the usual centered $R$-squared. Now, if the $u_{i}^{2}$ were used in place of the $\hat{u}_{i}^{2}$, we know that, under $\mathrm{H}_{0}$ and condition (6.37), $N R_{c}^{2} \stackrel{a}{\sim} \chi_{Q}^{2}$, where $Q$ is the dimension of $\mathbf{h}_{i}$.
+
+What adjustment is needed because we have estimated $u_{i}^{2}$ ? It turns out that, because of the structure of these tests, no adjustment is needed to the asymptotics. (This statement is not generally true for regressions where the dependent variable has been estimated in a first stage; the current setup is special in that regard.) After tedious algebra, it can be shown that
+
+
+\begin{equation*}
+N^{-1 / 2} \sum_{i=1}^{N} \mathbf{h}_{i}^{\prime}\left(\hat{u}_{i}^{2}-\hat{\sigma}^{2}\right)=N^{-1 / 2} \sum_{i=1}^{N}\left(\mathbf{h}_{i}-\boldsymbol{\mu}_{h}\right)^{\prime}\left(u_{i}^{2}-\sigma^{2}\right)+\mathrm{o}_{p}(1) ; \tag{6.39}
+\end{equation*}
+
+
+see Problem 6.5. Along with condition (6.37), this equation can be shown to justify the $N R_{c}^{2}$ test from regression (6.38).
+
+Two popular tests are special cases. Koenker's (1981) version of the Breusch and Pagan (1979) test is obtained by taking $\mathbf{h}_{i} \equiv \mathbf{x}_{i}$, so that $Q=K$. (The original version of the Breusch-Pagan test relies heavily on normality of the $u_{i}$, in particular $\kappa^{2}=3 \sigma^{2}$, so that Koenker's version based on $N R_{c}^{2}$ in regression (6.38) is preferred.) White's (1980b) test is obtained by taking $\mathbf{h}_{i}$ to be all nonconstant, unique elements of $\mathbf{x}_{i}$ and $\mathbf{x}_{i}^{\prime} \mathbf{x}_{i}$ : the levels, squares, and cross products of the regressors in the conditional mean.
+
+The Breusch-Pagan and White tests have degrees of freedom that depend on the number of regressors in $\mathrm{E}(y \mid \mathbf{x})$. Sometimes we want to conserve on degrees of freedom. A test that combines features of the Breusch-Pagan and White tests but that has only two $d f$ s takes $\hat{\mathbf{h}}_{i} \equiv\left(\hat{y}_{i}, \hat{y}_{i}^{2}\right)$, where the $\hat{y}_{i}$ are the OLS fitted values. (Recall that these are linear functions of the $\mathbf{x}_{i}$.) To justify this test, we must be able to replace $\mathbf{h}\left(\mathbf{x}_{i}\right)$ with $\mathbf{h}\left(\mathbf{x}_{i}, \hat{\boldsymbol{\beta}}\right)$. We discussed the generated regressors problem for OLS in Section 6.1.1 and concluded that, for testing purposes, using estimates from earlier stages causes no complications. This is the case here as well: $N R_{c}^{2}$ from $\hat{u}_{i}^{2}$ on $1, \hat{y}_{i}, \hat{y}_{i}^{2}$, $i=1,2, \ldots, N$ has a limiting $\chi_{2}^{2}$ distribution under the null hypothesis, along with\\
+condition (6.37). This is easily seen to be a special case of the White test because $\left(\hat{y}_{i}, \hat{y}_{i}^{2}\right)$ contains two linear combinations of the squares and cross products of all elements in $\mathbf{x}_{i}$.
+
+A simple modification is available for relaxing the auxiliary homokurtosis assumption (6.37). Following the work of Wooldridge (1990)-or, working directly from the representation in equation (6.39), as in Problem 6.5-it can be shown that $N-\mathrm{SSR}_{0}$ from the regression (without a constant)
+
+
+\begin{equation*}
+1 \text { on }\left(\mathbf{h}_{i}-\overline{\mathbf{h}}\right)\left(\hat{u}_{i}^{2}-\hat{\sigma}^{2}\right), \quad i=1,2, \ldots, N \tag{6.40}
+\end{equation*}
+
+
+is distributed asymptotically as $\chi_{Q}^{2}$ under $\mathrm{H}_{0}$ (there are $Q$ regressors in regression (6.40)). This test is very similar to the heteroskedasticity-robust LM statistics derived in Chapter 4. It is sometimes called a heterokurtosis-robust test for heteroskedasticity.
+
+If we allow some elements of $\mathbf{x}_{i}$ to be endogenous but assume we have instruments $\mathbf{z}_{i}$ such that $\mathrm{E}\left(u_{i} \mid \mathbf{z}_{i}\right)=0$ and the rank condition holds, then we can test $\mathrm{H}_{0}: \mathrm{E}\left(u_{i}^{2} \mid \mathbf{z}_{i}\right) =\sigma^{2}$ (which implies Assumption 2SLS.3). Let $\mathbf{h}_{i} \equiv \mathbf{h}\left(\mathbf{z}_{i}\right)$ be a $1 \times Q$ function of the exogenous variables. The statistics are computed as in either regression (6.38) or (6.40), depending on whether the homokurtosis is maintained, where the $\hat{u}_{i}$ are the 2SLS residuals. There is, however, one caveat. For the validity of the asymptotic variances that these regressions implicitly use, an additional assumption is needed under $\mathrm{H}_{0}: \operatorname{Cov}\left(\mathbf{x}_{i}, u_{i} \mid \mathbf{z}_{i}\right)$ must be constant. This covariance is zero when $\mathbf{z}_{i}=\mathbf{x}_{i}$, so there is no additional assumption when the regressors are exogenous. Without the assumption of constant conditional covariance, the tests for heteroskedasticity are more complicated. For details, see Wooldridge (1990). Baum, Schaffer, and Stillman (2003) review tests that do not require the constant conditional covariance assumption.
+
+You should remember that $\mathbf{h}_{i}$ (or $\hat{\mathbf{h}}_{i}$ ) must only be a function of exogenous variables and estimated parameters; it should not depend on endogenous elements of $\mathbf{x}_{i}$. Therefore, when $\mathbf{x}_{i}$ contains endogenous variables, it is not valid to use $\mathbf{x}_{i} \hat{\boldsymbol{\beta}}$ and $\left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right)^{2}$ as elements of $\hat{\mathbf{h}}_{i}$. It is valid to use, say, $\hat{\mathbf{x}}_{i} \hat{\boldsymbol{\beta}}$ and $\left(\hat{\mathbf{x}}_{i} \hat{\boldsymbol{\beta}}\right)^{2}$, where the $\hat{\mathbf{x}}_{i}$ are the first-stage fitted values from regressing $\mathbf{x}_{i}$ on $\mathbf{z}_{i}$.
+
+\subsection*{6.4 Correlated Random Coefficient Models}
+In Section 4.3.3, we discussed models where unobserved heterogeneity interacts with one or more explanatory variables and mentioned how they can be interpreted as "random coefficient" models. Recall that if the heterogeneity is independent of the covariates, then the usual OLS estimator that ignores the heterogeneity consistently\\
+estimates the average partial effect (APE). Or, if we have suitable proxy variables for the unobserved heterogeneity, we can simply add interactions between the covariates and the (demeaned) proxy variables to estimate the APEs.
+
+Consistent estimation of APEs is more difficult if one or more explanatory variables are endogenous (and there are no proxy variables that break the correlation between the unobservable variables and the endogenous variables). In this section, we provide a relatively simple analysis that is suitable for continuous, or roughly continuous, endogenous explanatory variables. We will continue our treatment of such models in Part IV, after we know more about estimation of models for discrete response.
+
+\subsection*{6.4.1 When Is the Usual IV Estimator Consistent?}
+We study a special case of Wooldridge (2003b), who allows for multiple endogenous explanatory variables. A slight modification of equation (6.9) is\\
+$y_{1}=\eta_{1}+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+a_{1} y_{2}+u_{1}$,\\
+where $\mathbf{z}_{1}$ is $1 \times L_{1}, y_{2}$ is the endogenous explanatory variable, and $a_{1}$ is the "coefficient" on $y_{2}$-an unobserved random variable. (The reason we now set apart the intercept in (6.41) will be clear shortly.) We could replace $\boldsymbol{\delta}_{1}$ with a random vector, say $\mathbf{d}_{1}$, without substantively changing the following analysis, because we would assume $\mathrm{E}\left(\mathbf{d}_{1} \mid \mathbf{z}\right)=\mathrm{E}\left(\mathbf{d}_{1}\right)=\boldsymbol{\delta}_{1}$ for the exogenous variables $\mathbf{z}$. The additional part of the error term, $\mathbf{z}_{1}\left(\mathbf{d}_{1}-\boldsymbol{\delta}_{1}\right)$, has a zero mean conditional on $\mathbf{z}$, and so its presence would not affect our approach to estimation. The interesting feature of equation (6.41) is that the random coefficient, $a_{1}$, might be correlated with $y_{2}$. Following Heckman and Vytlacil (1998), we refer to (6.41) as a correlated random coefficient (CRC) model.
+
+It is convenient to write $a_{1}=\alpha_{1}+v_{1}$, where $\alpha_{1}=\mathrm{E}\left(a_{1}\right)$ is the object of interest. We can rewrite the equation as\\
+$y_{1}=\eta_{1}+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+v_{1} y_{2}+u_{1} \equiv \eta_{1}+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+e_{1}$,\\
+where $e_{1}=v_{1} y_{2}+u_{1}$. Equation (6.42) shows explicitly a constant coefficient on $y_{2}$ (which we hope to estimate) but also an interaction between the unobserved heterogeneity, $v_{1}$, and $y_{2}$. Remember, equation (6.42) is a population model. For a random draw, we would write $y_{i 1}=\eta_{1}+\mathbf{z}_{i 1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{i 2}+v_{i 1} y_{i 2}+u_{i 1}$, which makes it clear that $\boldsymbol{\delta}_{1}$ and $\alpha_{1}$ are parameters to estimate and $v_{i 1}$ is specific to observation $i$.
+
+As discussed in Wooldridge (1997b, 2003b), the potential problem with applying instrumental variables (2SLS) to (6.42) is that the error term $v_{1} y_{2}+u_{1}$ is not necessarily uncorrelated with the instruments $\mathbf{z}$, even if we make the assumptions\\
+$\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=\mathrm{E}\left(v_{1} \mid \mathbf{z}\right)=0$,\\
+which we maintain from here on. Generally, the term $v_{1} y_{2}$ can cause problems for IV estimation, but it is important to be clear about the nature of the problem. If we are allowing $y_{2}$ to be correlated with $u_{1}$, then we also want to allow $y_{2}$ and $v_{1}$ to be correlated. In other words, $\mathrm{E}\left(v_{1} y_{2}\right)=\operatorname{Cov}\left(v_{1}, y_{2}\right) \equiv \tau_{1} \neq 0$. But a nonzero unconditional covariance is not a problem with applying IV to equation (6.42); it simply implies that the composite error term, $e_{1}$, has (unconditional) mean $\tau_{1}$ rather than zero. As we know, a nonzero mean for $e_{1}$ means that the orginal intercept, $\eta_{1}$, would be inconsistently estimated, but this is rarely a concern.
+
+Therefore, we can allow $\operatorname{Cov}\left(v_{1}, y_{2}\right)$, the unconditional covariance, to be unrestricted. But the usual IV estimator is generally inconsistent if $\mathrm{E}\left(v_{1} y_{2} \mid \mathbf{z}\right)$ depends on $\mathbf{z}$. (There are still cases, which we will cover in Part IV, where the IV estimator is consistent.) Note that, because $\mathrm{E}\left(v_{1} \mid \mathbf{z}\right)=0, \mathrm{E}\left(v_{1} y_{2} \mid \mathbf{z}\right)=\operatorname{Cov}\left(v_{1}, y_{2} \mid \mathbf{z}\right)$. Therefore, as shown in Wooldridge (2003b), a sufficient condition for the IV estimator applied to equation (6.42) to be consistent for $\boldsymbol{\delta}_{1}$ and $\alpha_{1}$ is\\
+$\operatorname{Cov}\left(v_{1}, y_{2} \mid \mathbf{z}\right)=\operatorname{Cov}\left(v_{1}, y_{2}\right)$.
+
+The 2SLS intercept estimator is consistent for $\eta_{1}+\tau_{1}$. Condition (6.44) means that the conditional covariance between $v_{1}$ and $y_{2}$ is not a function of $\mathbf{z}$, but the unconditional covariance is unrestricted.
+
+Because $v_{1}$ is unobserved, we cannot generally verify condition (6.44). But it is easy to find situations where it holds. For example, if we write
+
+
+\begin{equation*}
+y_{2}=m_{2}(\mathbf{z})+v_{2} \tag{6.45}
+\end{equation*}
+
+
+and assume ( $v_{1}, v_{2}$ ) is independent of $\mathbf{z}$ (with zero mean), then condition (6.44) is easily seen to hold because $\operatorname{Cov}\left(v_{1}, y_{2} \mid \mathbf{z}\right)=\operatorname{Cov}\left(v_{1}, v_{2} \mid \mathbf{z}\right)$, and the latter cannot be a function of $\mathbf{z}$ under independence. Of course, assuming $v_{2}$ in equation (6.45) is independent of $\mathbf{z}$ is a strong assumption even if we do not need to specify the mean function, $m_{2}(\mathbf{z})$. It is much stronger than just writing down a linear projection of $y_{2}$ on $\mathbf{z}$ (which is no real assumption at all). As we will see in various models in Part IV, the representation (6.45) with $v_{2}$ independent of $\mathbf{z}$ is not suitable for discrete $y_{2}$, and generally (6.44) is not a good assumption when $y_{2}$ has discrete characteristics. Further, as discussed in Card (2001), condition (6.44) can be violated even if $y_{2}$ is (roughly) continuous. Wooldridge (2005c) makes some headway in relaxing condition (6.44), but such methods are beyond the scope of this chapter.
+
+A useful extension of equation (6.41) is to allow observed exogenous variables to interact with $y_{2}$. The most convenient formulation is\\
+$y_{1}=\eta_{1}+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\left(\mathbf{z}_{1}-\boldsymbol{\psi}_{1}\right) y_{2} \gamma_{1}+v_{1} y_{2}+u_{1}$,\\
+where $\boldsymbol{\psi}_{1} \equiv \mathrm{E}\left(\mathbf{z}_{1}\right)$ is the $1 \times L_{1}$ vector of population means of the exogenous variables and $\gamma_{1}$ is an $L_{1} \times 1$ parameter vector. As we saw in Chapter 4, subtracting the mean from $\mathbf{z}_{1}$ before forming the interaction with $y_{2}$ ensures that $\alpha_{1}$ is the average partial effect.
+
+Estimation of equation (6.46) is simple if we maintain condition (6.44) (along with (6.43) and the appropriate rank condition). Typically, we would replace the unknown $\boldsymbol{\psi}_{1}$ with the sample averages, $\overline{\mathbf{z}}_{1}$, and then estimate\\
+$y_{i 1}=\theta_{1}+\mathbf{z}_{i 1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{i 2}+\left(\mathbf{z}_{i 1}-\overline{\mathbf{z}}_{1}\right) y_{i 2} \gamma_{1}+$ error $_{i}$\\
+by instrumental variables, ignoring the estimation error in the population mean (see Problem 6.10 for justification). The only issue is choice of instruments, which is complicated by the interaction term. One possibility is to use interactions between $\mathbf{z}_{i 1}$ and all elements of $\mathbf{z}_{i}$ (including $\mathbf{z}_{i 1}$ ). This results in many overidentifying restrictions, even if we just have one instrument $z_{i 2}$ for $y_{i 2}$. Alternatively, we could obtain fitted values from a first-stage linear regression $y_{i 2}$ on $\mathbf{z}_{i}, \hat{y}_{i 2}=\mathbf{z}_{i} \hat{\boldsymbol{\pi}}_{2}$, and then use IVs $\left[1, \mathbf{z}_{i},\left(\mathbf{z}_{i 1}-\overline{\mathbf{z}}_{1}\right) \hat{y}_{i 2}\right]$, which results in as many overidentifying restrictions as for the model without the interaction. Note that the use of $\left(\mathbf{z}_{i 1}-\overline{\mathbf{z}}_{1}\right) \hat{y}_{i 2}$ as IVs for $\left(\mathbf{z}_{i 1}-\overline{\mathbf{z}}_{1}\right) y_{i 2}$ is asymptotically the same as using instruments $\left(\mathbf{z}_{i 1}-\boldsymbol{\psi}_{1}\right) \cdot\left(\mathbf{z}_{i} \boldsymbol{\pi}_{2}\right)$, where $\mathrm{L}\left(y_{2} \mid \mathbf{z}\right)=\mathbf{z} \boldsymbol{\pi}_{2}$ is the linear projection. In other words, consistency of this IV procedure does not in any way restrict the nature of the distribution of $y_{2}$ given $\mathbf{z}$. Plus, although we have generated instruments, the assumptions sufficient for ignoring estimation of the instruments hold, and so inference is standard (perhaps made robust to heteroskedasticity, as usual). In Chapter 8 we will develop the tools that allow us to determine when this choice of instruments produces the asymptotically efficient IV estimator.
+
+We can just identify the parameters in equation (6.46) by using a further restricted set of instruments, $\left[1, \mathbf{z}_{i 1}, \hat{y}_{i 2},\left(\mathbf{z}_{i 1}-\overline{\mathbf{z}}_{1}\right) \hat{y}_{i 2}\right]$. If so, it is important to use these as instruments and not as regressors. The latter procedure is suggested by Heckman and Vytlacil (1998), which I will refer to as HV (1998), under the assumptions (6.43) and (6.44), along with
+
+
+\begin{equation*}
+\mathrm{E}\left(y_{2} \mid \mathbf{z}\right)=\mathbf{z} \boldsymbol{\pi}_{2} \tag{6.48}
+\end{equation*}
+
+
+(where $\mathbf{z}$ includes a constant). Under assumptions (6.43), (6.44), and (6.48), it is easy to show that\\
+$\mathrm{E}\left(y_{1} \mid \mathbf{z}\right)=\left(\eta_{1}+\tau_{1}\right)+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1}\left(\mathbf{z} \boldsymbol{\pi}_{2}\right)+\left(\mathbf{z}_{1}-\boldsymbol{\psi}_{1}\right) \cdot\left(\mathbf{z} \boldsymbol{\pi}_{2}\right) \gamma_{1}$.
+
+HV (1998) use this expression to suggest a two-step regression procedure. In the first step, $y_{i 2}$ is regressed on $\mathbf{z}_{i}$ to obtain the fitted values, $\hat{y}_{i 2}$, as before. In the second step, $\eta_{1}+\tau_{1}, \boldsymbol{\delta}_{1}, \alpha_{1}$, and $\boldsymbol{\gamma}_{1}$ are estimated from the OLS regression $y_{i 1}$ on $1, \mathbf{z}_{i 1}, \hat{y}_{i 2}$, and $\left(\mathbf{z}_{i 1}-\overline{\mathbf{z}}_{1}\right) \hat{y}_{i 2}$. Generally, consistency of this procedure hinges on assumption (6.48), and it is important to see that running this regression is not the same as applying IV to equation (6.47) with instruments $\left[1, \mathbf{z}_{i 1}, \hat{y}_{i 2},\left(\mathbf{z}_{i 1}-\overline{\mathbf{z}}_{1}\right) \hat{y}_{i 2}\right]$. (The firststage regressions using the IV approach are, in effect, linear projections of $y_{2}$ on $\left[1, \mathbf{z}_{1}, \mathbf{z} \boldsymbol{\pi}_{2},\left(\mathbf{z}_{1}-\boldsymbol{\psi}_{1}\right) \cdot\left(\mathbf{z} \boldsymbol{\pi}_{2}\right)\right]$ and of $\left(\mathbf{z}_{1}-\boldsymbol{\psi}_{1}\right) y_{2}$ on $\left[1, \mathbf{z}_{1}, \mathbf{z} \boldsymbol{\pi}_{2},\left(\mathbf{z}_{1}-\boldsymbol{\psi}_{1}\right) \cdot\left(\mathbf{z} \boldsymbol{\pi}_{2}\right)\right] ;$ no restrictions are made on $\mathrm{E}\left(y_{2} \mid \mathbf{z}\right)$.) In practice, the IV and two-step regression approaches may give similar estimates, but, even if this is the case, the IV standard errors need not be adjusted, whereas the second-step OLS standard errors do, because of the generated regressors problem.
+
+In summary, applying standard IV methods to equation (6.47) provides a consistent estimator of the APE when condition (6.44) holds; no further restrictions on the distribution of $y_{2}$ given $\mathbf{z}$ are needed.
+
+\subsection*{6.4.2 Control Function Approach}
+Garen (1984) studies the model in equation (6.41) (and also allows $y_{2}$ to appear as a quadratic and interacted with exogenous variables, but that does not change the control function approach). He proposed a control function approach to estimate the parameters. It is instructive to derive the control function approach here and to contrast it to the IV approaches discussed above.
+
+Like Heckman and Vytlacil (1998), Garen uses a particular model for $\mathrm{E}\left(y_{2} \mid \mathbf{z}\right)$. In fact, Garen makes the assumption $y_{2}=\mathbf{z} \boldsymbol{\pi}_{2}+v_{2}$, where ( $u_{1}, v_{1}, v_{2}$ ) is independent of $\mathbf{z}$ with a mean-zero trivariate normal distribution. The normality and independence assumptions are much stronger than needed. We can get by with\\
+$\mathrm{E}\left(u_{1} \mid \mathbf{z}, v_{2}\right)=\rho_{1} v_{2}, \mathrm{E}\left(v_{1} \mid \mathbf{z}, v_{2}\right)=\xi_{1} v_{2}$,\\
+which is the same as equation (6.18). From equation (6.41),
+
+
+\begin{align*}
+\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right) & =\eta_{1}+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\mathrm{E}\left(v_{1} \mid \mathbf{z}, y_{2}\right) y_{2}+\mathrm{E}\left(u_{1} \mid \mathbf{z}, y_{2}\right) \\
+& =\eta_{1}+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\xi_{1} v_{2} y_{2}+\rho_{1} v_{2} \tag{6.51}
+\end{align*}
+
+
+and this equation is estimable once we estimate $\boldsymbol{\pi}_{2}$. So, Garen's (1984) control function procedure is first to regress $y_{2}$ on $\mathbf{z}$ and obtain the reduced-form residuals, $\hat{v}_{2}$, and then to run the OLS regression $y_{1}$ on $1, \mathbf{z}_{1}, y_{2}, \hat{v}_{2} y_{2}, \hat{v}_{2}$. Under the maintained assumptions, Garen's method consistently estimates $\boldsymbol{\delta}_{1}$ and $\alpha_{1}$. Because the second step uses generated regressors, the standard errors should be adjusted for the estimation of\\
+$\boldsymbol{\pi}_{2}$ in the first stage. Nevertheless, a test that $y_{2}$ is exogenous is easily obtained from the usual $F$ test of $\mathrm{H}_{0}: \xi_{1}=0, \rho_{1}=0$ (or a heteroskedasticity-robust version). Under the null hypothesis, no adjustment is needed for the generated standard errors.
+
+Garen's assumptions are more restrictive than those needed for the standard IV estimator to be consistent. For one, it would be a fluke if assumption (6.50) held without the conditional covariance $\operatorname{Cov}\left(v_{1}, y_{2} \mid \boldsymbol{z}\right)$ being independent of $\boldsymbol{z}$. Plus, like HV (1998), Garen relies on a linear model for $\mathrm{E}\left(y_{2} \mid \boldsymbol{z}\right)$. Further, Garen adds the assumptions that $\mathrm{E}\left(u_{1} \mid v_{2}\right)$ and $\mathrm{E}\left(v_{1} \mid v_{2}\right)$ are linear functions, something not needed for the IV approach.
+
+If the assumptions needed for Garen's CF estimator to be consistent hold, it is likely more efficient than the IV estimator, although a comparison of the correct asymptotic variances is complicated. As we discussed in Section 6.2, when IV and control function methods lead to different estimators, the CF estimator is likely to be more efficient but less robust.
+
+\subsection*{6.5 Pooled Cross Sections and Difference-in-Differences Estimation}
+So far our treatment of OLS and 2SLS has been explicitly for the case of random samples. In this section we briefly discuss how random samples from different points in time can be exploited, particularly for policy analysis.
+
+\subsection*{6.5.1 Pooled Cross Sections over Time}
+A data structure that is useful for a variety of purposes, including policy analysis, is what we will call pooled cross sections over time. The idea is that during each year a new random sample is taken from the relevant population. Since distributions of variables tend to change over time, the identical distribution assumption is not usually valid, but the independence assumption is. Sampling a changing population at different points in time gives rise to independent, not identically distributed (i.n.i.d.) observations. It is important not to confuse a pooling of independent cross sections with a different data structure, panel data, which we treat starting in Chapter 7. Briefly, in a panel data set we follow the same group of individuals, firms, cities, and so on over time. In a pooling of cross sections over time, there is no replicability over time. (Or, if units appear in more than one time period, their recurrence is treated as coincidental and ignored.)
+
+Every method we have learned for pure cross section analysis can be applied to pooled cross sections, including corrections for heteroskedasticity, specification testing, instrumental variables, and so on. But in using pooled cross sections, we should\\
+usually include year (or other time period) dummies to account for aggregate changes over time. If year dummies appear in a model, and it is estimated by 2SLS, the year dummies are their own instruments, as the passage of time is exogenous. For an example, see Problem 6.8. Time dummies can also appear in tests for heteroskedasticity to determine whether the unconditional error variance has changed over time.
+
+In some cases we interact some explanatory variables with the time dummies to allow partial effects to change over time. For example, in estimating a wage equation using data sampled during different years, we might want to allow the return to schooling or union membership to change across time. Or we might want to determine how the gender gap in wages has changed over time. This is easily accomplished by interacting the appropriate variable with a full set of year dummies (less one if we explicitly use the first year as the base year, as is common). Typically, one would include a full set of time period dummies by themselves to allow for secular changes, including inflation and changes in productivity that are not captured by observed covariates. Problems 6.8 and 6.11 ask you to work through some empirical examples, focusing on how the results should be interpreted.
+
+\subsection*{6.5.2 Policy Analysis and Difference-in-Differences Estimation}
+Much of the recent literature in policy analysis using natural experiments can be cast as regression with pooled cross sections with appropriately chosen interactions. In the simplest case, we have two time periods, say year 1 and year 2. There are also two groups, which we will call a control group and an experimental group or treatment group. In the natural experiment literature, people (or firms, or cities, and so on) find themselves in the treatment group essentially by accident. For example, to study the effects of an unexpected change in unemployment insurance on unemployment duration, we choose the treatment group to be unemployed individuals from a state that has a change in unemployment compensation. The control group could be unemployed workers from a neighboring state. The two time periods chosen would straddle the policy change.
+
+As another example, the treatment group might consist of houses in a city undergoing unexpected property tax reform, and the control group would be houses in a nearby, similar town that is not subject to a property tax change. Again, the two (or more) years of data would include the period of the policy change. Treatment means that a house is in the city undergoing the regime change.
+
+To formalize the discussion, call $A$ the control group, and let $B$ denote the treatment group; the dummy variable $d B$ equals unity for those in the treatment group and is zero otherwise. Letting $d 2$ denote a dummy variable for the second (post-policychange) time period, the simplest equation for analyzing the impact of the policy\\
+change is\\
+$y=\beta_{0}+\beta_{1} d B+\delta_{0} d 2+\delta_{1} d 2 \cdot d B+u$,\\
+where $y$ is the outcome of interest. The dummy variable $d B$ captures possible differences between the treatment and control groups prior to the policy change. The time period dummy, $d 2$, captures aggregate factors that would cause changes in $y$ even in the absence of a policy change. The coefficient of interest, $\delta_{1}$, multiplies the interaction term, $d 2 \cdot d B$, which is the same as a dummy variable equal to one for those observations in the treatment group in the second period.
+
+The OLS estimator, $\hat{\delta}_{1}$, has a very interesting interpretation. Let $\bar{y}_{A, 1}$ denote the sample average of $y$ for the control group in the first year, and let $\bar{y}_{A, 2}$ be the average of $y$ for the control group in the second year. Define $\bar{y}_{B, 1}$ and $\bar{y}_{B, 2}$ similarly. Then $\hat{\delta}_{1}$ can be expressed as
+
+
+\begin{equation*}
+\hat{\delta}_{1}=\left(\bar{y}_{B, 2}-\bar{y}_{B, 1}\right)-\left(\bar{y}_{A, 2}-\bar{y}_{A, 1}\right) \tag{6.53}
+\end{equation*}
+
+
+This estimator has been labeled the difference-in-differences (DD) estimator in the recent program evaluation literature, although it has a long history in analysis of variance.
+
+To see how effective $\hat{\delta}_{1}$ is for estimating policy effects, we can compare it with some alternative estimators. One possibility is to ignore the control group completely and use the change in the mean over time for the treatment group, $\bar{y}_{B, 2}-\bar{y}_{B, 1}$, to measure the policy effect. The problem with this estimator is that the mean response can change over time for reasons unrelated to the policy change. Another possibility is to ignore the first time period and compute the difference in means for the treatment and control groups in the second time period, $\bar{y}_{B, 2}-\bar{y}_{A, 2}$. The problem with this pure cross section approach is that there might be systematic, unmeasured differences in the treatment and control groups that have nothing to do with the treatment; attributing the difference in averages to a particular policy might be misleading.
+
+By comparing the time changes in the means for the treatment and control groups, both group-specific and time-specific effects are allowed for. Nevertheless, unbiasedness of the DD estimator still requires that the policy change not be systematically related to other factors that affect $y$ (and are hidden in $u$ ).
+
+In most applications, additional covariates appear in equation (6.52), for example, characteristics of unemployed people or housing characteristics. These account for the possibility that the random samples within a group have systematically different characteristics in the two time periods. The OLS estimator of $\delta_{1}$ no longer has the simple representation in equation (6.53), but its interpretation is essentially unchanged.
+
+Example 6.5 (Length of Time on Workers' Compensation): Meyer, Viscusi, and Durbin (1995) (hereafter, MVD) study the length of time (in weeks) that an injured worker receives workers' compensation. On July 15, 1980, Kentucky raised the cap on weekly earnings that were covered by workers' compensation. An increase in the cap has no effect on the benefit for low-income workers but makes it less costly for a high-income worker to stay on workers' comp. Therefore, the control group is lowincome workers and the treatment group is high-income workers; high-income workers are defined as those for whom the pre-policy-change cap on benefits is binding. Using random samples both before and after the policy change, MVD are able to test whether more generous workers' compensation causes people to stay out of work longer (everything else fixed). MVD start with a difference-in-differences analysis, using $\log ($ durat $)$ as the dependent variable. The variable afchnge is the dummy variable for observations after the policy change, and highearn is the dummy variable for high earners. The estimated equation is
+
+
+\begin{align*}
+\log \widehat{(d u r a t)}= & \underset{(0.031)}{1.126}+\underset{(.0447)}{.0077} \text { afchnge }+\underset{(.047)}{.256} \text { highearn } \\
+& +\underset{(.069)}{.191 \text { afchnge } \text { ⋅ } \text { highearn. }} \\
+N=5,626, \quad & R^{2}=.021 \tag{6.54}
+\end{align*}
+
+
+Therefore, $\hat{\delta}_{1}=.191(t=2.77)$, which implies that the average duration on workers' compensation increased by about 19 percent owing to the higher earnings cap. The coefficient on afchnge is small and statistically insignificant: as is expected, the increase in the earnings cap had no effect on duration for low-earnings workers. The coefficient on highearn shows that, even in the absence of any change in the earnings cap, high earners spent much more time-on the order of $100 \cdot[\exp (.256)-1]=29.2$ percent-on workers' compensation.
+
+MVD also add a variety of controls for gender, marital status, age, industry, and type of injury. These allow for the fact that the kind of people and type of injuries differ systematically in the two years. Perhaps not surprisingly, controlling for these factors has little effect on the estimate of $\delta_{1}$; see the MVD article and Problem 6.9.
+
+Sometimes the two groups consist of people or cities in different states in the United States, often close geographically. For example, to assess the impact of changing alcohol taxes on alcohol consumption, we can obtain random samples on individuals from two states for two years. In state $A$, the control group, there was no change in alcohol taxes. In state $B$, taxes increased between the two years. The\\
+outcome variable would be a measure of alcohol consumption, and equation (6.52) can be estimated to determine the effect of the tax on alcohol consumption. Other factors, such as age, education, and gender can be controlled for, although this procedure is not necessary for consistency if sampling is random in both years and in both states.
+
+The basic equation (6.52) can be easily modified to allow for continuous, or at least nonbinary, "treatments." An example is given in Problem 6.7, where the "treatment" for a particular home is its distance from a garbage incinerator site. In other words, there is not really a control group: each unit is put somewhere on a continuum of possible treatments. The analysis is similar because the treatment dummy, $d B$, is simply replaced with the nonbinary treatment.
+
+In some cases a more convincing analysis of a policy change is available by further refining the definition of treatment and control groups. For example, suppose a state implements a change in health care policy aimed at the elderly, say people 65 and older, and the response variable, $y$, is a health outcome. One possibility is to use data only on people in the state with the policy change, both before and after the change, with the control group being people under 65 and the treatment group being people 65 and older. This DD strategy is similar to the MVD (1995) application. The potential problem with this DD analysis is that other factors unrelated to the state's new policy might affect the health of the elderly relative to the younger population, such as changes in health care emphasis at the federal level. A different DD analysis would be to use another state as the control group and use the elderly from the non-policy state as the control group. Here the problem is that changes in the health of the elderly might be systematically different across states as a result of, say, income and wealth differences rather than the policy change.
+
+A more robust analysis than either of the DD analyses described above can be obtained by using both a different state and a control group within the treatment state. If we again label the two time periods as 1 and 2 , let $B$ represent the state implementing the policy, and let $E$ denote the group of elderly, then an expanded version of equation (6.52) is
+
+
+\begin{align*}
+y= & \beta_{0}+\beta_{1} d B+\beta_{2} d E+\beta_{3} d B \cdot d E+\delta_{0} d 2+\delta_{1} d 2 \cdot d B \\
+& +\delta_{2} d 2 \cdot d E+\delta_{3} d 2 \cdot d B \cdot d E+u \tag{6.55}
+\end{align*}
+
+
+The coefficient of interest is now $\delta_{3}$, the coefficient on the triple interaction term, $d 2 \cdot d B \cdot d E$. The OLS estimate $\hat{\delta}_{3}$ can be expressed as follows:\\
+$\hat{\delta}_{3}=\left(\bar{y}_{B, E, 2}-\bar{y}_{B, E, 1}\right)-\left(\bar{y}_{A, E, 2}-\bar{y}_{A, E, 1}\right)-\left(\bar{y}_{B, N, 2}-\bar{y}_{B, N, 1}\right)$,\\
+where the $A$ subscript means the state not implementing the policy and the $N$ sub-\\
+script represents the nonelderly. For obvious reasons, the estimator in equation (6.56) is called the difference-in-difference-in-differences (DDD) estimate. (The population analogue of equation (6.56) is easily established from equation (6.55) by finding the expected values of the six groups appearing in equation (6.56).) If we drop either the middle term or the last term, we obtain one of the DD estimates described in the previous paragraph. The DDD estimate starts with the time change in averages for the elderly in the treatment state and then nets out the change in means for elderly in the control state and the change in means for the nonelderly in the treatment state. The hope is that this controls for two kinds of potentially confounding trends: changes in health status of elderly across states (which would have nothing to do with the policy) and changes in health status of all people living in the policy-change state (possibly due to other state policies that affect everyone's health, or state-specific changes in the economy that affect everyone's health). When implemented as a regression, a standard error for $\hat{\delta}_{3}$ is easily obtained, including a heteroskedasticityrobust standard error. As in the DD case, it is straightforward to add additional covariates to equation (6.55).
+
+The DD and DDD methodologies can be applied to more than two time periods. In the first case, a full set of time period dummies is added to (6.53), and a policy dummy replaces $d 2 \cdot d B$; the policy dummy is simply defined to be unity for groups and time periods subject to the policy. This imposes the restriction that the policy has the same effect in every year, an assumption that is easily relaxed. In a DDD analysis, a full set of dummies is included for each of the two groups and all time periods, as well as for all pairwise interactions. Then, a policy dummy (or sometimes a continuous policy variable) measures the effect of the policy. See Gruber (1994) for an application to mandated maternity benefits.
+
+Sometimes the treatment and control groups involve multiple geographical or political units, such as states in the United States. For example, Carpenter (2004) considers the effects of state-level zero tolerance alcohol laws for people under age 21 on various drinking behaviors (the outcome variable, $y$ ). In each year, a state is defined as a zero tolerance state or not (say, zerotol). Carpenter uses young adults aged 21-24 years as an additional control group in a DDD-type analysis. In Carpenter's regressions, a full set of state dummies, year dummies, and monthly dummies are included (the latter to control for seasonal variations in drinking behavior). Carpenter then includes the zerotol dummy and the interaction zerotol ⋅ under 21 , where under 21 is a dummy variable for the 18-20 age group. The coefficient on the latter measures the effect of zero tolerance laws. This is in the spirit of a DDD analysis, although Carpenter does not appear to include the pairwise interactions suggested by a full DDD approach.
+
+\section*{Problems}
+6.1. a. In Problem 5.4d, test the null hypothesis that educ is exogenous.\\
+b. Test the the single overidentifying restriction in this example.\\
+6.2. In Problem 5.8b, test the null hypothesis that educ and $I Q$ are exogenous in the equation estimated by 2SLS.\\
+6.3. Consider a model for individual data to test whether nutrition affects productivity (in a developing country):
+
+
+\begin{equation*}
+\log (\text { produc })=\delta_{0}+\delta_{1} \text { exper }+\delta_{2} \text { exper }^{2}+\delta_{3} \text { educ }+\alpha_{1} \text { calories }+\alpha_{2} \text { protein }+u_{1}, \tag{6.57}
+\end{equation*}
+
+
+where produc is some measure of worker productivity, calories is caloric intake per day, and protein is a measure of protein intake per day. Assume here that exper, exper ${ }^{2}$, and educ are all exogenous. The variables calories and protein are possibly correlated with $u_{1}$ (see Strauss and Thomas (1995) for discussion). Possible instrumental variables for calories and protein are regional prices of various goods, such as grains, meats, breads, dairy products, and so on.\\
+a. Under what circumstances do prices make good IVs for calories and proteins? What if prices reflect quality of food?\\
+b. How many prices are needed to identify equation (6.57)?\\
+c. Suppose we have $M$ prices, $p_{1}, \ldots, p_{M}$. Explain how to test the null hypothesis that calories and protein are exogenous in equation (6.57).\\
+6.4. Consider a structural linear model with unobserved variable $q$ :
+
+$$
+y=\mathbf{x} \boldsymbol{\beta}+q+v, \quad \mathrm{E}(v \mid \mathbf{x}, q)=0 .
+$$
+
+Suppose, in addition, that $\mathrm{E}(q \mid \mathbf{x})=\mathbf{x} \boldsymbol{\delta}$ for some $K \times 1$ vector $\boldsymbol{\delta}$; thus, $q$ and $\mathbf{x}$ are possibly correlated.\\
+a. Show that $\mathrm{E}(y \mid \mathbf{x})$ is linear in $\mathbf{x}$. What consequences does this fact have for tests of functional form to detect the presence of $q$ ? Does it matter how strongly $q$ and $\mathbf{x}$ are correlated? Explain.\\
+b. Now add the assumptions $\operatorname{Var}(v \mid \mathbf{x}, q)=\sigma_{v}^{2}$ and $\operatorname{Var}(q \mid \mathbf{x})=\sigma_{q}^{2}$. Show that $\operatorname{Var}(y \mid \mathbf{x})$ is constant. (Hint: $\mathrm{E}(q v \mid \mathbf{x})=0$ by iterated expectations.) What does this fact imply about using tests for heteroskedasticity to detect omitted variables?\\
+c. Now write the equation as $y=\mathbf{x} \boldsymbol{\beta}+u$, where $\mathrm{E}\left(\mathbf{x}^{\prime} u\right)=\mathbf{0}$ and $\operatorname{Var}(u \mid \mathbf{x})=\sigma^{2}$. If $\mathrm{E}(u \mid \mathbf{x}) \neq \mathrm{E}(u)$, argue that an LM test of the form (6.28) will detect "heteroskedasticity" in $u$, at least in large samples.\\
+6.5. a. Verify equation (6.39) under the assumptions $\mathrm{E}(u \mid \mathbf{x})=0$ and $\mathrm{E}\left(u^{2} \mid \mathbf{x}\right)=\sigma^{2}$.\\
+b. Show that, under the additional assumption (6.27),\\
+$\mathrm{E}\left[\left(u_{i}^{2}-\sigma^{2}\right)^{2}\left(\mathbf{h}_{i}-\boldsymbol{\mu}_{h}\right)^{\prime}\left(\mathbf{h}_{i}-\boldsymbol{\mu}_{h}\right)\right]=\eta^{2} \mathrm{E}\left[\left(\mathbf{h}_{i}-\boldsymbol{\mu}_{h}\right)^{\prime}\left(\mathbf{h}_{i}-\boldsymbol{\mu}_{h}\right)\right]$\\
+where $\eta^{2}=\mathrm{E}\left[\left(u^{2}-\sigma^{2}\right)^{2}\right]$.\\
+c. Explain why parts a and b imply that the $L M$ statistic from regression (6.38) has a limiting $\chi_{Q}^{2}$ distribution.\\
+d. If condition (6.37) does not hold, obtain a consistent estimator of $\mathrm{E}\left[\left(u_{i}^{2}-\sigma^{2}\right)^{2}\left(\mathbf{h}_{i}-\boldsymbol{\mu}_{h}\right)^{\prime}\left(\mathbf{h}_{i}-\boldsymbol{\mu}_{h}\right)\right]$. Show how this leads to the heterokurtosis-robust test for heteroskedasticity.\\
+6.6. Using the test for heteroskedasticity based on the auxiliary regression $\hat{u}^{2}$ on $\hat{y}$, $\hat{y}^{2}$, test the $\log$ (wage) equation in Example 6.4 for heteroskedasticity. Do you detect heteroskedasticity at the 5 percent level?\\
+6.7. For this problem use the data in HPRICE.RAW, which is a subset of the data used by Kiel and McClain (1995). The file contains housing prices and characteristics for two years, 1978 and 1981, for homes sold in North Andover, Massachusetts. In 1981, construction on a garbage incinerator began. Rumors about the incinerator being built were circulating in 1979, and it is for this reason that 1978 is used as the base year. By 1981 it was very clear that the incinerator would be operating soon.\\
+a. Using the 1981 cross section, estimate a bivariate, constant elasticity model relating housing price to distance from the incinerator. Is this regression appropriate for determining the causal effects of incinerator on housing prices? Explain.\\
+b. Pooling the two years of data, consider the model\\
+$\log ($ price $)=\delta_{0}+\delta_{1} y 81+\delta_{2} \log ($ dist $)+\delta_{3} y 81 \cdot \log ($ dist $)+u$.\\
+If the incinerator has a negative effect on housing prices for homes closer to the incinerator, what sign is $\delta_{3}$ ? Estimate this model and test the null hypothesis that building the incinerator had no effect on housing prices.\\
+c. Add the variables $\log ($ intst $),[\log (\text { intst })]^{2}, \log ($ area $), \log ($ land $)$, age, age ${ }^{2}$, rooms, baths to the model in part b , and test for an incinerator effect. What do you conclude?\\
+6.8. The data in FERTIL1.RAW are a pooled cross section on more than a thousand U.S. women for the even years between 1972 and 1984, inclusive; the data set is similar to the one used by Sander (1992). These data can be used to study the relationship between women's education and fertility.\\
+a. Use OLS to estimate a model relating number of children ever born to a woman (kids) to years of education, age, region, race, and type of environment reared in. You should use a quadratic in age and should include year dummies. What is the estimated relationship between fertility and education? Holding other factors fixed, has there been any notable secular change in fertility over the time period?\\
+b. Reestimate the model in part a, but use motheduc and fatheduc as instruments for educ. First check that these instruments are sufficiently partially correlated with educ. Test whether educ is in fact exogenous in the fertility equation.\\
+c. Now allow the effect of education to change over time by including interaction terms such as $y 74 \cdot e d u c, y 76 \cdot e d u c$, and so on in the model. Use interactions of time dummies and parents' education as instruments for the interaction terms. Test that there has been no change in the relationship between fertility and education over time.\\
+6.9. Use the data in INJURY.RAW for this question.\\
+a. Using the data for Kentucky, reestimate equation (6.54) adding as explanatory variables male, married, and a full set of industry- and injury-type dummy variables. How does the estimate on afchnge-highearn change when these other factors are controlled for? Is the estimate still statistically significant?\\
+b. What do you make of the small $R$-squared from part a? Does this mean the equation is useless?\\
+c. Estimate equation (6.54) using the data for Michigan. Compare the estimate on the interaction term for Michigan and Kentucky, as well as their statistical significance.\\
+6.10. Consider a regression model with interactions and squares of some explanatory variables: $\mathrm{E}(y \mid \mathbf{x})=\mathbf{z} \boldsymbol{\beta}$, where $\mathbf{z}$ contains a constant, the elements of $\mathbf{x}$, and quadratics and interactions of terms in $\mathbf{x}$.\\
+a. Let $\boldsymbol{\mu}=\mathrm{E}(\mathbf{x})$ be the population mean of $\mathbf{x}$, and let $\overline{\mathbf{x}}$ be the sample average based on the $N$ available observations. Let $\hat{\boldsymbol{\beta}}$ be the OLS estimator of $\boldsymbol{\beta}$ using the $N$ observations on $y$ and $\mathbf{z}$. Show that $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$ and $\sqrt{N}(\overline{\mathbf{x}}-\boldsymbol{\mu})$ are asymptotically uncorrelated. (Hint: Write $\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})$ as in equation (4.8), and ignore the $\mathrm{o}_{p}(1)$ term. You will need to use the fact that $\mathrm{E}(u \mid \mathbf{x})=0$.)\\
+b. In the model of Problem 4.8, use part a to argue that\\
+$\operatorname{Avar}\left(\hat{\alpha}_{1}\right)=\operatorname{Avar}\left(\tilde{\alpha}_{1}\right)+\beta_{3}^{2} \operatorname{Avar}\left(\bar{x}_{2}\right)=\operatorname{Avar}\left(\tilde{\alpha}_{1}\right)+\beta_{3}^{2}\left(\sigma_{2}^{2} / N\right)$\\
+where $\alpha_{1}=\beta_{1}+\beta_{3} \mu_{2}, \tilde{\alpha}_{1}$ is the estimator of $\alpha_{1}$ if we knew $\mu_{2}$, and $\sigma_{2}^{2}=\operatorname{Var}\left(x_{2}\right)$.\\
+c. How would you obtain the correct asymptotic standard error of $\hat{\alpha}_{1}$, having run the regression in Problem 4.8d? (Hint: The standard error you get from the regression is really $\operatorname{se}\left(\tilde{\alpha}_{1}\right)$. Thus you can square this to estimate $\operatorname{Avar}\left(\tilde{\alpha}_{1}\right)$, then use the preceding formula. You need to estimate $\sigma_{2}^{2}$, too.)\\
+d. Apply the result from part c to the model in Problem 4.8; in particular, find the corrected asymptotic standard error for $\hat{\alpha}_{1}$, and compare it with the uncorrected one from Problem 4.8d. (Both can be nonrobust to heteroskedasticity.) What do you conclude?\\
+6.11. The following wage equation represents the populations of working people in 1978 and 1985:
+
+$$
+\begin{aligned}
+\log (\text { wage })= & \beta_{0}+\delta_{0} y 85+\beta_{1} \text { educ }+\delta_{1} y 85 \cdot \text { educ }+\beta_{2} \text { exper } \\
+& +\beta_{3} \text { exper }^{2}+\beta_{4} \text { union }+\beta_{5} \text { female }+\delta_{5} y 85 \cdot \text { female }+u,
+\end{aligned}
+$$
+
+where the explanatory variables are standard. The variable union is a dummy variable equal to one if the person belongs to a union and zero otherwise. The variable $y 85$ is a dummy variable equal to one if the observation comes from 1985 and zero if it comes from 1978. In the file CPS78\_85.RAW, there are 550 workers in the sample in 1978 and a different set of 534 people in 1985.\\
+a. Estimate this equation and test whether the return to education has changed over the seven-year period.\\
+b. What has happened to the gender gap over the period?\\
+c. Wages are measured in nominal dollars. What coefficients would change if we measure wage in 1978 dollars in both years? (Hint: Use the fact that for all 1985 observations, $\log \left(\right.$ wage $\left._{i} / P 85\right)=\log \left(\right.$ wage $\left._{i}\right)-\log (P 85)$, where $P 85$ is the common deflator; $P 85=1.65$ according to the Consumer Price Index.)\\
+d. Is there evidence that the variance of the error has changed over time?\\
+e. With wages measured nominally, and holding other factors fixed, what is the estimated increase in nominal wage for a male with 12 years of education? Propose a regression to obtain a confidence interval for this estimate. (Hint: You must replace $y 85 \cdot e d u c$ with something else.)\\
+6.12. In the linear model $y=\mathbf{x} \boldsymbol{\beta}+u$, initially assume that Assumptions 2SLS.12SLS. 3 hold with $\mathbf{w}$ in place of $\mathbf{z}$, where $\mathbf{w}$ includes all nonredundant elements of $\mathbf{x}$ and $\mathbf{z}$.\\
+a. Show that
+
+$$
+\begin{aligned}
+\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\hat{\boldsymbol{\beta}}_{O L S}\right)\right] & =\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}\right)\right]-\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{O L S}-\boldsymbol{\beta}\right)\right] \\
+& =\sigma^{2}\left[\mathrm{E}\left(\mathbf{x}^{* \prime} \mathbf{x}^{*}\right)\right]^{-1}-\sigma^{2}\left[\mathrm{E}\left(\mathbf{x}^{\prime} \mathbf{x}\right)\right]^{-1}
+\end{aligned}
+$$
+
+where $\mathbf{x}^{*}=\mathbf{z} \boldsymbol{\Pi}$ is the linear projection of $\mathbf{x}$ on $\mathbf{z}$. (Hint: It will help to write
+
+$$
+\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}\right)=\mathbf{A}_{1}^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{x}_{i}^{* \prime} u_{i}\right)+o_{p}(1)
+$$
+
+and
+
+$$
+\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{O L S}-\boldsymbol{\beta}\right)=\mathbf{A}_{2}^{-1}\left(N^{-1 / 2} \sum_{i=1}^{N} \mathbf{x}_{i}^{\prime} u_{i}\right)+o_{p}(1),
+$$
+
+where $\mathbf{A}_{1}=E\left(\mathbf{x}^{* \prime} \mathbf{x}^{*}\right)$ and $\mathbf{A}_{2}=E\left(\mathbf{x}^{\prime} \mathbf{x}\right)$. Then use these two to obtain the joint asymptotic distribution of $\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}\right)$ and $\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{O L S}-\boldsymbol{\beta}\right)$ under $\mathrm{H}_{0}$. Generally, $\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\hat{\boldsymbol{\beta}}_{O L S}\right)\right]=\mathbf{V}_{1}+\mathbf{V}_{2}-\left(\mathbf{C}+\mathbf{C}^{\prime}\right)$, where $\mathbf{V}_{1}=\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\boldsymbol{\beta}\right)\right.$, $\mathbf{V}_{2}=\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{\text {OLS }}-\boldsymbol{\beta}\right)\right]$, and $\mathbf{C}$ is the asymptotic covariance. Under the given assumptions, you can show $\mathbf{C}=\mathbf{V}_{2}$.)\\
+b. Show how to estimate $\operatorname{Avar}\left[\sqrt{N}\left(\hat{\boldsymbol{\beta}}_{2 S L S}-\hat{\boldsymbol{\beta}}_{O L S}\right)\right.$ if Assumption 2SLS. 3 (and Assumption OLS.3) do not hold under $\mathrm{H}_{0}$.\\
+6.13. Referring to equations (6.17) and (6.18), show that if $\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=0$ and $\mathrm{E}\left(u_{1} \mid \mathbf{z}, v_{2}\right)=\rho_{1} v_{2}$, then $\mathrm{E}\left(v_{2} \mid \mathbf{z}\right)=0$.\\
+6.14. Let $y_{1}$ and $y_{2}$ be scalars, and suppose the structural model is\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{g}\left(y_{2}\right) \boldsymbol{\alpha}_{1}+u_{1}, \quad \mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=0$,\\
+where $\mathbf{g}\left(y_{2}\right)$ is a $1 \times G_{1}$ vector of functions of $y_{2}$ and $\mathbf{z}$ contains at least one element not in $\mathbf{z}_{1}$. For example, $\mathbf{g}\left(y_{2}\right)=\left(y_{2}, y_{2}^{2}\right)$ allows for a quadratic. Or $\mathbf{g}\left(y_{2}\right)$ might be a vector of dummy variables indicating different intervals that $y_{2}$ falls into.
+
+Assume that $y_{2}$ has a linear conditional expectation, written as
+
+$$
+y_{2}=\mathbf{z} \boldsymbol{\pi}_{2}+v_{2}, \quad \mathrm{E}\left(v_{2} \mid \mathbf{z}\right)=0
+$$
+
+(Remember, this is much stronger than simply writing down a linear projection.)
+
+Further, assume $\left(u_{1}, v_{2}\right)$ is independent of $\mathbf{z}$. (This pretty much rules out $y_{2}$ with discrete characteristics.)\\
+a. Show that\\
+$\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right)=\mathrm{E}\left(y_{1} \mid \mathbf{z}, v_{2}\right)=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{g}\left(y_{2}\right) \boldsymbol{\alpha}_{1}+\mathrm{E}\left(u_{1} \mid v_{2}\right)$.\\
+b. Now add the assumption $\mathrm{E}\left(u_{1} \mid v_{2}\right)=\rho_{1} v_{2}$. Propose a consistent control function estimator of $\boldsymbol{\delta}_{1}, \boldsymbol{a}_{1}$ and $\rho_{1}$.\\
+c. How would you test the null hypothesis that $y_{2}$ is exogenous? Be very specific.\\
+d. How would you modify the CF approach if $\mathrm{E}\left(u_{1} \mid v_{2}\right)=\rho_{1} v_{2}+\xi_{1}\left(v_{2}^{2}-\tau_{2}^{2}\right)$, where $\tau_{2}^{2}=\mathrm{E}\left(v_{2}^{2}\right)$ ? How would you test the null hypothesis that $y_{2}$ is exogenous?\\
+e. Would your general CF approach change if we replace $\mathbf{g}\left(y_{2}\right)$ with $\mathbf{g}\left(\mathbf{z}_{1}, y_{2}\right)$ ? Explain.\\
+f. Suggest a more robust method of estimating $\boldsymbol{\delta}_{1}$ and $\boldsymbol{\alpha}_{1}$. In particular, suppose you are only willing to assume $E\left(u_{1} \mid \mathbf{z}\right)=0$.\\
+6.15. Expand the model from Problem 6.14 to\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\mathbf{g}\left(\mathbf{z}_{1}, y_{2}\right) \boldsymbol{\alpha}_{1}+\mathbf{g}\left(\mathbf{z}_{1}, y_{2}\right) \mathbf{v}_{1}+u_{1}$\\
+$\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=0, \quad E\left(\mathbf{v}_{1} \mid \mathbf{z}\right)=\mathbf{0}$,\\
+where $\mathbf{g}\left(\mathbf{z}_{1}, y_{2}\right)$ is a $1 \times J_{1}$ vector of functions, $\boldsymbol{\alpha}_{1}$ is a $J_{1} \times 1$ parameter vector, and $\mathbf{v}_{1}$ is a $J_{1} \times 1$ vector of unobserved heterogeneity. Make the same assumptions on the reduced form of $y_{2}$. Further, assume $\mathrm{E}\left(u_{1} \mid \mathbf{z}, v_{2}\right)=\rho_{1} v_{2}$ and $\mathrm{E}\left(\mathbf{v}_{1} \mid \mathbf{z}, v_{2}\right)=\boldsymbol{\theta}_{1} v_{2}$ for a $J_{1} \times 1$ vector $\boldsymbol{\theta}_{1}$.\\
+a. Find $\mathrm{E}\left(y_{1} \mid \mathbf{z}, y_{2}\right)$.\\
+b. Propose a control function method for consistently estimating $\boldsymbol{\delta}_{1}$ and $\boldsymbol{\alpha}_{1}$.\\
+c. How would you test the null hypothesis that $y_{2}$ is exogenous?\\
+d. Explain in detail how to appy the CF method to Garen's (1984) model, where only $y_{2}$ is interacted with unobserved heterogeneity: $y_{1}=\eta_{1}+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\lambda_{1} y_{2}^{2}+ \mathbf{z}_{1} y_{2} \gamma_{1}+v_{1} y_{2}+u_{1}$.
+
+\section*{Appendix 6A}
+We derive the asymptotic distribution of the 2SLS estimator in an equation with generated regressors and generated instruments. The tools needed to make the proof rigorous are introduced in Chapter 12, but the key components of the proof can be\\
+given here in the context of the linear model. Write the model as\\
+$y=\mathbf{x} \boldsymbol{\beta}+u, \quad \mathrm{E}(u \mid \mathbf{v})=0$,\\
+where $\mathbf{x}=\mathbf{f}(\mathbf{w}, \boldsymbol{\delta}), \boldsymbol{\delta}$ is a $Q \times 1$ vector, and $\boldsymbol{\beta}$ is $K \times 1$. Let $\hat{\boldsymbol{\delta}}$ be a $\sqrt{N}$-consistent estimator of $\boldsymbol{\delta}$. The instruments for each $i$ are $\hat{\mathbf{z}}_{i}=\mathbf{g}\left(\mathbf{v}_{i}, \hat{\boldsymbol{\lambda}}\right)$, where $\mathbf{g}(\mathbf{v}, \boldsymbol{\lambda})$ is a $1 \times L$ vector, $\boldsymbol{\lambda}$ is an $S \times 1$ vector of parameters, and $\hat{\boldsymbol{\lambda}}$ is $\sqrt{N}$-consistent for $\boldsymbol{\lambda}$. Let $\hat{\boldsymbol{\beta}}$ be the 2SLS estimator from the equation\\
+$y_{i}=\hat{\mathbf{x}}_{i} \boldsymbol{\beta}+$ error $_{i}$,\\
+where $\hat{\mathbf{x}}_{i}=\mathbf{f}\left(\mathbf{w}_{i}, \hat{\boldsymbol{\delta}}\right)$, using instruments $\hat{\mathbf{z}}_{i}$ :\\
+$\hat{\boldsymbol{\beta}}=\left[\left(\sum_{i=1}^{N} \hat{\mathbf{x}}_{i}^{\prime} \hat{\mathbf{z}}_{i}\right)\left(\sum_{i=1}^{N} \hat{\mathbf{z}}_{i}^{\prime} \hat{\mathbf{z}}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \hat{\mathbf{z}}_{i}^{\prime} \hat{\mathbf{x}}_{i}\right)\right]^{-1}\left(\sum_{i=1}^{N} \hat{\mathbf{x}}_{i}^{\prime} \hat{\mathbf{z}}_{i}\right)\left(\sum_{i=1}^{N} \hat{\mathbf{z}}_{i}^{\prime} \hat{\mathbf{z}}_{i}\right)^{-1}\left(\sum_{i=1}^{N} \hat{\mathbf{z}}_{i}^{\prime} y_{i}\right)$.\\
+Write $y_{i}=\hat{\mathbf{x}}_{i} \boldsymbol{\beta}+\left(\mathbf{x}_{i}-\hat{\mathbf{x}}_{i}\right) \boldsymbol{\beta}+u_{i}$, where $\mathbf{x}_{i}=\mathbf{f}\left(\mathbf{w}_{i}, \boldsymbol{\delta}\right)$. Plugging this in and multiplying through by $\sqrt{N}$ gives
+
+$$
+\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})=\left(\hat{\mathbf{C}}^{\prime} \hat{\mathbf{D}}^{-1} \hat{\mathbf{C}}\right)^{-1} \hat{\mathbf{C}}^{\prime} \hat{\mathbf{D}}^{-1}\left\{N^{-1 / 2} \sum_{i=1}^{N} \hat{\mathbf{z}}_{i}^{\prime}\left[\left(\mathbf{x}_{i}-\hat{\mathbf{x}}_{i}\right) \boldsymbol{\beta}+u_{i}\right]\right\},
+$$
+
+where
+
+$$
+\hat{\mathbf{C}} \equiv N^{-1} \sum_{i=1}^{N} \hat{\mathbf{z}}_{i}^{\prime} \hat{\mathbf{x}}_{i} \quad \text { and } \quad \hat{\mathbf{D}}=N^{-1} \sum_{i=1}^{N} \hat{\mathbf{z}}_{i}^{\prime} \hat{\mathbf{z}}_{i} .
+$$
+
+Now, using Lemma 12.1 in Chapter 12, $\hat{\mathbf{C}} \xrightarrow{p} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{x}\right)$ and $\hat{\mathbf{D}} \xrightarrow{p} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$. Further, a mean value expansion of the kind used in Theorem 12.3 gives
+
+$$
+N^{-1 / 2} \sum_{i=1}^{N} \hat{\mathbf{z}}_{i}^{\prime} u_{i}=N^{-1 / 2} \sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} u_{i}+\left[N^{-1} \sum_{i=1}^{N} \nabla_{\lambda} \mathbf{g}\left(\mathbf{v}_{i}, \boldsymbol{\lambda}\right) u_{i}\right] \sqrt{N}(\hat{\boldsymbol{\lambda}}-\boldsymbol{\lambda})+\mathrm{o}_{p}(1),
+$$
+
+where $\nabla_{\lambda} \mathbf{g}\left(\mathbf{v}_{i}, \boldsymbol{\lambda}\right)$ is the $L \times S$ Jacobian of $\mathbf{g}\left(\mathbf{v}_{i}, \boldsymbol{\lambda}\right)^{\prime}$. Because $\mathrm{E}\left(u_{i} \mid \mathbf{v}_{i}\right)=0$, $\mathrm{E}\left[\nabla_{\lambda} \mathbf{g}\left(\mathbf{v}_{i}, \boldsymbol{\lambda}\right)^{\prime} u_{i}\right]=\mathbf{0}$. It follows that $N^{-1} \sum_{i=1}^{N} \nabla_{\lambda} \mathbf{g}\left(\mathbf{v}_{i}, \boldsymbol{\lambda}\right) u_{i}=\mathrm{o}_{p}(1)$ and, since $\sqrt{N}(\hat{\boldsymbol{\lambda}}-\boldsymbol{\lambda})=\mathrm{O}_{p}(1)$, it follows that
+
+$$
+N^{-1 / 2} \sum_{i=1}^{N} \hat{\mathbf{z}}_{i}^{\prime} u_{i}=N^{-1 / 2} \sum_{i=1}^{N} \mathbf{z}_{i}^{\prime} u_{i}+\mathrm{o}_{p}(1) .
+$$
+
+Next, using similar reasoning,
+
+$$
+\begin{aligned}
+N^{-1 / 2} \sum_{i=1}^{N} \hat{\mathbf{z}}_{i}^{\prime}\left(\mathbf{x}_{i}-\hat{\mathbf{x}}_{i}\right) \boldsymbol{\beta} & =-\left[N^{-1} \sum_{i=1}^{N}\left(\boldsymbol{\beta} \otimes \mathbf{z}_{i}\right)^{\prime} \nabla_{\delta} \mathbf{f}\left(\mathbf{w}_{i}, \boldsymbol{\delta}\right)\right] \sqrt{N}(\hat{\boldsymbol{\delta}}-\boldsymbol{\delta})+\mathrm{o}_{p}(1) \\
+& =-\mathbf{G} \sqrt{N}(\hat{\boldsymbol{\delta}}-\boldsymbol{\delta})+\mathrm{o}_{p}(1)
+\end{aligned}
+$$
+
+where $\mathbf{G}=\mathrm{E}\left[\left(\boldsymbol{\beta} \otimes \mathbf{z}_{i}\right)^{\prime} \nabla_{\delta} \mathbf{f}\left(\mathbf{w}_{i}, \boldsymbol{\delta}\right)\right]$ and $\nabla_{\delta} \mathbf{f}\left(\mathbf{w}_{i}, \boldsymbol{\delta}\right)$ is the $K \times Q$ Jacobian of $\mathbf{f}\left(\mathbf{w}_{i}, \boldsymbol{\delta}\right)^{\prime}$. We have used a mean value expansion and $\hat{\mathbf{z}}_{i}^{\prime}\left(\mathbf{x}_{i}-\hat{\mathbf{x}}_{i}\right) \boldsymbol{\beta}=\left(\boldsymbol{\beta} \otimes \hat{\mathbf{z}}_{i}\right)^{\prime}\left(\mathbf{x}_{i}-\hat{\mathbf{x}}_{i}\right)^{\prime}$. Now, assume that
+
+$$
+\sqrt{N}(\hat{\boldsymbol{\delta}}-\boldsymbol{\delta})=N^{-1 / 2} \sum_{i=1}^{N} \mathbf{r}_{i}(\boldsymbol{\delta})+\mathrm{o}_{p}(1)
+$$
+
+where $\mathrm{E}\left[\mathbf{r}_{i}(\boldsymbol{\delta})\right]=\mathbf{0}$. This assumption holds for all estimators discussed so far, and it also holds for most estimators in nonlinear models; see Chapter 12. Collecting all terms gives
+
+$$
+\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta})=\left(\mathbf{C}^{\prime} \mathbf{D}^{-1} \mathbf{C}\right)^{-1} \mathbf{C}^{\prime} \mathbf{D}^{-1}\left\{N^{-1 / 2} \sum_{i=1}^{N}\left[\mathbf{z}_{i}^{\prime} u_{i}-\mathbf{G r}_{i}(\boldsymbol{\delta})\right]\right\}+\mathrm{o}_{p}(1)
+$$
+
+By the central limit theorem,
+
+$$
+\sqrt{N}(\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}) \stackrel{a}{\sim} \operatorname{Normal}\left[\mathbf{0},\left(\mathbf{C}^{\prime} \mathbf{D}^{-1} \mathbf{C}\right)^{-1} \mathbf{C}^{\prime} \mathbf{D}^{-1} \mathbf{M D}^{-1} \mathbf{C}\left(\mathbf{C}^{\prime} \mathbf{D}^{-1} \mathbf{C}\right)^{-1}\right],
+$$
+
+where
+
+$$
+\mathbf{M}=\operatorname{Var}\left[\mathbf{z}_{i}^{\prime} u_{i}-\mathbf{G r}_{i}(\boldsymbol{\delta})\right]
+$$
+
+The asymptotic variance of $\hat{\boldsymbol{\beta}}$ is estimated as
+
+
+\begin{equation*}
+\left(\hat{\mathbf{C}}^{\prime} \hat{\mathbf{D}}^{-1} \hat{\mathbf{C}}\right)^{-1} \hat{\mathbf{C}}^{\prime} \hat{\mathbf{D}}^{-1} \hat{\mathbf{M}} \hat{\mathbf{D}}^{-1} \hat{\mathbf{C}}\left(\hat{\mathbf{C}}^{\prime} \hat{\mathbf{D}}^{-1} \hat{\mathbf{C}}\right)^{-1} / N \tag{6.58}
+\end{equation*}
+
+
+where
+
+
+\begin{align*}
+& \hat{\mathbf{M}}=N^{-1} \sum_{i=1}^{N}\left(\hat{\mathbf{z}}_{i}^{\prime} \hat{u}_{i}-\hat{\mathbf{G}} \hat{\mathbf{r}}_{i}\right)\left(\hat{\mathbf{z}}_{i}^{\prime} \hat{u}_{i}-\hat{\mathbf{G}} \hat{\mathbf{r}}_{i}\right)^{\prime}  \tag{6.59}\\
+& \hat{\mathbf{G}}=N^{-1} \sum_{i=1}^{N}\left(\hat{\boldsymbol{\beta}} \otimes \hat{\mathbf{z}}_{i}\right)^{\prime} \nabla_{\delta} \mathbf{f}\left(\mathbf{w}_{i}, \hat{\boldsymbol{\delta}}\right) \tag{6.60}
+\end{align*}
+
+
+and
+
+
+\begin{equation*}
+\hat{\mathbf{r}}_{i}=\mathbf{r}_{i}(\hat{\boldsymbol{\delta}}), \quad \hat{u}_{i}=y_{i}-\hat{\mathbf{x}}_{i} \hat{\boldsymbol{\beta}} \tag{6.61}
+\end{equation*}
+
+
+A few comments are in order. First, estimation of $\lambda$ does not affect the asymptotic distribution of $\hat{\boldsymbol{\beta}}$. Therefore, if there are no generated regressors, the usual 2SLS inference procedures are valid $\left(\mathbf{G}=\mathbf{0}\right.$ in this case and so $\left.\mathbf{M}=\mathrm{E}\left(u_{i}^{2} \mathbf{z}_{i}^{\prime} \mathbf{z}_{i}\right)\right)$. If $\mathbf{G}=\mathbf{0}$ and $\mathrm{E}\left(u^{2} \mathbf{z}^{\prime} \mathbf{z}\right)=\sigma^{2} \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$, then the usual 2SLS standard errors and test statistics are valid. If Assumption 2SLS. 3 fails, then the heteroskedasticity-robust statistics are valid.
+
+If $\mathbf{G} \neq \mathbf{0}$, then the asymptotic variance of $\hat{\boldsymbol{\beta}}$ depends on that of $\hat{\boldsymbol{\delta}}$ (through the presence of $\mathbf{r}_{i}(\boldsymbol{\delta})$ ). Neither the usual 2SLS variance matrix estimator nor the heteroskedasticity-robust form is valid in this case. The matrix $\hat{\mathbf{M}}$ should be computed as in equation (6.59).
+
+In some cases, $\mathbf{G}=\mathbf{0}$ under the null hypothesis that we wish to test. The $j$ th row of $\mathbf{G}$ can be written as $\mathrm{E}\left[z_{i j} \boldsymbol{\beta}^{\prime} \nabla_{\delta} \mathbf{f}\left(\mathbf{w}_{i}, \boldsymbol{\delta}\right)\right]$. Now, suppose that $\hat{x}_{i h}$ is the only generated regressor, so that only the $h$ th row of $\nabla_{\delta} \mathbf{f}\left(\mathbf{w}_{i}, \boldsymbol{\delta}\right)$ is nonzero. But then if $\beta_{h}=0$, $\boldsymbol{\beta}^{\prime} \nabla_{\delta} \mathbf{f}\left(\mathbf{w}_{i}, \boldsymbol{\delta}\right)=\mathbf{0}$. It follows that $\mathbf{G}=\mathbf{0}$ and $\mathbf{M}=\mathrm{E}\left(u_{i}^{2} \mathbf{z}_{i}^{\prime} \mathbf{z}_{i}\right)$, so that no adjustment for the preliminary estimation of $\boldsymbol{\delta}$ is needed. This observation is very useful for a variety of specification tests, including the test for endogeneity in Section 6.3.1. We will also use it in sample selection contexts later on.
+
+\section*{7 Estimating Systems of Equations by Ordinary Least Squares and Generalized Least Squares}
+
+\end{document}

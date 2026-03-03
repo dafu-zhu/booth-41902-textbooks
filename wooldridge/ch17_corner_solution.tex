@@ -1,0 +1,1198 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 17: Corner Solution Responses}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Corner Solution Responses}
+\subsection*{17.1 Motivation and Examples}
+We now turn to models for limited dependent variables that have features of both continuous and discrete random variables. In particular, they are continuously distributed over a range of values - sometimes a very wide range-but they take on one or two focal points with positive probability. Such variables arise often in modeling individual, family, or firm behavior, and even when studying outcomes at a more aggregated level, such as the classroom or school level.
+
+The most common case is when the nonnegative response variable, $y$, has a (roughly) continuous distribution over strictly positive values, but $\mathrm{P}(y=0)>0$. We call such a variable a corner solution response or corner solution outcome, where the corner in this case is at zero. Corners can occur at other values, too. For example, consider the population of families making charitable contributions during a given year. If $y$ is the fraction of charitable contributions made to religious organizations, we are likely to see a wide range of values between zero and one, and then pileups at the two endpoints of zero and one. If so, the corners are at zero and one, and it makes sense to treat $y$ as having a continuous distribution over the open interval $(0,1)$.
+
+Corner solution responses are often called "censored responses," a label that comes from situations with actual data censoring. Consequently, the leading model that we cover in this chapter is sometimes called a "censored regression model." Instead, we use the somewhat unconventional name corner solution model because we are trying to capture features of an observed corner solution response. The word "censored" implies that we are not observing the entire possible range of the response variable, but that is not the case for corner solution responses. For example, in a model of charitable contributions, the variable we are interested in explaining, both for theoretical reasons and for the purposes of policy analysis, is the actual amount of charitable contributions. That this outcome might be zero for a nontrivial fraction of the population does not mean that charitable contributions are somehow "censored at zero," a common but misleading phrase that one sees used in the analysis of corner solution responses. The fact that, say, charitable contributions, labor supply, life insurance purchases, and fraction of investments in the stock market pile up at certain focal points means that we might want to use special econometric models. But it is not a problem of data observability.
+
+In Chapter 19, we will study true data-censoring problems, where the underlying variable we would like to explain is censored above or below a threshold. Typically, data censoring arises because of a survey sampling scheme or institutional constraints. There, we will be interested in an underlying response variable that we do\\
+not fully observe because it is censored above or below certain values. The econometric models for corner solution responses and censored data have similar statistical structures, but the ways one uses the estimates and thinks about violations of underlying assumptions are different. To avoid confusion, and to do justice to both corner solution models and data-censoring mechanisms, we treat data censoring in a separate chapter on data problems.
+
+Before we consider models specifically developed for corner solution responses, it is important to understand that some simple strategies are available, and also to understand the shortcomings of these strategies. Because we are interested in features of $D(y \mid \mathbf{x})$ for observable $y$, we can model such features directly. If we are interested in the effect of $x_{j}$ on the mean response $\mathrm{E}(y \mid \mathbf{x})$, it is natural to ask: Why not just assume $\mathrm{E}(y \mid \mathbf{x})=\mathbf{x} \boldsymbol{\beta}$ (where $x_{1}=1$ ) and apply OLS on a random sample? Of course, if $\mathrm{E}(y \mid \mathbf{x})=\mathbf{x} \boldsymbol{\beta}$, then OLS of $y_{i}$ on $\mathbf{x}_{i}, i=1, \ldots, N$ is perfectly sensible in that it consistently estimates $\boldsymbol{\beta}$. Consistency holds even though $y_{i} \geq 0$ and $\mathrm{P}\left(y_{i}=0\right)>0$; nothing about consistency of OLS hinges on restricting the probabilistic features of $y$. The problem with estimating a linear model is the assumption of a mean linear in $\mathbf{x}$ : unless the range of $\mathbf{x}$ is fairly limited, $\mathrm{E}(y \mid \mathbf{x})$ cannot truly be linear in $\mathbf{x}$. (In the special case where $\mathbf{x}$ consists of exhaustive and mutually exclusive dummy variables, $\mathrm{E}(y \mid \mathbf{x})$ can always be written as a linear function of $\mathbf{x}$.) A related problem is that the partial effects on $\mathrm{E}(y \mid \mathbf{x})$ cannot really be constant over a wide range of $\mathbf{x}$, and using standard nonlinear transformations of the underlying explanatory variables cannot fully solve the problem. These shortcomings with a linear model for $\mathrm{E}(y \mid \mathbf{x})$ are quite analogous to those for the linear probability model.
+
+As we discussed in Section 15.2 for binary y, it is always valid to view the linear model as the linear projection $\mathrm{L}(y \mid \mathbf{x})$. As we know, regardless of the nature of $y$ (and $\mathbf{x}), \mathrm{L}(y \mid \mathbf{x})$ is always well defined, provided all random variables have finite second moments. Further, as we saw in Section 15.7.5, the coefficients in the linear projection can, under restrictive assumptions, equal average partial effects (APEs). Generally, the linear projection may well approximate the APEs. Even so, one may be interested in getting sensible estimates of $\mathrm{E}(y \mid \mathbf{x})$, along with partial effects on the conditional mean, over a wide range of $\mathbf{x}$ values, and the linear projection may provide a poor approximation to the conditional mean, although the approximation is better if $\mathbf{x}$ includes flexible functions of the underlying covariates.
+
+Even though a linear model for $\mathrm{E}(y \mid \mathbf{x})$ usually is not suitable, we have seen other relatively simple functional forms that ensure a positive conditional mean for all values of $\mathbf{x}$ and the parameters. The leading case is an exponential function, $\mathrm{E}(y \mid \mathbf{x})=\exp (\mathbf{x} \boldsymbol{\beta})$, where again we assume that $x_{1}=1$. (We cannot use $\log (y)$ as the dependent variable in a linear regression because $\log (0)$ is undefined.) It is important\\
+to understand that there is nothing wrong with an exponential model for $\mathrm{E}(y \mid \mathbf{x})$. It has all of the features we want in a conditional mean model for a nonnegative response. It is true that the exponential mean is not compatible with the Tobit model that we define below. But the Tobit model, as attractive as it is, is just one possibility, and there is nothing logically wrong with directly specifying an exponential model for $\mathrm{E}(y \mid \mathbf{x})$. As we will see in Chapter 18, an exponential function also lends itself to relatively simple ways to account for endogenous explanatory variables.
+
+Because $\operatorname{Var}(y \mid \mathbf{x})$ is likely to be heteroskedastic when $y$ is a corner solution, nonlinear least squares (NLS) estimation of an exponential model is likely to be inefficient. As we know from Chapter 12, we can use weighted NLS to obtain more efficient estimators, although that requires specification of a model for the conditional variance that would be arbitrary. However, remember that we can use fully robust inference whether we use NLS or WNLS, and a thoughtfully constructed WNLS estimator might be more efficient than NLS even if we have the conditional variance misspecified.
+
+A more important criticism with modeling $\mathrm{E}(y \mid \mathbf{x})$ as an exponential function, or any other function, is that we cannot measure the effect of the $x_{j}$ on any other feature of $\mathrm{D}(y \mid \mathbf{x})$. Often, we are interested in features such as $\mathrm{P}(y=0 \mid \mathbf{x})$ and $\mathrm{E}(y \mid \mathbf{x}, y>0)$. By construction, a model for $\mathrm{E}(y \mid \mathbf{x})$ says nothing about other features of $\mathrm{D}(y \mid \mathbf{x})$. In this chapter, we are mainly concerned with models that fully specify the conditional distribution, although we will touch on other situations where we specify less than a full conditional distribution.
+
+Before we turn to econometric models, we note that economic models of maximizing or minimizing behavior often lead to the possibility of corner solution outcomes. A good example is annual hours worked for married women. In the population, we see a wide range of hours worked over strictly positive hours, with enough different values to take the distribution as being continuous. But we also see a nontrivial fraction of married women who do not work for a wage or salary.
+
+Generally, utility maximization problems allow for the possibility of a corner solution, as shown by the following simple model of charitable contributions.
+
+Example 17.1 (Charitable Contributions): Problem 15.2 shows how to derive a probit model from a utility maximization problem for charitable giving, using utility function $\operatorname{util}_{i}(c, q)=c+a_{i} \log (1+q)$, where $c$ is annual consumption in dollars and $q$ is annual charitable giving. The variable $a_{i}$ determines the marginal utility of giving for family $i$. Maximizing subject to the budget constraint $c_{i}+p_{i} q_{i}=m_{i}$ (where $m_{i}$ is family income and $p_{i}$ is the price of a dollar of charitable contributions) and the inequality constraints $c, q \geq 0$, the solution $q_{i}$ is easily shown to be $q_{i}=0$ if $a_{i} / p_{i} \leq 1$,\\
+and $q_{i}=a_{i} / p_{i}-1$ if $a_{i} / p_{i}>1$. We can write this relation as $1+q_{i}=\max \left(1, a_{i} / p_{i}\right)$. If $a_{i}=\exp \left(\mathbf{z}_{i} \gamma+u_{i}\right)$, where $u_{i}$ is an unobservable, then charitable contributions are determined by the equation\\
+$\log \left(1+q_{i}\right)=\max \left[0, \mathbf{z}_{i} \gamma-\log \left(p_{i}\right)+u_{i}\right]$.
+
+Because $q_{i}=0$ if and only if $\log \left(1+q_{i}\right)=0$, equation (17.1) implies that the probability of observing zero charitable contributions is strictly positive. Further, because $u_{i}$ has a normal distribution, $q_{i}$ has a continuous distribution over strictly postive values.
+
+The charitable contributions example is a special case of a model that has become a workhorse for corner solution responses when the only corner is at zero-the canonical case. In the population, let $y$ be the corner solution response and let $\mathbf{x}$ be the row vector of covariates (which contains unity as its first element). Assume\\
+$y=\max (0, \mathbf{x} \boldsymbol{\beta}+u)$,\\
+where $u$ is unobservable. Naturally, $u$ could have a variety of distributions, and its conditional distribution $\mathrm{D}(u \mid \mathbf{x})$ could depend on $\mathbf{x}$. But we will mostly work with the assumption\\
+$u \mid \mathbf{x} \sim \operatorname{Normal}\left(0, \sigma^{2}\right)$,\\
+which implies that $u$ is independent of $\mathbf{x}$. Assumptions (17.2) and (17.3) define the type I Tobit model (after Tobin, 1958). This model is also called the standard censored regression model, but, as we mentioned before, we avoid the word "censored" in this chapter because it connotes some sort of data censoring. Amemiya (1985) gave it the "type I" label, and we use that here because it is neutral with respect to the nature of the application. (Interestingly, Tobin's original application to spending on consumer durables is clearly a corner solution application, and he never uses the word "censored" in his article. Instead, he refers to the response taking on its "limit value." Plus, Tobin was careful to compare the Tobit estimates of the conditional mean with the linear model estimates.) It is handy to have a notation for when a variable follows a Tobit model. If $\mathbf{D}(y \mid \mathbf{x})$ is determined by (17.2) and (17.3), we write $\mathbf{D}(y \mid \mathbf{x})= \operatorname{Tobit}\left(\mathbf{x} \boldsymbol{\beta}, \sigma^{2}\right)$.
+
+The normality assumption for $u$ means that it has unbounded support, and, because $u$ is independent of $\mathbf{x}$, there is always positive probability (for any $\mathbf{x}$ and any value of $\boldsymbol{\beta}$ ) that $\mathbf{x} \boldsymbol{\beta}+u<0$, which means $\mathrm{P}(y=0 \mid \mathbf{x})>0$.
+
+Equation (17.2) has the benefit of directly relating the variable of interest, $y$, to observed explanatory variables and an unobservable. Nevertheless, sometimes it is useful to write (17.2) as a latent variable model:\\
+$y^{*}=\mathbf{x} \boldsymbol{\beta}+u, \quad u \mid \mathbf{x} \sim \operatorname{Normal}\left(0, \sigma^{2}\right)$,\\
+$y_{i}=\max \left(0, y^{*}\right)$.
+
+The latent variable formulation has the danger of suggesting that we are interested in $\mathrm{E}\left(y^{*} \mid \mathbf{x}\right)$, but it will be valuable for certain derivations later on. Given (17.4), the latent variable $y^{*}$ satisfies the classical linear model assumptions.
+
+We can write the model in Example 17.1 as in equation (17.2) by defining (in the population) $y=\log (1+q)$ and $\mathbf{x}=[\mathbf{z}, \log (p)]$. This particular transformation of $q$, along with the restriction that the coefficient on $\log (p)$ is -1 , are products of the specific utility function used in the example. In practice, one might just take $y=q$ and not impose restrictions on the vector $\boldsymbol{\beta}$. In such applications, we must be careful not to put too much emphasis on $y^{*}$, which some might view as "desired" or "latent" charitable contributions (which can, evidently, be negative). In corner solution applications, we are interested in $y$, which would be actual charitable contributions.
+
+\subsection*{17.2 Useful Expressions for Type I Tobit}
+Because $y$ is a nonlinear function of $\mathbf{x}$ and $u$, we will want to derive various features of its conditional distribution, $\mathrm{D}(y \mid \mathbf{x})$. Given that assumption (17.3) fully specifies $\mathrm{D}(u \mid \mathbf{x})$, we can fully characterize $\mathrm{D}(y \mid \mathbf{x})$. But before doing so, it is useful to derive general features of the conditional mean and median of $y$ that do not require full distributional assumptions.
+
+First, suppose $\mathrm{E}(u \mid \mathbf{x})=0$. Then, because the function $g(z) \equiv \max (0, z)$ is convex, it follows from the conditional Jensen's inequality (see Appendix 2A) that\\
+$\mathrm{E}(y \mid \mathbf{x}) \geq \max (0, \mathrm{E}(\mathbf{x} \boldsymbol{\beta}+u \mid \mathbf{x}))=\max (0, \mathbf{x} \boldsymbol{\beta})$.
+
+Therefore, although we cannot find $\mathrm{E}(y \mid \mathbf{x})$ without further assumptions, we do have a lower bound as a function of $\mathbf{x} \boldsymbol{\beta}$.
+
+Next, assume that rather than a zero mean, $\operatorname{Med}(u \mid \mathbf{x})=0$. Unlike the expected value, the median operator passes through monotonic functions, and the function $g(z)$ is monotically increasing (though not strictly so). Therefore,\\
+$\operatorname{Med}(y \mid \mathbf{x})=\max (0, \operatorname{Med}(\mathbf{x} \boldsymbol{\beta}+u \mid \mathbf{x}))=\max (0, \mathbf{x} \boldsymbol{\beta})$,\\
+and so, without any restrictions on $\mathrm{D}(u \mid \mathbf{x})$ other than a zero median (and certainly independence between $u$ and $\mathbf{x}$ is not required), we have $\operatorname{Med}(y \mid \mathbf{x})$ as a known function of $\mathbf{x} \boldsymbol{\beta}$. From equations (17.6) and (17.7), if $\mathbf{D}(u \mid \mathbf{x})$ is symmetric about zero, it follows that $\mathrm{E}(y \mid \mathbf{x}) \geq \operatorname{Med}(y \mid \mathbf{x})$. We will return to expression (17.7) in
+
+Section 17.5.4 as a basis for estimating $\boldsymbol{\beta}$ under the zero conditional median assumption for $u$.
+
+When $u$ is independent of $\mathbf{x}$ and has a normal distribution, we can find an explicit expression for $\mathrm{E}(y \mid \mathbf{x})$. We first derive $\mathrm{P}(y>0 \mid \mathbf{x})$ and $\mathrm{E}(y \mid \mathbf{x}, y>0)$, which are of interest in their own right. Then, we use the law of iterated expectations to obtain $\mathrm{E}(y \mid \mathbf{x})$ :
+
+
+\begin{align*}
+\mathrm{E}(y \mid \mathbf{x}) & =\mathrm{P}(y=0 \mid \mathbf{x}) \cdot 0+\mathrm{P}(y>0 \mid \mathbf{x}) \cdot \mathrm{E}(y \mid \mathbf{x}, y>0) \\
+& =\mathrm{P}(y>0 \mid \mathbf{x}) \cdot \mathrm{E}(y \mid \mathbf{x}, y>0) \tag{17.8}
+\end{align*}
+
+
+Deriving $\mathrm{P}(y>0 \mid \mathbf{x})$ is easy. Define the binary variable $w=1$ if $y>0, w=0$ if $y=0$. Then $w$ follows a probit model:
+
+
+\begin{align*}
+\mathrm{P}(w=1 \mid \mathbf{x}) & =\mathrm{P}\left(y^{*}>0 \mid \mathbf{x}\right)=\mathrm{P}(u>-\mathbf{x} \boldsymbol{\beta} \mid \mathbf{x}) \\
+& =\mathrm{P}(u / \sigma>-\mathbf{x} \boldsymbol{\beta} / \sigma)=\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma) \tag{17.9}
+\end{align*}
+
+
+One implication of equation (17.9) is that $\boldsymbol{\gamma} \equiv \boldsymbol{\beta} / \sigma$, but not $\boldsymbol{\beta}$ and $\sigma$ separately, can be consistently estimated from a probit of $w$ on $\mathbf{x}$.
+
+To derive $\mathrm{E}(y \mid \mathbf{x}, y>0)$, we need the following fact about the normal distribution: if $z \sim \operatorname{Normal}(0,1)$, then, for any constant $c$,\\
+$\mathrm{E}(z \mid z>c)=\frac{\phi(c)}{1-\Phi(c)}$,\\
+where $\phi(\cdot)$ is the standard normal density function. (This is easily shown by noting that the density of $z$ given $z>c$ is $\phi(z) /[1-\Phi(c)], z>c$, and then integrating $z \phi(z)$ from $c$ to $\infty$.) Therefore, if $u \sim \operatorname{Normal}\left(0, \sigma^{2}\right)$, then\\
+$\mathrm{E}(u \mid u>c)=\sigma \mathrm{E}\left(\frac{u}{\sigma} \left\lvert\, \frac{u}{\sigma}>\frac{c}{\sigma}\right.\right)=\sigma\left[\frac{\phi(c / \sigma)}{1-\Phi(c / \sigma)}\right]$.\\
+We can use this equation to find $\mathrm{E}(y \mid \mathbf{x}, y>0)$ when $y$ follows a Tobit model:
+
+
+\begin{equation*}
+\mathrm{E}(y \mid \mathbf{x}, y>0)=\mathbf{x} \boldsymbol{\beta}+\mathrm{E}(u \mid u>-\mathbf{x} \boldsymbol{\beta})=\mathbf{x} \boldsymbol{\beta}+\sigma\left[\frac{\phi(\mathbf{x} \boldsymbol{\beta} / \sigma)}{\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma)}\right] \tag{17.10}
+\end{equation*}
+
+
+since $1-\Phi(-\mathbf{x} \boldsymbol{\beta} / \sigma)=\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma)$. Although it is not obvious from looking at equation (17.10), the right-hand side is positive for any values of $\mathbf{x}$ and $\boldsymbol{\beta}$.
+
+For any $c$, the quantity $\lambda(c) \equiv \phi(c) / \Phi(c)$ is called the inverse Mills ratio. Thus, $\mathrm{E}(y \mid \mathbf{x}, y>0)$ is the sum of $\mathbf{x} \boldsymbol{\beta}$ and $\sigma$ times the inverse Mills ratio evaluated at $\mathbf{x} \boldsymbol{\beta} / \sigma$.
+
+If $x_{j}$ is a continuous explanatory variable, then\\
+$\frac{\partial \mathrm{E}(y \mid \mathbf{x}, y>0)}{\partial x_{j}}=\beta_{j}+\beta_{j}\left[\frac{\mathrm{~d} \lambda}{\mathrm{~d} c}(\mathbf{x} \boldsymbol{\beta} / \sigma)\right]$\\
+assuming that $x_{j}$ is not functionally related to other regressors. By differentiating $\lambda(c)=\phi(c) / \Phi(c)$, it can be shown that $\frac{\mathrm{d} \lambda}{\mathrm{d} c}(c)=-\lambda(c)[c+\lambda(c)]$, and therefore\\
+$\frac{\partial \mathrm{E}(y \mid \mathbf{x}, y>0)}{\partial x_{j}}=\beta_{j}\{1-\lambda(\mathbf{x} \boldsymbol{\beta} / \sigma)[\mathbf{x} \boldsymbol{\beta} / \sigma+\lambda(\mathbf{x} \boldsymbol{\beta} / \sigma)]\}$.
+
+This equation shows that the partial effect of $x_{j}$ on $\mathrm{E}(y \mid \mathbf{x}, y>0)$ is not entirely determined by $\beta_{j}$; there is an adjustment factor multiplying $\beta_{j}$, the term in $\{\cdot\}$, that depends on $\mathbf{x}$ through the index $\mathbf{x} \boldsymbol{\beta} / \sigma$. We can use the fact that if $z \sim \operatorname{Normal}(0,1)$, then $\operatorname{Var}(z \mid z>-c)=1-\lambda(c)[c+\lambda(c)]$ for any $c \in \mathbb{R}$, which implies that the adjustment factor in equation (17.11), call it $\theta(\mathbf{x} \boldsymbol{\beta} / \sigma)=(1-\lambda(\mathbf{x} \boldsymbol{\beta} / \sigma)[\mathbf{x} \boldsymbol{\beta} / \sigma+\lambda(\mathbf{x} \boldsymbol{\beta} / \sigma)])$, is strictly between zero and one. Therefore, the sign of $\beta_{j}$ is the same as the sign of the partial effect of $x_{j}$.
+
+Other functional forms are easily handled. Suppose that $x_{1}=\log \left(z_{1}\right)$ (and that this is the only place $z_{1}$ appears in $\mathbf{x}$ ). Then\\
+$\frac{\partial \mathrm{E}(y \mid \mathbf{x}, y>0)}{\partial z_{1}}=\left(\beta_{1} / z_{1}\right) \theta(\mathbf{x} \boldsymbol{\beta} / \sigma)$,\\
+where $\beta_{1}$ now denotes the coefficient on $\log \left(z_{1}\right)$. Or, suppose that $x_{1}=z_{1}$ and $x_{2}=z_{1}^{2}$. Then\\
+$\frac{\partial \mathrm{E}(y \mid \mathbf{x}, y>0)}{\partial z_{1}}=\left(\beta_{1}+2 \beta_{2} z_{1}\right) \theta(\mathbf{x} \boldsymbol{\beta} / \sigma)$,\\
+where $\beta_{1}$ is the coefficient on $z_{1}$ and $\beta_{2}$ is the coefficient on $z_{1}^{2}$. Interaction terms are handled similarly. Generally, we compute the partial effect of $\mathbf{x} \boldsymbol{\beta}$ with respect to the variable of interest and multiply this by the factor $\theta(\mathbf{x} \boldsymbol{\beta} / \sigma)$.
+
+All of the usual economic quantities such as elasticities can be computed. The elasticity of $y$ with respect to $x_{1}$, conditional on $y>0$, is
+
+
+\begin{equation*}
+\frac{\partial \mathrm{E}(y \mid \mathbf{x}, y>0)}{\partial x_{1}} \cdot \frac{x_{1}}{\mathrm{E}(y \mid \mathbf{x}, y>0)} \tag{17.13}
+\end{equation*}
+
+
+and equations (17.11) and (17.10) can be used to find the elasticity when $x_{1}$ appears in levels form. If $z_{1}$ appears in logarithmic form, the elasticity is obtained simply as $\partial \log \mathrm{E}(y \mid \mathbf{x}, y>0) / \partial \log \left(z_{1}\right)$.
+
+If $x_{1}$ is a binary variable, the effect of interest is obtained as the difference between $\mathrm{E}(y \mid \mathbf{x}, y>0)$ with $x_{1}=1$ and $x_{1}=0$. Other discrete variables (such as number of children) can be handled similarly.
+
+We can also compute $\mathrm{E}(y \mid \mathbf{x})$ from equation (17.8):
+
+
+\begin{align*}
+\mathrm{E}(y \mid \mathbf{x}) & =\mathrm{P}(y>0 \mid \mathbf{x}) \cdot \mathrm{E}(y \mid \mathbf{x}, y>0) \\
+& =\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma)[\mathbf{x} \boldsymbol{\beta}+\sigma \lambda(\mathbf{x} \boldsymbol{\beta} / \sigma)]=\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma) \mathbf{x} \boldsymbol{\beta}+\sigma \phi(\mathbf{x} \boldsymbol{\beta} / \sigma) \tag{17.14}
+\end{align*}
+
+
+We can find the partial derivatives of $\mathrm{E}(y \mid \mathbf{x})$ with respect to continuous $x_{j}$ using the chain rule. In examples where $y$ is some quantity chosen by individuals (labor supply, charitable contributions, life insurance), this derivative accounts for the fact that some people who start at $y=0$ may switch to $y>0$ when $x_{j}$ changes. Formally,
+
+
+\begin{equation*}
+\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{j}}=\frac{\partial \mathrm{P}(y>0 \mid \mathbf{x})}{\partial x_{j}} \cdot \mathrm{E}(y \mid \mathbf{x}, y>0)+\mathrm{P}(y>0 \mid \mathbf{x}) \cdot \frac{\partial \mathrm{E}(y \mid \mathbf{x}, y>0)}{\partial x_{j}} . \tag{17.15}
+\end{equation*}
+
+
+This decomposition is attributed to McDonald and Moffitt (1980). Because $\mathrm{P}(y> 0 \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma), \partial \mathrm{P}(y>0 \mid \mathbf{x}) / \partial x_{j}=\left(\beta_{j} / \sigma\right) \phi(\mathbf{x} \boldsymbol{\beta} / \sigma)$. If we plug this along with equation (17.11) into equation (17.15), we get a remarkable simplification:
+
+
+\begin{equation*}
+\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{j}}=\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma) \beta_{j} . \tag{17.16}
+\end{equation*}
+
+
+The estimated scale factor for a given $\mathbf{x}$ is $\Phi(\mathbf{x} \hat{\boldsymbol{\beta}} / \hat{\sigma})$. This scale factor has a very interesting interpretation: $\Phi(\mathbf{x} \hat{\boldsymbol{\beta}} / \hat{\sigma})=\hat{\mathbf{P}}(y>0 \mid \mathbf{x})$; that is, $\Phi(\mathbf{x} \hat{\boldsymbol{\beta}} / \hat{\sigma})$ is the estimated probability of observing a positive response given $\mathbf{x}$. If $\Phi(\mathbf{x} \hat{\boldsymbol{\beta}} / \hat{\sigma})$ is close to one, then it is unlikely we observe $y_{i}=0$ when $\mathbf{x}_{i}=\mathbf{x}$, and the adjustment factor becomes unimportant. We can evaluate $\Phi(\mathbf{x} \hat{\boldsymbol{\beta}} / \hat{\sigma})$ at interesting values of $\mathbf{x}$ to determine how the estimated partial effects change as the covariates change. One possibility is to plug in mean values, although this need not correspond to any particular population unit when $\mathbf{x}$ contains discrete elements (and even sometimes when $\mathbf{x}$ contains all continuous elements). We can use median values, or plug in various quantiles. Often it is useful to have a single scale factor, and the scale factor that delivers APEs is probably the most useful. The APE for a continuous variable $x_{j}$ is estimated as
+
+
+\begin{equation*}
+\left[N^{-1} \sum_{i=1}^{N} \Phi\left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}} / \hat{\sigma}\right)\right] \hat{\beta}_{j} . \tag{17.17}
+\end{equation*}
+
+
+The scale factor in equation (17.17) is the average of $\hat{\mathbf{P}}(y>0 \mid \mathbf{x})$ across the sample. The delta method can be used to obtain a valid asymptotic standard error for (17.17),\\
+but the bootstrap is convenient and feasible because estimation of Tobit models can be done fairly quickly.
+
+Naturally, the scale factor in (17.17) is always between zero and one, and that fact helps explain why Tobit coefficients are typically larger than OLS coefficients from a linear regression. If $\hat{\gamma}_{j}$ is the OLS estimate on a continuous variable $x_{j}$ from the regression $y_{i}$ on $\mathbf{x}_{i}$, we can compare $\hat{\gamma}_{j}$ to (17.17) as an indication of whether the linear model gives similar estimates of the APEs. Sometimes it will, but in other cases the linear model APEs can be notably different from the Tobit APEs.
+
+For discrete explanatory variables or for large changes in continuous ones, we can compute the difference in $\mathrm{E}(y \mid \mathbf{x})$ at different values of $\mathbf{x}$. For example, suppose $x_{K}$ is a binary variable (such as a policy indicator), and define, for each observation $i$, the two indices $\hat{w}_{i 1}=\mathbf{x}_{i(K)} \hat{\boldsymbol{\beta}}_{(K)}+\hat{\beta}_{K}$ and $\hat{w}_{i 0}=\mathbf{x}_{i(K)} \hat{\boldsymbol{\beta}}_{(K)}$, where $\mathbf{x}_{i(K)}$ is the $1 \times(K-1)$ row vector with $x_{i K}$ dropped. Then $\hat{w}_{i 1}$ is the estimated index for person $i$ when $x_{K}=1$ and $\hat{w}_{i 0}$ is the estimated index for person $i$ when $x_{K}=0$. (One of these is a counterfactual because $x_{i K}$ is either zero or one for each $i$.) Then the average difference
+
+
+\begin{equation*}
+N^{-1} \sum_{i=1}^{N}\left\{\left[\Phi\left(\hat{w}_{i 1} / \hat{\sigma}\right) \hat{w}_{i 1}+\hat{\sigma} \phi\left(\hat{w}_{i 1} / \hat{\sigma}\right)\right]-\left[\Phi\left(\hat{w}_{i 0} / \hat{\sigma}\right) \hat{w}_{i 0}+\hat{\sigma} \phi\left(\hat{w}_{i 0} / \hat{\sigma}\right)\right]\right\} \tag{17.18}
+\end{equation*}
+
+
+is the estimated APE of the binary variable $x_{K}$. Again, bootstrapping is a convenient method of computing a standard error.
+
+The equations for the partial effects in the type I Tobit model, equations (17.11) and (17.16), and the estimates in (17.17) and (17.18) reveal an important point about the parameters: $\sigma$ as well as $\boldsymbol{\beta}$ appears in the partial effects. In other words, if we can only estimate $\boldsymbol{\beta}$, we cannot estimate the partial effects of the covariates on $\mathrm{E}(y \mid \mathbf{x}, y>0)$ and $\mathrm{E}(y \mid \mathbf{x})$. Therefore, treatments of the type I Tobit for corner solutions that refer to $\sigma$ as "ancillary"-of secondary importance-are misleading. In a linear model, of course, the variance of the errors plays no role in obtaining partial effects on the mean, and so the estimated error variance plays a role only in obtaining the usual OLS standard errors. But the variance of $u$ in equation (17.2) directly enters the conditional means, and so we should not think of $\sigma$ as ancillary when our interest is in partial effects on the mean. (As we will see in Chapter 20, in true data censoring contexts we are interested in $\boldsymbol{\beta}$, and $\sigma$ becomes ancillary to estimating partial effects.)
+
+Equations (17.9), (17.11), and (17.14) show that, for continuous variables $x_{j}$ and $x_{h}$, the relative partial effects on $\mathrm{P}(y>0 \mid \mathbf{x}), \mathrm{E}(y \mid \mathbf{x}, y>0)$, and $\mathrm{E}(y \mid \mathbf{x})$ are all equal to $\beta_{j} / \beta_{h}$ (assuming that $\beta_{h} \neq 0$ ). This feature can be a limitation of the Tobit model, and we will study models that relax this implication in Section 17.6.
+
+By taking the $\log$ of equation (17.8) and differentiating, we see that the elasticity (or semielasticity) of $\mathrm{E}(y \mid \mathbf{x})$ with respect to any $x_{j}$ is simply the sum of the elasticities (or semielasticities) of $\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma)$ and $\mathrm{E}(y \mid \mathbf{x}, y>0)$, each with respect to $x_{j}$.
+
+\subsection*{17.3 Estimation and Inference with the Type I Tobit Model}
+Let $\left\{\left(\mathbf{x}_{i}, y_{i}\right): i=1,2, \ldots N\right\}$ be a random sample following the censored Tobit model. To use maximum likelihood, we need to derive the density of $y_{i}$ given $\mathbf{x}_{i}$. We have already shown that $f\left(0 \mid \mathbf{x}_{i}\right)=\mathrm{P}\left(y_{i}=0 \mid \mathbf{x}_{i}\right)=1-\Phi\left(\mathbf{x}_{i} \boldsymbol{\beta} / \sigma\right)$. Further, for $y>0$, $\mathrm{P}\left(y_{i} \leq y \mid \mathbf{x}_{i}\right)=\mathrm{P}\left(y_{i}^{*} \leq y \mid \mathbf{x}_{i}\right)$, which implies that\\
+$f\left(y \mid \mathbf{x}_{i}\right)=f^{*}\left(y \mid \mathbf{x}_{i}\right), \quad$ all $y>0$,\\
+where $f^{*}\left(\cdot \mid \mathbf{x}_{i}\right)$ denotes the density of $y_{i}^{*}$ given $\mathbf{x}_{i}$. (We use $y$ as the dummy argument in the density.) By assumption, $y_{i}^{*} \mid \mathbf{x}_{i} \sim \operatorname{Normal}\left(\mathbf{x}_{i} \boldsymbol{\beta}, \sigma^{2}\right)$, so
+
+$$
+f^{*}\left(y \mid \mathbf{x}_{i}\right)=\frac{1}{\sigma} \phi\left[\left(y-\mathbf{x}_{i} \boldsymbol{\beta}\right) / \sigma\right], \quad-\infty<y<\infty .
+$$
+
+(As in recent chapters, we will use $\boldsymbol{\beta}$ and $\sigma^{2}$ to denote the true values as well as dummy arguments in the log-likelihood function and its derivatives.) We can write the density for $y_{i}$ given $\mathbf{x}_{i}$ compactly using the indicator function $1[\cdot]$ as
+
+
+\begin{equation*}
+f\left(y \mid \mathbf{x}_{i}\right)=\left\{1-\Phi\left(\mathbf{x}_{i} \boldsymbol{\beta} / \sigma\right)\right\}^{1[y=0]}\left\{(1 / \sigma) \phi\left[\left(y-\mathbf{x}_{i} \boldsymbol{\beta}\right) / \sigma\right]\right\}^{1[y>0]}, \tag{17.19}
+\end{equation*}
+
+
+where the density is zero for $y<0$. Let $\boldsymbol{\theta} \equiv\left(\boldsymbol{\beta}^{\prime}, \sigma^{2}\right)^{\prime}$ denote the $(K+1) \times 1$ vector of parameters. The log likelihood is
+
+
+\begin{equation*}
+\ell_{i}(\boldsymbol{\theta})=1\left[y_{i}=0\right] \log \left[1-\Phi\left(\mathbf{x}_{i} \boldsymbol{\beta} / \sigma\right)\right]+1\left[y_{i}>0\right]\left\{\log \phi\left[\left(y_{i}-\mathbf{x}_{i} \boldsymbol{\beta}\right) / \sigma\right]-\log \left(\sigma^{2}\right) / 2\right\} . \tag{17.20}
+\end{equation*}
+
+
+Apart from a constant that does not affect the maximization, equation (17.20) can be written as
+
+$$
+1\left[y_{i}=0\right] \log \left[1-\Phi\left(\mathbf{x}_{i} \boldsymbol{\beta} / \sigma\right)\right]-1\left[y_{i}>0\right]\left\{\left(y_{i}-\mathbf{x}_{i} \boldsymbol{\beta}\right)^{2} / 2 \sigma^{2}+\log \left(\sigma^{2}\right) / 2\right\} .
+$$
+
+Therefore,
+
+
+\begin{align*}
+\partial \ell_{i}(\boldsymbol{\theta}) / \partial \boldsymbol{\beta}= & -1\left[y_{i}=0\right] \phi\left(\mathbf{x}_{i} \boldsymbol{\beta} / \sigma\right)\left(\mathbf{x}_{i} / \sigma\right)\left[1-\Phi\left(\mathbf{x}_{i} \boldsymbol{\beta} / \sigma\right)\right]+1\left[y_{i}>0\right]\left(y_{i}-\mathbf{x}_{i} \boldsymbol{\beta}\right) \mathbf{x}_{i} / \sigma^{2}  \tag{17.21}\\
+\partial \ell_{i}(\boldsymbol{\theta}) / \partial \sigma^{2}= & 1\left[y_{i}=0\right] \phi\left(\mathbf{x}_{i} \boldsymbol{\beta} / \sigma\right)\left(\mathbf{x}_{i} \boldsymbol{\beta}\right) /\left\{2 \sigma^{3}\left[1-\Phi\left(\mathbf{x}_{i} \boldsymbol{\beta} / \sigma\right)\right]\right\} \\
+& +1\left[y_{i}>0\right]\left\{\left(y_{i}-\mathbf{x}_{i} \boldsymbol{\beta}\right)^{2} /\left(2 \sigma^{4}\right)-1 /\left(2 \sigma^{2}\right)\right\} . \tag{17.22}
+\end{align*}
+
+
+The second derivatives are complicated, but all we need is $\mathbf{A}\left(\mathbf{x}_{i}, \boldsymbol{\theta}\right) \equiv-\mathrm{E}\left[\mathbf{H}_{i}(\boldsymbol{\theta}) \mid \mathbf{x}_{i}\right]$. After tedious calculations it can be shown that\\
+$\mathbf{A}\left(\mathbf{x}_{i}, \boldsymbol{\theta}\right)=\left[\begin{array}{cc}a_{i} \mathbf{x}_{i}^{\prime} \mathbf{x}_{i} & b_{i} \mathbf{x}_{i}^{\prime} \\ b_{i} \mathbf{x}_{i} & c_{i}\end{array}\right]$,\\
+where\\
+$a_{i}=-\sigma^{-2}\left\{\mathbf{x}_{i} \gamma \phi_{i}-\left[\phi_{i}^{2} /\left(1-\Phi_{i}\right)\right]-\Phi_{i}\right\}$,\\
+$b_{i}=\sigma^{-3}\left\{\left(\mathbf{x}_{i} \gamma\right)^{2} \phi_{i}+\phi_{i}-\left[\left(\mathbf{x}_{i} \gamma\right) \phi_{i}^{2} /\left(1-\Phi_{i}\right)\right]\right\} / 2$,\\
+$c_{i}=-\sigma^{-4}\left\{\left(\mathbf{x}_{i} \gamma\right)^{3} \phi_{i}+\left(\mathbf{x}_{i} \gamma\right) \phi_{i}-\left[\left(\mathbf{x}_{i} \gamma\right) \phi_{i}^{2} /\left(1-\Phi_{i}\right)\right]-2 \Phi_{i}\right\} / 4$,\\
+$\boldsymbol{\gamma}=\boldsymbol{\beta} / \sigma$, and $\phi_{i}$ and $\Phi_{i}$ are evaluated at $\mathbf{x}_{i} \boldsymbol{\gamma}$. This matrix is used in equation (13.32) to obtain the estimate of $\operatorname{Avar}(\hat{\boldsymbol{\theta}})$. See Amemiya (1973) for details.
+
+Testing is easily carried out in a standard maximum likelihood estimator (MLE) framework. Single exclusion restrictions are tested using asymptotic $t$ statistics once $\hat{\beta}_{j}$ and its asymptotic standard error have been obtained. Multiple exclusion restrictions are easily tested using the likelihood ratio $(L R)$ statistic, and some econometrics packages routinely compute the Wald statistic. If the unrestricted model has so many variables that computation becomes an issue, the lagrange multiplier (LM) statistic is an attractive alternative.
+
+The Wald statistic is the easiest to compute for testing nonlinear restrictions on $\boldsymbol{\beta}$, just as in binary response analysis, because the unrestricted model is just standard Tobit.
+
+\subsection*{17.4 Reporting the Results}
+As with any estimation of a parametric model, the parameter estimates $\hat{\boldsymbol{\beta}}$ and $\hat{\sigma}$ and their standard errors should be reported. We saw in Section 17.2 that the $\hat{\beta}_{j}$ give the direction of the partial effects on the means, and the ratios are the relative partial effects for continuous variables. The value of the log likelihood should be included for testing purposes and also to allow comparisons with other nonnested models. A goodness-of-fit statistic for the conditional mean $\mathrm{E}(y \mid \mathbf{x})$ is often of interest, particularly for comparing with other models of $\mathrm{E}(y \mid \mathbf{x})$ (including linear models). A simple measure is the squared correlation between the actual outcomes, $y_{i}$, and fitted values, $\hat{y}_{i}$, obtained by evaluating equation (17.14) at $\mathbf{x}_{i}$ and the MLEs, $\hat{\boldsymbol{\beta}}$ and $\hat{\sigma}$.
+
+It is also important to report partial effects. For continuous variables we can use (17.17) and for binary variables we can use (17.18). For discrete variables that are not
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 17.1\\
+OLS and Tobit Estimation of Annual Hours Worked}
+\begin{tabular}{|l|l|l|}
+\hline
+\multicolumn{3}{|l|}{Dependent Variable: hours} \\
+\hline
+Independent Variable & Linear (OLS) & Tobit (MLE) \\
+\hline
+nwifeinc & -3.45 (2.54) & -8.81 (4.46) \\
+\hline
+educ & 28.76 (12.95) & 80.65 (21.58) \\
+\hline
+exper & 65.67 (9.96) & 131.56 (17.28) \\
+\hline
+exper ${ }^{2}$ & -. 700 (.325) & -1.86 (0.54) \\
+\hline
+age & -30.51 (4.36) & -54.41 (7.42) \\
+\hline
+kidslt6 & -442.09 (58.85) & -894.02 (111.88) \\
+\hline
+kidsge6 & -32.78 (23.18) & -16.22 (38.64) \\
+\hline
+constant & 1,330.48 (270.78) & 965.31 (446.44) \\
+\hline
+Log-likelihood value & - & -3,819.09 \\
+\hline
+$R$-squared & . 266 & . 275 \\
+\hline
+$\hat{\sigma}$ & 750.18 & 1,122.02 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+binary it is less obvious how to report a single APE. For key explanatory variables, one might want to evaluate partial effects at a range of values, and then average out across the other explanatory variables. Or, we can evaluate partial effects with each covariate evaluated at its mean or its median, or other quantiles of interest.
+
+Example 17.2 (Annual Hours Equation for Married Women): We use the Mroz (1987) data (MROZ.RAW) to estimate a reduced form annual hours equation for married women. The equation is a reduced form because we do not include hourly wage offer as an explanatory variable. The hourly wage offer is unlikely to be exogenous, and, just as important, we cannot observe it when hours $=0$. We will show how to deal with both these issues in Chapter 19. For now, the explanatory variables are the same ones appearing in the labor force participation probit in Example 15.2.
+
+Of the 753 women in the sample, 428 worked for a wage outside the home during the year; 325 of the women worked zero hours. For the women who worked positive hours, the range is fairly broad, ranging from 12 to 4,950 . Thus, annual hours worked is a reasonable candidate for a Tobit model. We also estimate a linear model (using all 753 observations) by OLS. The results are given in Table 17.1.
+
+Not surprisingly, the Tobit coefficient estimates are the same sign as the corresponding OLS estimates, and the statistical significance of the estimates is similar. (Possible exceptions are the coefficients on nwifeinc and kidsge6, but the $t$ statistics have similar magnitudes.) Second, though it is tempting to compare the magnitudes of the OLS estimates and the Tobit estimates, such comparisons are not very informative. We must not think that, because the Tobit coefficient on kidslt6 is roughly twice that of the OLS coefficient, the Tobit model somehow implies a much greater response of hours worked to young children.
+
+The scale factor computed in equation (17.17) is about .589 , and we can multiply this by the Tobit coefficients-at least on the roughly continuous variables-to obtain estimated APEs. For example, the APE for educ is about $.589(80.65)=47.5$, and a bootstrap standard error based on 500 replications is about 13. The Tobit estimated APE is well above the comparable OLS estimate, 28.8, and just as precisely estimated.
+
+For the discrete variable kidslt6, if we use the calculus definition of an APE, the Tobit APE is about -526.68 , which again is much larger in magnitude than the OLS coefficient ( -442.1 ). However, if we compute the difference in estimated expected values at kidslt $=1$ and kidslt $=0$, and average these differences, the result is about -487.2 (bootstrap standard error $=54$ ), and this is more in line with the OLS estimate (but still larger in magnitude). The APE in moving from one small child to two small children is about -246.2 (bootstrap standard error $=12.3$ ): not surprisingly, the effect on expected hours of having a second young child is less than having a first young child. It makes sense that the OLS estimate is between these two values yet closer to the first partial effect: 118 women in the sample have one small child and only 29 have two or more. If we compute a weighted average of the two APEs, the result is about -439 , which is quite close to the OLS estimate and, in some sense, verifies that in some cases OLS can provide a good estimate of APEs, even for a discrete explanatory variable. Interestingly, the APE computed from the Tobit model based on the approximation that kidslt6 is continuous is actually worse than the OLS estimate.
+
+We can also evaluate the partial effects at the average values of the covariates, where we plug $\overline{\operatorname{exper}}$ into the quadratic rather than using the average of $\operatorname{exper}_{i}^{2}$. The scale factor evaluated at the means is about .645, which implies partial effects even larger than the APEs. In other words, the PAEs are much larger than the APEs.
+
+We can also compute the partial effects on $\mathrm{E}(y \mid \mathbf{x}, y>0)$. Again, plugging in the mean values of the explanatory variables, the scale factor in equation (17.11) is about .451, and this number can be multiplied by coefficients to obtain the estimated change in expected hours conditional on hours being positive.
+
+We have reported an $R$-squared for both the linear regression model and the Tobit model. The $R$-squared for OLS is the usual one. For Tobit, the $R$-squared is the square of the correlation coefficient between $y_{i}$ and $\hat{y}_{i}$, where $\hat{y}_{i}=\Phi\left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}} / \hat{\sigma}\right) \mathbf{x}_{i} \hat{\boldsymbol{\beta}}+ \hat{\sigma} \phi\left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}} / \hat{\sigma}\right)$ is the estimate of $\mathrm{E}\left(y \mid \mathbf{x}=\mathbf{x}_{i}\right)$. This statistic is motivated by the fact that the usual $R$-squared for OLS is equal to the squared correlation between the $y_{i}$ and the OLS fitted values.
+
+Based on the $R$-squared measures, the Tobit conditional mean function fits the hours data somewhat better, although the difference is not overwhelming. However, we should remember that the Tobit estimates are not chosen to maximize an $R$-squaredthey maximize the log-likelihood function-whereas the OLS estimates produce the highest $R$-squared given the linear functional form for the conditional mean.
+
+When two additional variables, the local unemployment rate and a binary city indicator, are included, the log likelihood becomes about $-3,817.89$. The likelihood ratio statistic is about $2(3,819.09-3,817.89)=2.40$. This is the outcome of a $\chi_{2}^{2}$ variate under $\mathrm{H}_{0}$, and so the $p$-value is about .30 . Therefore, these two variables are jointly insignificant.
+
+\subsection*{17.5 Specification Issues in Tobit Models}
+\subsection*{17.5.1 Neglected Heterogeneity}
+Suppose that we are initially interested in the model
+
+
+\begin{equation*}
+y=\max (0, \mathbf{x} \boldsymbol{\beta}+\gamma q+u), \quad u \mid \mathbf{x}, q \sim \operatorname{Normal}\left(0, \sigma^{2}\right) \tag{17.24}
+\end{equation*}
+
+
+where $q$ is an unobserved variable that is assumed to be independent of $\mathbf{x}$ and has a $\operatorname{Normal}\left(0, \tau^{2}\right)$ distribution. It follows immediately that
+
+
+\begin{equation*}
+y=\max (0, \mathbf{x} \boldsymbol{\beta}+v), \quad v \mid \mathbf{x} \sim \operatorname{Normal}\left(0, \sigma^{2}+\gamma^{2} \tau^{2}\right) \tag{17.25}
+\end{equation*}
+
+
+Thus, $y$ conditional on $\mathbf{x}$ follows a Tobit model, and Tobit of $y$ on $\mathbf{x}$ consistently estimates $\boldsymbol{\beta}$ and $\eta^{2} \equiv \sigma^{2}+\gamma^{2} \tau^{2}$.
+
+What about estimating partial effects on $\mathrm{E}(y \mid \mathbf{x}, q)$ ? As we discussed in Sections 2.2.5 and 15.7.1, we are often interested in the APEs, where, say, $\mathrm{E}(y \mid \mathbf{x}, q)$ is averaged over the population distribution of $q$, and then derivatives or differences with respect to elements of $\mathbf{x}$ are obtained. From Section 2.2.5 we know that when the heterogeneity is independent of $\mathbf{x}$, the APEs are obtained by finding $\mathrm{E}(y \mid \mathbf{x})$. Naturally, this conditional mean comes from the distribution of $y$ given $\mathbf{x}$. Under the preceding assumptions, it is exactly this distribution that Tobit of $y$ on $\mathbf{x}$ estimates. In other words, we estimate the desired quantities - the APEs - by simply ignoring the\\
+heterogeneity. This is the same conclusion we reached for the probit model in Section 15.7.1.
+
+If $q$ is not normal, then these arguments do not carry over because $y$ given $\mathbf{x}$ does not follow a Tobit model. But the flavor of the argument does. A more difficult issue arises when $q$ and $\mathbf{x}$ are correlated, and we address that in the next subsection.
+
+We can also ask what happens if, rather than having heterogeneity appear additively inside the index, as in equation (17.24), the heterogeneity appears multiplicatively: $y=q \cdot \max (0, \mathbf{x} \boldsymbol{\beta}+u)$, where $q \geq 0$ and we assume $q$ is independent of $(\mathbf{x}, u)$. The distribution $\mathrm{D}(y \mid \mathbf{x})$ now depends on the distribution of $q$, and does not follow a type I Tobit model; generally, finding its distribution would be difficult, even if we specify a simple distribution for $q$. Nevertheless, if we normalize $\mathrm{E}(q)=1$, then $\mathrm{E}(y \mid \mathbf{x}, u)=\mathrm{E}(q \mid \mathbf{x}, u) \cdot \max (0, \mathbf{x} \boldsymbol{\beta}+u)=\max (0, \mathbf{x} \boldsymbol{\beta}+u)$ (because $\mathrm{E}(q \mid \mathbf{x}, u)=1)$. It follows immediately from iterated expectations that if assumption (17.3) holds, then $\mathrm{E}(y \mid \mathbf{x})$ has exactly the same form as the type I Tobit model in equation (17.14). That equation (17.14) holds for an extension of the Tobit model means that it makes sense to estimate $\mathrm{E}(y \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma) \mathbf{x} \boldsymbol{\beta}+\sigma \phi(\mathbf{x} \boldsymbol{\beta} / \sigma)$ by NLS, or a weighted NLS procedure (or a quasi-MLE, which we discuss in Chapter 18). NLS and WNLS approaches are consistent under (17.14) even though $\mathrm{D}(y \mid \mathbf{x})$ does not follow the type I Tobit distribution.
+
+\subsection*{17.5.2 Endogenous Explanatory Variables}
+Suppose we now allow one of the variables in the Tobit model to be endogenous. The first model we consider has a continuous endogenous explanatory variable:\\
+$y_{1}=\max \left(0, \mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+u_{1}\right)$,\\
+$y_{2}=\mathbf{z} \boldsymbol{\delta}_{2}+v_{2}=\mathbf{z}_{1} \boldsymbol{\delta}_{21}+\mathbf{z}_{2} \boldsymbol{\delta}_{22}+v_{2}$,\\
+where ( $u_{1}, v_{2}$ ) are zero-mean normally distributed, independent of $\mathbf{z}$. If $u_{1}$ and $v_{2}$ are correlated, then $y_{2}$ is endogenous. For identification we need the usual rank condition $\boldsymbol{\delta}_{22} \neq \mathbf{0} ; \mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$ is assumed to have full rank, as always.
+
+Naturally, we are interested in estimating $\boldsymbol{\delta}_{1}$ and $\alpha_{1}$, but we are also interested in estimating APEs, which depend on $\sigma_{1}^{2}=\operatorname{Var}\left(u_{1}\right)$. The reasoning is just as for the probit model in Section 15.7.2. Holding other factors fixed, the difference in $y_{1}$ when $y_{2}$ changes from $\bar{y}_{2}$ to $\bar{y}_{2}+1$ is\\
+$\max \left[0, \overline{\mathbf{z}}_{1} \boldsymbol{\delta}_{1}+\alpha_{1}\left(\bar{y}_{2}+1\right)+u_{1}\right]-\max \left[0, \overline{\mathbf{z}}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} \bar{y}_{2}+u_{1}\right]$.\\
+Averaging this expression across the distribution of $u_{1}$ gives differences in expectations that have the form (17.14), with $\mathbf{x}=\left[\overline{\mathbf{z}}_{1},\left(\bar{y}_{2}+1\right)\right]$ in the first case, $\mathbf{x}=\left(\overline{\mathbf{z}}_{1}, \bar{y}_{2}\right)$ in the second, and $\sigma=\sigma_{1}$.
+
+Before estimating this model by MLE, a procedure that requires obtaining the distribution of $\left(y_{1}, y_{2}\right)$ given $\mathbf{z}$, it is convenient to have a two-step procedure that also delivers a simple test for the endogeneity of $y_{2}$. Smith and Blundell (1986) propose a two-step procedure that is analogous to the Rivers-Vuong method (see Section 15.7.2) for binary response models. Under bivariate normality of ( $u_{1}, v_{2}$ ), we can write\\
+$u_{1}=\theta_{1} v_{2}+e_{1}$,\\
+where $\theta_{1}=\eta_{1} / \tau_{2}^{2}, \eta_{1}=\operatorname{Cov}\left(u_{1}, v_{2}\right), \tau_{2}^{2}=\operatorname{Var}\left(v_{2}\right)$, and $e_{1}$ is independent of $v_{2}$ with a zero-mean normal distribution and variance, say, $\tau_{1}^{2}$. Further, because ( $u_{1}, v_{2}$ ) is independent of $\mathbf{z}, e_{1}$ is independent of ( $\mathbf{z}, v_{2}$ ). Now, plugging equation (17.28) into equation (17.26) gives\\
+$y_{1}=\max \left(0, \mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\theta_{1} v_{2}+e_{1}\right)$,\\
+where $e_{1} \mid \mathbf{z}, v_{2} \sim \operatorname{Normal}\left(0, \tau_{1}^{2}\right)$. Using our previous notation, we can write $\mathrm{D}\left(y_{1} \mid \mathbf{z}, y_{2}\right)=$\\
+$\operatorname{Tobit}\left(\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\theta_{1}\left(y_{2}-\mathbf{z} \boldsymbol{\delta}_{2}\right), \tau_{1}^{2}\right)=\operatorname{Tobit}\left(\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+\theta_{1} v_{2}, \tau_{1}^{2}\right)$.\\
+It follows that, if we knew $v_{2}$, we would just estimate $\boldsymbol{\delta}_{1}, \alpha_{1}, \theta_{1}$, and $\tau_{1}^{2}$ by type I Tobit. We do not observe $v_{2}$ because it depends on the unknown vector $\boldsymbol{\delta}_{2}$. However, we can easily estimate $\boldsymbol{\delta}_{2}$ by OLS in a first stage. The Smith-Blundell procedure is as follows:
+
+Procedure 17.1: (a) Estimate the reduced form of $y_{2}$ by OLS; this step gives $\hat{\boldsymbol{\delta}}_{2}$. Define the reduced-form OLS residuals as $\hat{v}_{2}=y_{2}-\mathbf{z} \hat{\boldsymbol{\delta}}_{2}$.\\
+(b) Estimate a standard Tobit of $y_{1}$ on $\mathbf{z}_{1}, y_{2}$, and $\hat{v}_{2}$. This step gives consistent estimators of $\boldsymbol{\delta}_{1}, \alpha_{1}, \theta_{1}$, and $\tau_{1}^{2}$.
+
+The usual $t$ statistic on $\hat{v}_{2}$ reported by Tobit provides a simple test of the null $\mathrm{H}_{0}: \theta_{1}=0$, which says that $y_{2}$ is exogenous. Further, under $\theta_{1}=0, e_{1}=u_{1}$, and so normality of $v_{2}$ plays no role: as a test for endogeneity of $y_{2}$, the Smith-Blundell approach is valid without any distributional assumptions on the reduced form of $y_{2}$.
+
+Example 17.3 (Testing Exogeneity of Other Income in the Hours Equation): As an illustration, we test for endogeneity of nwifeinc in the reduced-form hours equation in Example 17.2. We assume that huseduc is exogenous in the hours equation, and so huseduc is a valid instrument for nwifeinc. We first obtain $\hat{v}_{2}$ as the OLS residuals from estimating the reduced form for nwifeinc. When $\hat{v}_{2}$ is added to the Tobit model in Example 17.2 (without unem and city), its coefficient is 24.42 with $t$ statistic $=$\\
+1.47. Thus, there is marginal evidence that nwifeinc is endogenous in the equation. The test is valid under the null hypothesis that nwifeinc is exogenous even if nwifeinc does not have a conditional normal distribution.
+
+When $\theta_{1} \neq 0$, the second-stage Tobit standard errors and test statistics are not asymptotically valid because $\hat{\boldsymbol{\delta}}_{2}$ has been used in place of $\boldsymbol{\delta}_{2}$. Smith and Blundell (1986) contain formulas for correcting the asymptotic variances; these can be derived using the formulas for two-step M-estimators in Chapter 12. Alternatively, it is easy to program the two-step procedure in a bootstrap resampling scheme, and the computational time should be reasonable even for larger data sets.
+
+It is easily seen that joint normality of ( $u_{1}, v_{2}$ ) is not necessary for the two-step estimator to consistently estimate the parameters. It suffices that $u_{1}$ conditional on $\left(\mathbf{z}, v_{2}\right)$ is distributed as $\operatorname{Normal}\left(\theta_{1} v_{2}, \tau_{1}^{2}\right)$. Still, this is a fairly restrictive assumption that cannot be expected to hold when $v_{2}$ is discrete or partially discrete.
+
+We can recover an estimate $\sigma_{1}^{2}$ from the estimates obtained from the two-step control function procedure. From equation (17.27) we have $\sigma_{1}^{2}=\theta_{1}^{2} \tau_{2}^{2}+\tau_{1}^{2}$, and $\hat{\tau}_{2}^{2}$ is obtained as the usual estimated error variance from the first-stage regression, whereas $\hat{\theta}_{1}$ and $\hat{\tau}_{1}^{2}$ are obtained from the second-stage Tobit. Forming $\hat{\sigma}_{1}^{2}=\hat{\theta}_{1}^{2} \hat{\tau}_{2}^{2}+\hat{\tau}_{1}^{2}$ gives us all the estimates we need to obtain the APEs. Generally, it is useful to define the function\\
+$m\left(a, \sigma^{2}\right) \equiv \Phi(a / \sigma) z+\sigma \phi(a / \sigma)$.
+
+Using this notation, the estimated partial effects can be obtained by computing derivatives or differences of $m\left(\mathbf{z}_{1} \hat{\boldsymbol{\delta}}_{1}+\hat{\alpha}_{1} y_{2}, \hat{\sigma}_{1}^{2}\right)$ with respect to elements of $\left(\mathbf{z}_{1}, y_{2}\right)$, just as we did in the case of exogenous explanatory variables.
+
+As with all control function procedures, we can easily allow more general functional forms in both the exogenous and endogenous variables (such as squares and interactions). In fact, if we replace $\mathbf{x}_{1}=\left(\mathbf{z}_{1}, y_{2}\right)$ with $\mathbf{x}_{1}=\mathbf{g}_{1}\left(\mathbf{z}_{1}, y_{2}\right)$, then the estimation procedure is unchanged. Of course, we must believe that $y_{2}$ has the reduced form in (17.27) with the error term having the properties already described. Some additional flexibility is gained by allowing $\mathrm{E}\left(u_{1} \mid v_{2}\right)$ to be nonlinear-for example, a quadratic function, $\mathrm{E}\left(u_{1} \mid v_{2}\right)=\theta_{1} v_{2}+\psi_{1}\left(v_{2}^{2}-\tau_{2}^{2}\right)$ (where the variance of $v_{2}$ is subtracted from $v_{2}^{2}$ to ensure $\mathrm{E}\left(u_{1}\right)=0$ )-and then the second step of the procedure adds $\hat{v}_{2}$ and $\hat{v}_{2}^{2}-\hat{\tau}_{2}^{2}$ as the control functions. The easiest way to obtain APEs in this case is to use derivatives and changes with respect to elements of $\mathbf{x}_{1}$ of
+
+
+\begin{equation*}
+N^{-1} \sum_{i=1}^{N} m\left(\mathbf{x}_{1} \hat{\boldsymbol{\beta}}_{1}+\hat{\theta}_{1} \hat{v}_{i 2}+\hat{\psi}_{1}\left(\hat{v}_{i 2}^{2}-\hat{\tau}_{2}^{2}\right), \hat{\tau}_{1}^{2}\right), \tag{17.31}
+\end{equation*}
+
+
+where $m(a, \sigma)$ is defined in (17.30); that is, we average out the reduced form residuals, $\hat{v}_{i 2}$. Of course, (17.31) can be used in the case where $\mathrm{E}\left(u_{1} \mid v_{2}\right)$ is linear in $v_{2}$ and $\mathbf{x}_{1}=\left(\mathbf{z}_{1}, y_{2}\right)$, but it does not exploit the full distributional assumptions.
+
+In extending the usual model by allowing $\mathrm{E}\left(u_{1} \mid v_{2}\right)$ to be a nonlinear function of $v_{2}$, one should be aware that $u_{1}$ will likely not have a normal distribution. Practically, we may be as satisfied with a conditional normal distribution for $\mathbf{D}\left(u_{1} \mid v_{2}\right)$, even if that implies nonnormality of $\mathbf{D}\left(u_{1}\right)$.
+
+A full maximum likelihood approach avoids the two-step estimation problem. The joint distribution of $\left(y_{1}, y_{2}\right)$ given $\mathbf{z}$ is most easily found by using
+
+
+\begin{equation*}
+f\left(y_{1}, y_{2} \mid \mathbf{z}\right)=f\left(y_{1} \mid y_{2}, \mathbf{z}\right) f\left(y_{2} \mid \mathbf{z}\right) \tag{17.32}
+\end{equation*}
+
+
+just as for the probit case in Section 15.7.2. The density $f\left(y_{2} \mid \mathbf{z}\right)$ is $\operatorname{Normal}\left(\mathbf{z} \boldsymbol{\delta}_{2}, \tau_{2}^{2}\right)$. We already know that $\mathrm{D}\left(y_{1} \mid \mathbf{z}, y_{2}\right)=\operatorname{Tobit}\left(\mathbf{x}_{1} \boldsymbol{\beta}_{1}+\theta\left(y_{2}-\mathbf{z} \boldsymbol{\delta}_{2}\right), \tau_{1}^{2}\right)$, where $\tau_{1}^{2}= \sigma_{1}^{2}-\left(\eta_{1}^{2} / \tau_{2}^{2}\right), \sigma_{1}^{2}=\operatorname{Var}\left(u_{1}\right), \tau_{2}^{2}=\operatorname{Var}\left(v_{2}\right)$, and $\eta_{1}=\operatorname{Cov}\left(v_{2}, u_{1}\right)$. (As in the two-step estimation framework, we can allow $\mathrm{E}\left(u_{1} \mid v_{2}\right)$ to be a more flexible function of $v_{2}$, subject to the caveat that we are implicitly using a nonnormal unconditional distribution for $u_{1}$.) Taking the log of equation (17.32), the log-likelihood function for each $i$ is easily constructed as a function of the parameters $\left(\boldsymbol{\delta}_{1}, \alpha_{1}, \boldsymbol{\delta}_{2}, \sigma_{1}^{2}, \tau_{2}^{2}, \eta_{1}\right)$. The usual conditional maximum likelihood theory can be used for constructing standard errors and test statistics. When the structural equation is just identified, the twostep and MLE estimates are identical (although the two-step inference needs to be adjusted).
+
+Once the MLE has been obtained, we can easily test the null hypothesis of exogeneity of $y_{2}$ by using the $t$ statistic for $\hat{\theta}_{1}$. Because the MLE can be computationally more difficult than the Smith-Blundell procedure, it makes sense to use the SmithBlundell procedure to test for endogeneity before obtaining the MLE.
+
+If $y_{2}$ is a binary variable, then the Smith-Blundell assumptions cannot be expected to hold. Taking equation (17.26) as the structural equation, we could add
+
+
+\begin{equation*}
+y_{2}=1\left[\mathbf{z} \boldsymbol{\pi}_{2}+v_{2}>0\right] \tag{17.33}
+\end{equation*}
+
+
+and assume that $\left(u_{1}, v_{2}\right)$ has a zero-mean normal distribution and is independent of $\mathbf{z}$; $v_{2}$ is standard normal, as always. Equation (17.32) can be used to obtain the log likelihood for each $i$. Since $y_{2}$ given $\mathbf{z}$ is probit, its density is easy to obtain: $f\left(y_{2} \mid \mathbf{z}\right)= \Phi\left(\mathbf{z} \boldsymbol{\pi}_{2}\right)^{y_{2}}\left[1-\Phi\left(\mathbf{z} \boldsymbol{\pi}_{2}\right)\right]^{1-y_{2}}$. The hard part is obtaining the conditional density $f\left(y_{1} \mid y_{2}, \mathbf{z}\right)$, which is done first for $y_{2}=0$ and then for $y_{2}=1$; see Problem 17.6. Unfortunately, as in the probit case (and nonlinear models generally), the simple strategy of replacing the binary variable $y_{2}$, with its fitted value from a probit\\
+(or logit, or linear probability model) does not work; it is another example of a forbidden regression. In particular, the distribution of $y_{1}$ given $\mathbf{z}$ does not follow a $\operatorname{Tobit}\left(\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\theta_{1} \Phi\left(\mathbf{z} \boldsymbol{\pi}_{2}\right), \boldsymbol{\kappa}_{1}^{2}\right)$ model for any variance parameter $\boldsymbol{\kappa}_{1}^{2}$. Generally, $\mathrm{D}\left(y_{1} \mid \mathbf{z}\right)$ is difficult to characterize, although we could properly use it in a two-step procedure. But better than that, we can obtain $\mathrm{D}\left(y_{1} \mid y_{2}, \mathbf{z}\right)$ and use it along with a probit specification for $\mathrm{D}\left(y_{2} \mid \mathbf{z}\right)$ to perform joint maximum likelihood estimation.
+
+If $y_{2}$ is itself a corner solution and follows a $\operatorname{Tobit}\left(\mathbf{z} \boldsymbol{\pi}_{2}, \boldsymbol{\kappa}_{2}^{2}\right)$ model, then the MLE can also be derived. But again, we should not replace $y_{2}$ with the estimated expected value $\mathrm{E}\left(y_{2} \mid \mathbf{z}\right)$ obtained from a first-stage Tobit. Such a procedure does not produce consistent estimates and may be very badly biased.
+
+Because properly accounting for endogenous explanatory variables that have nonnormal conditional distributions in Tobit models is challenging, one still sees linear models used when $y_{1}$ is a corner, and then standard IV methods, such as 2SLS, can be applied regardless of the nature of $y_{2}$. As with binary responses, the linear model has been much maligned for corner solution responses, but a linear model estimated by 2SLS can deliver good estimates of average effects. One of the inappropriate two-step approaches described previously, where fitted probit or Tobit estimates are inserted into a second-stage Tobit, is likely inferior to a linear model that has been properly estimated by instrumental variables. An interesting topic is to find control function methods that can be used for general $y_{2}$ that do not suffer from a forbidden regression problem.
+
+The Smith-Blundell control function method extends immediately to more than one endogenous explanatory variables, provided we have sufficient instruments and a vector of reduced form errors $\mathbf{v}_{2}$ such that $\mathrm{D}\left(u_{1} \mid \mathbf{z}, \mathbf{v}_{2}\right)=\mathrm{D}\left(u_{1} \mid \mathbf{v}_{2}\right)$, where the latter is homoskedastic normal with linear mean. For example, we might assume $h_{g}\left(y_{2 g}\right)= \mathbf{z} \boldsymbol{\pi}_{2 g}+v_{2 g}$ for a strictly monotonic function $h_{g}(\cdot)$ for $g=1, \ldots, G_{1}$, where $G_{1}$ is the number of endogenous explanatory variables. Then $\mathbf{x}_{1}=\mathbf{g}_{1}\left(\mathbf{z}_{1}, \mathbf{y}_{2}\right)$ is the set of explanatory variables, and we can add the vector of reduced form residuals, obtained from $G_{1}$ regressions $h_{g}\left(y_{2 g}\right)$ on $\mathbf{z}$, to a standard Tobit model in the second stage. See Problem 17.9 for ways to allow more flexibility in $\mathrm{D}\left(u_{1} \mid \mathbf{z}, \mathbf{v}_{2}\right)$.
+
+\subsection*{17.5.3 Heteroskedasticity and Nonnormality in the Latent Variable Model}
+As in the case of probit, both heteroskedasticity and nonnormality result in the Tobit estimator $\hat{\boldsymbol{\beta}}$ being inconsistent for $\boldsymbol{\beta}$. This inconsistency occurs because the derived density of $y$ given $\mathbf{x}$ hinges crucially on $y^{*} \mid \mathbf{x} \sim \operatorname{Normal}\left(\mathbf{x} \boldsymbol{\beta}, \sigma^{2}\right)$.
+
+Rather than focusing on parameters, we must remember that the presence of heteroskedasticity or nonnormality in the latent variable model entirely changes the\\
+functional forms for $\mathrm{E}(y \mid \mathbf{x}, y>0)$ and $\mathrm{E}(y \mid \mathbf{x})$. Therefore, it does not make sense to focus only on the inconsistency in estimating $\boldsymbol{\beta}$. We should study how departures from the homoskedastic normal assumption affect the estimated partial derivatives of the conditional mean functions. Allowing for heteroskedasticity or nonnormality in the latent variable model can be useful for generalizing functional form in corner solution applications, and it should be viewed in that light.
+
+Specification tests can be based on the score approach, where the standard Tobit model is nested in a more general alternative. Tests for heteroskedasticity and nonnormality in the latent variable equation are easily constructed if the outer product of the form statistic (see Section 13.6) is used. A useful test for heteroskedasticity is obtained by assuming $\operatorname{Var}(u \mid \mathbf{x})=\sigma^{2} \exp \left(\mathbf{x}_{1} \boldsymbol{\delta}\right)$, where $\mathbf{x}_{1}$ is a $1 \times Q$ subvector of $\mathbf{x}$ ( $\mathbf{x}_{1}$ does not include a constant). The $Q$ restrictions $\mathrm{H}_{0}: \boldsymbol{\delta}=\mathbf{0}$ can be tested using the $L M$ statistic. The partial derivatives of the $\log$ likelihood $\ell_{i}\left(\boldsymbol{\beta}, \sigma^{2}, \boldsymbol{\delta}\right)$ with respect to $\boldsymbol{\beta}$ and $\sigma^{2}$, evaluated at $\boldsymbol{\delta}=\mathbf{0}$, are given exactly as in equations (17.21) and (17.22). Further, we can show that $\partial \ell_{i} / \partial \boldsymbol{\delta}=\sigma^{2} \mathbf{x}_{i 1}\left(\partial \ell_{i} / \partial \sigma^{2}\right)$. Thus the outer product of the score statistic is $N-\mathrm{SSR}_{0}$ from the regression
+
+1 on $\partial \hat{\ell}_{i} / \partial \boldsymbol{\beta}, \partial \hat{\ell}_{i} / \partial \sigma^{2}, \hat{\sigma}^{2} \mathbf{x}_{i 1}\left(\partial \hat{\ell}_{i} / \partial \sigma^{2}\right), \quad i=1, \ldots, N$,\\
+where the derivatives are evaluated at the Tobit estimates (the restricted estimates) and $\mathrm{SSR}_{0}$ is the usual sum of squared residuals. Under $\mathrm{H}_{0}, N-\mathrm{SSR}_{0} \stackrel{a}{\sim} \chi_{Q}^{2}$. Unfortunately, as we discussed in Section 13.6, the outer product form of the statistic can reject much too often when the null hypothesis is true. If MLE of the alternative model is possible, the $L R$ statistic is a preferable alternative.
+
+We can also construct tests of nonnormality that require only standard Tobit estimation. The most convenient of these are derived as conditional moment tests, which we discussed in Section 13.7. See Pagan and Vella (1989).
+
+It is not too difficult to estimate Tobit models with $u$ heteroskedastic if a test reveals such a problem. When $\mathrm{E}(y \mid \mathbf{x}, y>0)$ and $\mathrm{E}(y \mid \mathbf{x})$ are of interest, we should look at estimates of these expectations with and without heteroskedasticity. The partial effects on $\mathrm{E}(y \mid \mathbf{x}, y>0)$ and $\mathrm{E}(y \mid \mathbf{x})$ could be similar even though the estimates of $\boldsymbol{\beta}$ might be very different.
+
+As with the probit model with heteroskedasticity, there is a subtle issue that arises when computing APEs when we introduce heteroskedasticity into the type I Tobit model. Suppose we replace (17.3) with\\
+$u \mid \mathbf{x} \sim \operatorname{Normal}\left(0, \sigma^{2} \exp \left(\mathbf{x}_{1} \boldsymbol{\delta}\right)\right)$.\\
+Then, following the same argument in Section 15.7.4, it can be shown that the average structural function is\\
+$\operatorname{ASF}(\mathbf{x})=\mathrm{E}_{\mathbf{x}_{i l}}\left[m\left(\mathbf{x} \boldsymbol{\beta}, \boldsymbol{\sigma}^{2} \exp \left(\mathbf{x}_{i l} \boldsymbol{\delta}\right)\right)\right]$,\\
+where $m(\cdot, \cdot)$ is defined in equation (17.30). This means, for example, that the partial effect of a continuous variable (evaluated at $\mathbf{x}$ ) is simply estimated as\\
+$\left[N^{-1} \sum_{i=1}^{N} \Phi\left(\mathbf{x} \hat{\boldsymbol{\beta}} /\left[\hat{\sigma} \exp \left(\mathbf{x}_{i 1} \hat{\boldsymbol{\delta}} / 2\right)\right]\right)\right] \hat{\beta}_{j}$,\\
+where all estimates are the MLEs from the heteroskedastic Tobit model. Unfortunately, as we discussed in Section 15.7.4, if the heteroskedasticity arises due to interactions between unobservables that are independent of $\mathbf{x}$ and elements of $\mathbf{x}$, then the APEs are estimated from the partial derivatives of $\mathrm{E}(y \mid \mathbf{x})$, which are more complicated and may have signs that differ from the signs of the $\hat{\beta}_{j}$.
+
+As a rough idea of the appropriateness of the standard Tobit model, we can compare the probit estimates, say $\hat{\boldsymbol{\gamma}}$, to the Tobit estimate of $\boldsymbol{\gamma}=\boldsymbol{\beta} / \sigma$, namely, $\hat{\boldsymbol{\beta}} / \hat{\sigma}$. These will never be identical, but they should not be statistically different. Statistically significant sign changes are indications of misspecification. For example, if $\hat{\gamma}_{j}$ is positive and significant but $\hat{\beta}_{j}$ is negative and perhaps significant, the Tobit model is probably misspecified.
+
+As an illustration, in Example 15.2, we obtained the probit coefficient on nwifeinc as -.012 , and the coefficient on kidslt6 was -.868 . When we divide the corresponding Tobit coefficients by $\hat{\sigma}=1,122.02$, we obtain about -.0079 and -.797 , respectively. Though the estimates differ somewhat, the signs are the same and the magnitudes are similar.
+
+It is possible to form a Hausman statistic as a quadratic form in $(\hat{\gamma}-\hat{\boldsymbol{\beta}} / \hat{\sigma})$, but obtaining the appropriate asymptotic variance is somewhat complicated. (See Ruud, 1984, for a formal discussion of this test.) Section 17.6 discusses more flexible models that may be needed for corner solution outcomes.
+
+\subsection*{17.5.4 Estimating Parameters under Weaker Assumptions}
+It is possible to $\sqrt{N}$-consistently estimate $\boldsymbol{\beta}$ without assuming a particular distribution for $u$ and without even assuming that $u$ and $\mathbf{x}$ are independent. Consider again the latent variable model, but where the median of $u$ given $\mathbf{x}$ is zero:\\
+$y^{*}=\mathbf{x} \boldsymbol{\beta}+u, \quad \operatorname{Med}(u \mid \mathbf{x})=0$.
+
+As we showed in Section 17.2, assumption (17.34) leads to\\
+$\operatorname{Med}(y \mid \mathbf{x})=\max (0, \mathbf{x} \boldsymbol{\beta})$.
+
+In Chapter 12 we showed how the analogy principle leads to least absolute deviations as the appropriate method for estimating the parameters in a conditional median. Therefore, assumption (17.34) suggests estimating $\boldsymbol{\beta}$ by solving\\
+$\min _{\boldsymbol{\beta}} \sum_{i=1}^{N}\left|y_{i}-\max \left(0, \mathbf{x}_{i} \boldsymbol{\beta}\right)\right|$.
+
+This estimator was suggested by Powell (1984). Since $q(\mathbf{w}, \boldsymbol{\beta}) \equiv|y-\max (0, \mathbf{x} \boldsymbol{\beta})|$ is a continuous function of $\boldsymbol{\beta}$, consistency of Powell's estimator follows from Theorem 12.2 under an appropriate identification assumption. Establishing $\sqrt{N}$-asymptotic normality is much more difficult because the objective function is not twice continuously differentiable with nonsingular Hessian. Powell $(1984,1994)$ and Newey and McFadden (1994) contain applicable theorems.
+
+An attractive feature of Powell's approach is that $\operatorname{Med}(y \mid \mathbf{x})$ can be estimated without specifying $\mathrm{D}(u \mid \mathbf{x})$ beyond its having a zero conditional median. Of course, under (17.34) we cannot estimate other features of $\mathbf{D}(y \mid \mathbf{x})$ : if we impose weak assumptions, then often we can learn only about limited features of a distribution. Because $y$ is a corner solution, it is unclear how valuable estimating the conditional median is. For $\mathbf{x} \boldsymbol{\beta}>0$, $\operatorname{Med}(y \mid \mathbf{x})$ is linear in $\mathbf{x}$, and so the $\beta_{j}$ are the partial effects on the median for $\mathbf{x} \boldsymbol{\beta}$. One interesting aspect of equation (17.35) is that if we use the median for predication, we predict $\hat{y}_{i}=0$ for all $i$ such that $\mathbf{x}_{i} \hat{\boldsymbol{\beta}}_{i} \leq 0$. This will not happen if we use the conditional mean, $\mathrm{E}(y \mid \mathbf{x})$, to predict $y$, as is easily seen for the type I Tobit.
+
+As in the probit case, one consequence of having consistent estimates of the $\beta_{j}$ that do not rely on full distributional assumptions is that we can estimate the directions of the APEs on the mean response, and also the relative partial effects for the continuous explanatory variables, under weaker assumptions. But we cannot estimate the magnitude of the partial effects on the means, and there is no easy way to obtain relative effects for discrete explanatory variables. (Because the partial effects of discrete variables cannot be obtained via calculus, relative effects involving a discrete explanatory variable generally depend on $\mathbf{x}$.)
+
+The parametric nature of the Tobit model-that is, it fully specifies $\mathbf{D}(y \mid \mathbf{x})$-is often stated as its major weakness. But for modeling corner solution outcomes, we do not get something for nothing. The Tobit model implies that we can estimate any feature of $\mathrm{D}(y \mid \mathbf{x})$ that we want, including $\mathrm{P}(y>0 \mid \mathbf{x}), \mathrm{E}(y \mid \mathbf{x}, y>0), \mathrm{E}(y \mid \mathbf{x}, y>0)$ and, of course, $\operatorname{Med}(y \mid \mathbf{x})$ (which is necessarily given by (17.35)). Therefore, it is difficult to rank Powell's semiparametric method and type I Tobit: Powell's method\\
+assumes little and delivers estimates of only a single feature of $\mathbf{D}(y \mid \mathbf{x})$, the conditional median, while Tobit assumes a lot but delivers the entire conditional distribution. If the type I Tobit model is true, then the MLE estimates of the $\beta_{j}$ should not differ significantly from the censored least absolute deviations (CLAD) estimates, and so CLAD can be used as a rough specification check. In the next section we address the idea that perhaps the type I Tobit model is not flexible enough for a wide range of applications.
+
+Interestingly, if we modify the model to allow multiplicative heterogeneity of the form in Section 17.5.1, $y=q \cdot \max (0, \mathbf{x} \boldsymbol{\beta}+u)$, where $q$ is independent of $(\mathbf{x}, u)$, then we cannot determine $\operatorname{Med}(y \mid \mathbf{x})$, and, generally, CLAD estimates nothing of interest-even if $\mathbf{D}(u \mid \mathbf{x})$ is homoskedastic normal. Yet, as we showed in Section 17.5.1, $\mathrm{E}(y \mid \mathbf{x})$ has the usual Tobit form, and we could consistently estimate the parameters by NLS. Again, by focusing on the features of $\mathbf{D}(y \mid \mathbf{x})$ that are identified by different approaches, as opposed to parameters, we find that the choice between seemingly less parametric methods such as CLAD, and an uncommon method such as NLS applied to the Tobit functional form $\mathrm{E}(y \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma) \mathbf{x} \boldsymbol{\beta}+\sigma \phi(\mathbf{x} \boldsymbol{\beta} / \sigma)$, is not as clear-cut as is often presented. The bottom line is that CLAD consistently estimates $\operatorname{Med}(y \mid \mathbf{x})$ if $\operatorname{Med}(y \mid \mathbf{x})=\max (0, \mathbf{x} \boldsymbol{\beta})$ while NLS consistently estimates $\mathrm{E}(y \mid \mathbf{x})$ if $\mathrm{E}(y \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma) \mathbf{x} \boldsymbol{\beta}+\sigma \phi(\mathbf{x} \boldsymbol{\beta} / \sigma)$.
+
+In some cases a quantile other than the median is of interest, and Powell's approach applies when $\operatorname{Quant}_{\tau}(u \mid \mathbf{x})=0$ for a quantile $\tau$, provided the absolute value function is replaced by the asymmetric loss (check) function; see Section 12.10. Buchinsky and Hahn (1998) offer a different approach to estimating quantiles.
+
+The Chung and Goldberger (1984) results on consistent OLS estimation of slope coefficients up to a common scale factor apply when $y$ is given by (17.2) and $u$ and $\mathbf{x}$ are uncorrelated; see also Section 15.7.5. But the assumptions are restrictive, and the OLS estimates at best deliver directions of effects and relative partial effects for the continuous covariates. The Stoker (1986) result also applies: if $\mathbf{x}$ is multivariate normal, then the linear regression $y$ on $\mathbf{x}$ consistently estimates the partial effects averaged across the distribution of $\mathbf{x}$. As in the binary response case, multivariate normality of $\mathbf{x}$ makes Stoker's result of mostly theoretical interest. In Example 17.2 we saw that there is strong evidence that at least one OLS estimate, even on a roughly continuous variable (educ), gave a very different estimate of the APE from the Tobit model. Of course, this does not mean that the Tobit model estimate is closer to the population APE, but it does suggest that linear models have limitations for corner solution responses. And Stoker's result cannot be applied to discrete explanatory variables.
+
+\subsection*{17.6 Two-Part Models and Type II Tobit for Corner Solutions}
+As we saw in Section 17.2, the type I Tobit model implies that the partial effects of an explanatory variable on $\mathrm{P}(y>0 \mid \mathbf{x})$ and $\mathrm{E}(y \mid \mathbf{x}, y>0)$ must have the same signs. It is easy to imagine situations where this implication of the standard Tobit model could be false. For example, if $y$ is amount of life insurance and age is an explanatory variable, age could have a positive effect, or at least an initially positive effect, on the probability of having a life insurance policy. But after a certain age, the amount of life insurance coverage might decline. Such a situation would violate the type I Tobit model assumptions.
+
+We also showed that the standard Tobit model implies that the relative effects of two continuous explanatory variables, say $x_{j}$ and $x_{h}$, on $\mathrm{P}(y>0 \mid \mathbf{x})$ and $\mathrm{E}(y \mid \mathbf{x}, y>0)$ are identical (and equal to $\beta_{j} / \beta_{h}$ ). For example, in a labor supply model where education and experience appear only in level form, if a year of education has twice the effect as a year of experience on the probability of labor force participation, then education necessarily has twice the effect on the expected hours worked for the subpopulation of those working. Even if we think that the partial effects of a variable on $\mathrm{P}(y>0 \mid \mathbf{x})$ and $\mathrm{E}(y \mid \mathbf{x}, y>0)$ have the same sign, we might not wish to impose the restriction that any two (continuous) explanatory variables have the same relative effects on these two different features of $\mathrm{D}(y \mid \mathbf{x})$.
+
+In this section, we consider models that are more flexible than the type I Tobit model. These models allow separate mechanisms to determine what we call the participation decision ( $y=0$ versus $y>0$ ) and the amount decision (the magnitude of $y$ when it is positive). As we will see, such models are fairly easy to estimate. Unfortunately, there is some confusion in the literature about the nature and interpretation of two approaches to extending the type I Tobit model. Fortunately, we can resolve some of the ambiguity in the literature by using a simple, unified setting.
+
+Let $s$ be a binary variable that determines whether $y$ is zero or strictly positive. It is also useful to introduce a continuously distributed, nonnegative latent variable, which we call $w^{*}$ in this section. Then we assume $y$ is generated as
+
+
+\begin{equation*}
+y=s \cdot w^{*} \tag{17.37}
+\end{equation*}
+
+
+It is important to remember that $y$-for example, annual hours worked-is the observed corner solution response, and it is features of $\mathbf{D}(y \mid \mathbf{x})$ that we would like to explain. Then, a model like (17.37) can arise if there are fixed costs that affect the decision to enter a particular state. For a married woman out of the labor force, the decision to enter the labor force may depend on a variety of considerations, including whether she has small children. The way that the presence of a small child affects the\\
+labor force participation decision may be quite different from how it affects the decision on how much to work. Equation (17.37) is a convenient way to allow different mechanisms for the participation and amount decisions. Other than $s$ being binary and $w^{*}$ being continuous, there is another important difference between $s$ and $w^{*}$ : we effectively observe $s$ because $s$ is observationally equivalent to the indicator $1[y>0]$ (because we assume $\mathrm{P}\left(w^{*}=0\right)$ ). But $w^{*}$ is only observed when $s=1$, in which case $w^{*}=y$.
+
+To proceed in a parametric setting, we will assume that $s$ and $w^{*}$ are specific functions of observable covariates and unobservables, and we will make (at least partial) distributional assumptions about the unobservables. But we can discuss, in a general way, different assumptions about how $s$ and $w^{*}$ are related. As we will see, a useful assumption is that $s$ and $w^{*}$ are independent conditional on explanatory variables $\mathbf{x}$, which we can write as
+
+
+\begin{equation*}
+\mathrm{D}\left(w^{*} \mid s, \mathbf{x}\right)=\mathrm{D}\left(w^{*} \mid \mathbf{x}\right) . \tag{17.38}
+\end{equation*}
+
+
+When assumption (17.38) holds, the resulting model has typically been called a twopart model or hurdle model. The assumption is basically that, conditional on a set of observed covariates, the mechanisms determining $s$ and $w^{*}$ are independent. One implication of (17.38) is that the expected value of $y$ conditional on $\mathbf{x}$ and $s$ is easy to obtain:
+
+
+\begin{equation*}
+\mathrm{E}(y \mid \mathbf{x}, s)=s \cdot \mathrm{E}\left(w^{*} \mid \mathbf{x}, s\right)=s \cdot \mathrm{E}\left(w^{*} \mid \mathbf{x}\right), \tag{17.39}
+\end{equation*}
+
+
+which, of course, can be derived under the conditional mean version of (17.38),
+
+
+\begin{equation*}
+\mathrm{E}\left(w^{*} \mid \mathbf{x}, s\right)=\mathrm{E}\left(w^{*} \mid \mathbf{x}\right) \tag{17.40}
+\end{equation*}
+
+
+When $s=1$, (17.39) becomes
+
+
+\begin{equation*}
+\mathrm{E}(y \mid \mathbf{x}, y>0)=\mathrm{E}\left(w^{*} \mid \mathbf{x}\right), \tag{17.41}
+\end{equation*}
+
+
+so that the so-called conditional expectation of $y$ (where we condition on $y>0$ ) is just the expected value of $w^{*}$ (conditional on $\mathbf{x}$ ). Further, the so-called unconditional expectation is
+
+
+\begin{equation*}
+\mathrm{E}(y \mid \mathbf{x})=\mathrm{E}(s \mid \mathbf{x}) \mathrm{E}\left(w^{*} \mid \mathbf{x}\right)=\mathrm{P}(s=1 \mid \mathbf{x}) \mathrm{E}\left(w^{*} \mid \mathbf{x}\right) . \tag{17.42}
+\end{equation*}
+
+
+Although some, for example, Duan, Manning, Morris, and Newhouse (1984), have argued that two-part models do not impose (17.38), some sort of conditional independence is natural, even if it is only (17.40). This will become clear as our analysis unfolds.
+
+A different class of models explicitly allows correlation between the participation and amount decisions (after conditioning on covariates). Unfortunately, such a model is often called a selection model. When attached to corner solution responses, the "selection model" label has shortcomings and has led to considerable confusion. As in other situations-such as treating a corner solution response as a datacensoring problem-the confusion arises because of statistical similarities that models for corner solutions have with missing data models. But, remember, we have no missing data problem here. We are interested in explaining the corner solution response, $y$, and we assume it is always observable. We may use latent variable models to obtain $\mathbf{D}(y \mid \mathbf{x})$, but in the end, the latent variables are irrelevant. Because of its common use, we will use the selection model label. In Section 17.7.3 we study a version of the type II Tobit model.
+
+There has been much discussion in the literature on whether two-part and selection models can be put into a common framework, and whether selection models nest two-part models; see, for example, the survey and discussion in Leung and Yu (1996). Using (17.37) as a unified setting, we will see that, technically speaking, the type II Tobit model (applied to the logarithm of the response) does nest what is probably the most widely used two-part model, the lognormal hurdle model. But the type II Tobit model can be poorly identified without assuming that an exclusion restriction exists. Namely, we will often need to assume that there is at least one element of $\mathbf{x}$ that appears in $\mathrm{P}(s=1 \mid \mathbf{x})$ that does not appear in $\mathrm{D}\left(w^{*} \mid \mathbf{x}\right)$. Therefore, in a practical sense, the models offer two different approaches. We will have more to say on this issue when we cover the specific models.
+
+\subsection*{17.6.1 Truncated Normal Hurdle Model}
+Cragg (1971) proposed a natural two-part extension of the type I Tobit model. The conditional independence assumption (17.38) is assumed to hold, and the binary variable $s$ is assumed to follow a probit model, that is,
+
+
+\begin{equation*}
+\mathrm{P}(s=1 \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{\gamma}) . \tag{17.43}
+\end{equation*}
+
+
+The unique feature of Cragg's model is that the latent variable $w^{*}$ is assumed to have a truncated normal distribution with parameters that can vary freely from those in (17.43). The support of $w^{*}$ is $(0, \infty)$, and so there is no possibility that the model predicts negative outcomes on $y$. We can specify the model in terms of (17.37) by defining $w^{*}=\mathbf{x} \boldsymbol{\beta}+u$, where $u$ given $\mathbf{x}$ has a truncated normal distribution with lower truncation point $-\mathbf{x} \boldsymbol{\beta}$. Because $y=w^{*}$ when $y>0$, we can write the truncated normal assumption in terms of the density of $y$ given $y>0$ (and $\mathbf{x}$ ):
+
+
+\begin{equation*}
+f(y \mid \mathbf{x}, y>0)=[\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma)]^{-1} \phi[(y-\mathbf{x} \boldsymbol{\beta}) / \sigma] / \sigma, \quad y>0, \tag{17.44}
+\end{equation*}
+
+
+where the term $[\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma)]^{-1}$ ensures that the density integrates to unity over $y>0$. The density of $y$ given $\mathbf{x}$ can be written succinctly as
+
+
+\begin{equation*}
+f(y \mid \mathbf{x})=[1-\Phi(\mathbf{x} \boldsymbol{\gamma})]^{1[y=0]}\left\{\Phi(\mathbf{x} \boldsymbol{\gamma})[\Phi(\mathbf{x} \boldsymbol{\beta} / \sigma)]^{-1} \phi[(y-\mathbf{x} \boldsymbol{\beta}) / \sigma] / \sigma\right\}^{1[y>0]}, \tag{17.45}
+\end{equation*}
+
+
+where we must multiply $f(y \mid \mathbf{x}, y>0)$ by $\mathrm{P}(y>0 \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{y})$. Equation (17.45), which is how Cragg directly specified the model without introducing $s$ and $w^{*}$, makes it clear that the truncated normal hurdle (TNH) model reduces to the type I Tobit model when $\boldsymbol{\gamma}=\boldsymbol{\beta} / \sigma$.
+
+As usual, the log-likelihood function for a random draw $i$ is obtained by plugging $\left(\mathbf{x}_{i}, y_{i}\right)$ into (17.45) and taking the $\log$, so we have
+
+$$
+\begin{aligned}
+l_{i}(\boldsymbol{\theta})= & 1\left[y_{i}=0\right] \log \left[1-\Phi\left(\mathbf{x}_{i} \boldsymbol{\gamma}\right)\right]+1\left[y_{i}>0\right] \log \left[\Phi\left(\mathbf{x}_{i} \boldsymbol{\gamma}\right)\right] \\
+& +1\left[y_{i}>0\right]\left\{-\log \left[\Phi\left(\mathbf{x}_{i} \boldsymbol{\beta} / \sigma\right)\right]+\log \left\{\phi\left[\left(y_{i}-\mathbf{x}_{i} \boldsymbol{\beta}\right) / \sigma\right]\right\}-\log (\sigma)\right\}
+\end{aligned}
+$$
+
+Because the parameters $\boldsymbol{\gamma}, \boldsymbol{\beta}$, and $\sigma$ are allowed to freely vary, it is easily seen that the MLE for $\boldsymbol{\gamma}, \hat{\boldsymbol{\gamma}}$, is simply the probit estimator from probit of $s_{i} \equiv 1\left[y_{i}>0\right]$ on $\mathbf{x}_{i}$. The MLEs of $\boldsymbol{\beta}$ and $\sigma$ (or $\boldsymbol{\beta}$ and $\sigma^{2}$ ) are also fairly easy to obtain using software that estimates truncated normal regression models. (We return to truncated normal regression in Chapter 19, but in the context of missing data. Here, the truncated normal distribution is convenient for estimating the density of $y$ given $\mathbf{x}$ over strictly positive values.) Inference about the parameters is straightforward using Wald tests. Fin and Schmidt (1984) derive the LM test of the restrictions $\boldsymbol{\gamma}=\boldsymbol{\beta} / \sigma$; naturally, this test only requires estimation of the type I Tobit model. If one estimates Cragg's model, then the $L R$ statistic is easy to compute. One must be sure to add the two parts of the log-likelihood function for the hurdle model: that from the probit using all observations and that from the truncated normal using the $y_{i}>0$ observations. Of course, one may reject the standard type I Tobit model for other reasons, such as heteroskedasticity or nonnormality in the latent variable model. And, as always, a statistical rejection might not lead to practically different estimates of the partial effects.
+
+As an illustration, we estimate the truncated normal hurdle model for the data in Table 17.1. (The full results are reported in Section 17.6.3.) The log likelihood value is $-3,791.95$, compared with $-3,819.09$ for the standard (type I) Tobit model. Therefore, the $L R$ statistic is about 54.28. With eight degrees of freedom, the $p$-value is zero to many decimal places. Therefore, the Tobit model is rejected against Cragg's more general model.
+
+The expected values for the truncated normal hurdle model are straightforward extensions of the standard Tobit model. First, the distribution $\mathbf{D}(y \mid \mathbf{x}, y>0)$ is identical in the two models, and so\\
+$\mathrm{E}(y \mid \mathbf{x}, y>0)=\mathbf{x} \boldsymbol{\beta}+\sigma \lambda(\mathbf{x} \boldsymbol{\beta} / \sigma)$.
+
+The difference is that $\mathrm{P}(y>0 \mid \mathbf{x})$ is allowed to follow an unrestricted probit model. Therefore, for Cragg's model,\\
+$\mathrm{E}(y \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{\gamma})[\mathbf{x} \boldsymbol{\beta}+\sigma \lambda(\mathbf{x} \boldsymbol{\beta} / \sigma)]$.
+
+The partial effects no longer have the simple form in (17.16), but they can be computed easily from (17.15). In particular\\
+$\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{j}}=\gamma_{j} \phi(\mathbf{x} \boldsymbol{\gamma})[\mathbf{x} \boldsymbol{\beta}+\sigma \lambda(\mathbf{x} \boldsymbol{\beta} / \sigma)]+\Phi(\mathbf{x} \boldsymbol{\gamma}) \beta_{j} \theta(\mathbf{x} \boldsymbol{\beta} / \sigma)$,\\
+where $\theta(z)=1-\lambda(z)[z-\lambda(z)]$, as in (17.12). Further, semielasticities on the conditional mean are easily obtained from $\log [\mathrm{E}(y \mid \mathbf{x})]=\log [\Phi(\mathbf{x} \boldsymbol{y})]+\log [\mathrm{E}(y \mid \mathbf{x}, y>0)]$, which implies $\partial \log [\mathrm{E}(y \mid \mathbf{x})] / \partial x_{j}=\partial \log [\Phi(\mathbf{x} \boldsymbol{\gamma})] / \partial x_{j}+\partial \log [\mathrm{E}(y \mid \mathbf{x}, y>0)] / \partial x_{j}$. Thus, the semielasticity of $\mathrm{E}(y \mid \mathbf{x})$ with respect to $x_{j}$ is obtained by multiplying
+
+
+\begin{equation*}
+\gamma_{j} \lambda(\mathbf{x} \boldsymbol{\gamma})+\beta_{j} \theta(\mathbf{x} \boldsymbol{\beta} / \sigma) /[\mathbf{x} \boldsymbol{\beta}+\sigma \lambda(\mathbf{x} \boldsymbol{\beta} / \sigma)] \tag{17.49}
+\end{equation*}
+
+
+by 100 . If $x_{j}=\log \left(z_{j}\right)$, then (17.49) is the elasticity of $\mathrm{E}(y \mid \mathbf{x})$ with respect to $z_{j}$. We can insert the MLEs into any of the equations and average across $\mathbf{x}_{i}$ to obtain an APE, average semielastisticity, or average elasticity. As in many nonlinear contexts, the bootstrap is a convenient method for obtaining valid standard errors.
+
+Because we can estimate $\mathrm{E}(y \mid \mathbf{x})$, we can compute the squared correlation between $y_{i}$ and $\hat{\mathrm{E}}\left(y_{i} \mid \mathbf{x}_{i}\right)=\Phi\left(\mathbf{x}_{i} \hat{\gamma}\right)\left[\mathbf{x}_{i} \hat{\boldsymbol{\beta}}+\hat{\sigma} \lambda\left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}} / \hat{\sigma}\right)\right]$ across all $i$ as an $R$-squared measure. This goodness-of-fit statistic can be compared to the usual Tobit model or the models that we cover subsequently. We can do a similar calculation conditional on $y>0$ using equation (17.46).
+
+\subsection*{17.6.2 Lognormal Hurdle Model and Exponential Conditional Mean}
+Cragg (1971) suggested that a lognormal distribution can be used in place of the truncated Tobit, and the resulting hurdle model has been studied in detail by Duan, Manning, Morris, and Newhouse (1984). The participation decision is still governed by a probit model. One way to express $y$ is\\
+$y=s \cdot w^{*}=1[\mathbf{x} \boldsymbol{\gamma}+v>0] \exp (\mathbf{x} \boldsymbol{\beta}+u)$,\\
+where $(u, v)$ is independent of $\mathbf{x}$ with a bivariate normal distribution and $u$ and $v$ are independent. We have already assumed $v$ has a standard normal distribution. Therefore, the assumption that makes (17.50) different from the truncated normal hurdle model is\\
+$u \mid \mathbf{x} \sim \operatorname{Normal}\left(0, \sigma^{2}\right)$.
+
+Assumption (17.51) means that the latent variable $w^{*}=\exp (\mathbf{x} \boldsymbol{\beta}+u)$ has a lognormal distribution, and, because $v$ and $u$ are independent of $\mathbf{x}$ and each other, $y$ conditional on $(\mathbf{x}, y>0)$ has a lognormal distribution. Therefore, we call this model the lognormal hurdle (LH) model. The expected value conditional on $y>0$ is\\
+$\mathrm{E}(y \mid \mathbf{x}, y>0)=\mathrm{E}\left(w^{*} \mid \mathbf{x}, s=1\right)=\mathrm{E}\left(w^{*} \mid \mathbf{x}\right)=\exp \left(\mathbf{x} \boldsymbol{\beta}+\sigma^{2} / 2\right)$,\\
+and so the "unconditional" expectation is\\
+$\mathrm{E}(y \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{\gamma}) \exp \left(\mathbf{x} \boldsymbol{\beta}+\sigma^{2} / 2\right)$.
+
+The semielasticity of $\mathrm{E}(y \mid \mathbf{x})$ with respect to $x_{j}$ is simply (100 times) $\gamma_{j} \lambda(\mathbf{x} \boldsymbol{\gamma})+\beta_{j}$ where $\lambda(\cdot)$ is the inverse Mills ratio. If $x_{j}=\log \left(z_{j}\right)$, this expression becomes the elasticity of $\mathrm{E}(y \mid \mathbf{x})$ with respect to $z_{j}$.
+
+Estimation of the parameters is particularly straightforward. The density conditional on $\mathbf{x}$ is\\
+$f(y \mid \mathbf{x})=[1-\Phi(\mathbf{x} \boldsymbol{\gamma})]^{1[y=0]}\{\Phi(\mathbf{x} \boldsymbol{\gamma}) \phi[(\log (y)-\mathbf{x} \boldsymbol{\beta}) / \sigma] /(\sigma y)\}^{1[y>0]}$,\\
+which leads to the log-likelihood function for a random draw:
+
+
+\begin{align*}
+l_{i}(\boldsymbol{\theta})= & 1\left[y_{i}=0\right] \log \left[1-\Phi\left(\mathbf{x}_{i} \boldsymbol{\gamma}\right)\right]+1\left[y_{i}>0\right] \log \left[\Phi\left(\mathbf{x}_{i} \boldsymbol{\gamma}\right)\right] \\
+& +1\left[y_{i}>0\right]\left\{\log \left(\phi\left[\left(\log \left(y_{i}\right)-\mathbf{x}_{i} \boldsymbol{\beta}\right) / \sigma\right]\right)-\log (\sigma)-\log \left(y_{i}\right)\right\} . \tag{17.55}
+\end{align*}
+
+
+As with the truncated normal hurdle model, estimation of the parameters can proceed in two steps. The first is probit of $s_{i}$ on $\mathbf{x}_{i}$ to estimate $\boldsymbol{\gamma}$, and then $\boldsymbol{\beta}$ is estimated using an OLS regression of $\log \left(y_{i}\right)$ on $\mathbf{x}_{i}$ for observations with $y_{i}>0$. The usual error variance estimator (or without the degrees-of-freedom adjustment), $\hat{\sigma}^{2}$, is consistent for $\sigma^{2}$. The last term in (17.55), $\log \left(y_{i}\right)$, does not affect estimation of the parameters, but it must be included in comparing log-likelihood values across different models for $\mathrm{D}(y \mid \mathbf{x})$. In particular, in order to compare Cragg's truncated normal hurdle model and the lognormal hurdle model, the log likelihood for each $i$ must be obtained as in (17.55). (Strictly speaking, to compare log-likelihood values, one should use the MLE for $\sigma$, which does not use a degrees-of-freedom correction. The difference should be minimal unless $N$ is small.)
+
+The lognormal hurdle model is easy to estimate, the parameters are easy to interpret, and partial effects and elasticities on $\mathrm{P}(y>0 \mid \mathbf{x}), \mathrm{E}(y \mid \mathbf{x}, y>0)$, and $\mathrm{E}(y \mid \mathbf{x})$ are easy to obtain. Nevertheless, if we are mainly interested in these three features of $\mathrm{D}(y \mid \mathbf{x})$, we can get by with weaker assumptions. Mullahy (1998) pointed out that the linear regression with $\log \left(y_{i}\right)$ as the dependent variable may estimate $\mathrm{E}[\log (y) \mid \mathbf{x}$, $y>0]$ consistently, but we may not be uncovering $\mathrm{E}(y \mid \mathbf{x}, y>0)$ if (17.51) fails. If we assume that $u$ is independent of $\mathbf{x}$ but do not specify a distribution, then we can estimate $\mathrm{E}(y \mid \mathbf{x}, y>0)$ using Duan's (1983) smearing estimate. In the exponential case, we obtain the scale factor, say $\hat{\tau}$, by averaging $\exp \left(\hat{u}_{i}\right)$ over all $i$ with $y_{i}>0$, where $\hat{u}_{i}$ are the OLS residuals from $\log \left(y_{i}\right)$ on $\mathbf{x}_{i}$ using the $y_{i}>0$ data. Then, $\hat{\mathrm{E}}(y \mid \mathbf{x}, y>0)=\hat{\tau} \exp (\mathbf{x} \hat{\boldsymbol{\beta}})$, where $\hat{\boldsymbol{\beta}}$ is the OLS estimator of $\log \left(y_{i}\right)$ on $\mathbf{x}_{i}$ using the $y_{i}>0$ subsample.
+
+An alternative way to relax (17.51) is to maintain normality but allow heteroskedasticity, say, $\operatorname{Var}(u \mid \mathbf{x})=\exp (\mathbf{x} \boldsymbol{\delta})$. Then $\hat{\mathrm{E}}(y \mid \mathbf{x}, y>0)=\exp [\mathbf{x} \hat{\boldsymbol{\beta}}+\exp (\mathbf{x} \hat{\boldsymbol{\delta}}) / 2]$ where, say, $\hat{\boldsymbol{\beta}}$ and $\hat{\boldsymbol{\delta}}$ are the MLEs based on $\log (y) \mid \mathbf{x}, y>0 \sim \operatorname{Normal}(\mathbf{x} \boldsymbol{\beta}, \exp (\mathbf{x} \boldsymbol{\delta}))$.
+
+A more direct approach that avoids specific distributional assumptions in the second tier is just to model $\mathrm{E}(y \mid \mathbf{x}, y>0)$ directly. It is natural to use an exponential function,
+
+
+\begin{equation*}
+\mathrm{E}(y \mid \mathbf{x}, y>0)=\exp (\mathbf{x} \boldsymbol{\beta}), \tag{17.56}
+\end{equation*}
+
+
+and this contains $w^{*}=\exp (\mathbf{x} \boldsymbol{\beta}+u)$, with $u$ independent of $\mathbf{x}$, as a special case. We need not place any additional restrictions on $\mathrm{D}(y \mid \mathbf{x}, y>0)$. Given (17.56), we can use NLS using the $y_{i}>0$ observations to consistently estimate $\boldsymbol{\beta}$. But NLS is likely to be inefficient because $\operatorname{Var}(y \mid \mathbf{x}, y>0)$ is unlikely to be constant. We could use a WNLS estimator, but a quasi-MLE in the linear exponential family (LEF), as we discussed in Section 13.11.3, is a nice, simple alternative. Using the gamma quasi-log-likelihood function is especially attractive as it produces a relatively efficient estimator when the variance is proportional to the square of the mean, which holds in the leading case $w^{*}=\exp (\mathbf{x} \boldsymbol{\beta}+u)$ with $u$ independent of $\mathbf{x}$. We discuss such estimators in more detail in Chapter 18.
+
+Given probit estimates of $\mathrm{P}(y>0 \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{\gamma})$ and QMLE estimates of $\mathrm{E}(y \mid \mathbf{x}$, $y>0)=\exp (\mathbf{x} \boldsymbol{\beta})$, we can easily estimate $\mathrm{E}(y \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{\gamma}) \exp (\mathbf{x} \boldsymbol{\beta})$ without additional distributional assumptions. Computation of semielasticities and elasticities follows along the same lines as under the homoskedastic lognormality assumption. If our goal is to estimate partial effects on the two means, an approach that specifies parametric models for the minimal features of $\mathbf{D}(y \mid \mathbf{x})$ is attractive. See Mullahy (1998) for further discussion in the context of health economics.
+
+\subsection*{17.6.3 Exponential Type II Tobit Model}
+The two-part models in the previous two subsections assume that $s$ and $w^{*}$ are independent conditional on the observed covariates, $\mathbf{x}$, either in the full distributional sense or in the conditional mean sense. Generally, we might expect some common unobserved factors to affect both the participation decision (whether $s$ is zero or one) and the amount decision (how large $w^{*}$ is). For example, in a model of married women's labor supply, unobserved factors that affect the decision to enter the workforce might be correlated with factors that affect the hours decision. Fortunately, we can modify the lognormal hurdle model to allow conditional correlation between $s$ and $w^{*}$.
+
+We call the model in this subsection the exponential type II Tobit (ET2T) model. Before we derive the log-likelihood function, we need to understand where this model fits into the literature. Traditionally, the type II Tobit model has been applied to missing data problems-that is, where we truly have a sample selection issue. We return to this important application in Chapter 19. But, as we emphasized earlier, we do not have a missing data problem in the current setting: we have a corner solution response, and we have been exploring ways to model $\mathbf{D}(y \mid \mathbf{x})$ that are more flexible than the type I Tobit model. Thus far, in the context of equation (17.37), we have assumed conditional independence between $s$ and $w^{*}$. Now, we want to relax that assumption. We use the qualifier "exponential" to emphasize that, in (17.37), we should have $w^{*}=\exp (\mathbf{x} \boldsymbol{\beta}+u)$; it will not make sense to have $w^{*}=\mathbf{x} \boldsymbol{\beta}+u$, as is often the case in the study of type II Tobit models. After we cover the exponential version of the model, we will explain why a linear model for $w^{*}$ is inappropriate.
+
+With the model written in equation (17.37), we now allow $u$ and $v$ to be correlated. Because $v$ has variance equal to one, $\operatorname{Cov}(u, v)=\rho \sigma$, where $\rho$ is the correlation between $u$ and $v$ and $\sigma^{2}=\operatorname{Var}(u)$. Obtaining the log likelihood in this case is a bit tricky. For simplicity, let $m^{*}=\log \left(w^{*}\right)$, so that $\mathrm{D}\left(m^{*} \mid \mathbf{x}\right)$ is $\operatorname{Normal}\left(\mathbf{x} \boldsymbol{\beta}, \sigma^{2}\right)$. Then $\log (y)=m^{*}$ when $y>0$. Of course, we still have $\mathrm{P}(y=0 \mid \mathbf{x})=1-\Phi(\mathbf{x} \boldsymbol{\gamma})$. To obtain the density of $y$ (conditional on $\mathbf{x}$ ) over strictly positive values, we find $f(y \mid \mathbf{x}, y>0)$ and multiply it by $\mathrm{P}(y>0 \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{y})$. To find $f(y \mid \mathbf{x}, y>0)$, we use the change-of-variables formula $f(y \mid \mathbf{x}, y>0)=g(\log (y) \mid \mathbf{x}, y>0) / y$, where $g(\cdot \mid \mathbf{x}, y>0)$ is the density of $m^{*}$ conditional on $y>0$ (and $\mathbf{x}$ ). Obtaining $g\left(m^{*} \mid \mathbf{x}, y>0\right)=g\left(m^{*} \mid \mathbf{x}, s=1\right)$ is complicated by the correlation between $u$ and $v$. One approach is to use Bayes' rule to write $g\left(m^{*} \mid \mathbf{x}, s=1\right)= \mathrm{P}\left(s=1 \mid m^{*}, \mathbf{x}\right) h\left(m^{*} \mid \mathbf{x}\right) / \mathrm{P}(s=1 \mid \mathbf{x})$ where $h\left(m^{*} \mid \mathbf{x}\right)$ is the density of $m^{*}$ given $\mathbf{x}$. Then, $\mathrm{P}(s=1 \mid \mathbf{x}) g\left(m^{*} \mid \mathbf{x}, s=1\right)=\mathrm{P}\left(s=1 \mid m^{*}, \mathbf{x}\right) h\left(m^{*} \mid \mathbf{x}\right)$, and this is the expression we want to obtain the density of $y$ given $\mathbf{x}$ for strictly positive $y$. Now, we can\\
+write $s=1[\mathbf{x} \gamma+v>0]=1[\mathbf{x} \gamma+(\rho / \sigma) u+e>0]$, where we use $v=(\rho / \sigma) u+e$ and $e \mid \mathbf{x}, u \sim \operatorname{Normal}\left(0,\left(1-\rho^{2}\right)\right)$. Because $u=m^{*}-\mathbf{x} \boldsymbol{\beta}$, we have\\
+$\mathrm{P}\left(s=1 \mid m^{*}, \mathbf{x}\right)=\Phi\left(\left[\mathbf{x} \boldsymbol{\gamma}+(\rho / \sigma)\left(m^{*}-\mathbf{x} \boldsymbol{\beta}\right)\right]\left(1-\rho^{2}\right)^{-1 / 2}\right)$.\\
+Further, we have assumed that $h\left(m^{*} \mid \mathbf{x}\right)$ is $\operatorname{Normal}\left(\mathbf{x} \boldsymbol{\beta}, \sigma^{2}\right)$. Therefore, the density of $y$ given $\mathbf{x}$ over strictly positive $y$ is\\
+$\left.f(y \mid \mathbf{x})=\Phi\left(\left[\mathbf{x} \boldsymbol{\gamma}+(\rho / \sigma)\left(m^{*}-\mathbf{x} \boldsymbol{\beta}\right)\right]\left(1-\rho^{2}\right)^{-1 / 2}\right)\right) \phi((\log (y)-\mathbf{x} \boldsymbol{\beta}) / \sigma) /(\sigma y)$.\\
+Combining this expression with the density at $y=0$ gives the log likelihood as
+
+
+\begin{align*}
+l_{i}(\boldsymbol{\theta})= & 1\left[y_{i}=0\right] \log \left[1-\Phi\left(\mathbf{x}_{i} \boldsymbol{\gamma}\right)\right] \\
+& +1\left[y_{i}>0\right]\left\{\operatorname { l o g } \left[\Phi \left(\left[\mathbf{x}_{i} \boldsymbol{\gamma}+\left(\rho / \sigma\left(\log \left(y_{i}\right)-\mathbf{x}_{i} \boldsymbol{\beta}\right)\right]\left(1-\rho^{2}\right)^{-1 / 2}\right)\right.\right.\right. \\
+& \left.+\log \left[\phi\left(\left(\log \left(y_{i}\right)-\mathbf{x}_{i} \boldsymbol{\beta}\right) / \sigma\right)\right]-\log (\sigma)-\log \left(y_{i}\right)\right\} \tag{17.57}
+\end{align*}
+
+
+Many econometrics packages have this estimator programmed, although the emphasis is on sample selection problems, and one must define $\log \left(y_{i}\right)$ as the variable where the data are missing (when $y_{i}=0$ ). When $\rho=0$, we obtain the log likelihood for the lognormal hurdle model from the previous subsection. (Incidentally, for a true missing data problem, the last term in (17.57), $\log \left(y_{i}\right)$, is not included. That is because in sample selection problems the log-likelihood function is only a partial log likelihood, where we truly do not observe a response variable for part of the sample. That is not the case here. Inclusion of $\log \left(y_{i}\right)$ does not affect the estimation problem, but it does affect the value of the log-likelihood function, which is needed to compare across different models.)
+
+The ET2T model contains the conditional lognormal model from the previous subsection because both models assume that ( $u, v$ ) is independent of $\mathbf{x}$ and jointly normally distributed; the conditional lognormal model makes the extra assumption that $u$ and $v$ are independent. This fact seems to imply that we should, at a minimum, always estimate the more general model to see if it is needed. But the issue is not so simple. It turns out that the model with unknown $\rho$ can be poorly identified if the set of explanatory variables that appears in $w^{*}=\exp (\mathbf{x} \boldsymbol{\beta}+u)$ is the same as the variables in $s=1[\mathbf{x} \gamma+v>0]$. One way to see the problem is to derive $\mathrm{E}[\log (y) \mid \mathbf{x}, y>0]$. We do this by first obtaining $\mathrm{E}\left(m^{*} \mid \mathbf{x}, s=1\right)$. By iterated expectations, $\mathrm{E}\left(m^{*} \mid \mathbf{x}, s\right)= \mathrm{E}\left[\mathrm{E}\left(m^{*} \mid \mathbf{x}, v\right) \mid \mathbf{x}, s\right]$ because $s$ is a function of $(\mathbf{x}, v)$. But\\
+$\mathrm{E}\left(m^{*} \mid \mathbf{x}, v\right)=\mathbf{x} \boldsymbol{\beta}+\mathrm{E}(u \mid \mathbf{x}, v)=\mathbf{x} \boldsymbol{\beta}+\mathrm{E}(u \mid v)=\mathbf{x} \boldsymbol{\beta}+\eta v$,\\
+where $\eta=\rho \sigma$ is the population regression coefficient from $u$ on $v$. Therefore, $\mathrm{E}\left(m^{*} \mid \mathbf{x}, s\right)=\mathbf{x} \boldsymbol{\beta}+\eta \mathrm{E}(v \mid \mathbf{x}, s)$, and, as we showed in Section 17.2, $\mathrm{E}(v \mid \mathbf{x}, s=1)=$\\
+$\lambda(\mathbf{x} \boldsymbol{\gamma})$, where $\lambda(\cdot)$ is the inverse Mills ratio. Therefore, $\mathrm{E}\left(m^{*} \mid \mathbf{x}, s=1\right)=\mathbf{x} \boldsymbol{\beta}+\eta \lambda(\mathbf{x} \boldsymbol{\gamma})$, and so\\
+$\mathrm{E}[\log (y) \mid \mathbf{x}, y>0]=\mathbf{x} \boldsymbol{\beta}+\eta \lambda(\mathbf{x} \boldsymbol{\gamma})$.
+
+If we know $\gamma$-a valid stance for identification analysis because we can estimate it consistently using probit-equation (17.58) nominally identifies $\boldsymbol{\beta}$ and $\eta$. But identification is possible only because $\lambda(\cdot)$ is a nonlinear function. If $\boldsymbol{\beta}$ is unrestricted, then $\lambda(\mathbf{x} \boldsymbol{\gamma})$ is a function of $\mathbf{x}$, just not an exact linear function. This kind of identification can lead to poor estimators in practice because $\lambda(\cdot)$ can be very close to linear over the appropriate range. In fact, if we do not impose a probit model on $\mathrm{P}(y>0 \mid \mathbf{x})$, identification would be lost because we would have to allow $\lambda(\cdot)$ to be from a class of functions that contain functions arbitrarily close to linear functions.
+
+As a practical matter, the simple two-step procedure suggested by (17.58) can lead to imprecise or unexpected estimates of $\boldsymbol{\beta}$ and $\eta$. The two-step procedure obtains $\hat{\boldsymbol{\gamma}}$ from probit of $s_{i}$ on $\mathbf{x}_{i}$, and then $\hat{\boldsymbol{\beta}}$ and $\hat{\eta}$ are obtained from OLS of $\log \left(y_{i}\right)$ on $\mathbf{x}_{i}$, $\lambda\left(\mathbf{x}_{i} \hat{\gamma}\right)$ using only observations with $y_{i}>0$. Heckman (1976) originally proposed this two-step procedure, although he had the sample selection problem more in mind. Generally, the two-step method is referred to as Heckman's method or Heckit. We will study the method applied to missing data problems much more fully in Chapter 19.
+
+Of course, the two-step estimation method may poorly identify $\boldsymbol{\beta}$ and $\eta$ simply because it does not efficiently use all of the information in $\mathrm{D}(y \mid \mathbf{x})$. But there are other indications that the general model is poorly identified. It can be shown that
+
+
+\begin{equation*}
+\mathrm{E}(y \mid \mathbf{x})=\Phi(\mathbf{x} \boldsymbol{\gamma}+\eta) \exp \left(\mathbf{x} \boldsymbol{\beta}+\sigma^{2} / 2\right), \tag{17.59}
+\end{equation*}
+
+
+which is exactly of the same form as equation (17.53), where $u$ and $v$ are assumed to be independent. The only difference is the appearance of $\eta$. However, because $\mathbf{x}$ always should include a constant, $\eta$ is not separately identified by $\mathrm{E}(y \mid \mathbf{x})$ (and neither is $\sigma^{2} / 2$ ). If we based identification entirely on $\mathrm{E}(y \mid \mathbf{x})$, there would be no difference between the lognormal hurdle model and the ET2T model when the same set of regressors appears in the participation and amount equations.
+
+While the previous discussion indicates that the model with $\rho$ unknown may be poorly identified, all of the parameters are technically identified by the log likelihood in (17.57), and MLE is generally feasible. Unfortunately, as with the two-step procedure, the estimates can be difficult to believe when the same set of regressors shows up in both parts of the model.
+
+Example 17.4 (Annual Hours Equation for Married Women): Table 17.1 reports linear model and Tobit estimates for married women's labor supply. We now
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 17.2\\
+Models for Married Women's Labor Supply}
+\begin{tabular}{|l|l|l|l|}
+\hline
+Model & (1) & (2) & Type II Tobit \\
+\hline
+\multicolumn{4}{|l|}{Participation equation} \\
+\hline
+nwifeinc & -. 012 (.005) & -. 012 (.005) & -. 0097 (.0043) \\
+\hline
+educ & . 131 (.025) & . 131 (.025) & . 120 (.022) \\
+\hline
+exper & . 123 (.019) & . 123 (.019) & . 083 (.017) \\
+\hline
+exper ${ }^{2}$ & -. 0019 (.0006) & -. 0019 (.0006) & -. 0013 (.0005) \\
+\hline
+age & -. 088 (.015) & -. 088 (.015) & -. 033 (.008) \\
+\hline
+kidslt6 & -. 868 (.119) & -. 868 (.119) & -. 504 (.107) \\
+\hline
+kidsge6 & . 036 (.043) & . 036 (.043) & . 070 (.039) \\
+\hline
+constant & . 270 (.509) & . 270 (.509) & -. 367 (.448) \\
+\hline
+Amount equation & hours & $\log$ (hours) & $\log$ (hours) \\
+\hline
+nwifeinc & . 153 (5.164) & -. 0020 (.0044) & . 0067 (.0050) \\
+\hline
+educ & -29.85 (22.84) & -. 039 (.020) & -. 119 (.024) \\
+\hline
+exper & 72.62 (21.24) & . 073 (.018) & -. 033 (.020) \\
+\hline
+exper ${ }^{2}$ & -. 944 (.609) & -. 0012 (.0005) & . 0006 (.0006) \\
+\hline
+age & -27.44 (8.29) & -. 024 (.007) & . 014 (.008) \\
+\hline
+kidslt6 & -484.91 (153.79) & -. 585 (.119) & . 208 (.134) \\
+\hline
+kidsge6 & -102.66 (43.54) & -. 069 (.037) & -. 092 (.043) \\
+\hline
+constant & 2,123.5 (483.3) & 7.90 (.43) & 8.67 (.50) \\
+\hline
+$\hat{\sigma}$ & 850.77 (43.80) & . 884 (.030) & 1.209 (.051) \\
+\hline
+$\hat{\rho}$ & - & - & -. 972 (.010) \\
+\hline
+Log likelihood & -3,791.95 & -3,894.93 & -3,877.88 \\
+\hline
+Number of women & 753 & 753 & 753 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+All estimates are from maximum likelihood, with standard errors in parentheses after coefficents.\\
+The headings for the amount equation are intended to emphasize that the $\log$ (hours) can be expressed as a linear function in the lognormal hurdle and exponential type II Tobit models.\\
+estimate the truncated normal hurdle model, the lognormal hurdle model, and the ET2T model. The results are given in Table 17.2.
+
+There are several interesting features of the estimates in Table 17.2. First, because the lognormal hurdle model is nested within the ET2T model, the log likelihood of the latter is necessarily larger than that of the former. The $L R$ test decidedly rejects the null model with $L R=34.10$ for the test of $\mathrm{H}_{0}: \rho=0$. But we should view the very large, negative value $\hat{\rho}=-.972$ with suspicion. It seems very unlikely that the unobserved factors that positively affect the decision to enter the workforce have a strong negative effect on how much to work.
+
+Because of the correlation allowed between $u$ and $v$ in the ET2T model, it is not immediately obvious how each explanatory variable affects $\mathrm{E}(y \mid \mathbf{x}, y>0)$ or $\mathrm{E}(y \mid \mathbf{x})$. The positive coefficient on kidslt6 for the amount equation seems odd, but, because $\hat{\beta}_{\text {kidslt } 6}>0, \hat{\eta}<0, \hat{\gamma}_{\text {kidslt } 6}<0$, and $\lambda(\cdot)$ has a negative slope, the estimated partial effect of kidslt6 on $\mathrm{E}[\log ($ hours $) \mid \mathbf{x}$, hours $>0]$ is ambiguous. Equation (17.59)\\
+shows that the effect on E (hours $\mid \mathbf{x}$ ) is ambiguous, and we would have to plug in specific values of $\mathbf{x}$ to determine the sign of the partial effect at interesting values. The experience profile also seems unusual, although, again, it is difficult in the ET2T model to figure out how the inverted U-shape for the participation part and the U-shape for the amount part translate into partial effects. The difficulty in interpreting the estimates in the ET2T model, coupled with the unbelievable estimate of $\rho$, make this model undesirable for this application. (Unlike with the truncated normal and lognormal hurdle models, the label "amount equation" is less suitable as a label in the ET2T model: equation (17.58) makes it clear that both sets of parameters enter the expectation conditional on $y>0$.)
+
+Based on the log likelihood, the truncated normal hurdle model fits considerably better than the lognormal hurdle model. We can apply Vuong's (1989) test to see if the difference is statistically significant. Because the participation equations are identical probits in both models, we can only test the "amount" models on the 428 observations with positive hours. The simplest way to implement the test is to regress $\hat{\boldsymbol{l}}_{i 1}-\hat{\boldsymbol{l}}_{i 2}$ on a constant and perform a $t$ test, where, for observation $i, \hat{\boldsymbol{l}}_{i 1}$ is the log likelihood for the truncated normal model and $\hat{\boldsymbol{l}}_{i 2}$ is the log likelihood for the lognormal model. The average difference in the log likelihoods is .241 with standard error $=.033$, and so the difference is highly statistically significant. Therefore, we can at least reject the lognormal model as being the true model.
+
+Conditional on hours $>0$, the truncated normal model fits the conditional mean better than the lognormal model, too. The squared correlation between hours ${ }_{i}$ and the fitted values for the TNH model is about . 138 (computed from (17.46)) and about . 128 for the LH model (computed from (17.52)).
+
+We can also easily test the type I Tobit model against the TNH model by using the $L R$ statistic. In this case, the usual Tobit model imposes eight restrictions of the form $\gamma_{j}=\beta_{j} / \sigma$. The $L R$ statistic is $L R=2(3,819.09-3,791.95)=54.28$, which yields a $p$-value of essentially zero, and so the standard Tobit model is strongly rejected. However, it is interesting to note that the Tobit model fits better than the ET2T model, even though the latter model contains nine more parameters.
+
+As a practical matter, the TNH model allows certain variables to affect the participation and amount decisions differently. For example, education has a positive effect on the participation decision but appears to have no effect, or maybe a negative effect, on the hours decision conditional on participation. The number of older children does not seem to affect participation-which makes sense because the older children are in school for most of the year, making at least part-time work much more convenient-but having older children has a negative effect on amount of hours worked conditional on working. While having young children has large negative\\
+effects on both the participation and amount decisions, the Tobit restriction, $\gamma_{\text {kidslt } 6}=\beta_{\text {kidslt } 6} / \sigma$, seems to be rejected, with $\hat{\gamma}_{\text {kidsl } 6}=-.868$ and $\hat{\beta}_{\text {kidslt } 6} / \hat{\sigma}=-.570$.
+
+A complete analysis of this example would be to obtain partial effects of some key variables, perhaps nwifeinc and kidslt6, on the different conditional expectations and to see how the partial effects change across models.
+
+In the example just given, the TNH model provides the best fit and gives sensible estimates. In other cases, one can imagine the lognormal distribution could fit better for the amount distribution conditional on $y>0$; such issues must be studied for each application.
+
+The ET2T model is more convincing when the covariates determining the participation decision strictly contain those affecting the amount decision. Then, the model can be expressed as\\
+$y=1[\mathbf{x} \gamma+v \geq 0] \cdot \exp \left(\mathbf{x}_{1} \boldsymbol{\beta}_{1}+u\right)$,\\
+where both $\mathbf{x}$ and $\mathbf{x}_{1}$ contain unity as their first elements but $\mathbf{x}_{1}$ is a strict subset of $\mathbf{x}$. If we write $\mathbf{x}=\left(\mathbf{x}_{1}, \mathbf{x}_{2}\right)$, then we are assuming $\boldsymbol{\gamma}_{2} \neq \mathbf{0}$. Given at least one exclusion restriction, we can see from $\mathrm{E}[\log (y) \mid \mathbf{x}, y>0]=\mathbf{x}_{1} \boldsymbol{\beta}_{1}+\eta \lambda(\mathbf{x} \boldsymbol{\gamma})$ that $\boldsymbol{\beta}_{1}$ and $\eta$ are likely to be better identified because $\lambda(\mathbf{x} \boldsymbol{\gamma})$ is not an exact function of $\mathbf{x}_{1}$. (Identification of $y$ is not an issue because it is always identified by the probit model for $\mathrm{P}(y>0 \mid \mathbf{x})$.) Unfortunately, where the exclusion restriction might come from is often unclear in applications. To use an exclusion restriction in Example 17.4, we need an observed variable that affects the labor force participation decision but not the amount decision. Perhaps a measure of the accessibility of day care can be viewed as affecting fixed costs of participating but not the amount decision. (The price of day care would typically affect the participation and amount decisions.) But such a variable is not available in the Mroz (1987) data set.
+
+In Example 9.5, where we estimated a simultaneous equations model for hours and $\log$ (wage), restricting ourselves to working women, we assumed that past workforce experience had no affect on hours; this allowed us to identify the hours equation. If we make a similar assumption and allow experience to affect participation but exclude it from $\mathbf{x}_{1}$, we obtain two exclusion restrictions because exper appears as a quadratic. Unfortunately, using these exclusion restrictions does not appreciably change the estimated correlation between $v$ and $u: \hat{\rho}$ becomes -.963 , and the estimated coefficients on the explanatory variables are similar to those in Table 17.2. Therefore, for this application, the ET2T model has some serious shortcomings even if we accept the exclusion restrictions.
+
+Given that the TNH model (and even the Tobit model) fits better than the ET2T model, it is tempting to apply the type II Tobit model to the level, $y$, rather than\\
+$\log (y)$. After all, the TNH model can be expressed as $y=1[\mathbf{x} \boldsymbol{\gamma}+v>0] \cdot(\mathbf{x} \boldsymbol{\beta}+u)$. But in the TNH model, the truncated normal distribution of $u$ at the value $-\mathbf{x} \boldsymbol{\beta}$ ensures that $\mathbf{x} \boldsymbol{\beta}+u>0$. If we apply the type II Tobit model directly to $y$, we must assume ( $u, v$ ) is bivariate normal and independent of $\mathbf{x}$. What we gain is that $u$ and $v$ can be correlated, but this comes at the cost of not specifying a proper density because the T2T model allows negative outcomes on y . (This was not a problem when we applied the model to $\log (y)$.) Now, rather than (17.46) or (17.52)-both of which are guaranteed to be positive-we would have\\
+$\mathrm{E}(y \mid \mathbf{x}, y>0)=\mathbf{x} \boldsymbol{\beta}+\eta \lambda(\mathbf{x} \boldsymbol{\gamma})$,\\
+where $\eta=\rho \sigma, \rho=\operatorname{Corr}(u, v)$, and $\sigma^{2}=\operatorname{Var}(u)$. When we obtain either two-step estimates or MLEs of $\boldsymbol{\gamma}, \boldsymbol{\beta}$, and $\eta$, nothing guarantees the right-hand side of (17.61) is positive for all $\mathbf{x}$. Especially when $\rho<0$, it is possible to get negative estimates of $\mathrm{E}(y \mid \mathbf{x}, y>0)$. Clearly negative estimates are possible in the case $\rho=0$, as nothing guarantees $\mathbf{x} \hat{\boldsymbol{\beta}}>0$. Therefore, although the T2T model has been applied to corner solution responses-see, for example, Blank (1988) for hours worked and Franses and Paap (2001) for charitable contributions-it is not generally a good idea. As we will see in Chapter 19, the type II Tobit model was originally intended for sample selection problems.
+
+If we (inappropriately) apply the T2T model to hours, the value of the "log likelihood"-that is, the value of the partial $\log$ likelihood obtained by treating the hours $_{i}=0$ observations as missing data-is $-3,823.77$, which is notably lower than the log likelihood value for the model it is supposed to nest, the TNH model (with log likelihood $-3,791.95$ ). This provides verification that the T2T "model" does not nest Cragg's TNH model and in fact fits much worse.
+
+\subsection*{17.7 Two-Limit Tobit Model}
+As mentioned in the introduction, some corner solution responses take on two values with positive probability. When the response variable is a fraction or a percent, the corners are usually at zero and one or zero and 100 , respectively. But it is also possible that institutional constraints impose corners at other values. For example, if workers are allowed to contribute at most $15 \%$ of their earnings to a tax-deferred pension plan, and $y_{i}$ is the fraction of income contributed for worker $i$, then the corners are at zero and . 15 .
+
+Generally, let $a_{1}<a_{2}$ be the two limit values of $y$ in the population. Then the twolimit Tobit model is most easily defined in terms of an underlying latent variable.\\
+$y^{*}=\mathbf{x} \boldsymbol{\beta}+u, \quad u \mid \mathbf{x} \sim \operatorname{Normal}\left(0, \sigma^{2}\right)$\\
+$y=a_{1} \quad$ if $y^{*} \leq a_{1}$\\
+$y=y^{*} \quad$ if $a_{1}<y^{*}<a_{2}$\\
+$y=a_{2} \quad$ if $y^{*} \geq a_{2}$.\\
+The specification in equation (17.62) ensures that $\mathrm{P}\left(y=a_{1}\right)>0$ and $\mathrm{P}\left(y=a_{2}\right)>0$ but $\mathrm{P}(y=a)=0$ for $a_{1}<a<a_{2}$. Therefore, this model is applicable only when we actually see pileups at the two endpoints and then a (roughly) continuous distribution in between.
+
+Using similar arguments for the type I Tobit model, the density of $y$ is the same as $y^{*}$ for values in $\left(a_{1}, a_{2}\right)$. Further, as you are asked to work out in Problem 17.3,
+
+
+\begin{equation*}
+\mathrm{P}\left(y=a_{1} \mid \mathbf{x}\right)=\Phi\left(\left(a_{1}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right) \tag{17.63}
+\end{equation*}
+
+
+$\mathrm{P}\left(y=a_{2} \mid \mathbf{x}\right)=\Phi\left(-\left(a_{2}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right)$.
+
+It follows that the log-likelihood function for a random draw $i$ is
+
+$$
+\begin{aligned}
+\log f\left(y_{i} \mid \mathbf{x}_{i} ; \boldsymbol{\theta}\right)= & 1\left[y_{i}=a_{1}\right] \log \left[\Phi\left(\left(a_{1}-\mathbf{x}_{i} \boldsymbol{\beta}\right) / \sigma\right)\right]+1\left[y_{i}=a_{2}\right] \log \left[\Phi\left(-\left(a_{2}-\mathbf{x}_{i} \boldsymbol{\beta}\right) / \sigma\right)\right] \\
+& +1\left[a_{1}<y_{i}<a_{2}\right] \log \left[(1 / \sigma) \phi\left(\left(y_{i}-\mathbf{x}_{i} \boldsymbol{\beta}\right) / \sigma\right)\right]
+\end{aligned}
+$$
+
+Many econometrics packages that estimate the standard Tobit model also allow specifying any lower and upper limit. The log likelihood is well behaved, and standard asymptotic theory for MLE applies.
+
+As usual with nonlinear models, a difficult aspect is in knowing which estimated features to report. It can be shown (again see Problem 17.3) that
+
+
+\begin{align*}
+\mathrm{E}\left(y \mid \mathbf{x}, a_{1}<y<a_{2}\right)= & \mathbf{x} \boldsymbol{\beta}+\sigma\left[\phi\left(\left(a_{1}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right)-\phi\left(\left(a_{1}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right)\right] / \\
+& {\left[\Phi\left(\left(a_{2}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right)-\Phi\left(\left(a_{1}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right)\right] } \tag{17.65}
+\end{align*}
+
+
+where the term after $\mathbf{x} \boldsymbol{\beta}$ is the extension of the inverse Mills ratio. The so-called unconditional expectation can be gotten from
+
+
+\begin{align*}
+\mathrm{E}(y \mid \mathbf{x})= & a_{1} \mathrm{P}\left(y=a_{1} \mid \mathbf{x}\right)+\mathrm{P}\left(a_{1}<y<a_{2} \mid \mathbf{x}\right) \mathrm{E}\left(y \mid \mathbf{x}, a_{1}<y<a_{2}\right)+a_{2} \mathrm{P}\left(y=a_{2} \mid \mathbf{x}\right) \\
+= & a_{1} \Phi\left(\left(a_{1}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right)+\mathrm{P}\left(a_{1}<y<a_{2} \mid \mathbf{x}\right) \mathrm{E}\left(y \mid \mathbf{x}, a_{1}<y<a_{2}\right) \\
+& +a_{2} \Phi\left(-\left(a_{2}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right) \tag{17.66}
+\end{align*}
+
+
+Equations (17.65) and (17.66) are cumbersome to work with, but they do allow us to obtain predicted values for a vector $\mathbf{x}$, once we have obtained the MLEs.
+
+As with the single corner at zero, the partial effect of a continuous variable $x_{j}$ on $\mathrm{E}(y \mid \mathbf{x})$ simplifies to a remarkable degree:\\
+$\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{j}}=\left[\Phi\left(\left(a_{2}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right)-\Phi\left(\left(a_{1}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right)\right] \beta_{j}$.
+
+This last expression makes partial effects at specific values of $\mathbf{x}$, and APEs, especially easy to compute for continuous explanatory variables. For APEs we have\\
+$\left(N^{-1} \sum_{i=1}^{N}\left[\Phi\left(\left(a_{2}-\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right) / \hat{\sigma}\right)-\Phi\left(\left(a_{1}-\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right) / \hat{\sigma}\right)\right]\right) \hat{\beta}_{j}$,\\
+where the scale factor is, of course, between zero and one. To determine how linear model estimates compare for estimating APEs, we should compare the OLS estimates for continuous variables directly to (17.68). APEs for binary variables should be obtained from equation (17.66), where we difference the two expected values at the two settings of the binary variable, and then average the differences; see (17.18) for the standard Tobit case.
+
+\subsection*{17.8 Panel Data Methods}
+We now cover panel data methods for corner solution responses. We use the same notation as in previous chapters, namely, $y_{i t}$ denotes the response for unit $i$ at time $t$. The treatment is similar to that given in Section 15.8 for probit models.
+
+\subsection*{17.8.1 Pooled Methods}
+We begin with the case where $y_{i t} \geq 0$ and $\mathrm{P}\left(y_{i t}=0\right)>0$. Before covering the type I Tobit model, it is important to remember that, because we are interested in explaining $y_{i t}$, it is acceptable in some cases to use linear regression methods. Just as in the cross section case, linear regressions are easy to interpret and might provide acceptable approximations to average effects. But the linear model might also not provide good estimates of partial effects at more extreme values.
+
+But it is also easy to apply the type I Tobit model to panel data. We now write
+
+
+\begin{equation*}
+y_{i t}=\max \left(0, \mathbf{x}_{i t} \boldsymbol{\beta}+u_{i t}\right), \quad t=1,2, \ldots, T \tag{17.69}
+\end{equation*}
+
+
+$u_{i t} \mid \mathbf{x}_{i t} \sim \operatorname{Normal}\left(0, \sigma^{2}\right)$.
+
+This model has several notable features. First, it does not maintain strict exogeneity of $\mathbf{x}_{i t}: u_{i t}$ is independent of $\mathbf{x}_{i t}$, but the relationship between $u_{i t}$ and $\mathbf{x}_{i s}, t \neq s$, is unspecified. As a result, $\mathbf{x}_{i t}$ could contain $y_{i, t-1}$ or variables that are affected by\\
+feedback. A second important point is that the $\left\{u_{i t}: t=1, \ldots, T\right\}$ are allowed to be serially dependent, which means that the $y_{i t}$ can be dependent after conditioning on the explanatory variables. In short, equations (17.69) and (17.70) only specify a model for $\mathrm{D}\left(y_{i t} \mid \mathbf{x}_{i t}\right)$, and $\mathbf{x}_{i t}$ can contain any conditioning variables (time dummies, interactions of time dummies with time-constant or time-varying variables, lagged dependent variables, and so on).
+
+The pooled estimator maximizes the partial log-likelihood function\\
+$\sum_{i=1}^{N} \sum_{t=1}^{T} \ell_{i t}\left(\boldsymbol{\beta}, \sigma^{2}\right)$,\\
+where $\ell_{i t}\left(\boldsymbol{\beta}, \sigma^{2}\right)$ is the log-likelihood function given in equation (17.20). Computationally, we just apply Tobit to the data set as if it were one long cross section of size $N T$. However, while the conditional information matrix equality holds for all $t$ under assumptions (17.69) and (17.70), a robust variance matrix estimator is needed to account for serial correlation in the score across $t$; see Sections 13.8.2 and 15.8.1. Robust Wald and score statistics can be computed as in Section 12.6. The $L R$ statistic based on the pooled Tobit estimation is not generally valid without further assumptions.
+
+In the case that the panel data model is dynamically complete, that is,\\
+$\mathrm{D}\left(y_{i t} \mid \mathbf{x}_{i t}, y_{i, t-1}, \mathbf{x}_{i, t-1}, \ldots\right)=\mathrm{D}\left(y_{i t} \mid \mathbf{x}_{i t}\right)$,\\
+inference is considerably easier: all the usual statistics from pooled Tobit are valid, including $L R$ statistics. Remember, we are not assuming any kind of independence across $t$; in fact, $\mathbf{x}_{i t}$ can contain lagged dependent variables. It just works out that dynamic completeness leads to the same inference procedures one would use on independent cross sections; see the general treatment in Section 13.8.
+
+A general test for dynamic completeness can be based on the scores $\hat{\mathbf{s}}_{i t}$, as mentioned in Section 13.8.3, but it is nice to have a simple test that can be computed from pooled Tobit estimation. Under assumption (17.71), variables dated at time $t-1$ and earlier should not affect the distribution of $y_{i t}$ once $\mathbf{x}_{i t}$ is conditioned on. There are many possibilities, but we focus on just one here. Define $r_{i, t-1}=1$ if $y_{i, t-1}=0$ and $r_{i, t-1}=0$ if $y_{i, t-1}>0$. Further, define $\hat{u}_{i, t-1} \equiv y_{i, t-1}-\mathbf{x}_{i, t-1} \hat{\boldsymbol{\beta}}$ if $y_{i, t-1}>0$ and $\hat{u}_{i, t-1} \equiv 0$ if $y_{i, t-1}=0$. Then estimate the following (artificial) model by pooled Tobit:\\
+$y_{i t}=\max \left[0, \mathbf{x}_{i t} \boldsymbol{\beta}+\gamma_{1} r_{i, t-1}+\gamma_{2}\left(1-r_{i, t-1}\right) \hat{u}_{i, t-1}+\right.$ error $\left._{i t}\right]$\\
+using time periods $t=2, \ldots, T$, and test the joint hypothesis $\mathrm{H}_{0}: \gamma_{1}=0, \gamma_{2}=0$. Under the null of dynamic completeness, error ${ }_{i t}=u_{i t}$, and the estimation of $u_{i, t-1}$\\
+does not affect the limiting distribution of the Wald, LR, or LM tests. In computing either the LR or LM test it is important to drop the first time period in estimating the restricted model with $\gamma_{1}=\gamma_{2}=0$. Since pooled Tobit is used to estimate both the restricted and unrestricted models, the LR test is fairly easy to obtain.
+
+In some applications it may be important to allow interactions between time dummies and explanatory variables. We might also want to allow the variance of $u_{i t}$ to change over time to allow more flexibly for time heterogeneity. If $\sigma_{t}^{2}=\operatorname{Var}\left(u_{i t}\right)$, a pooled approach still works, but $\ell_{i t}\left(\boldsymbol{\beta}, \sigma^{2}\right)$ becomes $\ell_{i t}\left(\boldsymbol{\beta}, \sigma_{t}^{2}\right)$, and special software may be needed for estimation.
+
+The exact way that lagged dependent variables should appear in dynamic Tobit models is not clear. We might want to allow different effects of lagged participation and amounts. So, defining $r_{i, t-1}=1\left[y_{i, t-1}=0\right]$, we might specify\\
+$y_{i t}=\max \left(0, \mathbf{z}_{i t} \boldsymbol{\delta}+\rho_{1} r_{i, t-1}+\rho_{2}\left(1-r_{i, t-1}\right) y_{i, t-1}+u_{i t}\right)$.\\
+Any of the two-part models and the selection model we discussed in Section 17.6 are easily adapted to panel data where we use pooled estimation. In Cragg's truncated normal hurdle model and the lognormal hurdle model, we can allow lagged participation and amount decisions to appear separately in the current participation and amount equations. And, of course, we can allow lags of other variables, too. If the model is assumed to be dynamically complete-as it typically would be if we start adding lagged dependent variables-standard inference from the pooled estimation is valid. If we are estimating a static model or finite distributed lag model, serial correlation robust statistics should be used. The two-limit Tobit model from Section 17.7 extends in a straightforward manner, too. Any of these methods is just a special case of the partial MLE results we discussed in Section 13.8: if the distribution is dynamically complete, then we can use the usual standard errors and test statistics; if it is not, all inference should be made robust to serial dependence.
+
+\subsection*{17.8.2 Unobserved Effects Models under Strict Exogeneity}
+As in the case of probit, allowing for unobserved heterogeneity in Tobit models is tricky. Of course, the simple strategy of specifying a linear model is available. That is, we can write $y_{i t}=\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}+u_{i t}$ and, under the assumption that $\mathbf{x}_{i r}$ is uncorrelated with $u_{i t}$ for all $t$ and $r$, estimate $\boldsymbol{\beta}$ by fixed effects. Of course, FE estimation ignores the restriction $u_{i t} \geq-\left(\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}\right)$, and, if we think $\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i t}, c_{i}\right)=\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}$, we would be ignoring $c_{i} \geq-\mathbf{x}_{i t} \boldsymbol{\beta}$ for $t=1, \ldots, T$. Nevertheless, as we discussed in Section 15.8 for binary responses, the linear model has some advantages: we can leave $\mathrm{D}\left(c_{i} \mid \mathbf{x}_{i}\right)$ unspecified, and we can allow for general serial dependence in $\left\{u_{i t}\right\}$. Plus, as usual, the $\hat{\boldsymbol{\beta}}$ are easy to interpret, although they are at best approximations to APEs.
+
+To exploit the corner solution nature of $y_{i t}$, we can instead use the unobserved effects Tobit model. (We leave the "type I" designation implicit here.) We can write this model as
+
+
+\begin{align*}
+& y_{i t}=\max \left(0, \mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}+u_{i t}\right), \quad t=1,2, \ldots, T  \tag{17.72}\\
+& u_{i t} \mid \mathbf{x}_{i}, c_{i} \sim \operatorname{Normal}\left(0, \sigma_{u}^{2}\right) \tag{17.73}
+\end{align*}
+
+
+where $c_{i}$ is the unobserved effect and $\mathbf{x}_{i}$ contains $\mathbf{x}_{i t}$ for all $t$. Assumption (17.73) is a normality assumption, but it also imples that the $\mathbf{x}_{i t}$ are strictly exogenous conditional on $c_{i}$. As we have seen in several contexts, this assumption rules out certain kinds of explanatory variables.
+
+Under assumptions (17.72) and (17.73), we can obtain $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, c, y_{t}>0\right)$ and $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, c\right)$ as in equations (17.10) and (17.14). These expectations, and therefore the partial effects, depend on the parameters $\boldsymbol{\beta}$ and $\sigma_{u}^{2}$. As in the unobserved effects models for binary responses, the partial effects on $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, c, y_{t}>0\right)$ and $\mathrm{E}\left(y_{t} \mid \mathbf{x}_{t}, c\right)$ also depend on the unobserved heterogeneity, $c$. If we can estimate the distribution of $c$ then we can plug in interesting values, such as the mean, median, or various quantiles, in obtaining the partial effects. As we will see, just as in the unobserved effects probit model, we can estimate APEs under weaker assumptions.
+
+Rather than cover a standard random effects version, we consider a more general correlated random effects Tobit model that allows $c_{i}$ and $\mathbf{x}_{i}$ to be correlated. To this end, assume, just as in the probit case,
+
+
+\begin{equation*}
+c_{i} \mid \mathbf{x}_{i} \sim \operatorname{Normal}\left(\psi+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}, \sigma_{a}^{2}\right), \tag{17.74}
+\end{equation*}
+
+
+where $\sigma_{a}^{2}$ is the variance of $a_{i}$ in the equation $c_{i}=\psi+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}$. We could replace $\overline{\mathbf{x}}_{i}$ with $\mathbf{x}_{i}$ to be more general, but $\overline{\mathbf{x}}_{i}$ has at most dimension $K$. (As usual, $\mathbf{x}_{i t}$ would not include a constant, and time dummies would be excluded from $\overline{\mathbf{x}}_{i}$ because they are already in $\mathbf{x}_{i t}$.) Under assumptions (17.42)-(17.44), we can write
+
+
+\begin{align*}
+& y_{i t}=\max \left(0, \psi+\mathbf{x}_{i t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}+u_{i t}\right)  \tag{17.75}\\
+& u_{i t} \mid \mathbf{x}_{i}, a_{i} \sim \operatorname{Normal}\left(0, \sigma_{u}^{2}\right), \quad t=1,2, \ldots, T  \tag{17.76}\\
+& a_{i} \mid \mathbf{x}_{i} \sim \operatorname{Normal}\left(0, \sigma_{a}^{2}\right) \tag{17.77}
+\end{align*}
+
+
+In our previous notation, assumptions (17.75) and (17.76) mean that $\mathrm{D}\left(y_{i t} \mid \mathbf{x}_{i}, a_{i}\right) =\operatorname{Tobit}\left(\psi+\mathbf{x}_{i t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}, \sigma_{u}^{2}\right)$. The formulation in equations (17.75), (17.76), and (17.77) is very useful, especially if we assume that, conditional on ( $\mathbf{x}_{i}, a_{i}$ ) (equivalently, conditional on $\left(\mathbf{x}_{i}, c_{i}\right)$ ), the $\left\{u_{i t}\right\}$ are serially independent:\\
+$\left(u_{i 1}, \ldots, u_{i T}\right)$ are independent given $\left(\mathbf{x}_{i}, a_{i}\right)$.
+
+If we set $\boldsymbol{\xi}=\mathbf{0}$, equations (17.75) through (17.78) constitute the traditional random effects Tobit model. It is hardly more difficult to estimate the CRE version of the model, because software that estimates random effects Tobit models can be used to obtain consistent and $\sqrt{N}$-asymptotically normal MLEs of $\psi, \boldsymbol{\beta}, \boldsymbol{\xi}, \sigma_{a}^{2}$, and $\sigma_{u}^{2}$. The log-likelihood function for unit $i$ is obtained first by multiplying the densities for the $\operatorname{Tobit}\left(\psi+\mathbf{x}_{i t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}, \sigma_{u}^{2}\right)$ model across $t$ and then integrating the product with respect to the $\operatorname{Normal}\left(0, \sigma_{a}^{2}\right)$ density-the distribution of $a_{i}$. Then, of course, we take the logarithm of the result. The steps are very similar to obtaining the density for the random effects probit model (with the Chamberlain-Mundlak device of adding $\overline{\mathbf{x}}_{i}$ as a set of regressors).
+
+Although we show the CRE Tobit model with only time-varying regressors-likely including a full set of time dummies-we can always include time-constant regressors, too, just as in the CRE probit model. We might include time-constant controls to proxy for unobserved heterogeneity, or we might actually be interested in the effects of a time-constant variable, say $w_{i}$, under the assumption $\mathbf{D}\left(c_{i} \mid \mathbf{x}_{i}, w_{i}\right)= \mathrm{D}\left(c_{i} \mid \mathbf{x}_{i}\right)$. Of course, including time-constant controls can often improve the fit of the model, too. Mechanically, we can include such variables in $\mathbf{x}_{i t}$ and simply drop the time averages associated with those variables (just as we do with aggregate time effects). We do not make this explicit in what follows.
+
+As in the probit case, given estimates of all parameters, we can estimate the mean and variance of $c_{i}$. A consistent estimator of $\mu_{c}=\mathrm{E}\left(c_{i}\right)$ is simply $\hat{\mu}_{c}=\hat{\psi}+\overline{\mathbf{x}} \hat{\boldsymbol{\xi}}$, where $\overline{\mathbf{x}}=N^{-1} \sum_{i=1}^{N} \overline{\mathbf{x}}_{i}$. A consistent estimator of $\sigma_{c}^{2}$ is simply $\hat{\sigma}_{c}^{2}=\hat{\boldsymbol{\xi}}^{\prime} \hat{\Sigma}_{\overline{\mathbf{x}}_{i}} \hat{\boldsymbol{\xi}}^{\prime}+\hat{\sigma}_{a}^{2}$, where $\hat{\Sigma}_{\overline{\mathbf{x}}_{i}}$ is the sample variance matrix of $\left\{\overline{\mathbf{x}}_{i}: i=1, \ldots, N\right\}$. If we define $m\left(a, \sigma^{2}\right)=\Phi(a / \sigma) a+ \sigma \phi(a / \sigma)$ as in equation (17.30), then we can compute partial effects at $\hat{\mu}_{c}$, by taking derivatives and changes of $m\left(\mathbf{x}_{t} \hat{\boldsymbol{\beta}}+\hat{\mu}_{c}, \hat{\sigma}_{u}^{2}\right)$ with respect to elements of $\mathbf{x}_{t}$. In the case of a derivative, we simply get $\Phi\left(\left(\mathbf{x}_{t} \hat{\boldsymbol{\beta}}+\hat{\mu}_{c}\right) / \hat{\sigma}_{u}\right) \hat{\beta}_{j}$. Furthermore, we might replace $\hat{\mu}_{c}$ with $\hat{\mu}_{c} \pm k \hat{\sigma}_{c}$ for some value of $k$, say $k=1$ or $k=2$. The bootstrap can be used to obtain valid standard errors where, as always with large $N$ and small $T$, we resample the cross section units (keeping all $T$ time periods for each $i$ ).
+
+Estimating APEs is also relatively simple. APEs (at $\mathbf{x}_{t}$ ) are obtained by finding $\mathrm{E}\left[m\left(\mathbf{x}_{t} \boldsymbol{\beta}+c_{i}, \sigma_{u}^{2}\right)\right]$ and then computing partial derivatives or changes with respect to elements of $\mathbf{x}_{t}$. Since $c_{i}=\psi+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}$, we have, by iterated expectations,
+
+
+\begin{equation*}
+\mathrm{E}\left[m\left(\mathbf{x}_{t} \boldsymbol{\beta}+c_{i}, \sigma_{u}^{2}\right)\right]=\mathrm{E}\left\{\mathrm{E}\left[m\left(\psi+\mathbf{x}_{t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}, \sigma_{u}^{2}\right) \mid \mathbf{x}_{i}\right]\right\}, \tag{17.79}
+\end{equation*}
+
+
+where the first expectation is with respect to the distribution of $c_{i}$. Since $a_{i}$ and $\mathbf{x}_{i}$ are independent and $a_{i} \sim \operatorname{Normal}\left(0, \sigma_{a}^{2}\right)$, the conditional expectation in equation (17.79) is obtained by integrating $m\left(\psi+\mathbf{x}_{t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}, \sigma_{u}^{2}\right)$ over $a_{i}$ with respect to the $\operatorname{Normal}\left(0, \sigma_{a}^{2}\right)$ distribution. Since $m\left(\psi+\mathbf{x}_{t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}, \sigma_{u}^{2}\right)$ is obtained by integrating\\
+$\max \left(0, \psi+\mathbf{x}_{t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}+u_{i t}\right)$ with respect to $u_{i t}$ over the $\operatorname{Normal}\left(0, \sigma_{u}^{2}\right)$ distribution, it follows that
+
+
+\begin{equation*}
+\mathrm{E}\left[m\left(\psi+\mathbf{x}_{t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+a_{i}, \sigma_{u}^{2}\right) \mid \mathbf{x}_{i}\right]=m\left(\psi+\mathbf{x}_{t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}, \sigma_{a}^{2}+\sigma_{u}^{2}\right) . \tag{17.80}
+\end{equation*}
+
+
+Therefore, the expected value of equation (17.80) (with respect to the distribution of $\overline{\mathbf{x}}_{i}$ ) is consistently estimated as
+
+
+\begin{equation*}
+N^{-1} \sum_{i=1}^{N} m\left(\hat{\psi}+\mathbf{x}_{t} \hat{\boldsymbol{\beta}}+\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}, \hat{\sigma}_{a}^{2}+\hat{\sigma}_{u}^{2}\right) \tag{17.81}
+\end{equation*}
+
+
+A similar argument works for $\mathrm{E}\left(y_{t} \mid \mathbf{x}, c, y_{t}>0\right)$ : $\operatorname{sum}\left(\hat{\psi}+\mathbf{x}_{t} \hat{\boldsymbol{\beta}}+\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}\right)+\hat{\boldsymbol{\sigma}}_{v} \lambda[(\hat{\psi}+ \left.\mathbf{x}_{t} \hat{\boldsymbol{\beta}}+\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}\right) / \hat{\sigma}_{v}$ in expression (17.81), where $\lambda(\cdot)$ is the inverse Mills ratio and $\hat{\sigma}_{v}^{2}= \hat{\sigma}_{a}^{2}+\hat{\sigma}_{u}^{2}$.
+
+We can relax assumption (17.78) and still obtain consistent, $\sqrt{N}$-asymptotically normal estimates of the APEs. In fact, under assumptions (17.75)-(17.77), we can write
+
+
+\begin{align*}
+& y_{i t}=\max \left(0, \psi+\mathbf{x}_{i t} \boldsymbol{\beta}+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}+v_{i t}\right),  \tag{17.82}\\
+& v_{i t} \mid \mathbf{x}_{i} \sim \operatorname{Normal}\left(0, \sigma_{v}^{2}\right), \quad t=1,2, \ldots, T, \tag{17.83}
+\end{align*}
+
+
+where $v_{i t}=a_{i}+u_{i t}$. Without further assumptions, the $v_{i t}$ are arbitrarily serially correlated, and so maximum likelihood analysis using the density of $\mathbf{y}_{i}$ given $\mathbf{x}_{i}$ would be computationally demanding. However, we can obtain $\sqrt{N}$-asymptotically normal estimators by a simple pooled Tobit procedure of $y_{i t}$ on $1, \mathbf{x}_{i t}, \overline{\mathbf{x}}_{i}, t=1, \ldots, T, i= 1, \ldots, N$. While we can only estimate $\sigma_{v}^{2}$ from this procedure, it is all we need-along with $\hat{\psi}, \hat{\boldsymbol{\beta}}$, and $\hat{\boldsymbol{\xi}}$-to obtain the APEs based on expression (17.81). The robust variance matrix for partial MLE derived in Section 13.8.2 should be used for standard errors and inference. A minimum distance approach, analogous to the probit case discussed in Section 15.8.2, is also available.
+
+From equation (17.81), we can easily obtain scale factors for APEs of the continuous explanatory variables. For given $\mathbf{x}_{t}$, the estimated scale is $N^{-1} \sum_{i=1}^{N} \Phi((\hat{\psi}+ \left.\mathbf{x}_{t} \hat{\boldsymbol{\beta}}+\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}\right) / \hat{\sigma}_{v}$ ) where $\hat{\sigma}_{v}^{2}=\hat{\sigma}_{a}^{2}+\hat{\sigma}_{u}^{2}$. We can further average across $\mathbf{x}_{i t}$ to obtain a scale factor for time period $t$, or even across all time periods to get a single scale factor. We can use (17.81) directly to estimate APEs for discrete changes. For example, if $x_{t K}$ is binary, we evaluate $m\left(\hat{\boldsymbol{\psi}}+\mathbf{x}_{t} \hat{\boldsymbol{\beta}}+\overline{\mathbf{x}}_{i} \hat{\boldsymbol{\xi}}, \hat{\sigma}_{v}^{2}\right)$ and $x_{t K}=1$ and $x_{t K}=0$ and form the difference. Rather than set values for $x_{t 1}, \ldots, x_{t, K-1}$, we could average across these as well, and even across all time periods. The next example illustrates how these calculations can be done.
+
+\begin{table}[h]
+\begin{center}
+\captionsetup{labelformat=empty}
+\caption{Table 17.3\\
+Panel Data Models for Annual Women's Labor Supply, 1980-1992}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\multirow[b]{2}{*}{Model Estimation Method} & (1) & (2) & (3) \\
+\hline
+ & Linear Fixed Effects & RE Tobit MLE & CRE Tobit MLE \\
+\hline
+nwifeinc & -. 775 (.343) & -2.251 (.325) & -1.554 (.382) \\
+\hline
+ch0\_2 & -342.38 (26.65) & -459.93 (22.67) & -472.09 (23.03) \\
+\hline
+ch3\_5 & -254.13 (25.88) & -313.50 (18.82) & -329.39 (19.49) \\
+\hline
+ch6\_17 & -42.96 (14.89) & -32.33 (9.82) & -46.12 (10.90) \\
+\hline
+marr & -634.80 (286.17) & -657.58 (48.93) & -784.18 (155.01) \\
+\hline
+constant & 1,786 (247.30) & 1,676.37 (39.28) & 1,646.36 (45.26) \\
+\hline
+$\hat{\sigma}_{a}$ & - & 768.55 & 756.40 \\
+\hline
+$\hat{\sigma}_{u}$ & - & 624.29 & 621.70 \\
+\hline
+scale factor & - & - 819 & . 826 \\
+\hline
+Log likelihood & - & -70,782.09 & -70,733.20 \\
+\hline
+Number of women &  &  & 898 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+All specifications include a full set of time dummies.\\
+The standard errors for FE estimation of the linear model are robust to arbitrary serial correlation and heteroskedasticity.\\
+For RE Tobit, $\hat{\sigma}_{a}=\hat{\sigma}_{c}$.\\
+The likelihood ratio test for exclusion of the five time averages in column (3) is 97.78 , which gives a $p$-value of essentially zero.
+
+Example 17.5 (Panel Data Estimation of Annual Hours Equation for Women): We now apply the RE Tobit and CRE Tobit models to an annual hours equation using the Panel Study of Income Dynamics for 1980 to 1992 (PSID80\_92.RAW). We include other sources of income (nwifeinc), three categories of children (ch0\_2,ch3\_5, and ch6\_17), and a binary marital status indicator (marr). We also include a full set of year dummies (not reported). For comparison purposes, a linear model estimated by fixed effects is also reported (Table 17.3).
+
+The three sets of estimates tell the same story in terms of directions of effects. Other income has a negative, statistically significant effect on annual hours, as do number of children-especially young children-and being married. The scale factors for the RE and CRE Tobit models have been computed by averaging across all $i$ and $t$. Therefore, the APE for nwifeinc for RE Tobit is about $.811(-2.25)=-1.82$, and for the CRE Tobit model it is $.826(-1.55)=-1.28$. Both are larger in magnitude than the linear model coefficient obtained from FE, -.775 . Certainly, including the time averages makes the APE from the Tobit and that from FE closer, but it does not entirely close the gap. The APE for marr from the CRE Tobit is about -695.26 (obtained from averaging the differences in estimated means with marr $=1$ and marr $=0$ ). This is almost $10 \%$ higher in magnitude than the FE estimate. Of course, we cannot know which estimate is closer to the true APE; each approach has its drawbacks.
+
+A correlated random effects version of the two-limit Tobit model follows in the obvious way. As with the standard Tobit model, partial effects at the mean of $c_{i}$ and other values are easily obtained under the full set of assumptions, but where equation (17.72) is replaced with the equations that generate two corners. APEs can be estimated without assumption (17.78) because the mean function for a two-limit Tobit conditional on $\left(\mathbf{x}_{i t}, \overline{\mathbf{x}}_{i}\right)$ has the same structure as the mean function conditional on $\left(\mathbf{x}_{i t}, c_{i}\right)$, provided assumption (17.74) holds. The argument is essentially the same as in the standard unobserved effects Tobit model; see Problem 17.16 for details.
+
+It is also possible to consistently estimate $\boldsymbol{\beta}$ under the conditional median assumption\\
+$\operatorname{Med}\left(y_{i t} \mid \mathbf{x}_{i 1}, \ldots, \mathbf{x}_{i T}, c_{i}\right)=\operatorname{Med}\left(y_{i t} \mid \mathbf{x}_{i t}, c_{i}\right)=\max \left(0, \mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}\right)$,\\
+which imposes strict exogeneity (for the median) conditional on $c_{i}$. Equivalently, we can write\\
+$y_{i t}=\max \left(0, \mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}+u_{i t}\right), \quad \operatorname{Med}\left(u_{i t} \mid \mathbf{x}_{i}, c_{i}\right)=0, \quad t=1, \ldots, T$.
+
+Honoré (1992) uses a clever conditioning argument on pairs of time periods, say $t$ and $s$, that effectively eliminates $c_{i}$ under the exchangeability assumption that $\left(u_{i t}, u_{i s}\right)$ and ( $u_{i s}, u_{i t}$ ) are identically distributed conditional on ( $\mathbf{x}_{i t}, \mathbf{x}_{i s}, c_{i}$ ). The details are too involved to cover here. A nice feature of Honoré's method is that it identifies the parameters in $\operatorname{Med}\left(y_{i t} \mid \mathbf{x}_{i t}, c_{i}\right)$ without restricting $\mathrm{D}\left(c_{i} \mid \mathbf{x}_{i}\right)$. However, restrictions are imposed on the joint distribution of $\left(u_{i 1}, \ldots, u_{i T}\right)$, restrictions that rule out, for example, heteroskedasticity that depends on the covariates, unobserved effect, or just time. (Of course, the standard Tobit model imposes homoskedasticity, too, although that is fairly easy to relax in parametric contexts.) A less obvious problem with Honoré's method is that, because we know nothing about the distribution of $c_{i}$ (either unconditionally or conditional on $\mathbf{x}_{i}$ ), we have no idea what are sensible values to plug in for $c$ in the estimated median function $\max \left(0, \mathbf{x}_{t} \hat{\boldsymbol{\beta}}+c\right)$. The estimate $\hat{\beta}_{j}$ is the estimated partial effect of $x_{t j}$ on the median once $\mathbf{x}_{t} \boldsymbol{\beta}+c>0$, but we cannot even estimate the fraction of the population where $\mathbf{x}_{t} \boldsymbol{\beta}+c>0$. We might be satisfied by averaging $c$ out of $\max \left(0, \mathbf{x}_{t} \boldsymbol{\beta}+c\right)$-that is, obtain an average structural function but where the median, rather than the mean, is defined as the "structure" of interest-but again, without information about the distribution of $c_{i}$, we cannot compute this average. (If $c_{i}$ has a $\operatorname{Normal}\left(\mu_{c}, \sigma_{c}^{2}\right)$ distribution, then $\mathrm{E}_{c_{i}}\left(\max \left(0, \mathbf{x}_{t} \boldsymbol{\beta}+c_{i}\right)\right)= \Phi\left(\left(\mu_{c}+\mathbf{x}_{t} \boldsymbol{\beta}\right) / \boldsymbol{\sigma}_{c}\right)\left(\mu_{c}+\mathbf{x}_{t} \boldsymbol{\beta}\right)+\sigma_{c} \phi\left(\left(\mu_{c}+\mathbf{x}_{t} \boldsymbol{\beta}\right) / \boldsymbol{\sigma}_{c}\right)$, but we do not have enough information to estimate $\mu_{c}$ and $\sigma_{c}^{2}$.)
+
+Given the variety of methods for estimating unobserved effects models for corner solution responses, we can produce a table very similar to Table 15.4 for binary re-\\
+sponse. With Honoré's estimator of $\boldsymbol{\beta}$ playing the role of the fixed effects (FE) logit estimator, the table would only be slightly changed. For example, the CRE Tobit model under the full random effects assumptions allows estimation of partial effects at different values of $c$, and also estimation of APEs. If we drop the conditional independence assumption, we can only identify APEs (that is, averaged across the distribution of $c_{i}$ ). As we just discussed, Honoré's estimator allows estimation of $\boldsymbol{\beta}$, but not generally partial effects on the median or APEs on the median. Honoré's approach does allow serial correlation in the idiosyncratic errors (unlike the FE logit estimator for binary response), but does impose exchangeability.
+
+\subsection*{17.8.3 Dynamic Unobserved Effects Tobit Models}
+We now turn to a specific dynamic model,\\
+$y_{i t}=\max \left(0, \mathbf{z}_{i t} \boldsymbol{\delta}+\rho_{1} y_{i, t-1}+c_{i}+u_{i t}\right)$,\\
+$u_{i t} \mid\left(\mathbf{z}_{i}, y_{i, t-1}, \ldots, y_{i 0}, c_{i}\right) \sim \operatorname{Normal}\left(0, \sigma_{u}^{2}\right), \quad t=1, \ldots, T$.
+
+We can embellish this model in many ways. For example, the lagged effect of $y_{i, t-1}$ can depend on whether $y_{i, t-1}$ is zero or greater than zero. Thus, we might replace $\rho_{1} y_{i, t-1}$ by $\eta_{1} r_{i, t-1}+\rho_{1}\left(1-r_{i, t-1}\right) y_{i, t-1}$, where $r_{i t}$ is a binary variable equal to unity if $y_{i t}=0$. We can allow a polynomial in $y_{i, t-1}$. Or, we can let the variance of $u_{i t}$ change over time. The basic approach does not depend on the particular model.
+
+The discussion in Section 15.8.4 about how to handle the initial value problem also holds here (see Section 13.9.2 for the general case). A fairly general and tractable approach is to specify a distribution for the unobserved effect, $c_{i}$, given the initial value, $y_{i 0}$, and the exogenous variables in all time periods, $\mathbf{z}_{i}$. Let $h\left(c \mid y_{0}, \mathbf{z} ; \boldsymbol{\gamma}\right)$ denote such a density. Then the joint density of $\left(y_{1}, \ldots, y_{T}\right)$ given $\left(y_{0}, \mathbf{z}\right)$ is\\
+$\int_{-\infty}^{\infty} \prod_{t=1}^{T} f\left(y_{t} \mid y_{t-1}, \ldots y_{1}, y_{0}, \mathbf{z}, c ; \boldsymbol{\theta}\right) h\left(c \mid y_{0}, \mathbf{z} ; \gamma\right) \mathrm{d} c$,\\
+where $f\left(y_{t} \mid y_{t-1}, \ldots y_{1}, y_{0}, \mathbf{z}, c ; \boldsymbol{\theta}\right)$ is the censored-at-zero normal distribution with mean $\mathbf{z}_{t} \boldsymbol{\delta}+\rho_{1} y_{t-1}+c$ and variance $\sigma_{u}^{2}$. A natural specification for $h\left(c \mid y_{0}, \mathbf{z} ; \boldsymbol{\gamma}\right)$ is $\operatorname{Normal}\left(\psi+\xi_{0} y_{0}+\mathbf{z} \boldsymbol{\xi}, \sigma_{a}^{2}\right)$, where $\sigma_{a}^{2}=\operatorname{Var}\left(c \mid y_{0}, \mathbf{z}\right)$. This leads to a fairly straightforward procedure. To see why, write $c_{i}=\psi+\xi_{0} y_{i 0}+\mathbf{z}_{i} \boldsymbol{\xi}+a_{i}$, so that\\
+$y_{i t}=\max \left(0, \psi+\mathbf{z}_{i t} \boldsymbol{\delta}+\rho_{1} y_{i, t-1}+\xi_{0} y_{i 0}+\mathbf{z}_{i} \boldsymbol{\xi}+a_{i}+u_{i t}\right)$,\\
+where the distribution of $a_{i}$ given ( $y_{i 0}, \mathbf{z}_{i}$ ) is $\operatorname{Normal}\left(0, \sigma_{a}^{2}\right)$, and assumption (17.87) holds with $a_{i}$ replacing $c_{i}$. The density in expression (17.88) then has the same form as the random effects Tobit model, where the explanatory variables at time $t$ are\\
+$\left(\mathbf{z}_{i t}, y_{i, t-1}, y_{i 0}, \mathbf{z}_{i}\right)$. The inclusion of the initial condition in each time period, as well as the entire vector $\mathbf{z}_{i}$, allows for the unobserved heterogeneity to be correlated with the initial condition and the strictly exogenous variables. Any software that estimates random effects Tobit models can be used to estimate all the parameters; in particular, we can easily test for state dependence ( $\rho_{1} \neq 0$ ). APEs can be estimated rather easily. For example, the APEs for $\mathrm{E}\left(y_{t} \mid \mathbf{z}_{t}, y_{t-1}, c\right)$ are consistently estimated from
+
+
+\begin{equation*}
+N^{-1} \sum_{i=1}^{N} m\left(\hat{\psi}_{t}+\mathbf{z}_{t} \hat{\boldsymbol{\delta}}+\hat{\rho}_{1} y_{t-1}+\hat{\xi}_{0} y_{i 0}+\mathbf{z}_{i} \hat{\boldsymbol{\xi}}, \hat{\sigma}_{a}^{2}+\hat{\sigma}_{u}^{2}\right) \tag{17.90}
+\end{equation*}
+
+
+where different time intercepts, $\hat{\psi}_{t}$, are explicitly shown for emphasis. (As with linear models and previous nonlinear models, one would usually include time dummies among the regressors.) As usual, we can take derivatives or changes with respect to elements of $\left(\mathbf{z}_{t}, y_{t-1}\right)$. Allowing more flexible functions of the initial condition in $\mathrm{E}\left(c_{i} \mid y_{i 0}, \mathbf{z}_{i}\right)$ is straightforward. Allowing heteroskedasticity in $\operatorname{Var}\left(c_{i} \mid y_{i 0}, \mathbf{z}_{i}\right)$, say $\operatorname{Var}\left(c_{i} \mid y_{i 0}, \mathbf{z}_{i}\right)=\exp \left(\eta+\xi_{0} y_{i 0}+\mathbf{z}_{i} \boldsymbol{\xi}\right)$, or with more flexible functions in $\left(y_{i 0}, \mathbf{z}_{i}\right)$, should not be too difficult. See Wooldridge (2005b) for further discussion and extensions, including to two-limit Tobit models.
+
+Using a censoring argument, Honoré (1993a) obtains orthogonality conditions that have zero mean at the true values of the parameters without making distributional assumptions about $c_{i}$ or $u_{i t}$ in equation (17.86). Honoré's assumptions put restrictions on the distribution of $\left\{u_{i t}: t=1, \ldots, T\right\}$-sufficient is that they are independent, identically distributed conditional on $\left(\mathbf{z}_{i}, y_{i 0}, c_{i}\right)$-but he does not impose a parametric distribution. Therefore, one can test for state dependence fairly generally (although heteroskedasticity in $\left\{u_{i t}\right\}$ is ruled out). Honoré and $\mathrm{Hu}(2004)$ obtained sufficient conditions such that the parameters $\boldsymbol{\delta}$ and $\rho_{1}$ are identified by a set of moment conditions similar to those in Honoré (1993a), and they derive the consistency and $\sqrt{N}$-asymptotic normality of a GMM estimator. Unfortunately, the methods used by Honoré (1993a) and Honoré and Hu (2004) do not allow for time dummies, and so it could be difficult to distinguish state dependence from aggregate fluctuations. Further, the censoring arguments hinge critically on $y_{i, t-1}$ appearing linearly in (17.86). It is not clear how to extend their arguments to general functions of $y_{i, t-1}$. At a minimum, one would need to know the signs of the coefficients on the extra functions (such as quadratics, or where we allow a separate effect from zero to a positive value).
+
+As things stand, semiparametric methods for estimating dynamic corner solution models do not uniformly relax assumptions of parametric approaches. Parametric approaches easily handle time dummies, nonlinear functions of $y_{i, t-1}$, and parametric\\
+heteroskedasticity. Therefore, it is difficult to know the proper reaction when discrepancies are found in the parameter estimates. Further, as with semiparametric methods for corner solution responses with strictly exogenous explanatory variables, the ability of semiparametric methods to consistently estimate parameters does not result in estimates of partial effects, and so the practical importance of any state dependence is not easily determined.
+
+\section*{Problems}
+17.1. When $y$ is a nonnegative corner solution response with corner at zero, one strategy that has been suggested is to use $\log (1+y)$ as the dependent variable in a linear regression.\\
+a. Does the transformation $\log (1+y)$ solve the problem of a pileup at zero? Explain. Are there other reasons that this transformation might be useful?\\
+b. Suppose we assume the linear model\\
+$\log (1+y)=\mathbf{x} \boldsymbol{\beta}+r, \quad \mathrm{E}(r \mid \mathbf{x})=0$.\\
+How would you estimate $\boldsymbol{\beta}$ ? Generally, can $r$ be independent of $\mathbf{x}$ ? Explain.\\
+c. Show that\\
+$\mathrm{E}(y \mid \mathbf{x})=\exp (\mathbf{x} \boldsymbol{\beta}) \mathrm{E}[\exp (r) \mid \mathbf{x}]-1$.\\
+If, as an approximation, we assume $r$ and $\mathbf{x}$ are independent with $\eta=\mathrm{E}[\exp (r)]$, find $\mathrm{E}(y \mid \mathbf{x})$.\\
+d. Under the independence assumption in part c , propose a consistent estimate of $\eta$. (Hint: Use Duan's (1983) smearing estimate.)\\
+e. Given $\hat{\boldsymbol{\beta}}$ and $\hat{\eta}$, how would you estimate $\mathrm{E}(y \mid \mathbf{x})$ ? Is the estimate guaranteed to be nonnegative? Explain.\\
+f. Use the data in MROZ.RAW to estimate $\boldsymbol{\beta}$ and $\eta$, where $y=$ hours. The elements of $\mathbf{x}$ should be the same as in Table 17.1. What is $\hat{\eta}$ for this data set? Compute the fitted values for hours ${ }_{i}$, say $\widehat{\operatorname{hour}} s_{i}$. Do you get any negative fitted values?\\
+g. Using the fitted values from part f , obtain the squared correlation between hours ${ }_{i}$ and $\widehat{\operatorname{hour}}_{i}$. How does this $R$-squared measure compare to that for the linear model and the Tobit model in Table 17.1?\\
+h. Test the errors $r_{i}$ for heteroskedasticity by running the regression $\hat{r}_{i}^{2}$ on $1,\left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right)$, $\left(\mathbf{x}_{i} \hat{\boldsymbol{\beta}}\right)^{2}$, where $\mathbf{x}_{i} \hat{\boldsymbol{\beta}}$ are the fitted values from the OLS regression $\log \left(1+\right.$ hours $\left._{i}\right)$ on $\mathbf{x}_{i}$. (See Section 6.2.4.) Does it appear that $r_{i}$ is independent of $\mathbf{x}_{i}$ ?\\
+17.2. Let $y$ be a response variable taking on values in $[0,1]$, where $\mathrm{P}(y=0)=0$ and $\mathrm{P}(y=1)>0$. An example is, for a random sample of markets indexed by $i, y_{i}$ is the share of the largest firm; by definition, $y_{i}$ cannot be zero but could be one.\\
+a. Would a two-limit Tobit model be appropriate for $y$ ? Explain.\\
+b. Explain why a type I Tobit model applied to $-\log (y)$ makes logical sense.\\
+c. If you apply the suggestion in part b , would it be easy to recover $\mathrm{E}(y \mid \mathbf{x})$ ? Show what you would have to do.\\
+17.3. Suppose that $y$ given $\mathbf{x}$ follows a two-limit Tobit model as in Section 17.7, with limit points $a_{1}<a_{2}$.\\
+a. Find $\mathrm{P}\left(y=a_{1} \mid \mathbf{x}\right)$ and $\mathrm{P}\left(y=a_{2} \mid \mathbf{x}\right)$ in terms of the standard normal cdf, $\mathbf{x}, \boldsymbol{\beta}$, and\\
+$\sigma$. For $a_{1}<y<a_{2}$, find $\mathrm{P}(y \leq y \mid \mathbf{x})$, and use this to find the density of $y$ given $\mathbf{x}$ for $a_{1}<y<a_{2}$.\\
+b. If $z \sim \operatorname{Normal}(0,1)$, it can be shown that $\mathrm{E}\left(z \mid c_{1}<z<c_{2}\right)=\left\{\phi\left(c_{1}\right)-\phi\left(c_{2}\right)\right\} / \left\{\Phi\left(c_{2}\right)-\Phi\left(c_{1}\right)\right\}$ for $c_{1}<c_{2}$. Use this fact to find $\mathrm{E}\left(y \mid \mathbf{x}, a_{1}<y<a_{2}\right)$ and $\mathrm{E}(y \mid \mathbf{x})$.\\
+c. Consider the following method for estimating $\boldsymbol{\beta}$. Using only the nonlimit observations, that is, observations for which $a_{1}<y_{i}<a_{2}$, run the OLS regression of $y_{i}$ on $\mathbf{x}_{i}$. Explain why this does not generally produce a consistent estimator of $\boldsymbol{\beta}$.\\
+d. Write down the log-likelihood function for observation $i$; it should consist of three parts.\\
+e. How would you estimate $\mathrm{E}\left(y \mid \mathbf{x}, a_{1}<y<a_{2}\right)$ and $\mathrm{E}(y \mid \mathbf{x})$ ?\\
+f. Show that
+
+$$
+\frac{\partial \mathrm{E}(y \mid \mathbf{x})}{\partial x_{j}}=\left\{\Phi\left[\left(a_{2}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right]-\Phi\left[\left(a_{1}-\mathbf{x} \boldsymbol{\beta}\right) / \sigma\right]\right\} \beta_{j} .
+$$
+
+Why is the scale factor multiplying $\beta_{j}$ necessarily between zero and one?\\
+g. Suppose you obtain $\hat{\gamma}$ from a standard OLS regression of $y_{i}$ on $\mathbf{x}_{i}$, using all observations. Would you compare $\hat{\gamma}_{j}$ to the two-limit Tobit estimate, $\hat{\beta}_{j}$ ? What would be a sensible comparison?\\
+17.4. Use the data in JTRAIN1.RAW for this question.\\
+a. Using only the data for 1988, estimate a linear equation relating hrsemp to $\log$ (employ), union, and grant. Compute the usual and heteroskedasticity-robust standard errors. Interpret the results.\\
+b. Out of the 127 firms with nonmissing data on all variables, how many have hrsemp $=0$ ? Estimate the model from part a by Tobit. Find the estimated average\\
+partial effect of grant on E (hrsemp $\mid$ employ, union, grant, hrsemp $>0$ ) for the 127 firms and union $=1$. What is the APE on E (hrsemp $\mid$ employ, union, grant)?\\
+c. Are $\log$ (employ) and union jointly significant in the Tobit model?\\
+d. In terms of goodness of fit for the conditional mean, do you prefer the linear model or Tobit model for estimating E(hrsemp | employ, union, grant)?\\
+17.5. Use the data set FRINGE.RAW for this question.\\
+a. Estimate a linear model by OLS relating hrbens to exper, age, educ, tenure, married, male, white, nrtheast, nrthcen, south, and union.\\
+b. Estimate a Tobit model relating the same variables from part a. Why do you suppose the OLS and Tobit estimates are so similar?\\
+c. Add exper ${ }^{2}$ and tenure ${ }^{2}$ to the Tobit model from part b. Should these be included?\\
+d. Are there significant differences in hourly benefits across industry, holding the other factors fixed?\\
+17.6. Consider a Tobit model with an endogenous binary explanatory variable:\\
+$y_{1}=\max \left(0, \mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+u_{1}\right)$\\
+$y_{2}=1\left[\mathbf{z} \boldsymbol{\delta}_{2}+v_{2}>0\right]$,\\
+where ( $u_{1}, v_{2}$ ) is independent of $\mathbf{z}$ with a bivariate normal distribution with mean zero and $\operatorname{Var}\left(v_{2}\right)=1$. If $u_{1}$ and $v_{2}$ are correlated, $y_{2}$ is endogenous.\\
+a. Find the density of $y_{1}$ given $\left(\mathbf{z}, y_{2}\right)$. (Hint: First find the density of $y_{1}$ given $\left(\mathbf{z}, v_{2}\right)$, which has the standard Tobit form.)\\
+b. For any observation $i$, write down the log-likelihood function in terms of the parameters $\boldsymbol{\delta}_{1}, \alpha_{1}, \sigma_{1}^{2}, \boldsymbol{\delta}_{2}$, and $\rho_{1}$, where $\sigma_{1}^{2}=\operatorname{Var}\left(u_{1}\right)$ and $\rho_{1}=\operatorname{Cov}\left(v_{2}, u_{1}\right)$.\\
+c. Discuss the properties of the following two-step method for estimating $\left(\boldsymbol{\delta}_{1}, \alpha_{1}\right):(1)$ Run probit of $y_{i 2}$ on $\mathbf{z}_{i}$ and obtain the fitted probabilities, $\Phi\left(\mathbf{z}_{i} \hat{\boldsymbol{\delta}}_{2}\right), i=1, \ldots, N$. (2) Run Tobit of $y_{i 1}$ on $\mathbf{z}_{i 1}, \Phi\left(\mathbf{z}_{i} \hat{\boldsymbol{\delta}}_{2}\right)$, and use the coefficients as estimates of ( $\boldsymbol{\delta}_{1}, \alpha_{1}$ ).\\
+d. For the binary response model $y_{2}=1\left[\mathbf{z} \boldsymbol{\delta}_{2}+v_{2} \geq 0\right]$, the generalized residual for a random draw $i$ is defined as $g r_{i 2}=\mathrm{E}\left(v_{i 2} \mid y_{i 2}, \mathbf{z}_{i}\right)$. When $v_{2}$ is independent of $\mathbf{z}$ with a standard normal distribution, it can be shown that $g r_{i 2}=y_{i 2} \phi\left(\mathbf{z}_{i} \boldsymbol{\delta}_{2}\right) / \Phi\left(\mathbf{z}_{i} \boldsymbol{\delta}_{2}\right)- \left(1-y_{i 2}\right) \phi\left(\mathbf{z}_{i} \boldsymbol{\delta}_{2}\right) /\left[1-\Phi\left(\mathbf{z}_{i} \boldsymbol{\delta}_{2}\right)\right]$. Show that a variable addition test version of the score test for $\mathrm{H}_{0}: \eta_{1}=0$ can be obtained from Tobit of $y_{i 1}$ on $\mathbf{z}_{i 1}, y_{i 2}, \widehat{g r}_{i 2}$ and using a $t$ test on $\widehat{g r}_{i 2}$. (Hint: The problem is simplified by reparameterizing the log likelihood by defining $\tau_{1}^{2}=\sigma_{1}^{2}-\eta_{1}^{2}$, so that $\eta_{1}$ appears only multiplying $v_{2}$.)\\
+17.7. Suppose in a two-part model that $\mathrm{P}(y>0 \mid \mathbf{x})$ follows a probit model, $\mathrm{E}(y \mid \mathbf{x}, y>0)=\exp (\mathbf{x} \boldsymbol{\beta})$, and $\operatorname{Var}(y \mid \mathbf{x}, y>0)=\eta^{2}[\exp (\mathbf{x} \boldsymbol{\beta})]^{2}$. Find $\operatorname{Var}(y \mid \mathbf{x})$. (Hint: Write $y$ as in (17.37), where $s$ and $w^{*}$ are independent conditional on $\mathbf{x}$, with $\mathrm{E}\left(w^{*} \mid \mathbf{x}\right)=\exp (\mathbf{x} \boldsymbol{\beta})$ and $\operatorname{Var}\left(w^{*} \mid \mathbf{x}\right)=\eta^{2}[\exp (\mathbf{x} \boldsymbol{\beta})]^{2}$.)\\
+17.8. Consider three different approaches for modeling $\mathrm{E}(y \mid \mathbf{x})$ when $y \geq 0$ is a corner solution outcome: (1) $\mathrm{E}(y \mid \mathbf{x})=\mathbf{x} \boldsymbol{\beta}$; (2) $\mathrm{E}(y \mid \mathbf{x})=\exp (\mathbf{x} \boldsymbol{\beta})$; and (3) $y$ given $\mathbf{x}$ follows a type I Tobit model.\\
+a. How would you estimate models 1 and 2?\\
+b. Obtain three goodness-of-fit statistics that can be compared across models; each should measure how much sample variation in $y_{i}$ is explained by $\hat{\mathrm{E}}\left(y_{i} \mid \mathbf{x}_{i}\right)$.\\
+c. Suppose, in your sample, $y_{i}>0$ for all $i$. Show that the OLS and Tobit estimates of $\boldsymbol{\beta}$ are identical. Does the fact that they are identical mean that the linear model for $\mathrm{E}(y \mid \mathbf{x})$ and the Tobit model produce the same estimates of $\mathrm{E}(y \mid \mathbf{x})$ ? Explain.\\
+d. If $y>0$ in the population, does a Tobit model make sense? What is a simple alternative to the three approaches listed at the beginning of this problem? What assumptions are sufficient for estimating $\mathrm{E}(y \mid \mathbf{x})$ ?\\
+17.9. Consider the Tobit model $y_{1}=\max \left(0, \mathbf{x}_{1} \boldsymbol{\beta}+u_{1}\right)$ where $\mathbf{x}_{1}$ is a function of $\left(\mathbf{z}_{1}, y_{2}\right)$ and $y_{2}=\mathbf{z} \boldsymbol{\delta}_{2}+v_{2}$. Assume that $\mathrm{E}\left(\mathbf{z}^{\prime} v_{2}\right)=\mathbf{0}$ and that $u_{1} \mid v_{2}, \mathbf{z} \sim \operatorname{Normal}\left(\theta_{1} v_{2}\right. \left.+\eta_{1}\left(v_{2}^{2}-\tau_{2}^{2}\right), \exp \left(\psi_{1}+\omega_{1} v_{2}\right)\right)$, where $\tau_{2}^{2}=\mathrm{E}\left(v_{2}^{2}\right)$.\\
+a. Find $\mathrm{D}\left(y_{1} \mid y_{2}, \mathbf{z}\right)$.\\
+b. Based on your answer in part a, propose a two-step method for estimating all of the parameters.\\
+c. Show how to estimate the average structural function after the two-step estimation. (Hint: This involves averaging across $\hat{v}_{i 2}$.)\\
+d. If $v_{2} \mid \mathbf{z} \sim \operatorname{Normal}\left(0, \tau_{2}^{2}\right)$, what is an alternative method of estimation?\\
+e. Under the assumption on $\mathrm{D}\left(u_{1} \mid v_{2}\right)$, can $u_{1}$ have an unconditional normal distribution? Explain.\\
+17.10. a. Provide a careful derivation of equation (17.16). It will help to use the fact that $\mathrm{d} \phi(z) / \mathrm{d} z=-z \phi(z)$.\\
+b. Derive equation (17.59).\\
+17.11. Let $y$ be a corner solution response, and let $\mathrm{L}(y \mid 1, \mathbf{x})=\gamma_{0}+\mathbf{x} \boldsymbol{y}$ be the linear projection of $y$ onto an intercept and $\mathbf{x}$, where $\mathbf{x}$ is $1 \times K$. If we use a random sample on $(\mathbf{x}, y)$ to estimate $\gamma_{0}$ and $\gamma$ by OLS, are the estimators inconsistent because of the corner solution nature of $y$ ? Explain.\\
+17.12. Use the data in APPLE.RAW for this question. These are phone survey data, where each respondent was asked the amount of "ecolabeled" (or "ecologically friendly") apples he or she would purchase at given prices for both ecolabeled apples and regular apples. The prices are cents per pound, and ecolbs and reglbs are both in pounds.\\
+a. For what fraction of the sample is $e c o l b s_{i}=0$ ? Discuss generally whether ecolbs is a good candidate for a Tobit model.\\
+b. Estimate a linear regression model for ecolbs, with explanatory variables $\log ($ ecoprc $), \log ($ regprc $), \log ($ faminc $)$, educ, hhsize, and num5\_17. Are the signs of the coefficient for $\log ($ ecoprc $)$ and $\log ($ regprc $)$ the expected ones? Interpret the estimated coefficient on $\log$ (ecoprc).\\
+c. Test the linear regression in part b for heteroskedasticity by running the regression $\hat{u}^{2}$ on 1, ecôlbs, ecôlbs ${ }^{2}$ and carrying out an F test. What do you conclude?\\
+d. Obtain the OLS fitted values. How many are negative?\\
+e. Now estimate a Tobit model for ecolbs. Are the signs and statistical significance of the explanatory variables the same as for the linear regression model? What do you make of the fact that the Tobit estimate on $\log ($ ecoprc $)$ is about twice the size of the OLS estimate in the linear model?\\
+f. Obtain the estimated partial effect of $\log ($ ecoprc $)$ for the Tobit model using equation (17.16), where the $x_{j}$ are evaluated at the mean values. What is the estimated price elasticity (again, at the mean values of the $x_{j}$ )?\\
+g. Reestimate the Tobit model dropping the variable $\log ($ regprc $)$. What happens to the coefficient on $\log ($ ecoprc $)$ ? What kind of correlation does this result suggest between $\log$ (ecoprc) and $\log$ (regprc)?\\
+h. Reestimate the model from part e, but with ecoprc and regprc as the explanatory variables, rather than their natural logs. Which functional form do you prefer? (Hint: Compare log-likelihood functions.)\\
+17.13. Suppose that, in the context of an unobserved effects Tobit (or probit) panel data model, the mean of the unobserved effect, $c_{i}$, is related to the time average of detrended $\mathbf{x}_{i t}$. Specifically,\\
+$c_{i}=\left[(1 / T) \sum_{t=1}^{T}\left(\mathbf{x}_{i t}-\boldsymbol{\pi}_{t}\right)\right] \boldsymbol{\xi}+a_{i}$,\\
+where $\boldsymbol{\pi}_{t}=\mathrm{E}\left(\mathbf{x}_{i t}\right), t=1, \ldots, T$, and $a_{i} \mid \mathbf{x}_{i} \sim \operatorname{Normal}\left(0, \sigma_{a}^{2}\right)$. How does this extension of equation (17.74) affect estimation of the unobserved effects Tobit (or probit) model?\\
+17.14. Consider the correlated random effects Tobit model under assumptions (17.72), (17.73), and (17.78), but replace assumption (17.74) with\\
+$c_{i} \mid \mathbf{x}_{i} \sim \operatorname{Normal}\left[\psi+\overline{\mathbf{x}}_{i} \boldsymbol{\xi}, \sigma_{a}^{2} \exp \left(\overline{\mathbf{x}}_{i} \boldsymbol{\lambda}\right)\right]$\\
+See Problem 15.18 for the probit case.\\
+a. What is the density of $y_{i t}$ given $\left(\mathbf{x}_{i}, a_{i}\right)$, where $a_{i}=c_{i}-\mathrm{E}\left(c_{i} \mid \mathbf{x}_{i}\right)$ ?\\
+b. Derive the log-likelihood function by first finding the density of $\left(y_{i 1}, \ldots, y_{i T}\right)$ given $\mathbf{x}_{i}$.\\
+c. Assuming you have estimated $\boldsymbol{\beta}, \sigma_{u}^{2}, \psi, \boldsymbol{\xi}, \sigma_{a}^{2}$, and $\lambda$ by CMLE, how would you estimate the APEs?\\
+17.15 Use the data in CPS91.RAW to answer this question.\\
+a. Estimate a Tobit model for hours with nwifeinc, educ, exper, exper ${ }^{2}$, age, kidlt6, and kidge6 as explanatory variables. What is the value of the log-likelihood function?\\
+b. Estimate Cragg's lognormal hurdle model. Does it fit the conditional distribution of hours better than the Tobit model?\\
+c. Estimate the ET2T model (with all explanatory variables in both stages). Discuss how it compares to the model from part $b$. Do you reject the model from part $b$ in favor of the ET2T model?\\
+d. Estimate Cragg's truncated normal hurdle model. How does its fit compare with the previous models?\\
+17.16. Consider the CRE Tobit model in Section 17.8.2, written with latent variable\\
+$y_{i t}^{*}=\mathbf{x}_{i t} \boldsymbol{\beta}+c_{i}+u_{i t}$\\
+$y_{i t}=q_{1} \quad$ if $y_{i t}^{*} \leq q_{1}$\\
+$y_{i t}=q_{2} \quad$ if $y_{i t}^{*} \geq q$\\
+$y_{i t}=y_{i t}^{*} \quad$ if $q_{1}<y_{i t}^{*}<q_{2}$,\\
+where $q_{1}<q_{2}$ are the two known limits. Make assumptions (17.73), (17.74), and (17.78).\\
+a. Obtain the log-likelihood function for estimating all of the parameters.\\
+b. How would you estimate $\mathrm{E}\left(c_{i}\right)$ and $\operatorname{Var}\left(c_{i}\right)$ ?\\
+c. Describe how to obtain the APEs on $\mathrm{E}\left(y_{i t} \mid \mathbf{x}_{i t}, c_{i}\right)$.\\
+d. How would your analysis change if you dropped assumption (17.78)?\\
+17.17. Consider an unobserved effects Tobit model with a continuous endogenous explanatory variable:\\
+$y_{i t 1}=\max \left(0, \alpha_{1} y_{i t 2}+\mathbf{z}_{i t 1} \boldsymbol{\delta}+c_{i 1}+u_{i t 1}\right)$\\
+$y_{i t 2}=\mathbf{z}_{i t} \boldsymbol{\pi}_{2}+c_{i 2}+u_{i t 2}$\\
+$c_{i 1}=\psi_{1}+\overline{\mathbf{z}}_{i} \xi_{1}+a_{i 1}$\\
+$c_{i 2}=\psi_{2}+\overline{\mathbf{z}}_{i} \xi_{2}+a_{i 2}$\\
+Although the assumptions can be weakened somewhat, assume that $\left(u_{i t 1}, u_{i t 2}\right) \mid \mathbf{z}_{i}$, $\mathbf{a}_{i}$ is bivariate normal with mean zero and constant conditional variance matrix (across $t$, as well as not depending on the conditioning variables). Further, assume $\left(a_{i 1}, a_{i 2}\right) \mid \mathbf{z}_{i}$ is bivariate normal with mean zero and constant conditional variance matrix. Note that $y_{i t 2}$ will not be strictly exogenous in the estimable equation, only contemporaneously. The mechanics are very similar to those given in Section 15.8.5 for the probit model.\\
+a. Obtain a control function method for consistently estimating $\alpha_{1}$ and $\boldsymbol{\delta}_{1}$. (Hint: It will help to define $v_{i t 1}=a_{i 1}+u_{i t 1}$ and $v_{i t 2}=a_{i 2}+u_{i t 2}$.)\\
+b. How would you obtain standard errors for the parameter estimators?\\
+c. How would you consistently estimate the average structural function (which is a function of $\left.\left(y_{t 2}, \mathbf{z}_{t 1}\right)\right)$ ?\\
+17.18. Consider a standard linear model where the endogenous explanatory variable, $y_{2}$, is a corner solution:\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{1} y_{2}+u_{1}$\\
+$\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=0$,\\
+where $\mathbf{z}_{1}$ is a strict subset of $\mathbf{z}$.\\
+a. What additional assumptions ensure that the 2SLS estimator, using instruments $\mathbf{z}$ and a random sample, is consistent for the parameters? Does it matter that $y_{2}$ is a corner solution?\\
+b. Suppose you think $\mathrm{D}\left(y_{2} \mid \mathbf{z}\right)$ follows a Tobit model and $\operatorname{Var}\left(u_{1} \mid \mathbf{z}\right)=\sigma_{1}^{2}$. What might you do instead of 2SLS in part a, and why? State a minimal set of assumptions that ensure the estimator is consistent.\\
+c. Suppose $y_{2}=\max \left(0, \mathbf{z} \boldsymbol{\delta}_{2}+v_{2}\right), v_{2} \mid \mathbf{z} \sim \operatorname{Normal}\left(0, \tau_{2}^{2}\right)$ and $\mathrm{E}\left(u_{1} \mid \mathbf{z}, v_{2}\right)=\rho_{1} v_{2}$. Propose a control function method for estimating $\left(\boldsymbol{\delta}_{1}, \alpha_{1}\right)$. (For example, see Vella\\
+(1993).) Does the CF approach change if $\left(\mathbf{z}_{1}, y_{2}\right)$ is replaced by some known function, $\mathbf{x}_{1}$, of $\left(\mathbf{z}_{1}, y_{2}\right)$ (for example, including quadratics and interactions)?\\
+d. Compare the merits of the estimation methods from parts $\mathrm{a}, \mathrm{b}$, and c .\\
+e. If in the setup of part c you assume ( $u_{1}, v_{2}$ ) is independent of $\mathbf{z}$ with a joint normal distribution, what estimation method would you use? Provide the objective function.\\
+17.19. Let $y_{1}, y_{2}, \ldots, y_{G}$ be a set of limited dependent variables representing a population. These could be outcomes for the same individual, family, firm, and so on. Some elements could be binary outcomes, some could be ordered outcomes, and others might be corner solutions. For a vector of conditioning variables $\mathbf{x}$ and unobserved heterogeneity $\mathbf{c}$, assume that $y_{1}, y_{2}, \ldots, y_{G}$ are independent conditional on $(\mathbf{x}, \mathbf{c})$, where $f_{g}\left(\cdot \mid \mathbf{x}, \mathbf{c} ; \boldsymbol{\gamma}_{0}^{g}\right)$. For example, if $c$ is a scalar and $y_{1}$ is a binary response, $f_{1}\left(\cdot \mid \mathbf{x}, \mathbf{c} ; \gamma_{o}^{1}\right)$ might represent a probit model with response probability $\Phi\left(\mathbf{x} \boldsymbol{\gamma}_{o}^{1}+c\right)$.\\
+a. Write down the density of $\mathbf{y}=\left(y_{1}, y_{2}, \ldots, y_{G}\right)$ given $(\mathbf{x}, \mathbf{c})$.\\
+b. Let $h\left(\cdot \mid \mathbf{x} ; \boldsymbol{\delta}_{o}\right)$ be the density of $\mathbf{c}$ given $\mathbf{x}$, where $\boldsymbol{\delta}_{o}$ is the vector of unknown parameters. Find the density of $\mathbf{y}$ given $\mathbf{x}$. Are the $y_{g}$ independent conditional on $\mathbf{x}$ ? Explain.\\
+c. Find the log likelihood for any random draw $\left(\mathbf{x}_{i}, \mathbf{y}_{i}\right)$.\\
+17.20. Use the data in PSID80\_92.RAW to answer this question.\\
+a. Estimate the dynamic Tobit model in Section 17.8.3 using $y_{i t}=h_{o u r s}$, with elements of $\mathbf{z}_{i t}$ including nwifeinc ${ }_{i t}$, ch $0 \_2_{i t}$, ch $3 \_5_{i t}$, ch $6 \_17_{i t}$, and marr ${ }_{i t}$. Be sure to include a full set of year dummies, too.\\
+b. Estimate the APE of nwifeinc in 1992 when hours $_{t-1}=0$. Average across the remaining explanatory variables.\\
+c. Estimate the APE of increasing ch0\_2 from zero to one in 1992, averaging across all other explanatory variables.
+
+\section*{18 Count, Fractional, and Other Nonnegative Responses}
+
+\end{document}

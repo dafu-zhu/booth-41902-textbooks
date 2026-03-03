@@ -1,0 +1,172 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{03C4}{\ifmmode\tau\else{$\tau$}\fi}
+\title{Asymptotic Theory for Econometricians -- Front Matter}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\maketitle
+Revised Edition
+
+Halbert White
+
+Cover photo credit: Copyright © 1999 Dynamic Graphics, Inc.
+
+This book is printed on acid-free paper.
+
+Copyright (C) 2001, 1984 by ACADEMIC PRESS\\
+All Rights Reserved.\\
+No part of this publication may be reproduced or transmitted in any form or by any means, electronic or mechanical, including photocopy, recording, or any information storage and retrieval system, without permission in writing from the publisher.
+
+Requests for permission to make copies of any part of the work should be mailed to: Permissions Department, Harcourt Inc., 6277 Sea Harbor Drive, Orlando, Florida 32887-6777
+
+\section*{Academic Press}
+A Harcourt Science and Technology Company\\
+525 B Street, Suite 1900, San Diego, California 92101-4495, USA\\
+\href{http://www.academicpress.com}{http://www.academicpress.com}\\
+Academic Press\\
+Harcourt Place, 32 Jamestown Road, London NW1 7BY, UK\\
+\href{http://www.academicpress.com}{http://www.academicpress.com}
+
+Library of Congress Catalog Card Number: 00-107735\\
+International Standard Book Number: 0-12-746652-5
+
+PRINTED IN THE UNITED STATES OF AMERICA\\
+$\begin{array}{lllllllllllllllll}00 & 01 & 02 & 03 & 04 & 05 & \text { QW } & 9 & 8 & 7 & 6 & 5 & 4 & 3 & 2 & 1\end{array}$
+
+\section*{Contents}
+Preface to the First Edition ..... ix\\
+Preface to the Revised Edition ..... xi\\
+References ..... xiii\\
+1 The Linear Model and Instrumental Variables Estimators ..... 1\\
+References ..... 12\\
+For Further Reading ..... 12\\
+2 Consistency ..... 15\\
+2.1 Limits ..... 15\\
+2.2 Almost Sure Convergence ..... 18\\
+2.3 Convergence in Probability ..... 24\\
+2.4 Convergence in $r$ th Mean ..... 28\\
+References ..... 30\\
+3 Laws of Large Numbers ..... 31\\
+3.1 Independent Identically Distributed Observations ..... 32\\
+3.2 Independent Heterogeneously Distributed Observations ..... 35\\
+3.3 Dependent Identically Distributed Observations ..... 39\\
+3.4 Dependent Heterogeneously Distributed Observations ..... 46\\
+3.5 Martingale Difference Sequences ..... 53\\
+References ..... 62\\
+4 Asymptotic Normality ..... 65\\
+4.1 Convergence in Distribution ..... 65\\
+4.2 Hypothesis Testing ..... 74\\
+4.3 Asymptotic Efficiency ..... 83\\
+References ..... 111\\
+5 Central Limit Theory ..... 113\\
+5.1 Independent Identically Distributed Observations ..... 114\\
+5.2 Independent Heterogeneously Distributed Observations ..... 117\\
+5.3 Dependent Identically Distributed Observations ..... 122\\
+5.4 Dependent Heterogeneously Distributed Observations ..... 130\\
+5.5 Martingale Difference Sequences ..... 133\\
+References ..... 136\\
+6 Estimating Asymptotic Covariance Matrices ..... 137\\
+6.1 General Structure of $V_{n}$ ..... 137\\
+6.2 Case 1: $\left\{\boldsymbol{Z}_{t} \varepsilon_{t}\right\}$ Uncorrelated ..... 139\\
+6.3 Case 2: $\left\{Z_{t} \varepsilon_{t}\right\}$ Finitely Correlated ..... 147\\
+6.4 Case 3: $\left\{\boldsymbol{Z}_{t} \varepsilon_{t}\right\}$ Asymptotically Uncorrelated ..... 154\\
+References ..... 164\\
+7 Eunctional Central Limit Theory and Applications ..... 167\\
+7.1 Random Walks and Wiener Processes ..... 167\\
+7.2 Weak Convergence ..... 171\\
+7.3 Functional Central Limit Theorems ..... 175\\
+7.4 Regression with a Unit Root ..... 178\\
+7.5 Spurious Regression and Multivariate FCLTs ..... 184\\
+7.6 Cointegration and Stochastic Integrals ..... 190\\
+References ..... 204\\
+8 Directions for Further Study ..... 207\\
+8.1 Extending the Data Generating Process ..... 207\\
+8.2 Nonlinear Models ..... 209\\
+8.3 Other Estimation Techniques ..... 209\\
+8.4 Model Misspecification ..... 211\\
+References ..... 211\\
+Solution Set ..... 213\\
+References ..... 259\\
+Index ..... 261
+
+\section*{Preface to the First Edition}
+Within the framework of the classical linear model it is a fairly straightforward matter to establish the properties of the ordinary least squares (OLS) and generalized least squares (GLS) estimators for samples of any size. Although the classical linear model is an excellent framework for developing a feel for the statistical techniques of estimation and inference that are central to econometrics, it is not particularly well adapted to the study of economic phenomena, because economists usually cannot conduct controlled experiments. Instead, the data usually exist as the outcome of a stochastic process outside the control of the investigator. For this reason, both the dependent and the explanatory variables may be stochastic, and equation disturbances may exhibit nonnormality or heteroskedasticity and serial correlation of unknown form, so that the classical assumptions are violated. Over the years a variety of useful techniques has evolved to deal with these difficulties. Many of these amount to straightforward modifications or extensions of the OLS techniques (e.g., the Cochrane-Orcutt technique, two-stage least squares, and three-stage least squares). However, the finite sample properties of these statistics are rarely easy to establish outside of somewhat limited special cases. Instead, their usefulness is justified primarily on the basis of their properties in large samples, because these properties can be fairly easily established using the powerful tools provided by laws of large numbers and central limit theory.
+
+Despite the importance of large sample theory, it has usually received fairly cursory treatment in even the best econometrics textbooks. This is\\
+really no fault of the textbooks, however, because the field of asymptotic theory has been developing rapidly. It is only recently that econometricians have discovered or established methods for treating adequately and comprehensively the many different techniques available for dealing with the difficulties posed by economic data.
+
+This book is intended to provide a somewhat more comprehensive and unified treatment of large sample theory than has been available previously and to relate the fundamental tools of asymptotic theory directly to many of the estimators of interest to econometricians. In addition, because economic data are generated in a variety of different contexts (time series, cross sections, time series-cross sections), we pay particular attention to the similarities and differences in the techniques appropriate to each of these contexts.
+
+That it is possible to present our results in a fairly unified manner highlights the similarities among a variety of different techniques. It also allows us in specific instances to establish results that are somewhat more general than those previously available. We thus include some new results in addition to those that are better known.
+
+This book is intended for use both as a reference and as a textbook for graduate students taking courses in econometrics beyond the introductory level. It is therefore assumed that the reader is familiar with the basic concepts of probability and statistics as well as with calculus and linear algebra and that the reader also has a good understanding of the classical linear model.
+
+Because our goal here is to deal primarily with asymptotic theory, we do not consider in detail the meaning and scope of econometric models per se. Therefore, the material in this book can be usefully supplemented by standard econometrics texts, particularly any of those listed at the end of Chapter 1.
+
+I would like to express my appreciation to all those who have helped in the evolution of this work. In particular, I would like to thank Charles Bates, Ian Domowitz, Rob Engle, Clive Granger, Lars Hansen, David Hendry, and Murray Rosenblatt. Particular thanks are due Jeff Wooldridge for his work in producing the solution set for the exercises. I also thank the students in various graduate classes at UCSD, who have served as unwitting and indispensable guinea pigs in the development of this material. I am deeply grateful to Annetta Whiteman, who typed this difficult manuscript with incredible swiftness and accuracy. Finally, I would like to thank the National Science Foundation for providing financial support for this work under grant SES81-07552.
+
+\section*{Preface to the Revised Edition}
+It is a gratifying experience to be asked to revise and update a book written over fifteen years previously. Certainly, this request would be unnecessary had the book not exhibited an unusual tenacity in serving its purpose. Such tenacity had been my fond hope for this book, and it is always gratifying to see fond hopes realized.
+
+It is also humbling and occasionally embarrassing to perform such a revision. Certain errors and omissions become painfully obvious. Thoughts of "How could I have thought that?" or "How could I have done that?" arise with regularity. Nevertheless, the opportunity is at hand to put things right, and it is satisfying to believe that one has succeeded in this. (I know, of course, that errors still lurk, but I hope that this time they are more benign or buried more deeply, or preferably both.)
+
+Thus, the reader of this edition will find numerous instances where definitions have been corrected or clarified and where statements of results have been corrected or made more precise or complete. The exposition, too, has been polished in the hope of aiding clarity.
+
+Not only is a revision of this sort an opportunity to fix prior shortcomings, but it is also an opportunity to bring the material covered up-to-date. In retrospect, the first edition of this book was more ambitious than originally intended. The fundamental research necessary to achieve the intended scope and cohesiveness of the overall vision for the work was by no means complete at the time the first edition was written. For example, the central limit theory for heterogeneous mixing processes had still not developed to\\
+the desired point at that time, nor had the theories of optimal instrumental variables estimation or asymptotic covariance estimation.
+
+Indeed, the attempt made in writing the first edition to achieve its intended scope and coherence revealed a host of areas where work was needed, thus providing fuel for a great deal of my own research and (I like to think) that of others. In the years intervening, the efforts of the econometrics research community have succeeded wonderfully in delivering results in the areas needed and much more. Thus, the ambitions not realized in the first edition can now be achieved. If the theoretical vision presented here has not achieved a much better degree of unity, it can no longer be attributed to a lack of development of the field, but is now clearly identifiable as the author's own responsibility.
+
+As a result of these developments, the reader of this second edition will now find much updated material, particularly with regard to central limit theory, asymptotically efficient instrumental variables estimation, and estimation of asymptotic covariance matrices. In particular, the original Chapter 7 (concerning efficient estimation with estimated error covariance matrices) and an entire section of Chapter 4 concerning efficient IV estimation have been removed and replaced with much more accessible and coherent results on efficient IV estimation, now appearing in Chapter 4.
+
+There is also the progress of the field to contend with. When the first edition was written, cointegration was a subject in its infancy, and the tools needed to study the asymptotic behavior of estimators for models of cointegrated processes were years away from fruition. Indeed, results of DeJong and Davidson (2000) essential to placing estimation for cointegrated processes cohesively in place with the theory contained in the first six chapters of this book became available only months before work on this edition began.
+
+Consequently, this second edition contains a completely new Chapter 7 devoted to functional central limit theory and its applications, specifically unit root regression, spurious regression, and regression with cointegrated processes. Given the explosive growth in this area, we cannot here achieve a broad treatment of cointegration. Nevertheless, in the new Chapter 7 the reader should find all the basic tools necessary for entrée into this fascinating area.
+
+The comments, suggestions, and influence of numerous colleagues over the years have had effects both subtle and patent on the material presented here. With sincere apologies to anyone inadvertently omitted, I acknowledge with keen appreciation the direct and indirect contributions to the present state of this book by Takeshi Amemiya, Donald W. K. Andrews, Charles Bates, Herman Bierens, James Davidson, Robert DeJong,
+
+Ian Domowitz, Graham Elliott, Robert Engle, A. Ronald Gallant, Arthur Goldberger, Clive W. J. Granger, James Hamilton, Bruce Hansen, Lars Hansen, Jerry Hausman, David Hendry, Søren Johansen, Edward Leamer, James Mackinnon, Whitney Newey, Peter C. B. Phillips, Eugene Savin, Chris Sims, Maxwell Stinchcombe, James Stock, Mark Watson, Kenneth West, and Jeffrey Wooldridge. Special thanks are due Mark Salmon, who originally suggested writing this book. UCSD graduate students who helped with the revision include Jin Seo Cho, Raffaella Giacomini, Andrew Patton, Sivan Ritz, Kevin Sheppard, Liangjun Su, and Nada Wasi. I also thank sincerely Peter Reinhard Hansen, who has assisted invaluably with the creation of this revised edition, acting as electronic amanuensis and editor, and who is responsible for preparation of the revised set of solutions to the exercises. Finally, I thank Michael J. Bacci for his invaluable logistical support and the National Science Foundation for providing financial support under grant SBR-9811562.
+
+Del Mar, CA\\
+July, 2000
+
+\section*{References}
+DeJong R. M. and J. Davidson (2000). "The functional central limit theorem and weak convegence to stochastic integrals I: Weakly dependent processes," forthcoming in Econometric Theory, 16.
+
+\section*{The Linear Model and Instrumental Variables Estimators}
+
+\end{document}

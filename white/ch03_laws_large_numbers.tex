@@ -1,0 +1,836 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{03C4}{\ifmmode\tau\else{$\tau$}\fi}
+\title{Chapter 3: Laws of Large Numbers}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Laws of Large Numbers}
+In this chapter we study laws of large numbers, which provide conditions guaranteeing the stochastic convergence (e.g., of $\mathbf{Z}^{\prime} \mathbf{X} / n$ and $\mathbf{Z}^{\prime} \varepsilon / n$ ), required for the consistency results of the previous chapter. Since different conditions will apply to different kinds of economic data (e.g., time series or cross section), we shall pay particular attention to the kinds of data these conditions allow. Only strong consistency results will be stated explicitly, since strong consistency implies convergence in probability (by Theorem 2.24).
+
+The laws of large numbers we consider are all of the following form.
+
+Proposition 3.0 Given restrictions on the dependence, heterogeneity, and moments of a sequence of random variables $\left\{\mathcal{Z}_{t}\right\}, \overline{\mathcal{Z}}_{n}-\bar{\mu}_{n} \xrightarrow{\text { a.s. }} 0$, where $\overline{\mathcal{Z}}_{n} \equiv n^{-1} \sum_{t=1}^{n} \mathcal{Z}_{t}$ and $\bar{\mu}_{n} \equiv E\left(\overline{\mathcal{Z}}_{n}\right)$.
+
+The results that follow specify precisely which restrictions on the dependence, heterogeneity (i.e., the extent to which the distributions of the $\mathcal{Z}_{t}$ may differ across $t$ ), and moments are sufficient to allow the conclusion $\overline{\mathcal{Z}}_{n}-E\left(\overline{\mathcal{Z}}_{n}\right) \xrightarrow{\text { a.s. }} 0$ to hold. As we shall see, there are sometimes trade-offs among these restrictions; for example, relaxing dependence or heterogeneity restrictions may require strengthening moment restrictions.
+
+\subsection*{3.1 Independent Identically Distributed Observations}
+The simplest case is that of independent identically distributed (i.i.d.) random variables.
+
+Theorem 3.1 (Kolmogorov) Let $\left\{\mathcal{Z}_{t}\right\}$ be a sequence of i.i.d. random variables. Then $\overline{\mathcal{Z}}_{n} \xrightarrow{\text { a.s. }} \mu$ if and only if $E\left|\mathcal{Z}_{t}\right|<\infty$ and $E\left(\mathcal{Z}_{t}\right)=\mu$.
+
+Proof. See Rao (1973, p. 115).\\
+An interesting feature of this result is that the condition given is sufficient as well as necessary for $\overline{\mathcal{Z}}_{n} \xrightarrow{\text { a.s. }} \mu$. Also note that since $\left\{\mathcal{Z}_{t}\right\}$ is i.i.d., $E\left(\overline{\mathcal{Z}}_{n}\right)=\mu$.
+
+To apply this result to econometric estimators we have to know that the summands of $\mathbf{Z}^{\prime} \mathbf{X} / n=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}$ and $\mathbf{Z}^{\prime} \varepsilon / n=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t} \varepsilon_{t}$ are i.i.d. This occurs when the elements of $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ are i.i.d. To prove this, we use the following result.
+
+Proposition 3.2 Let $\mathbf{g}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{l}$ be a continuous ${ }^{1}$ function. (i) Let $\mathcal{Z}_{t}$ and $\mathcal{Z}_{\tau}$ be identically distributed. Then $\mathbf{g}\left(\mathcal{Z}_{t}\right)$ and $\mathbf{g}\left(\mathcal{Z}_{\tau}\right)$ are identically distributed. (ii) Let $\mathcal{Z}_{t}$ and $\mathcal{Z}_{\tau}$ be independent. Then $\mathbf{g}\left(\mathcal{Z}_{t}\right)$ and $\mathbf{g}\left(\mathcal{Z}_{\tau}\right)$ are independent.
+
+Proof. (i) Let $\mathcal{Y}_{t}=\mathbf{g}\left(\mathcal{Z}_{t}\right), \mathcal{Y}_{\tau}=\mathbf{g}\left(\mathcal{Z}_{\tau}\right)$. Let $A=[\mathbf{z}: \mathbf{g}(\mathbf{z})<\mathbf{a}]$. Then $F_{t}(\mathbf{a}) \equiv P\left[\mathcal{Y}_{t} \leq \mathbf{a}\right]=P\left[\mathcal{Z}_{t} \in A\right]=P\left[\mathcal{Z}_{\tau} \in A\right]=P\left[\mathcal{Y}_{\tau} \leq \mathbf{a}\right] \equiv F_{\tau}(\mathbf{a})$ for all $\mathbf{a} \in \mathbb{R}^{l}$. Hence $\mathbf{g}\left(\mathcal{Z}_{t}\right)$ and $\mathbf{g}\left(\mathcal{Z}_{\tau}\right)$ are identically distributed. (ii) Let $A_{1}=\left[\mathbf{z}: \mathbf{g}(\mathbf{z})<\mathbf{a}_{1}\right], A_{2}=\left[\mathbf{z}: \mathbf{g}(\mathbf{z}) \leq \mathbf{a}_{2}\right]$. Then $F_{t \tau}\left(\mathbf{a}_{1}, \mathbf{a}_{2}\right) \equiv P\left[\mathcal{Y}_{t} \leq\right. \left.\mathbf{a}_{1}, \mathcal{Y}_{\tau}<\mathbf{a}_{2}\right]=P\left[\mathcal{Z}_{t} \in A_{1}, \mathcal{Z}_{\tau} \in A_{2}\right]=P\left[\mathcal{Z}_{t} \in A_{1}\right] P\left[\mathcal{Z}_{\tau} \in A_{2}\right]=P\left[\mathcal{Y}_{t} \leq\right. \left.\mathbf{a}_{1}\right] P\left[\mathcal{Y}_{\tau}<\mathbf{a}_{2}\right]=F_{t}\left(\mathbf{a}_{1}\right) F_{\tau}\left(\mathbf{a}_{2}\right)$ for all $\mathbf{a}_{1}, \mathbf{a}_{2} \in \mathbb{R}^{l}$. Hence $g\left(\mathcal{Z}_{t}\right)$ and $g\left(\mathcal{Z}_{\tau}\right)$ are independent.
+
+Proposition 3.3 If $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is an i.i.d. random sequence, then $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\}$, $\left\{\mathbf{X}_{t} \varepsilon_{t}\right\},\left\{\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right\},\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$, and $\left\{\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right\}$ are also i.i.d. sequences.
+
+Proof. Immediate from Proposition 3.2 (i) and (ii).\\
+To write the moment conditions on the explanatory variables in compact form, we make use of the Cauchy-Schwarz inequality, which follows as a corollary to the following result.
+
+\footnotetext{${ }^{1}$ This result also holds for measurable functions, defined in Definition 3.21.
+}Proposition 3.4 (Hölder's inequality) If $p>1$ and $1 / p+1 / q=1$ and if $E|\mathcal{Y}|^{p}<\infty$ and $E|\mathcal{Z}|^{q}<\infty$, then $E|\mathcal{Y} \mathcal{Z}|<\left[E|\mathcal{Y}|^{p}\right]^{1 / p}\left[E|\mathcal{Z}|^{q}\right]^{1 / q}$.
+
+Proof. See Lukacs (1975, p. 11).\\
+If $p=q=2$, we have the Cauchy-Schwarz inequality,
+
+$$
+E|\mathcal{Y} \mathcal{Z}| \leq E\left(\mathcal{Y}^{2}\right)^{1 / 2} E\left(\mathcal{Z}^{2}\right)^{1 / 2}
+$$
+
+The $i, j$ th element of $\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}$ is given by $\sum_{h=1}^{p} X_{t h i} X_{t h j}$ and it follows from the triangle inequality that
+
+$$
+\sum_{h=1}^{p} X_{t h i} X_{t h j} \leq \sum_{h=1}^{p}\left|X_{t h i} X_{t h j}\right| .
+$$
+
+Hence,
+
+$$
+\begin{aligned}
+E\left|\sum_{h=1}^{p} X_{t h i} X_{t h j}\right| & \leq \sum_{h=1}^{p} E\left|X_{t h i} X_{t h j}\right| \\
+& \leq \sum_{h=1}^{p}\left(E\left|X_{t h i}\right|^{2}\right)^{1 / 2}\left(E\left|X_{t h j}\right|^{2}\right)^{1 / 2}
+\end{aligned}
+$$
+
+by the Cauchy-Schwarz inequality. It follows that the elements of $\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}$ will have $E\left|\sum_{h=1}^{p} X_{t h i} X_{t h j}\right|<\infty$ (as we require to apply Kolmogorov's law of large numbers), provided simply that $E\left|X_{\text {thi }}\right|^{2}<\infty$ for all $h$ and $i$.
+
+Combining Theorems 3.1 and 2.12, we have the following OLS consistency result for i.i.d. observations.
+
+Theorem 3.5 Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is an i.i.d. sequence;\\
+(iii) (a) $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$;\\
+(b) $E\left|X_{\text {thi }} \varepsilon_{t h}\right|<\infty, h=1, \ldots, p, i=1, \ldots, k$;\\
+(iv) (a) $E\left|X_{\text {thi }}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, k$;\\
+(b) $\mathbf{M} \equiv E\left(\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right)$ is positive definite.
+
+Then $\hat{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.\\
+Proof. Given (ii), $\left\{\mathbf{X}_{t} \varepsilon_{t}\right\}$ and $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\}$ are i.i.d. sequences. The elements of $\mathbf{X}_{t} \varepsilon_{t}$ and $\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}$ have finite expected absolute values, given (iii) and (iv) and applying the Cauchy-Schwarz inequality as above. By Theorem 3.1,\\
+$\mathbf{X}^{\prime} \epsilon / n=n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t} \varepsilon_{t} \xrightarrow{\text { a.s. }} \mathbf{0}$, and $n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t} \mathbf{X}_{t}^{\prime} \xrightarrow{\text { a.s. }} \mathbf{M}$, finite and positive definite, so the conditions of Theorem 2.12 are satisfied and the result follows.
+
+This result is useful in situations in which we have observations from a random sample, as in a simple cross section. The result does not apply to stratified cross sections since there the observations are not identically distributed across strata, and generally will not apply to time-series data since there the observations $\left(\mathbf{X}_{t} \varepsilon_{t}\right)$ generally are not independent. For these situations, we need laws of large numbers that do not impose the i.i.d. assumption. Since (i) is assumed, we could equally well have specified (ii) as requiring that $\left\{\left(\mathbf{X}_{t}^{\prime}, \mathbf{Y}_{t}\right)\right\}$ is an i.i.d. sequence and then applied Proposition 3.2, which implies that $\left\{\left(\mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is an i.i.d. sequence. Next, note that conditions sufficient to ensure $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$ would be $\mathbf{X}_{t}$ independent of $\varepsilon_{t}$ for all $t$ and $E\left(\epsilon_{t}\right)=\mathbf{0}$; alternatively, it would suffice that $E\left(\epsilon_{t} \mid \mathbf{X}_{t}\right)=\mathbf{0}$. This latter condition follows if $E\left(\mathbf{Y}_{t} \mid \mathbf{X}_{t}\right)=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}$ and we define $\varepsilon_{t}$ as $\varepsilon_{t} \equiv \mathbf{Y}_{t}-E\left(\mathbf{Y}_{t} \mid \mathbf{X}_{t}\right)=\mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}$. Both of these alternatives to (iii) are stronger than the simple requirement that $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$.
+
+In fact, by defining $\boldsymbol{\beta}_{o} \equiv E\left(\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right)^{-1} E\left(\mathbf{X}_{t} \mathbf{Y}_{t}\right)$ and $\varepsilon_{t} \equiv \mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}$, it is guaranteed that $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$ (verify this). Thus, we are not making strong assumptions about how $\mathbf{Y}_{t}$ is generated. Note that no restrictions are placed on the second moment of $\varepsilon_{t}$ in obtaining consistency for $\hat{\boldsymbol{\beta}}_{n}$. In fact, $\varepsilon_{t}$ can have infinite variance without affecting the consistency of $\hat{\boldsymbol{\beta}}_{n}$ for $\boldsymbol{\beta}_{o}$.
+
+The result for the IV estimator is analogous.\\
+Exercise 3.6 Prove the following result. Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \epsilon_{t}\right)\right\}$ an i.i.d. sequence;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \epsilon_{t}\right)=\mathbf{0}$;\\
+(b) $E\left|Z_{t h i} \varepsilon_{t h}\right|<\infty, h=1, \ldots, p, i=1, \ldots, l$;\\
+(iv) (a) $E\left|Z_{t h i} X_{t h j}\right|<\infty, h=1, \ldots, p, i=1, \ldots, l, j=1, \ldots, k$;\\
+(b) $\mathbf{Q} \equiv E\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ has full column rank;\\
+(c) $\hat{\mathbf{P}}_{n} \xrightarrow{\text { a.s. }} \mathbf{P}$, finite, symmetric, and positive definite.
+
+Then $\tilde{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$
+
+\subsection*{3.2 Independent Heterogeneously Distributed Observations}
+For cross-sectional data, it is often appropriate to assume that the observations are independent but not identically distributed. The failure of the identical distribution assumption results from stratifying (grouping) the population in some way. The independence assumption remains valid provided that sampling within and across the strata is random. A law of large numbers useful in these situations is the following.
+
+Theorem 3.7 (Markov) Let $\left\{\mathcal{Z}_{t}\right\}$ be a sequence of independent random variables, with finite means $\mu_{t} \equiv E\left(\mathcal{Z}_{t}\right)$. If for some $\delta>0, \sum_{t=1}^{\infty}\left(E \mid \mathcal{Z}_{t}-\right. \left.\left.\mu_{t}\right|^{1+\delta}\right) / t^{1+\delta}<\infty$, then $\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n} \xrightarrow{\text { a.s. }} 0$.
+
+Proof. See Chung (1974, pp. 125-126). \(\square\)
+
+In this result the random variables are allowed to be heterogeneous (i.e., not identically distributed), but the moments are restricted by the condition that $\sum_{t=1}^{\infty} E\left|\mathcal{Z}_{t}-\mu_{t}\right|^{1+\delta} / t^{1+\delta}<\infty$, known as Markov's condition. If $\delta=1$, we have a law of large numbers due to Kolmogorov (e.g., see Rao, 1973, p. 114). But Markov's condition allows us to choose $\delta$ arbitrarily small, thus reducing the restrictions imposed on $\mathcal{Z}_{t}$.
+
+By making use of Jensen's inequality and the following useful inequality, it is possible to state a corollary with a simpler moment condition.
+
+Proposition 3.8 (The $c_{r}$ inequality) Let $\mathcal{Y}$ and $\mathcal{Z}$ be random variables with $E|\mathcal{Y}|^{r}<\infty$ and $E|\mathcal{Z}|^{r}<\infty$ for some $r>0$. Then $E|\mathcal{Y}+\mathcal{Z}|^{r}<c_{r}(E \mid \mathcal{Y} \left.\right|^{r}+E|\mathcal{Z}|^{r}$ ), where $c_{r}=1$ if $r<1$ and $c_{r}=2^{r-1}$ if $r>1$.
+
+Proof. See Lukacs (1975, p. 13). \(\square\)
+
+Corollary 3.9 Let $\left\{\mathcal{Z}_{t}\right\}$ be a sequence of independent random variables such that $E\left|\mathcal{Z}_{t}\right|^{1+\delta}<\Delta<\infty$ for some $\delta>0$ and all $t$. Then $\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n} \xrightarrow{\text { a.s. }} 0$.
+
+Proof. By Proposition 3.8,
+
+$$
+E\left|\mathcal{Z}_{t}-\mu_{t}\right|^{1+\delta} \leq 2^{\delta}\left(E\left|\mathcal{Z}_{t}\right|^{1+\delta}+\left|\mu_{t}\right|^{1+\delta}\right) .
+$$
+
+By assuming that $E\left|\mathcal{Z}_{t}\right|^{1+\delta}<\Delta$ and using Jensen's inequality,
+
+$$
+\left|\mu_{t}\right| \leq E\left|\mathcal{Z}_{t}\right| \leq\left(E\left|\mathcal{Z}_{t}\right|^{1+\delta}\right)^{1 / 1+\delta} .
+$$
+
+It follows that for all $t$,
+
+$$
+\left|\mu_{t}\right|^{1+\delta}<\Delta .
+$$
+
+Hence, for all $t, E\left|\mathcal{Z}_{t}-\mu_{t}\right|^{1+\delta}<2^{1+\delta} \Delta$. Verifying the moment condition of Theorem 3.7, we have
+
+$$
+\sum_{t=1}^{\infty} E\left|\mathcal{Z}_{t}-\mu_{t}\right|^{1+\delta} / t^{1+\delta}<2^{1+\delta} \Delta \sum_{t=1}^{\infty} 1 / t^{1+\delta}<\infty
+$$
+
+since $\sum_{t=1}^{\infty} 1 / t^{1+\delta}<\infty$ for any $\delta>0$. Hence the conditions of Theorem 3.7 are satisfied and the result follows.
+
+Compared with Theorem 3.1, this corollary imposes slightly more in the way of moment restrictions but allows the observations to be rather heterogeneous.
+
+It is useful to point out that a nonstochastic sequence can be viewed as a sequence of independent, not identically distributed random variables, where the distribution function of these random variables places probability one at the observed value. Hence, Corollary 3.9 can be applied to situations in which we have fixed regressors, provided they are uniformly bounded, as the condition $E\left|\mathcal{Z}_{t}\right|^{1+\delta}<\Delta<\infty$ requires. Situations with unbounded fixed regressors can be treated using Theorem 3.7. To apply Corollary 3.9 to the linear model, we use the following fact.
+
+Proposition 3.10 If $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is an independent sequence, then $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\}$, $\left\{\mathbf{X}_{t} \varepsilon_{t}\right\},\left\{\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right\},\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$, and $\left\{\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right\}$ are also independent sequences.
+
+Proof. Immediate from Proposition 3.2 (ii).\\
+To simplify the moment conditions that we impose, we use the following consequence of Hölder's inequality.
+
+Proposition 3.11 (Minkowski's inequality) Let $q>1$. If $E|\mathcal{Y}|^{q}<\infty$ and $E|\mathcal{Z}|^{q}<\infty$, then $\left(E|\mathcal{Y}+\mathcal{Z}|^{q}\right)^{1 / q}<\left(E|\mathcal{Y}|^{q}\right)^{1 / q}+\left(E|\mathcal{Z}|^{q}\right)^{1 / q}$.
+
+Proof. See Lukacs (1975, p. 11).\\
+To apply Corollary 3.9 to $\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}$, we need to ensure that
+
+$$
+E\left|\sum_{h=1}^{p} X_{t h i} X_{t h j}\right|^{1+\delta}
+$$
+
+is bounded uniformly in $t$. This is accomplished by the following corollary.\\
+Corollary 3.12 Suppose $E\left|X_{\text {thi }}^{2}\right|^{1+\delta}<\Delta<\infty$ for some $\delta>0$, all $h= 1, \ldots, p, i=1, \ldots, k$, and all $t$. Then each element of $\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}$ satisfies $E\left|\sum_{h=1}^{p} X_{t h i} X_{t h j}\right|^{1+\delta}<\Delta^{\prime}<\infty$ for some $\delta>0$, all $i, j=1, \ldots, k$, and all $t$, where $\Delta^{\prime} \equiv p^{1+\delta} \Delta$.
+
+Proof. By Minkowski's inequality,
+
+$$
+E\left|\sum_{h=1}^{p} X_{t h i} X_{t h j}\right|^{1+\delta} \leq\left[\sum_{h=1}^{p}\left(E\left|X_{t h i} X_{t h j}\right|^{1+\delta}\right)^{1 /(1+\delta)}\right]^{1+\delta} .
+$$
+
+By the Cauchy-Schwarz inequality,
+
+$$
+E\left|X_{t h i} X_{t h j}\right|^{1+\delta} \leq\left[E\left|X_{t h i}^{2}\right|^{1+\delta}\right]^{1 / 2}\left[E\left|X_{t h j}^{2}\right|^{1+\delta}\right]^{1 / 2} .
+$$
+
+Since $E\left|X_{\text {thi }}^{2}\right|^{1+\delta}<\Delta<\infty, h=1, \ldots, p, i=1, \ldots, k$, it follows that for all $h=1, \ldots, p$ and $i, j=1, \ldots, k$,
+
+$$
+E\left|X_{t h i} X_{t h j}\right|^{1+\delta} \leq \Delta^{1 / 2} \Delta^{1 / 2}=\Delta,
+$$
+
+so that
+
+$$
+\begin{aligned}
+E \sum_{h=1}^{p} X_{t h i} X_{t h j}{ }^{1+\delta} & \leq\left[\sum_{h=1}^{p} \Delta^{1 /(1+\delta)}\right]^{1+\delta} \\
+& =p^{1+\delta} \Delta=\Delta^{\prime}
+\end{aligned}
+$$
+
+The requirement that $E\left|X_{\text {thi }}^{2}\right|^{1+\delta}<\Delta<\infty$ means that all the explanatory variables have moments slightly greater than 2 uniformly bounded. A similar requirement is imposed on the elements of $\mathbf{X}_{t} \varepsilon_{t}$.
+
+Exercise 3.13 Show that if $E\left|X_{\text {thi }} \varepsilon_{\text {th }}\right|^{1+\delta}<\Delta<\infty$ for some $\delta>0$, all $h=1, \ldots, p, i=1, \ldots, k$, and all $t$, then each element of $\mathbf{X}_{t} \varepsilon_{t}$ satisfies $E\left|\sum_{h=1}^{p} X_{\text {thi }} \varepsilon_{\text {th }}\right|^{1+\delta}<\Delta^{\prime}<\infty$ for some $\delta>0$, all $i=1, \ldots, k$, and all $t$, where $\Delta^{\prime}=p^{1+\delta} \Delta$.
+
+We now have all the results needed to obtain a consistency theorem for the ordinary least squares estimator. Since the argument is analogous to that of Theorem 3.5 we state the result as an exercise.
+
+Exercise 3.14 Prove the following result. Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{\mathrm{o}}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{\mathrm{o}} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\left(\mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is an independent sequence;\\
+(iii) (a) $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}, \quad t=1,2, \ldots$;\\
+(b) $E\left|X_{\text {thi }} \varepsilon_{t h}\right|^{1+\delta}<\Delta<\infty$ for some $\delta>0$, all $h=1, \ldots, p, i= 1, \ldots, k$, and all $t$;\\
+(iv) (a) $E\left|X_{\text {thi }}^{2}\right|^{1+\delta}<\Delta<\infty$ for some $\delta>0$, all $h=1, \ldots, p, i= 1, \ldots, k$, and all $t$;\\
+(b) $\mathbf{M}_{n} \equiv E\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ is uniformly positive definite.
+
+Then $\hat{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.\\
+Compared with Theorem 3.5, we have relaxed the identical distribution assumption at the expense of imposing slightly greater moment restrictions in (iii.b) and (iv.a). Also note that (iv.a) implies that $\mathbf{M}_{n}=O(1)$. (Why?)
+
+The extra generality we have gained now allows treatment of situations with fixed regressors, or observations from a stratified cross section, and also applies to models with (unconditionally) heteroskedastic errors. None of these cases is covered by Theorem 3.5.
+
+The result for the IV estimator is analogous.
+
+Theorem 3.15 Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$ is an independent sequence;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}, \quad t=1,2, \ldots$;\\
+(b) $E\left|Z_{\text {thi }} \epsilon_{\text {th }}\right|^{1+\delta}<\Delta<\infty$, for some $\delta>0$, all $h=1, \ldots, p, i= 1, \ldots$, l, and all $t$;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{1+\delta}<\Delta<\infty$, for some $\delta>0$, all $h=1, \ldots, p$, $i=1, \ldots, l, j=1, \ldots, k$ and all $t$;\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has uniformly full column rank;\\
+(c) $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$, where $\mathbf{P}_{n}=O(1)$ and is symmetric and uniformly positive definite.
+
+Then $\tilde{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.\\
+Proof. By Proposition 3.10, $\left\{\mathbf{Z}_{t} \epsilon_{t}\right\}$ and $\left\{\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right\}$ are independent sequences with elements satisfying the moment condition of Corollary 3.9, given (iii.b) and (iv.a), by arguments analogous to those of Corollary 3.12 and Exercise 3.13. It follows from Corollary 3.9 that $\mathbf{Z}^{\prime} \varepsilon / n \xrightarrow{\text { a.s. }} \mathbf{0}$ and $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$, where $\mathbf{Q}_{n}=O(1)$ given (iv.a) as a consequence of Jensen's inequality. Hence, the conditions of Exercise 2.20 are satisfied and the results follow.
+
+\subsection*{3.3 Dependent Identically Distributed Observations}
+The assumption of independence is inappropriate for economic time series, which typically exhibit considerable dependence. To cover these cases, we need laws of large numbers that allow the random variables to be dependent. To speak precisely about the kinds of dependence allowed, we need to make explicit some fundamental notions of probability theory that we have so far used implicitly.
+
+Definition 3.16 A family (collection) $\mathcal{F}$ of subsets of a set $\Omega$ is a $\sigma$-field ( $\sigma$-algebra) provided\\
+(i) $\emptyset$ and $\Omega$ belong to $\mathcal{F}$;\\
+(ii) if $F$ belongs to $\mathcal{F}$, then $F^{c}$ (the complement of $F$ in $\Omega$ ) belongs to $\mathcal{F}$;\\
+(iii) if $\left\{F_{i}\right\}$ is a sequence of sets in $\mathcal{F}$, then $\bigcup_{i=1}^{\infty} F_{i}$ belongs to $\mathcal{F}$.
+
+For example, let $\mathcal{F}=\{\emptyset, \Omega\}$. Then $\mathcal{F}$ is easily verified to be a $\sigma$-field (try it!). Or let $F$ be a subset of $\Omega$ and put $\mathcal{F}=\left\{\emptyset, \Omega, F, F^{c}\right\}$. Again $\mathcal{F}$ is easily verified to be a $\sigma$-field. We consider further examples below.
+
+The pair ( $\Omega, \mathcal{F}$ ) is called a measurable space when $\mathcal{F}$ is a $\sigma$-field of $\Omega$.\\
+The sets in a $\sigma$-field $\mathcal{F}$ are sets for which it is possible to assign welldefined probabilities. Thus, we can think of the sets in $\mathcal{F}$ as events. We are now in a position to give a formal definition of the concept of a probability or, more formally, a probability measure.
+
+Definition 3.17 Let $\{\Omega, \mathcal{F}\}$ be a measurable space. A mapping $P: \mathcal{F} \rightarrow [0,1]$ is a probability measure on $\{\Omega, \mathcal{F}\}$ provided that:\\
+(i) $P(\emptyset)=0$.\\
+(ii) For any $F \in \mathcal{F}, P\left(F^{c}\right)=1-P(F)$.\\
+(iii) For any disjoint sequence $\left\{F_{i}\right\}$ of sets in $\mathcal{F}$ (i.e., $F_{i} \cap F_{j}=\emptyset$ for all $i \neq j), P\left(\bigcup_{=1}^{\infty} F_{i}\right)=\sum_{i=1}^{\infty} P\left(F_{i}\right)$.
+
+When ( $\Omega, \mathcal{F}$ ) is a measurable space and $P$ is a probability measure on $(\Omega, \mathcal{F})$, we call the triple $(\Omega, \mathcal{F}, P)$ a probability space. When the underlying measurable space is clear, we just call $P$ a probability measure. Thus, a probability measure $P$ assigns a number between zero and one to every event ( $F \in \mathcal{F}$ ) in a way that coincides with our intuitive notion of how probabilities should behave. This powerful way of understanding probabilities is one of Kolmogorov's many important contributions (Kolmogorov 1933).
+
+Now that we have formally defined probability measures, let us return our attention to the various collections of events ( $\sigma$-fields) that are relevant for econometrics.
+
+Recall that an open set is a set containing only interior points, where a point $x$ in the set $B$ is interior provided that all points in a sufficiently small neighborhood of $x$ ( $\{y:|y-x|<\varepsilon\}$ for some $\varepsilon>0$ ) are also in $B$. Thus $(a, b)$ is open, while $(a, b]$ is not.
+
+Definition 3.18 The Borel $\sigma$-field $\mathcal{B}$ is the smallest collection of sets (called the Borel sets) that includes\\
+(i) all open sets of $\mathbb{R}$;\\
+(ii) the complement $B^{c}$ of any set $B$ in $\mathcal{B}$;\\
+(iii) the union $\bigcup_{i=1}^{\infty} B_{i}$ of any sequence $\left\{B_{i}\right\}$ of sets in $\mathcal{B}$.
+
+The Borel sets of $\mathbb{R}$ just defined are said to be generated by the open sets of $\mathbb{R}$. The same Borel sets would be generated by all the open half-lines of $\mathbb{R}$, all the closed half-lines of $\mathbb{R}$, all the open intervals of $\mathbb{R}$, or all the closed intervals of $\mathbb{R}$. The Borel sets are a "rich" collection of events for which probabilities can be defined. Nevertheless, there do exist subsets of the real line not in $\mathcal{B}$ for which probabilities are not defined; constructing such sets is very complicated (see Billingsley, 1979, p. 37).
+
+Thus, we can think of the Borel $\sigma$-field as consisting of all the events on the real line to which we can assign a probability. Sets not in $\mathcal{B}$ will not define events.
+
+The Borel $\sigma$-field just defined relates to real-valued random variables. A simple extension covers vector-valued random variables.
+
+Definition 3.19 The Borel $\sigma$-field $\mathcal{B}^{q}, q<\infty$, is the smallest collection of sets that includes\\
+(i) all open sets of $\mathbb{R}^{q}$;\\
+(ii) the complement $B^{c}$ of any set $B$ in $\mathcal{B}^{q}$;\\
+(iii) the union $\bigcup_{i=1}^{\infty} B_{i}$ of any sequence $\left\{B_{i}\right\}$ in $\mathcal{B}^{q}$.
+
+In our notation, $\mathcal{B}$ and $\mathcal{B}^{1}$ mean the same thing.\\
+Generally, we are interested in infinite sequences $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right\}$. If $p=1$, this is a sequence of random $1 \times(l+k+1)$ vectors, whereas if $p>1$, this is a sequence of $p \times(l+k+1)$ matrices. Nevertheless, we can convert these matrices into vectors by simply stacking the columns of a matrix, one on top of the other, to yield a $p(l+k+1) \times 1$ vector, denoted vec $\left(\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \boldsymbol{\varepsilon}_{t}\right)\right)$. (In what follows, we drop the vec operator and understand that it is implicit\\
+in this context.) Generally, then, we are interested in infinite sequences of $q$-dimensional random vectors, where $q=p(l+k+1)$. Corresponding to these are the Borel sets of $\mathbb{R}_{\infty}^{q}$, defined as the Cartesian products of a countable infinity of copies of $\mathbb{R}^{q}, \mathbb{R}_{\infty}^{q} \equiv \mathbb{R}^{q} \times \mathbb{R}^{q} \times \ldots$. In what follows we can think of $\omega$ taking its values in $\Omega=\mathbb{R}_{\infty}^{q}$. The events in which we are interested are the Borel sets of $\mathbb{R}_{\infty}^{q}$, which we define as follows.
+
+Definition 3.20 The Borel sets of $\mathbb{R}_{\infty}^{q}$, denoted $\mathcal{B}_{\infty}^{q}$, are the smallest collection of sets that includes\\
+(i) all sets of the form $\times_{i=1}^{\infty} B_{i}$, where each $B_{i} \in \mathcal{B}^{q}$ and $B_{i}=\mathbb{R}^{q}$ except for finitely many $i$;\\
+(ii) the complement $F^{c}$ of any set $F$ in $\mathcal{B}_{\infty}^{q}$;\\
+(iii) the union $\bigcup_{i=1}^{\infty} F_{i}$ of any sequence $\left\{F_{i}\right\}$ in $\mathcal{B}_{\infty}^{q}$.
+
+A set of the form specified by ( $i$ ) is called a measurable finite-dimensional product cylinder, so $\mathcal{B}_{\infty}^{q}$ is the Borel $\sigma$-field generated by all the measurable finite-dimensional product cylinders. When $\left(\mathbb{R}_{\infty}^{q}, \mathcal{B}_{\infty}^{q}\right)$ is the specific measurable space, a probability measure $P$ on $\left(\mathbb{R}_{\infty}^{q}, \mathcal{B}_{\infty}^{q}\right)$ will govern the behavior of events involving infinite sequences of finite dimensional vectors, just as we require. In particular, when $q=1$, the elements $\mathcal{Z}_{t}(\cdot)$ of the sequence $\left\{\mathcal{Z}_{t}\right\}$ can be thought of as functions from $\Omega=\mathbb{R}_{\infty}^{1}$ to the real line $\mathbb{R}$ that simply pick off the $t$ th coordinate of $\omega \in \Omega$; with $\omega=\left\{z_{t}\right\}$, $\mathcal{Z}_{t}(\omega)=z_{t}$. When $q>1, \mathcal{Z}_{t}(\cdot)$ maps $\Omega=\mathbb{R}_{\infty}^{q}$ into $\mathbb{R}^{q}$.
+
+The following definition plays a key role in our analysis.\\
+Definition 3.21 A function $g$ on $\Omega$ to $\mathbb{R}$ is $\mathcal{F}$-measurable if for every real number a the set $[\omega: g(\omega) \leq a] \in \mathcal{F}$.
+
+Example 3.22 Let $(\Omega, \mathcal{F})=\left(\mathbb{R}_{\infty}^{q}, \mathcal{B}_{\infty}^{q}\right)$ and set $q=1$. Then $\mathcal{Z}_{t}(\cdot)$ as just defined is $\mathcal{B}_{\infty}^{q}$-measurable because $\left[\omega: \mathcal{Z}_{t}(\omega) \leq a\right]=\left[z_{1}, \ldots, z_{t-1}, z_{t}, z_{t+1}\right.$, $\left.\ldots: z_{1}<\infty, \ldots, z_{t-1}<\infty, z_{t}<a, z_{t+1}<\infty, \ldots\right] \in \mathcal{B}_{\infty}^{q}$ for any $a \in \mathbb{R}$.
+
+When a function is $\mathcal{F}$-measurable, it means that we can express the probability of an event, say, $\left[\mathcal{Z}_{t}<a\right]$, in terms of the probability of an event in $\mathcal{F}$, say, $\left[\omega: \mathcal{Z}_{t}(\omega) \leq a\right]$. In fact, a random variable is precisely an $\mathcal{F}$-measurable function from $\Omega$ to $\mathbb{R}$.
+
+In Definition 3.21, when the $\sigma$-field is taken to be $\mathcal{B}_{\infty}^{q}$, the Borel sets of $\mathbb{R}_{\infty}^{q}$, we shall drop explicit reference to $\mathcal{B}_{\infty}^{q}$ and simply say that the function $g$ is measurable. Otherwise, the relevant $\sigma$-field will be explicitly identified.
+
+Proposition 3.23 Let $f$ and $g$ be $\mathcal{F}$-measurable real-valued functions, and let $c$ be a real number. Then the functions $c f, f+g, f g$, and $|f|$ are also $\mathcal{F}$-measurable.
+
+Proof. See Bartle (1966, Lemma 2.6).\\
+Example 3.24 If $\mathcal{Z}_{t}$ is measurable, then $\mathcal{Z}_{t} / n$ is measurable, so that $\overline{\mathcal{Z}}_{n}= \sum_{t=1}^{n} \mathcal{Z}_{t} / n$ is measurable.
+
+A function from $\Omega$ to $\mathbb{R}^{q}$ is measurable if and only if each component of the vector valued function is measurable. The notion of measurability extends to transformations from $\Omega$ to $\Omega$ in the following way.
+
+Definition 3.25 Let $(\Omega, \mathcal{F})$ be a measurable space. A one-to-one transformation ${ }^{2} T: \Omega \rightarrow \Omega$ is measurable provided that $T^{-1}(\mathcal{F}) \subset \mathcal{F}$.
+
+In other words, the transformation $T$ is measurable provided that any set taken by the transformation (or its inverse) into $\mathcal{F}$ is itself a set in $\mathcal{F}$. This ensures that sets that are not events cannot be transformed into events, nor can events be transformed into sets that are not events.
+
+Example 3.26 For any $\omega=\left(\ldots, z_{t-2}, z_{t-1}, z_{t}, z_{t+1}, z_{t+2}, \ldots\right)$ let $\omega^{\prime}= T \omega=\left(\ldots, z_{t-1}, z_{t}, z_{t+1}, z_{t+2}, z_{t+3}, \ldots\right)$, so that $T$ transforms $\omega$ by shifting each of its coordinates back one location. Then $T$ is measurable since $T(F)$ is in $\mathcal{F}$ and $T^{-1}(F)$ is in $\mathcal{F}$, for all $F \in \mathcal{F}$.
+
+The transformation of this example is often called the shift, or the backshift operator. By using such transformations, it is possible to define a corresponding transformation of a random variable. For example, set $\mathcal{Z}_{1}(\omega)=\mathcal{Z}(\omega)$, where $\mathcal{Z}$ is a measurable function from $\Omega$ to $\mathbb{R}$; then we can define the random variables $\mathcal{Z}_{2}(\omega)=\mathcal{Z}(T \omega), \mathcal{Z}_{3}(\omega)=\mathcal{Z}\left(T^{2} \omega\right)$, and so on, provided that $T$ is a measurable transformation. The random variables constructed in this way are said to be random variables induced by a measurable transformation.
+
+Definition 3.27 Let $(\Omega, \mathcal{F}, P)$ be a probability space. The transformation $T: \Omega \rightarrow \Omega$ is measure preserving if it is measurable and if $P\left(T^{-1} F\right)= P(F)$ for all $F$ in $\mathcal{F}$.
+
+The random variables induced by measure-preserving transformations then have the property that $P\left[\mathcal{Z}_{1}<a\right]=P[\omega: \mathcal{Z}(\omega) \leq a]=P[\omega$ : $\mathcal{Z}(T \omega) \leq a]=P\left[\mathcal{Z}_{2} \leq a\right]$; that is, they are identically distributed. In fact,
+
+\footnotetext{${ }^{2}$ The transformation $T$ maps an element of $\Omega$, say $\omega$, into another element of $\Omega$, say $\omega^{\prime}=T \omega$. When $T$ operates on a set $F$, it should be understood as operating on each element of $F$. Similarly, when $T$ operates on a family $\mathcal{F}$, it should be understood as operating on each set in the family.
+}
+such random variables have an even stronger property. We use the following definition.
+
+Definition 3.28 Let $G_{1}$ be the joint distribution function of the sequence $\left\{\mathcal{Z}_{1}, \mathcal{Z}_{2}, \ldots\right\}$, where $\mathcal{Z}_{t}$ is a $q \times 1$ vector, and let $G_{\tau+1}$ be the joint distribution function of the sequence $\left\{\boldsymbol{\mathcal { Z }}_{\tau+1}, \boldsymbol{\mathcal { Z }}_{\tau+2}, \ldots\right\}$. The sequence $\left\{\boldsymbol{\mathcal { Z }}_{t}\right\}$ is stationary if $G_{1}=G_{\tau+1}$ for each $\tau>1$.
+
+In other words, a sequence is stationary if the joint distribution of the variables in the sequence is identical, regardless of the date of the first observation.
+
+Proposition 3.29 Let $\mathcal{Z}$ be a random variable (i.e., $\mathcal{Z}$ is a measurable function) and $T$ be a measure-preserving transformation. Let $\mathcal{Z}_{1}(\omega)= \mathcal{Z}(\omega), \mathcal{Z}_{2}(\omega)=\mathcal{Z}(T \omega), \ldots, \mathcal{Z}_{n}(\omega)=\mathcal{Z}\left(T^{n-1} \omega\right)$ for each $\omega$ in $\Omega$. Then $\left\{\mathcal{Z}_{t}\right\}$ is a stationary sequence.
+
+Proof. Stout (1974, p. 169).\\
+A converse to this result is also available.\\
+Proposition 3.30 Let $\left\{\mathcal{Z}_{t}\right\}$ be a stationary sequence. Then there exists a measure-preserving transformation $T$ defined on ( $\Omega, \mathcal{F}, P$ ) such that $\mathcal{Z}_{1}(\omega) =\mathcal{Z}_{1}(\omega), \mathcal{Z}_{2}(\omega)=\mathcal{Z}_{1}(T \omega), \mathcal{Z}_{3}(\omega)=\mathcal{Z}_{1}\left(T^{2} \omega\right), \ldots, \mathcal{Z}_{n}(\omega)=\mathcal{Z}_{1}\left(T^{n-1} \omega\right)$ for all $\omega$ in $\Omega$.
+
+Proof. Stout (1974, p. 170).\\
+Example 3.31 Let $\left\{\mathcal{Z}_{t}\right\}$ be a sequence of i.i.d. $N(0,1)$ random variables. Then $\left\{\mathcal{Z}_{t}\right\}$ is stationary.
+
+The independence imposed in this example is crucial. If the elements of $\left\{\mathcal{Z}_{t}\right\}$ are simply identically distributed $N(0,1)$, the sequence is not necessarily stationary, because it is possible to construct different joint distributions that all have normal marginal distributions. By changing the joint distributions with $t$, we could violate the stationarity condition while preserving marginal normality. Thus stationarity is a strengthening of the identical distribution assumption, since it applies to joint and not simply marginal distributions. On the other hand, stationarity is weaker than the i.i.d. assumption, since i.i.d. sequences are stationary, but stationary sequences do not have to be independent.
+
+Does a version of the law of large numbers, Theorem 3.1, hold if the i.i.d. assumption is simply replaced by the stationarity assumption? The answer is no, unless additional restrictions are imposed.
+
+Example 3.32 Let $\mathcal{U}_{t}$ be a sequence of i.i.d. random variables uniformly distributed on $[0,1]$ and let $\mathcal{Z}$ be $N(0,1)$, independent of $\mathcal{U}_{t}, t=1,2, \ldots$. Define $\mathcal{Y}_{t} \equiv \mathcal{Z}+\mathcal{U}_{t}$. Then $\left\{\mathcal{Y}_{t}\right\}$ is stationary (why?), but $\overline{\mathcal{Y}}_{n} \equiv \sum_{t=1}^{n} \mathcal{Y}_{t} / n$ does not converge to $E\left(\mathcal{Y}_{t}\right)=\frac{1}{2}$. Instead, $\overline{\mathcal{Y}}_{n}-\mathcal{Z} \xrightarrow{\text { a.s. }} \frac{1}{2}$.
+
+In this example, $\overline{\mathcal{Y}}_{n}$ converges to a random variable, $\mathcal{Z}+\frac{1}{2}$, rather than to a constant. The problem is that there is too much dependence in the sequence $\left\{\mathcal{Y}_{t}\right\}$. No matter how far into the future we take an observation on $\mathcal{Y}_{t}$, the initial value $\mathcal{Y}_{1}$ still determines to some extent what $\mathcal{Y}_{t}$ will be, as a result of the common component $\mathcal{Z}$. In fact, the correlation between $\mathcal{Y}_{1}$ and $\mathcal{Y}_{t}$ is always positive for any value of $t$.
+
+To obtain a law of large numbers, we have to impose a restriction on the dependence or "memory" of the sequence. One such restriction is the concept of ergodicity.
+
+Definition 3.33 Let $(\Omega, \mathcal{F}, P)$ be a probability space. Let $\left\{\mathcal{Z}_{t}\right\}$ be a stationary sequence and let $T$ be the measure-preserving transformation of Proposition 3.30. Then $\left\{\mathcal{Z}_{t}\right\}$ is ergodic if
+
+$$
+\lim _{n \rightarrow \infty} n^{-1} \sum_{t=1}^{n} P\left(F \cap T^{t} G\right)=P(F) P(G)
+$$
+
+for all events $F, G \in \mathcal{F}$,\\
+If $F$ and $G$ were independent, then we would have $P(F \cap G)=P(F) P(G)$. We can think of $T^{t} G$ as being the event $G$ shifted $t$ periods into the future, and since $P\left(T^{t} G\right)=P(G)$ when $T$ is measure preserving, this definition says that an ergodic process (sequence) is one such that for any events $F$ and $G, F$ and $T^{t} G$ are independent on average in the limit. Thus ergodicity can be thought of as a form of "average asymptotic independence." For more on measure-preserving transformations, stationarity, and ergodicity the reader may consult Doob (1953, pp. 167-185) and Rosenblatt (1978).
+
+The desired law of large numbers can now be stated.\\
+Theorem 3.34 (Ergodic theorem) Let $\left\{\mathcal{Z}_{t}\right\}$ be a stationary ergodic scalar sequence with $E\left|\mathcal{Z}_{t}\right|<\infty$. Then $\overline{\mathcal{Z}}_{n} \xrightarrow{\text { a.s. }} \mu \equiv E\left(\mathcal{Z}_{t}\right)$.
+
+Proof. See Stout (1974, p. 181).\\
+To apply this result, we make use of the following theorem.\\
+Theorem 3.35 Let $\mathbf{g}$ be an $\mathcal{F}$-measurable function into $\mathbb{R}^{k}$ and define $\mathcal{Y}_{t}=\mathbf{g}\left(\ldots, \mathcal{Z}_{t-1}, \mathcal{Z}_{t}, \mathcal{Z}_{t+1}, \ldots\right)$, where $\mathcal{Z}_{t}$ is $q \times 1$. (i) If $\left\{\mathcal{Z}_{t}\right\}$ is stationary, then $\left\{\mathcal{Y}_{t}\right\}$ is stationary. (ii) If $\left\{\mathcal{Z}_{t}\right\}$ is stationary and ergodic, then $\left\{\mathcal{Y}_{t}\right\}$ is stationary and ergodic.
+
+Proof. See Stout (1974, pp. 170, 182).\\
+Note that $\mathbf{g}$ depends on the present and infinite past and future of the sequence $\left\{\mathcal{Z}_{t}\right\}$. As stated by Stout, $\mathbf{g}$ only depends on the present and future of $\mathcal{Z}_{t}$, but the result is valid as given here.
+
+Proposition 3.36 If $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a stationary ergodic sequence, then $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\},\left\{\mathbf{X}_{t} \varepsilon_{t}\right\},\left\{\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right\},\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$, and $\left\{\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right\}$ are stationary ergodic sequences.
+
+Proof. Immediate from Theorem 3.35 and Proposition 3.23.\\
+Now we can state a result applicable to time-series data.\\
+Theorem 3.37 Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a stationary ergodic sequence;\\
+(iii) (a) $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$;\\
+(b) $E\left|X_{\text {thi }} \varepsilon_{\text {th }}\right|<\infty, h=1, \ldots, p, i=1, \ldots, k$;\\
+(iv) (a) $E\left|X_{t h i}\right|^{2}<\infty, h=1, \ldots, p, i=1, \ldots, k$;\\
+(b) $\mathbf{M} \equiv E\left(\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right)$ is positive definite.
+
+Then $\hat{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.\\
+Proof. We verify the conditions of Theorem 2.12. Given (ii), $\left\{\mathbf{X}_{t} \varepsilon_{t}\right\}$ and $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\}$ are stationary ergodic sequences by Proposition 3.36, with elements having finite expected absolute values (given (iii) and (iv)). By the ergodic theorem (Theorem 3.34), $\mathbf{X}^{\prime} \varepsilon / n \xrightarrow{\text { a.s. }} \mathbf{0}$ and $\mathbf{X}^{\prime} \mathbf{X} / n \xrightarrow{\text { a.s. }} \mathbf{M}$, finite and positive definite. Hence, the conditions of Theorem 2.12 hold and the results follow.
+
+Compared with Theorem 3.5, we have replaced the i.i.d. assumption with the strictly weaker condition that the regressors and errors are stationary and ergodic. In both results, only the finiteness of second-order moments and cross moments is imposed. Thus Theorem 3.5 is a corollary of Theorem 3.37.
+
+A direct generalization of Exercise 3.6 for the IV estimator is also available.
+
+Exercise 3.38 Prove the following result. Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a stationary ergodic sequence;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}$;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{t h}\right|<\infty, h=1, \ldots, p, i=1, \ldots, k$;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {th } j}\right|<\infty, h=1, \ldots, p, i=1, \ldots, l, j=1, \ldots, k$;\\
+(b) $\mathbf{Q} \equiv E\left(\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right)$ has full column rank;\\
+(c) $\hat{\mathbf{P}}_{n} \xrightarrow{\text { a.s. }} \mathbf{P}$, finite, symmetric, and positive definite.
+
+Then $\tilde{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.\\
+Economic applications of Theorem 3.37 and Exercise 3.38 depend on whether it is reasonable to suppose that economic time series are stationary and ergodic. Ergodicity is often difficult to ascertain theoretically (although it does hold for certain Markov sequences; see Stout (1974, pp. 185-200) and is impossible to verify empirically (since this requires an infinite sample), although it can be tested and rejected (see, for example, Domowitz and El-Gamal, 1993; and Corradi, Swanson, and White, 2000). Further, many important economic time series seem not to be stationary but heterogeneous, exhibiting means, variances, and covariances that change over time.
+
+\subsection*{3.4 Dependent Heterogeneously Distributed Observations}
+To apply the consistency results of the preceding chapter to dependent heterogeneously distributed observations, we need to find conditions that ensure that the law of large numbers continues to hold. This can be done by replacing the ergodicity assumption with somewhat stronger conditions. Useful in this context are conditions on the dependence of a sequence known as mixing conditions.
+
+To specify these conditions, we use the following definition.\\
+Definition 3.39 The Borel $\sigma$-field generated by $\left\{\mathcal{Z}_{t}, t=n, \ldots, n+m\right\}$, denoted $\mathcal{B}_{n}^{n+m}=\sigma\left(\mathcal{Z}_{n}, \ldots, \mathcal{Z}_{n+m}\right)$, is the smallest $\sigma$-algebra of $\Omega$ that includes\\
+(i) all sets of the form $\times_{i=1}^{n-1} \mathbb{R}^{q} \times_{i=n}^{n+m} B_{i} \times_{i=n+m+1}^{\infty} \mathbb{R}^{q}$, where each $B_{i} \in \mathcal{B}^{q}$;\\
+(ii) the complement $A^{c}$ of any set $A$ in $\mathcal{B}_{n}^{n+m}$;\\
+(iii) the union $\bigcup_{i=1}^{\infty} A_{i}$ of any sequence $\left\{A_{i}\right\}$ in $\mathcal{B}_{n}^{n+m}$.
+
+The $\sigma$-field $\mathcal{B}_{n}^{n+m}$ is the smallest $\sigma$-field of subsets of $\Omega$ with respect to which $\mathcal{Z}_{t}, t=n, \ldots, n+m$ are measurable. In other words, $\mathcal{B}_{n}^{n+m}$ is the smallest collection of events that allows us to express the probability of an event, say, $\left[\mathcal{Z}_{n}<\mathbf{a}_{1}, \mathcal{Z}_{n+1}<\mathbf{a}_{2}\right]$, in terms of the probability of an event in $\mathcal{B}_{n}^{n+m}$, say $\left[\omega: \mathcal{Z}_{n}(\omega)<\mathbf{a}_{1}, \mathcal{Z}_{n+1}(\omega)<\mathbf{a}_{2}\right]$. The definition of mixing is given in terms of the Borel $\sigma$-fields generated by subsets of the history of a process extending infinitely far into both the past and future, $\left\{\mathcal{Z}_{t}\right\}_{t=-\infty}^{\infty}$. For our purposes, we can think of $\mathcal{Z}_{1}$ as generating the first observation available to us, so realizations of $\mathcal{Z}_{t}$ are unobservable for $t<0$. In what follows, this does not matter. All that does matter is the behavior of $\boldsymbol{\mathcal { Z }}_{t}$, $t<0$, if we could observe its realizations.
+
+Definition 3.40 Let $\mathcal{B}_{-\infty}^{n} \equiv \sigma\left(\ldots, \mathcal{Z}_{n}\right)$ be the smallest collection of subsets of $\Omega$ that contains the union of the $\sigma$-fields $\mathcal{B}_{a}^{n}$ as a $\rightarrow-\infty$; let $\mathcal{B}_{n+m}^{\infty}=\sigma\left(\mathcal{Z}_{n+m}, \ldots\right)$ be the smallest collection of subsets of $\Omega$ that contains the union of the $\sigma$-fields $\mathcal{B}_{n+m}^{a}$ as a $\rightarrow \infty$.
+
+Intuitively, we can think of $\mathcal{B}_{-\infty}^{n}$ as representing all the information contained in the past of the sequence $\left\{\mathcal{Z}_{t}\right\}$ up to time $n$, whereas $\mathcal{B}_{n+m}^{\infty}$ represents all the information contained in the future of the sequence $\left\{\mathcal{Z}_{t}\right\}$ from time $n+m$ on.
+
+We now define two measures of dependence between $\sigma$-fields.\\
+Definition 3.41 Let $\mathcal{G}$ and $\mathcal{H}$ be $\sigma$-fields and define
+
+$$
+\begin{aligned}
+\phi(\mathcal{G}, \mathcal{H}) & \equiv \sup _{\{G \in \mathcal{G}, H \in \mathcal{H}: P(G>0)\}}|P(H \mid G)-P(H)|, \\
+\alpha(\mathcal{G}, \mathcal{H}) & \equiv \sup _{\{G \in \mathcal{G}, H \in \mathcal{H}\}}|P(G \cap H)-P(G) P(H)| .
+\end{aligned}
+$$
+
+Intuitively, $\phi$ and $\alpha$ measure the dependence of the events in $\mathcal{H}$ on those in $\mathcal{G}$ in terms of how much the probability of the joint occurrence of an event in each $\sigma$-algebra differs from the product of the probabilities of each event occurring. The events in $\mathcal{G}$ and $\mathcal{H}$ are independent if and only if $\phi(\mathcal{G}, \mathcal{H})$ and $\alpha(\mathcal{G}, \mathcal{H})$ are zero. The function $\alpha$ provides an absolute measure of dependence and $\phi$ a relative measure of dependence
+
+Definition 3.42 For a sequence of random vectors $\left\{\mathcal{Z}_{t}\right\}$, with $\mathcal{B}_{-\infty}^{\boldsymbol{n}}$ and $\mathcal{B}_{n+m}^{\infty}$ as in Definition 3.40, define the mixing coefficients
+
+$$
+\phi(m) \equiv \sup _{n} \phi\left(\mathcal{B}_{-\infty}^{n}, \mathcal{B}_{n+m}^{\infty}\right) \quad \text { and } \quad \alpha(m) \equiv \sup _{n} \alpha\left(\mathcal{B}_{-\infty}^{n}, \mathcal{B}_{n+m}^{\infty}\right)
+$$
+
+If, for the sequence $\left\{\mathcal{Z}_{t}\right\}, \phi(m) \rightarrow 0$ as $m \rightarrow \infty,\left\{\mathcal{Z}_{t}\right\}$ is called $\phi$-mixing. If, for the sequence $\left\{\mathcal{Z}_{t}\right\}, \alpha(m) \rightarrow 0$ as $m \rightarrow \infty,\left\{\mathcal{Z}_{t}\right\}$ is called $\alpha$-mixing.
+
+The quantities $\phi(m)$ and $\alpha(m)$ measure how much dependence exists between events separated by at least $m$ time periods. Hence, if $\phi(m)=0$ or $\alpha(m)=0$ for some $m$, events $m$ periods apart are independent. By allowing $\phi(m)$ or $\alpha(m)$ to approach zero as $m \rightarrow \infty$, we allow consideration of situations in which events are independent asymptotically. In the probability literature, $\phi$-mixing sequences are also called uniform mixing (see Iosifescu and Theodorescu, 1969), whereas $\alpha$-mixing sequences are called strong mixing (see Rosenblatt, 1956). Because $\phi(m)>\alpha(m), \phi$-mixing implies $\alpha$-mixing.
+
+Example 3.43 (i) Let $\left\{\mathcal{Z}_{t}\right\}$ be a $\gamma$-dependent sequence (i.e., $\mathcal{Z}_{t}$ is independent of $\mathcal{Z}_{t-\tau}$ for all $\tau>\gamma$ ). Then $\phi(m)=\alpha(m)=0$ for all $m>\gamma$. (ii) Let $\left\{\mathcal{Z}_{t}\right\}$ be a nonstochastic sequence. Then it is an independent sequence, so $\phi(m)=\alpha(m)=0$ for all $m>0$. (iii) Let $\mathcal{Z}_{t}=\rho_{o} \mathcal{Z}_{t-1}+\varepsilon_{t}, t=1, \ldots, n$, where $\left|\rho_{o}\right|<1$ and $\varepsilon_{t}$ is i.i.d. $N(0,1)$. (This is called the Gaussian AR(1) process.) Then $\alpha(m) \rightarrow 0$ as $m \rightarrow \infty$, although $\phi(m) \nrightarrow 0$ as $m \rightarrow \infty$ (Ibragimov and Linnik, 1971, pp. 312-313).
+
+The concept of mixing has a meaningful physical interpretation. Adapting an example due to Halmos (1956), we imagine a dry martini initially poured so that $99 \%$ is gin and $1 \%$ is vermouth (placed in a layer at the top). The martini is steadily stirred by a swizzle stick; $t$ increments with each stir. We observe the proportions of gin and vermouth in any measurable set (i.e., volume of martini). If these proportions tend to $99 \%$ and $1 \%$ after many stirs, regardless of which volume we observe, then the process is mixing. In this example, the stochastic process corresponds to the position of a given particle at each point in time, which can be represented as a sequence of three-dimensional vectors $\left\{\mathcal{Z}_{t}\right\}$.
+
+The notion of mixing is a stronger memory requirement than that of ergodicity for stationary sequences, since given stationarity, mixing implies ergodicity, as the next result makes precise.
+
+Proposition 3.44 Let $\left\{\mathcal{Z}_{t}\right\}$ be a stationary sequence. If $\alpha(m) \rightarrow 0$ as $m \rightarrow \infty$, then $\left\{\mathcal{Z}_{t}\right\}$ is ergodic.
+
+Proof. See Rosenblatt (1978).\\
+Note that if $\phi(m) \rightarrow 0$ as $m \rightarrow \infty$, then $\alpha(m) \rightarrow 0$ as $m \rightarrow \infty$, so that $\phi$-mixing processes are also ergodic. Ergodic processes are not necessarily mixing, however. On the other hand, mixing is defined for sequences that are not necessarily strictly stationary, so mixing is more general in this sense. For more on mixing and ergodicity, see Rosenblatt (1972, 1978).
+
+To state the law of large numbers for mixing sequences we use the following definition.
+
+Definition 3.45 Let $a \in \mathbb{R}$. (i) If $\phi(m)=O\left(m^{-a-\varepsilon}\right)$ for some $\varepsilon>0$, then $\phi$ is of size $-a$. (ii) If $\alpha(m)=O\left(m^{-a-\varepsilon}\right)$ for some $\varepsilon>0$, then $\alpha$ is of size $-a$.
+
+This definition allows precise statements about the memory of a random sequence that we shall relate to moment conditions expressed in terms of $a$. As $a$ gets smaller, the sequence exhibits more and more dependence, while as $a \rightarrow \infty$, the sequence exhibits less dependence.
+
+Example 3.46 (i) Let $\left\{\mathcal{Z}_{t}\right\}$ be independent $\mathcal{Z}_{t} \sim N\left(0, \sigma_{t}^{2}\right)$. Then $\left\{\mathcal{Z}_{t}\right\}$ has $\phi$ of size -1 . (This is not the smallest size that could be invoked.) (ii) Let $\mathcal{Z}_{t}$ be a Gaussian AR(1) process. It can be shown that $\left\{\mathcal{Z}_{t}\right\}$ has $\alpha$ of size -a for any $a \in \mathbb{R}$, since $\alpha(m)$ decreases exponentially with $m$.
+
+The result of this example extends to many finite autoregressive moving average (ARMA) processes. Under general conditions, finite ARMA processes have exponentially decaying memories.
+
+Using the concept of mixing, we can state a law of large numbers, due to McLeish (1975), which applies to heterogeneous dependent sequences.
+
+Theorem 3.47 (McLeish) Let $\left\{\mathcal{Z}_{t}\right\}$ be a sequence of scalars with finite means $\mu_{t} \equiv E\left(\mathcal{Z}_{t}\right)$ and suppose that $\sum_{t=1}^{\infty}\left(E\left|\mathcal{Z}_{t}-\mu_{t}\right|^{r+\delta} / t^{r+\delta}\right)^{1 / r}<\infty$ for some $\delta, 0<\delta<r$ where $r \geq 1$. If $\phi$ is of size $-r /(2 r-1)$ or $\alpha$ is of size $-r /(r-1), r>1$, then $\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n} \xrightarrow{\text { a.s. }} 0$.
+
+Proof. See McLeish (1975, Theorem 2.10).\\
+This result generalizes the Markov law of large numbers, Theorem 3.7. (There we have $r=1$.)
+
+Using an argument analogous to that used in obtaining Corollary 3.9, we obtain the following corollary.
+
+Corollary 3.48 Let $\left\{\mathcal{Z}_{t}\right\}$ be a sequence with $\phi$ of size $-r /(2 r-1), r>1$, or $\alpha$ of size $-r /(r-1), r>1$, such that $E\left|\mathcal{Z}_{t}\right|^{r+\delta}<\Delta<\infty$ for some $\delta>0$ and all $t$. Then $\overline{\mathcal{Z}}_{n}-\bar{\mu}_{n} \xrightarrow{\text { a.s. }} 0$.
+
+Setting $r$ arbitrarily close to unity yields a generalization of Corollary 3.9 that would apply to sequences with exponential memory decay. For sequences with longer memories, $r$ is greater, and the moment restrictions increase accordingly. Here we have a clear trade-off between the amount of allowable dependence and the sufficient moment restrictions.
+
+To apply this result, we use the following theorem.
+
+Theorem 3.49 Let $\mathbf{g}$ be a measurable function into $\mathbb{R}^{k}$ and define $\mathcal{Y}_{t} \equiv \mathbf{g}\left(\mathcal{Z}_{t}, \mathcal{Z}_{t+1}, \ldots, \mathcal{Z}_{t+\tau}\right)$, where $\tau$ is finite. If the sequence of $q \times 1$ vectors $\left\{\mathcal{Z}_{t}\right\}$ is $\phi$-mixing ( $\alpha$-mixing) of size $-a, a>0$, then $\left\{\mathcal{Y}_{t}\right\}$ is $\phi$-mixing ( $\alpha$-mixing) of size $-a$.
+
+Proof. See White and Domowitz (1984, Lemma 2.1).\\
+In other words, measurable functions of mixing processes are mixing and of the same size. Note that whereas functions of ergodic processes retain ergodicity for any $\tau$, finite or infinite, mixing is guaranteed only for finite τ.
+
+Proposition 3.50 If $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a mixing sequence of size $-a$, then $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\},\left\{\mathbf{X}_{t} \varepsilon_{t}\right\},\left\{\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right\},\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$, and $\left\{\mathbf{Z}_{t} \mathbf{Z}_{t}^{\prime}\right\}$ are mixing sequences of size $-a$.
+
+Proof. Immediate from Theorem 3.49 and Proposition 3.23.\\
+Now we can generalize the results of Exercise 3.14 to allow for dependence as well as heterogeneity.
+
+Exercise 3.51 Prove the following result. Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a mixing sequence with $\phi$ of size $-r /(2 r-1), r>1$ or $\alpha$ of size $-r /(r-1), r>1$;\\
+(iii) (a) $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}, \quad t=1,2, \ldots$;\\
+(b) $E\left|X_{\text {thi }} \varepsilon_{t h}\right|^{r+\delta}<\Delta<\infty$, for some $\delta>0, h=1, \ldots, p, i= 1, \ldots, k$ and for all $t$;\\
+(iv) (a) $E\left|X_{\text {thi }}^{2}\right|^{r+\delta}<\Delta<\infty$, for some $\delta>0, h=1, \ldots, p, i=1, \ldots, k$ and for all $t$;\\
+(b) $\mathbf{M}_{\boldsymbol{n}} \equiv E\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ is uniformly positive definite.
+
+Then $\hat{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.\\
+From this result, we can obtain the result of Exercise 3.14 as a direct corollary by setting $r=1$. Compared to our first consistency result, Theorem 3.5, we have relaxed the independence and identical distribution assumptions, but strengthened the moment requirements somewhat. Among the many different possibilities that this result allows, we can have lagged dependent variables and nonstochastic variables both appearing in the explanatory variables $\mathbf{X}_{t}$. The regression errors $\varepsilon_{t}$ may be heteroskedastic or may be serially correlated.
+
+In fact, Exercise 3.51 is a powerful result that can be applied to a wide range of situations faced by economists. For further discussion of linear models with mixing observations, see Domowitz (1983).
+
+Applications of Exercise 3.51 often use the following result, which allows the interchange of expectation and infinite sums.
+
+Proposition 3.52 Let $\left\{\mathcal{Z}_{t}\right\}$ be a sequence of random variables such that $\sum_{t=1}^{\infty} E\left|\mathcal{Z}_{t}\right|<\infty$. Then $\sum_{t=1}^{\infty} \mathcal{Z}_{t}$ converges a.s. and
+
+$$
+E\left(\sum_{t=1}^{\infty} \mathcal{Z}_{t}\right)=\sum_{t=1}^{\infty} E\left(\mathcal{Z}_{t}\right)<\infty
+$$
+
+Proof. See Billingsley (1979, p. 181). \(\square\)
+
+This result is useful in verifying the conditions of Exercise 3.51 for the following exercise.
+
+Exercise 3.53 (i) State conditions that are sufficient to ensure the consistency of the OLS estimator when $Y_{t}=\alpha_{o} Y_{t-1}+\beta_{o} X_{t}+\varepsilon_{t}$, where $Y_{t}$, $X_{t}$ and $\varepsilon_{t}$ are scalars. (Hint: The Minkowski inequality applies to infinite sums; that is, given $\left\{\mathcal{Z}_{t}\right\}$ such that $\sum_{t=1}^{\infty}\left(E\left|\mathcal{Z}_{t}\right|^{p}\right)^{1 / p}<\infty$ with $p>1$, then $E\left|\sum_{t=1}^{\infty} \mathcal{Z}_{t}\right|^{p} \leq\left(\sum_{t=1}^{\infty}\left(E\left|\mathcal{Z}_{t}\right|^{p}\right)^{1 / p}\right)^{p}$.) (ii) Find a simple example to which Exercise 3.51 does not apply.
+
+Conditions for the consistency of the IV estimator are given by the next result.
+
+\section*{Theorem 3.54 Suppose}
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\boldsymbol{\varepsilon}_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a mixing sequence with $\phi$ of size $-r /(2 r-1), r>1$, or $\alpha$ of size $-r /(r-1), r>1$;\\
+(iii) (a) $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}, \quad t=1,2, \ldots$;\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{\text {th }}\right|^{r+\delta}<\Delta<\infty$, for some $\delta>0$, all $h=1, \ldots, p, i= 1, \ldots$, l, and all $t$;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{r+\delta}<\Delta<\infty$, for some $\delta>0$, all $h=1, \ldots, p$, $i=1, \ldots, l, j=1, \ldots, k$ and all $t$;\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has uniformly full column rank;\\
+(c) $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$, where $\mathbf{P}_{n}=O(1)$ and is symmetric and uniformly positive definite.\\
+Then $\tilde{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.
+
+Proof. By Proposition 3.50, $\left\{\mathbf{Z}_{t} \varepsilon_{t}\right\}$ and $\left\{\mathbf{Z}_{t} \mathbf{X}_{t}^{\prime}\right\}$ are mixing sequences with elements satisfying the conditions of Corollary 3.48 (given (iii.b) and (iv.a)). It follows from Corollary 3.48 that $\mathbf{Z}^{\prime} \varepsilon / n \xrightarrow{\text { a.s. }} \mathbf{0}$ and $\mathbf{Z}^{\prime} \mathbf{X} / n- \mathbf{Q}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$, where $\mathbf{Q}_{n}=O(1)$, given (iv.a) as a consequence of Jensen's inequality. Hence the conditions of Exercise 2.20 are satisfied and the results follow.
+
+Although mixing is an appealing dependence concept, it shares with ergodicity the property that it can be somewhat difficult to verify theoretically and is impossible to verify empirically. An alternative dependence concept that is easier to verify theoretically is a form of asymptotic noncorrelation.
+
+Definition 3.55 The scalar sequence $\left\{\mathcal{Z}_{t}\right\}$ has asymptotically uncorrelated elements (or is asymptotically uncorrelated) if there exist constants $\left\{\rho_{\tau}, \tau>0\right\}$ such that $0 \leq \rho_{\tau} \leq 1, \sum_{\tau=0}^{\infty} \rho_{\tau}<\infty$ and $\operatorname{cov}\left(\mathcal{Z}_{t}, \mathcal{Z}_{t+\tau}\right) \leq \rho_{\tau}\left(\operatorname{var}\left(\mathcal{Z}_{t}\right) \operatorname{var}\left(\mathcal{Z}_{t+\tau}\right)\right)^{1 / 2}$ for all $\tau>0$, where $\operatorname{var}\left(\mathcal{Z}_{t}\right)<\infty$ for all $t$.
+
+Note that $\rho_{\tau}$ is only an upper bound on the correlation between $\mathcal{Z}_{t}$ and $\mathcal{Z}_{t+\tau}$ and that the actual correlation may depend on $t$. Further, only positive correlation matters, so that if $\mathcal{Z}_{t}$ and $\mathcal{Z}_{t+\tau}$ are negatively correlated, we can set $\rho_{\tau}=0$. Also note that for $\sum_{\tau=0}^{\infty} \rho_{\tau}<\infty$, it is necessary that $\rho_{\tau} \rightarrow 0$ as $\tau \rightarrow \infty$, and it is sufficient that for all $\tau$ sufficiently large, $\rho_{\tau}<\tau^{-1-\delta}$ for some $\delta>0$.
+
+Example 3.56 Let $\mathcal{Z}_{t}=\rho_{o} \mathcal{Z}_{t-1}+\varepsilon_{t}$, where $\varepsilon_{t}$ is i.i.d., $E\left(\varepsilon_{t}\right)=0$, $\operatorname{var}\left(\varepsilon_{t}\right) =\sigma_{o}^{2}, E\left(\mathcal{Z}_{t-1} \varepsilon_{t}\right)=0$. Then $\operatorname{corr}\left(\mathcal{Z}_{t}, \mathcal{Z}_{t+\tau}\right)=\rho_{o}^{\tau}$. If $0 \leq \rho_{o}<1, \sum_{\tau=0}^{\infty} \rho_{o}^{\tau}= 1 /\left(1-\rho_{o}\right)<\infty$, so the sequence $\left\{\mathcal{Z}_{t}\right\}$ is asymptotically uncorrelated.
+
+If a sequence has constant finite variance and has covariances that depend only on the time lag between $\mathcal{Z}_{t}$ and $\mathcal{Z}_{t+\tau}$, the sequence is said to be covariance stationary. (This is implied by stationarity but is weaker because a sequence can be covariance stationary without being stationary.) Verifying that a covariance stationary sequence has asymptotically uncorrelated elements is straightforward when the process has a finite ARMA representation (see Granger and Newbold, 1977, Ch. 1). In this case, $\rho_{\tau}$ can be determined from well-known formulas (see, e.g., Granger and Newbold, 1977, Ch. 1) and the condition $\sum_{\tau=0}^{\infty} \rho_{\tau}<\infty$ can be directly evaluated. Thus, covariance stationary sequences as well as stationary ergodic sequences can often be shown to be asymptotically uncorrelated, although an asymptotically uncorrelated sequence need not be stationary and ergodic or covariance stationary. Under general conditions on the size of $\phi$\\
+or $\alpha$, mixing processes can be shown to be asymptotically uncorrelated. Asymptotically uncorrelated sequences need not be mixing, however.
+
+A law of large numbers for asymptotically uncorrelated sequences is the following.
+
+Theorem 3.57 Let $\left\{\mathcal{Z}_{t}\right\}$ be a scalar sequence with asymptotically uncorrelated elements with means $\mu_{t} \equiv E\left(\mathcal{Z}_{t}\right)$ and $\sigma_{t}^{2} \equiv \operatorname{var}\left(\mathcal{Z}_{t}\right)<\Delta<\infty$. Then $\overline{\mathcal{Z}}_{\boldsymbol{n}}-\bar{\mu}_{n} \xrightarrow{\text { a.s. }} 0$.
+
+Proof. Immediate from Stout (1974, Theorem 3.7.2).\\
+Compared with Corollary 3.48, we have relaxed the dependence restriction from asymptotic independence (mixing) to asymptotic uncorrelation, but we have altered the moment requirements from restrictions on moments of order $r+\delta(r>1, \delta>0)$ to second moments. Typically, this is a strengthening of the moment restrictions.
+
+Since taking functions of random variables alters their correlation properties, there is no simple analog of Proposition 3.2, Theorem 3.35, or Theorem 3.49. To obtain consistency results for the OLS or IV estimators, one must directly assume that all the appropriate sequences are asymptotically uncorrelated so that the almost sure convergence assumed in Theorem 2.18 or Exercise 2.20 holds. Since asymptotically uncorrelated sequences will not play an important role in the rest of this book, we omit stating and proving results for such sequences.
+
+\subsection*{3.5 Martingale Difference Sequences}
+In all of the consistency results obtained so far, there has been the explicit requirement that either $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$ or $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}$. Economic theory can play a key role in justifying this assumption. In fact, it often occurs that economic theory is used to justify the stronger assumption that $E\left(\varepsilon_{t} \mid \mathbf{X}_{t}\right)= \mathbf{0}$ or $E\left(\varepsilon_{t} \mid \mathbf{Z}_{t}\right)=\mathbf{0}$, which then implies $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$ or $E\left(\mathbf{Z}_{t} \varepsilon_{t}\right)=\mathbf{0}$. In particular, this occurs when $\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}$ is viewed as the value of $\mathbf{Y}_{t}$ we expect to observe when $\mathbf{X}_{t}$ occurs, so that $\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}$ is the conditional expectation of $\mathbf{Y}_{t}$ given $\mathbf{X}_{t}$, i.e., $E\left(\mathbf{Y}_{t} \mid \mathbf{X}_{t}\right)=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}$. Then we define $\boldsymbol{\varepsilon}_{t}=\mathbf{Y}_{t}-E\left(\mathbf{Y}_{t} \mid \mathbf{X}_{t}\right)= \mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}$. Using the algebra of conditional expectations given below, it is straightforward to show that $E\left(\varepsilon_{t} \mid \mathbf{X}_{t}\right)=\mathbf{0}$.
+
+One of the more powerful economic theories (powerful in the sense of imposing a great deal of structure on the way in which the data behave) is the theory of rational expectations. Often this theory can be used not only\\
+to justify the assumption that $E\left(\varepsilon_{t} \mid \mathbf{X}_{t}\right)=\mathbf{0}$ but also that
+
+$$
+E\left(\varepsilon_{t} \mid \mathbf{X}_{t}, \mathbf{X}_{t-1}, \ldots ; \varepsilon_{t-1}, \varepsilon_{t-2}, \ldots\right)=\mathbf{0},
+$$
+
+i.e., that the conditional expectation of $\varepsilon_{t}$, given the entire past history of the errors $\varepsilon_{t}$ and the current and past values of the explanatory variables $\mathrm{X}_{t}$, is zero. This assumption allows us to apply laws of large numbers for martingale difference sequences that are convenient and powerful.
+
+To define what martingale difference sequences are and to state the associated results, we need to provide a more complete background on the properties of conditional expectations.
+
+So far we have relied on the reader's intuitive understanding of what a conditional expectation is. A precise definition is the following.
+
+Definition 3.58 Let $\mathcal{Y}$ be an $\mathcal{F}$-measurable random variable, $E(|\mathcal{Y}|)<\infty$, and let $\mathcal{G}$ be a $\sigma$-field contained in $\mathcal{F}$. Then there exists a random variable $E(\mathcal{Y} \mid \mathcal{G})$ called the conditional expectation of $\mathcal{Y}$ given $\mathcal{G}$, such that\\
+(i) $E(\mathcal{Y} \mid \mathcal{G})$ is $\mathcal{G}$-measurable and $E(|E(\mathcal{Y} \mid \mathcal{G})|)<\infty$.\\
+(ii) $E(\mathcal{Y} \mid \mathcal{G})$ satisfies
+
+$$
+E\left(1_{[G]} E(\mathcal{Y} \mid \mathcal{G})\right)=E\left(1_{[G]} \mathcal{Y}\right)
+$$
+
+for all sets $G$ in $\mathcal{G}$, where $1_{[G]}$ is the indicator function equal to unity on the set $G$ and zero elsewhere.
+
+As Doob (1953, p. 18) notes, this definition actually defines an entire class of random variables each of which satisfies the above definition, because any random variable that equals $E(\mathcal{Y} \mid \mathcal{G})$ with probability one satisfies this definition. However, any member of the class of random variables specified by the definition can be used in any expression involving a conditional expectation, so we will not distinguish between members of this class.
+
+To put the conditional expectation in more familiar terms, we relate this definition to the expectation of $\mathcal{Y}_{t}$ conditional on other random variables $\mathcal{Z}_{t}, t=a, \ldots, b$, as follows.
+
+Definition 3.59 Let $\mathcal{Y}_{t}$ be a random variable such that $E\left(\left|\mathcal{Y}_{t}\right|\right)<\infty$ and let $\mathcal{B}_{a}^{b}=\sigma\left(\mathcal{Z}_{a}, \mathcal{Z}_{a+1}, \ldots, \mathcal{Z}_{b}\right)$ be the $\sigma$-algebra generated by the random vectors $\mathcal{Z}_{t}, t=a, \ldots, b$. Then the conditional expectation of $Y_{t}^{\prime}$ given $\mathcal{Z}_{t}$, $t=a, \ldots, b$, is defined as
+
+$$
+E\left(\mathcal{Y}_{t} \mid \mathcal{Z}_{a}, \ldots, \mathcal{Z}_{b}\right) \equiv E\left(\mathcal{Y}_{t} \mid \mathcal{B}_{a}^{b}\right)
+$$
+
+The conditional expectation $E\left(\mathcal{Y}_{t} \mid \mathcal{B}_{a}^{b}\right)$ can be expressed as a measurable function of $\mathcal{Z}_{t}, t=a, \ldots, b$, as the following result shows.
+
+Proposition 3.60 Let $\mathcal{B}_{a}^{b}=\sigma\left(\mathcal{Z}_{a}, \mathcal{Z}_{a+1}, \ldots, \mathcal{Z}_{b}\right)$. Then there exists a measurable function $g$ such that
+
+$$
+E\left(\mathcal{Y}_{t} \mid \mathcal{Z}_{a}, \ldots, \mathcal{Z}_{b}\right)=g\left(\mathcal{Z}_{a}, \ldots, \mathcal{Z}_{b}\right) .
+$$
+
+Proof. Immediate from Doob (1953, Theorem 1.5, p. 603).\\
+Example 3.61 Let $\mathcal{Y}$ and $\mathcal{Z}$ be jointly normal with $E(\mathcal{Y})=E(\mathcal{Z})=0$, $\operatorname{var}(\mathcal{Y})=\sigma_{\mathcal{Y}}^{2}, \operatorname{var}(\mathcal{Z})=\sigma_{\mathcal{Z}}^{2}, \operatorname{cov}(\mathcal{Y}, \mathcal{Z})=\sigma_{\mathcal{Y} \mathcal{Z}}$. Then
+
+$$
+E(\mathcal{Y} \mid \mathcal{Z})=\left(\sigma_{\mathcal{Y} \mathcal{Z}} / \sigma_{\mathcal{Z}}^{2}\right) \mathcal{Z}
+$$
+
+The role of economic theory can now be interpreted as specifying a particular form for the function $g$ in Proposition 3.60, although, as we can see from Example 3.61, the $g$ function is in fact a direct consequence of the form of the joint distribution of the random variables involved. For an economic theory to be valid, the $g$ function specified by that economic theory must be identical to that implied by the joint distribution of the random variables; otherwise the economic theory provides only an approximation to the statistical relationship between the random variables under consideration.
+
+We now state some useful properties of conditional expectations.\\
+Proposition 3.62 (Linearity of conditional expectation) Let $a_{1}$, $\ldots, a_{k}$ be finite constants and suppose $\mathcal{Y}_{1}, \ldots, \mathcal{Y}_{k}$ are random variables such that $E\left|\mathcal{Y}_{j}\right|<\infty, j=1, \ldots, k$. Then $E\left(a_{j} \mid \mathcal{G}\right)=a_{j}$ and
+
+$$
+E\left(\sum_{j=1}^{k} a_{j} \mathcal{Y}_{j} \mid \mathcal{G}\right)=\sum_{j=1}^{k} a_{j} E\left(\mathcal{Y}_{j} \mid \mathcal{G}\right)
+$$
+
+Proof. See Doob (1953, p. 23).\\
+Proposition 3.63 If $\mathcal{Y}$ is a random variable and $\mathcal{Z}$ is a random variable measurable with respect to $\mathcal{G}$ such that $E|\mathcal{Y}|<\infty$ and $E|\mathcal{Z} \mathcal{Y}|<\infty$, then with probability one
+
+$$
+E(\mathcal{Z} \mathcal{Y} \mid \mathcal{G})=\mathcal{Z} E(\mathcal{Y} \mid \mathcal{G})
+$$
+
+and
+
+$$
+E([\mathcal{Y}-E(\mathcal{Y} \mid \mathcal{G})] \mathcal{Z})=0
+$$
+
+Proof. See Doob (1953, p. 22).\\
+Example 3.64 Let $\mathcal{G}=\sigma\left(\mathbf{X}_{t}\right)$. Then $E\left(\mathbf{X}_{t} \mathbf{Y}_{t} \mid \mathbf{X}_{t}\right)=\mathbf{X}_{t} E\left(\mathbf{Y}_{t} \mid \mathbf{X}_{t}\right)$. Define $\varepsilon_{t}=\mathbf{Y}_{t}-E\left(\mathbf{Y}_{t} \mid \mathbf{X}_{t}\right)$. Then $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=E\left(\mathbf{X}_{t}\left[\mathbf{Y}_{t}-E\left(\mathbf{Y}_{t} \mid \mathbf{X}_{t}\right)\right]\right)=\mathbf{0}$.
+
+If we set $E\left(\mathbf{Y}_{t} \mid \mathbf{X}_{t}\right)=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}$, the result of this example justifies the orthogonality condition for the OLS estimator, $E\left(\mathbf{X}_{t} \varepsilon_{t}\right)=\mathbf{0}$.
+
+A version of Jensen's inequality also holds for conditional expectations.\\
+Proposition 3.65 (Conditional Jensen's inequality) Let $g: \mathbb{R} \rightarrow \mathbb{R}$ be a convex function on an interval $B \subset \mathbb{R}$ and let $\mathcal{Y}$ be a random variable such that $P[\mathcal{Y} \in B]=1$. If $E|\mathcal{Y}|<\infty$ and $E|g(\mathcal{Y})|<\infty$, then
+
+$$
+g[E(\mathcal{Y} \mid \mathcal{G})]<E(g(\mathcal{Y}) \mid \mathcal{G})
+$$
+
+for any $\sigma$-field $\mathcal{G}$ of sets in $\Omega$. If $g$ is concave, then
+
+$$
+g[E(\mathcal{Y} \mid \mathcal{G})]>E(g(\mathcal{Y}) \mid \mathcal{G})
+$$
+
+Proof. See Doob (1953, p. 33).\\
+Example 3.66 Let $g(y)=|y|$. It follows from the conditional Jensen's inequality that $|E(\mathcal{Y} \mid \mathcal{G})|<E(\mid \mathcal{Y} \| \mathcal{G})$.
+
+Proposition 3.67 Let $\mathcal{G}$ and $\mathcal{H}$ be $\sigma$-fields and suppose $\mathcal{G} \subset \mathcal{H}$ and that some version of $E(\mathcal{Y} \mid \mathcal{H})$ is measurable with respect to $\mathcal{G}$. Then
+
+$$
+E(\mathcal{Y} \mid \mathcal{H})=E(\mathcal{Y} \mid \mathcal{G}),
+$$
+
+with probability one.\\
+Proof. See Doob (1953, p. 21).\\
+In other words, conditional expectations with respect to two different $\sigma$-fields, one contained in the other, coincide provided that the expectation conditioned on the larger $\sigma$-field is measurable with respect to the smaller $\sigma$-field. Otherwise, no necessary relation holds between the two conditional expectations.
+
+Example 3.68 Suppose that $E\left(\mathcal{Y}_{t} \mid \mathcal{H}_{t-1}\right)=0$, where $\mathcal{H}_{t-1}=\sigma\left(\ldots, \mathcal{Y}_{t-2}\right.$, $\left.\mathcal{Y}_{t-1}\right)$. Then $E\left(\mathcal{Y}_{t} \mid \mathcal{Y}_{t-1}\right)=0$, since $E\left(\mathcal{Y}_{t} \mid \mathcal{Y}_{t-1}\right)=E\left(\mathcal{Y}_{t} \mid \mathcal{G}_{t-1}\right)$, where $\mathcal{G}_{t-1}= \sigma\left(\mathcal{Y}_{t-1}\right)$ satisfies $\mathcal{G}_{t-1} \subset \mathcal{H}_{t-1}$ and $E\left(\mathcal{Y}_{t} \mid \mathcal{H}_{t-1}\right)=0$ is measurable with respect to $\mathcal{G}_{t-1}$.
+
+One of the most useful properties of the conditional expectation is given by the law of iterated expectations.
+
+Proposition 3.69 (Law of iterated expectations) Let $E|\mathcal{Y}|<\infty$ and let $\mathcal{G}$ be a $\sigma$-field of sets in $\Omega$. Then
+
+$$
+E[E(\mathcal{Y} \mid \mathcal{G})]=E(\mathcal{Y}) .
+$$
+
+Proof. Set $G=\Omega$ in Definition 3.58.\\
+Example 3.70 Suppose $E\left(\varepsilon_{t} \mid \mathbf{X}_{t}\right)=\mathbf{0}$. Then by Proposition 3.69, $E\left(\varepsilon_{t}\right)= E\left(E\left(\varepsilon_{t} \mid \mathbf{X}_{t}\right)\right)=\mathbf{0}$.
+
+A more general result is the following.\\
+Proposition 3.71 (Law of iterated expectations) Let $\mathcal{G}$ and $\mathcal{H}$ be $\sigma$ fields of sets in $\Omega$ with $\mathcal{H} \subset \mathcal{G}$, and suppose $E(|\mathcal{Y}|)<\infty$. Then
+
+$$
+E[E(\mathcal{Y} \mid \mathcal{G}) \mid \mathcal{H}]=E(\mathcal{Y} \mid \mathcal{H}) .
+$$
+
+Proof. See Doob (1953, p. 37).\\
+Proposition 3.69 is the special case of Proposition 3.71 in which $\mathcal{H}= \{\emptyset, \Omega\}$, the trivial $\sigma$-field.
+
+With the law of iterated expectations available, it is straightforward to show that the conditional expectation has an optimal prediction property, in the sense that in predicting a random variable $\mathcal{Y}$, the prediction mean squared error of the conditional expectation of $\mathcal{Y}$ is smaller than that of any other predictor of $\mathcal{Y}$ measurable with respect to the same $\sigma$-field.
+
+Theorem 3.72 Let $\mathcal{Y}$ be a random variable with $E\left(\mathcal{Y}^{2}\right)<\infty$ and let $\hat{\mathcal{Y}} \equiv E(\mathcal{Y} \mid \mathcal{G})$. Then for any other $\mathcal{G}$-measurable random variable $\tilde{\mathcal{Y}}, E((\mathcal{Y}- \left.\hat{\mathcal{Y}})^{2}\right)<E\left((\mathcal{Y}-\tilde{\mathcal{Y}})^{2}\right)$.\\
+Proof. Adding and subtracting $\hat{\mathcal{Y}}$ in $(\mathcal{Y}-\tilde{\mathcal{Y}})^{2}$ gives
+
+$$
+\begin{aligned}
+E\left((\mathcal{Y}-\tilde{\mathcal{Y}})^{2}\right)= & E\left((\mathcal{Y}-\hat{\mathcal{Y}}+\hat{\mathcal{Y}}-\tilde{\mathcal{Y}})^{2}\right) \\
+= & E\left((\mathcal{Y}-\hat{\mathcal{Y}})^{2}+2 E((\mathcal{Y}-\hat{\mathcal{Y}})(\hat{\mathcal{Y}}-\tilde{\mathcal{Y}}))\right. \\
+& +E\left((\hat{\mathcal{Y}}-\tilde{\mathcal{Y}})^{2}\right)
+\end{aligned}
+$$
+
+By the law of iterated expectations and Proposition 3.63,
+
+$$
+\begin{aligned}
+E((\mathcal{Y}-\hat{\mathcal{Y}})(\hat{\mathcal{Y}}-\tilde{\mathcal{Y}})) & =E[E((\mathcal{Y}-\hat{\mathcal{Y}})(\hat{\mathcal{Y}}-\tilde{\mathcal{Y}}) \mid \mathcal{G})] \\
+& =E[E(\mathcal{Y}-\hat{\mathcal{Y}} \mid \mathcal{G})(\hat{\mathcal{Y}}-\tilde{\mathcal{Y}})]
+\end{aligned}
+$$
+
+But $E(\mathcal{Y}-\hat{\mathcal{Y}} \mid \mathcal{G})=0$, so $E((\mathcal{Y}-\hat{\mathcal{Y}})(\hat{\mathcal{Y}}-\tilde{\mathcal{Y}}))=0$ and
+
+$$
+E\left((\mathcal{Y}-\tilde{\mathcal{Y}})^{2}\right)=E\left((\mathcal{Y}-\hat{\mathcal{Y}})^{2}+E\left((\hat{\mathcal{Y}}-\tilde{\mathcal{Y}})^{2}\right)\right.
+$$
+
+and the result follows, because the final term on the right is nonnegative.
+
+This result provides us with another interpretation for the conditional expectation. The conditional expectation of $\mathcal{Y}$ given $\mathcal{G}$ gives the minimum mean squared error prediction of $\mathcal{Y}$ based on a specified information set ( $\sigma$-field) $\mathcal{G}$.
+
+With the next definition (from Stout, 1974, p. 30) we will have sufficient background to define the concept of a martingale difference sequence.
+
+Definition 3.73 Let $\left\{\mathcal{Y}_{t}\right\}$ be a sequence of random scalars, and let $\left\{\mathcal{F}_{t}\right\}$ be a sequence of $\sigma$-fields $\mathcal{F}_{t} \subset \mathcal{F}$ such that $\mathcal{F}_{t-1} \subset \mathcal{F}_{t}$ for all $t$ (i.e., $\left\{\mathcal{F}_{t}\right\}$ is an increasing sequence of $\sigma$-fields, also called a filtration). If $\mathcal{Y}_{t}$ is measurable with respect to $\mathcal{F}_{t}$, then $\left\{\mathcal{F}_{t}\right\}$ is said to be adapted to the sequence $\left\{\mathcal{Y}_{t}\right\}$ and $\left\{\mathcal{Y}_{t}, \mathcal{F}_{t}\right\}$ is called an adapted stochastic sequence.
+
+One way of generating an adapted stochastic sequence is to let $\mathcal{F}_{t}$ be the $\sigma$-field generated by current and past $\mathcal{Y}_{t}$, i.e., $\mathcal{F}_{t}=\sigma\left(\ldots, \mathcal{Y}_{t-1}, \mathcal{Y}_{t}\right)$. Then $\left\{\mathcal{F}_{t}\right\}$ is increasing and $\mathcal{Y}_{t}$ is always measurable with respect to $\mathcal{F}_{t}$. However, $\mathcal{F}_{t}$ can contain more than just the present and past of $\mathcal{Y}_{t}$; it can also contain the present and past of other random variables as well. For example, let $\mathcal{Y}_{t}=\mathcal{Z}_{t 1}$, where $\mathcal{Z}_{t}^{\prime}=\left(\mathcal{Z}_{t 1}, \ldots, \mathcal{Z}_{t q}\right)$, and let $\mathcal{F}_{t}=\sigma(\ldots$, $\left.\mathcal{Z}_{t-1}, \mathcal{Z}_{t}\right)$. Then $\mathcal{F}_{t}$ is again increasing and $\mathcal{Y}_{t}$ is again measurable with respect to $\mathcal{F}_{t}$, so $\left\{\mathcal{Y}_{t}, \mathcal{F}_{t}\right\}$ is an adapted stochastic sequence. This is the situation most relevant for our purposes.
+
+Definition 3.74 Let $\left\{\mathcal{Y}_{t}, \mathcal{F}_{t}\right\}$ be an adapted stochastic sequence. Then $\left\{\mathcal{Y}_{t}\right.$, $\mathcal{F}_{t}$ \} is a martingale difference sequence if
+
+$$
+E\left(\mathcal{Y}_{t} \mid \mathcal{F}_{t-1}\right)=0, \quad \text { for all } t>1 .
+$$
+
+Example 3.75 (i) Let $\left\{\mathcal{Y}_{t}\right\}$ be a sequence of i.i.d. random variables with $E\left(\mathcal{Y}_{t}\right)=0$, and let $\mathcal{F}_{t}=\sigma\left(\ldots, \mathcal{Y}_{t-1}, \mathcal{Y}_{t}\right)$. Then $\left\{\mathcal{Y}_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence. (ii) (The Lévy device) Let $\left\{\mathcal{Y}_{t}, \mathcal{F}_{t}\right\}$ be any adapted stochastic sequence such that $E\left|\mathcal{Y}_{t}\right|<\infty$ for all $t$. Then
+
+$$
+\left\{\mathcal{Y}_{t}-E\left(\mathcal{Y}_{t} \mid \mathcal{F}_{t-1}\right), \mathcal{F}_{t}\right\}
+$$
+
+is a martingale difference sequence because $\mathcal{Y}_{t}-E\left(\mathcal{Y}_{t} \mid \mathcal{F}_{t-1}\right)$ is measurable with respect to $\mathcal{F}_{t}$ and, by linearity,
+
+$$
+E\left[\mathcal{Y}_{t}-E\left(\mathcal{Y}_{t} \mid \mathcal{F}_{t-1}\right) \mid \mathcal{F}_{t-1}\right]=E\left(\mathcal{Y}_{t} \mid \mathcal{F}_{t-1}\right)-E\left(\mathcal{Y}_{t} \mid \mathcal{F}_{t-1}\right)=0
+$$
+
+The device of Example 3.75 (ii) is useful in certain circumstances because it reduces the study of the behavior of an arbitrary sequence of random\\
+variables to the study of the behavior of a martingale difference sequence and a sequence of conditional expectations (Stout, 1974, p. 33).
+
+The martingale difference assumption is often justified in economics by the efficient markets theory or rational expectations theory, e.g., Samuelson (1965). In these theories the random variable $\mathcal{Y}_{t}$ is the price change of an asset or a commodity traded in a competitive market and $\mathcal{F}_{t}$ is the $\sigma$-field generated by all current and past information available to market participants, $\mathcal{F}_{t}=\sigma\left(\ldots, \mathcal{Z}_{t-1}, \mathcal{Z}_{t}\right)$, where $\mathcal{Z}_{t}$ is a finite-dimensional vector of observable information, including information on $\mathcal{Y}_{t}$. A zero profit (no arbitrage) condition then ensures that $E\left(\mathcal{Y}_{t} \mid \mathcal{F}_{t-1}\right)=0$. Note that if $\mathcal{G}_{t}= \sigma\left(\ldots, \mathcal{Y}_{t-1}, \mathcal{Y}_{t}\right)$, then $\left\{\mathcal{Y}_{t}, \mathcal{G}_{t}\right\}$ is also an adapted stochastic sequence, and because $\mathcal{G}_{t} \subset \mathcal{F}_{t}$, it follows from Proposition 3.71 that
+
+$$
+E\left(\mathcal{Y}_{t} \mid \mathcal{G}_{t-1}\right)=E\left[E\left(\mathcal{Y}_{t} \mid \mathcal{F}_{t-1}\right) \mid \mathcal{G}_{t-1}\right]=0
+$$
+
+so $\left\{\mathcal{Y}_{t}, \mathcal{G}_{t}\right\}$ is also a martingale difference sequence.\\
+The martingale difference assumption often arises in a regression context in the following way. Suppose we have observations on a scalar $Y_{t}$ (set $p=1$ for now) that we are interested in explaining or forecasting on the basis of variables $\mathbf{Z}_{t}$ as well as on the basis of the past values of $Y_{t}$. Let $\mathcal{F}_{t-1}$ be the $\sigma$-field containing the information used to explain or forecast $Y_{t}$, i.e., $\mathcal{F}_{t-1}=\sigma\left(\ldots,\left(\mathbf{Z}_{t-1}^{\prime}, Y_{t-2}^{\prime}\right)^{\prime},\left(\mathbf{Z}_{t}^{\prime}, Y_{t-1}\right)^{\prime}\right)$. Then by Proposition 3.60,
+
+$$
+E\left(Y_{t} \mid \mathcal{F}_{t-1}\right)=g\left(\ldots,\left(\mathbf{Z}_{t-1}^{\prime}, Y_{t-2}^{\prime}\right)^{\prime},\left(\mathbf{Z}_{t}^{\prime}, Y_{t-1}\right)^{\prime}\right)
+$$
+
+where $g$ is some function of current and past values of $\mathbf{Z}_{t}$ and past values of $Y_{t}$. Let $\mathbf{X}_{t}$ contain a finite number of current and lagged values of $\left(\mathbf{Z}_{t}^{\prime}, Y_{t-1}\right)$, e.g., $\mathbf{X}_{t}=\left(\left(\mathbf{Z}_{t-\tau}^{\prime}, Y_{t-\tau-1}\right)^{\prime}, \ldots,\left(\mathbf{Z}_{t}^{\prime}, Y_{t-1}\right)^{\prime}\right)^{\prime}$ for some $\tau<\infty$. Economic theory is then often used in an attempt to justify the assumption that for some $\boldsymbol{\beta}_{o}<\infty$,
+
+$$
+g\left(\ldots,\left(\mathbf{Z}_{t-1}^{\prime}, Y_{t-2}\right)^{\prime},\left(\mathbf{Z}_{t}^{\prime}, Y_{t-1}^{\prime}\right)^{\prime}\right)=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}
+$$
+
+If this is true, we then have
+
+$$
+E\left(Y_{t} \mid \mathcal{F}_{t-1}\right)=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}
+$$
+
+Note that by definition, $Y_{t}$ is measurable with respect to $\mathcal{F}_{t}$, so that $\left\{Y_{t}, \mathcal{F}_{t}\right\}$ is an adapted stochastic sequence. Hence, by the Lévy device, we find that $\left\{Y_{t}-E\left(Y_{t} \mid \mathcal{F}_{t-1}\right), \mathcal{F}_{t}\right\}$ is a martingale difference sequence. If we let
+
+$$
+\varepsilon_{t}=Y_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}
+$$
+
+and it is true that $E\left(Y_{t} \mid \mathcal{F}_{t-1}\right)=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}$, then $\varepsilon_{t}=Y_{t}-E\left(Y_{t} \mid \mathcal{F}_{t-1}\right)$, so $\left\{\varepsilon_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence. Of direct importance for least squares estimation is the fact that $\left\{\mathcal{F}_{t}\right\}$ is also adapted to each sequence of cross products between regressors and errors $\left\{X_{t i} \varepsilon_{t}\right\}, i=1, \ldots, k$. It is then easily shown that $\left\{X_{t i} \varepsilon_{t}, \mathcal{F}_{t}\right\}$ is also a martingale difference sequence, since by Proposition 3.63
+
+$$
+E\left(X_{t i} \varepsilon_{t} \mid \mathcal{F}_{t-1}\right)=X_{t i} E\left(\varepsilon_{t} \mid \mathcal{F}_{t-1}\right)=0
+$$
+
+A law of large numbers for martingale difference sequences is the following theorem.
+
+Theorem 3.76 (Chow) Let $\left\{\mathcal{Z}_{t}, \mathcal{F}_{t}\right\}$ be a martingale difference sequence. If for some $r>1, \sum_{t=1}^{\infty}\left(E\left|\mathcal{Z}_{t}\right|^{2 r}\right) / t^{1+r}<\infty$, then $\overline{\mathcal{Z}}_{n} \xrightarrow{\text { a.s. }} 0$.
+
+Proof. See Stout (1974, pp. 154-155).\\
+Note the similarity of the present result to the Markov law of large numbers, Theorem 3.7. There the stronger assumption of independence replaces the martingale difference assumption, whereas the required moment conditions are weaker with independence than they are here. A corollary analogous to Corollary 3.9 also holds.
+
+Exercise 3.77 Prove the following. Let $\left\{\mathcal{Z}_{t}, \mathcal{F}_{t}\right\}$ be a martingale difference sequence such that $E\left|\mathcal{Z}_{t}\right|^{2 r}<\Delta<\infty$ for some $r>1$ and all $t$. Then $\overline{\mathcal{Z}}_{n} \xrightarrow{\text { a.s. }} 0$.
+
+Using this result and the law of large numbers for mixing sequences, we can state the following consistency result for the OLS estimator.
+
+Theorem 3.78 Suppose\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k} ;$\\
+(ii) $\left\{\mathbf{X}_{t}\right\}$ is a sequence of mixing random variables with $\phi$ of size $-r /(2 r-$ 1), $r>1$, or $\alpha$ of size $-r /(r-1), r>1$;\\
+(iii) (a) $\left\{X_{\text {thi }} \varepsilon_{t h}, \mathcal{F}_{t-1}\right\}$ is a martingale difference sequence, $h=1, \ldots, p$, $i=1, \ldots, k ;$\\
+(b) $E\left|X_{\text {thi }} \varepsilon_{t h}\right|^{2 r}<\Delta<\infty$, for all $h=1, \ldots, p, i=1, \ldots, k$ and $t$;\\
+(iv) (a) $E\left|X_{\text {thi }}^{2}\right|^{r+\delta}<\Delta<\infty$, for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, k$ and $t$;\\
+(b) $\mathbf{M}_{n} \equiv E\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ is uniformly positive definite.
+
+Then $\hat{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.\\
+Proof. To verify that the conditions of Theorem 2.18 hold, we note first that $\mathbf{X}^{\prime} \varepsilon / n=\sum_{h=1}^{p} \mathbf{X}_{h}^{\prime} \varepsilon_{h} / n$ where $\mathbf{X}_{h}$ is the $n \times k$ matrix with rows $\mathbf{X}_{t h}$ and $\varepsilon_{h}$ is the $n \times 1$ vector with elements $\varepsilon_{t h}$. By assumption (iii.a), $\left\{X_{t h i} \varepsilon_{t h}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence. Because the moment conditions of Exercise 3.77 are satisfied by (iii.b), we have $n^{-1} \sum X_{t h i} \varepsilon_{t h} \xrightarrow{\text { a.s. }} 0$, $h=1, \ldots, p, i=1, \ldots, k$, so $\mathbf{X}^{\prime} \varepsilon / n \xrightarrow{\text { a.s. }} \mathbf{0}$ by Proposition 2.11. Next, Proposition 3.50 ensures that $\left\{\mathbf{X}_{t} \mathbf{X}_{t}^{\prime}\right\}$ is a mixing sequence (given (ii)) that satisfies the conditions of Corollary 3.48 (given (iv.a)). It follows that $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$, and $\mathbf{M}_{n}=O(1)$ (given (iv.a)) by Jensen's inequality. Hence the conditions of Theorem 2.18 are satisfied and the result follows.
+
+Note that the conditions placed on $\mathbf{X}_{t}$ by (ii) and (iv.a) ensure that $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M}_{n} \xrightarrow{\text { a.s. }} \mathbf{O}$ and that these conditions can be replaced by any other conditions that ensure the same conclusion.
+
+A result for the IV estimator can be obtained analogously.\\
+Exercise 3.79 Prove the following result. Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}, \varepsilon_{t}\right)\right\}$ is a mixing sequence with $\phi$ of size $-r /(2 r-1), r>1$, or $\alpha$ of size $-r /(r-1), r>1$;\\
+(iii) (a) $\left\{Z_{\text {thi }} \varepsilon_{t h}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence, $h=1, \ldots, p$, $i=1, \ldots, l ;$\\
+(b) $E\left|Z_{\text {thi }} \varepsilon_{t h}\right|^{2 r}<\Delta<\infty$, for all $h=1, \ldots, p, i=1, \ldots, l$ and $t$;\\
+(iv) (a) $E\left|Z_{\text {thi }} X_{\text {thj }}\right|^{r+\delta}<\Delta<\infty$, for some $\delta>0$ and all $h=1, \ldots, p$, $i=1, \ldots, l, j=1 \ldots, k$ and $t$;\\
+(b) $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ has uniformly full column rank;\\
+(c) $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$, where $\mathbf{P}_{n}=O(1)$ and is symmetric and uniformly positive definite.
+
+Then $\tilde{\boldsymbol{\beta}}_{n}$ exists for all $n$ sufficiently large a.s., and $\tilde{\boldsymbol{\beta}}_{n} \xrightarrow{\text { a.s. }} \boldsymbol{\beta}_{o}$.\\
+As with results for the OLS estimator, (ii) and (iv.a) can be replaced by any other conditions that ensure $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q}_{n} \xrightarrow{\text { a.s. }} \mathbf{0}$. Note that assumption (ii) is stronger than absolutely necessary here. Instead, it suffices that $\left\{\left(\mathbf{Z}_{t}^{\prime}, \mathbf{X}_{t}^{\prime}\right)\right\}$ is appropriately mixing. However, assumption (ii) is used later to ensure the consistency of estimated covariance matrices.
+
+\section*{References}
+Bartle, R. G. (1966). The Elements of Integration. Wiley, New York.\\
+Billingsley, P. (1979). Probability and Measure. Wiley, New York.\\
+Chung, K. L. (1974). A Course in Probability Theory. Harcourt, New York.\\
+Corradi, V., N. Swanson, and H. White (2000). "Testing for stationarityergodicity and for comovement between nonlinear discrete time Markov processes." Journal of Econometrics, 96, 39-73.\\
+Domowitz, I. (1983). "The linear model with stochastic regressors and heteroskedastic dependent errors." Discussion Paper, Center for Mathematical Studies in Economics and Management Sciences, Northwestern University, Evanston, Illinois.\\
+and M. A. El-Gamal (1993). "A consistent test of stationary-ergodicity." Econometric Theory, 9, 589-601.\\
+Doob, J. L. (1953). Stochastic Processes. Wiley, New York.\\
+Granger, C. W. J. and P. Newbold (1977). Forecasting Economic Time Series. Academic Press, New York.\\
+Halmos, P. R. (1956). Lectures in Ergodic Theory. Chelsea Publishing, New York.\\
+Ibragimov, I. A. and Y. V. Linnik (1971). Independent and Stationary Sequences of Random Variables. Wolters-Noordhoff, The Netherlands.\\
+Iosifescu, M. and R. Theodorescu (1969). Random Processes and Learning. Springer-Verlag, New York.\\
+Kolmogorov, A. N. (1933). Grundbegriffe der Wahrscheinlichkeitsrechnung. Ergebnisse der Mathematik und ihrer Grenzgebiete, Vol. 2, No. 3. SpringerVerlag, Berlin.\\
+Lukacs, E. (1975). Stochastic Convergence. Academic Press, New York.\\
+McLeish, D. L. (1975). "A maximal inequality and dependent strong laws." Annals of Probability, 3, 826-836.\\
+Rao, C. R. (1973). Linear Statistical Inference and Its Applications. Wiley, New York.\\
+Rosenblatt, M. (1956). "A central limit theorem and a strong mixing condition." Proc. Nat. Acad. Sci. U.S.A., 42, 43-47.\\
+(1972). "Uniform ergodicity and strong mixing." Z. Wahrsch. Verw. Gebiete, 24, 79-84.\\
+(1978). "Dependence and asymptotic independence for random processes." In Studies in Probability Theory, M. Rosenblatt, ed., Mathematical Association of America, Washington, D.C.\\
+Samuelson, P. (1965). "Proof that properly anticipated prices fluctuate randomly." Industrial Management Review. 6, 41-49.
+
+Stout, W. F. (1974). Almost Sure Convergence. Academic Press, New York.\\
+White, H. and I. Domowitz (1984). "Nonlinear regression with dependent observations." Econometrica, 52, 143-162.
+
+\section*{Asymptotic Normality}
+
+\end{document}

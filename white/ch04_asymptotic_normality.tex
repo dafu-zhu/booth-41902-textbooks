@@ -1,0 +1,1760 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{03C4}{\ifmmode\tau\else{$\tau$}\fi}
+\title{Chapter 4: Asymptotic Normality}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+In the classical linear model with fixed regressors and normally distributed i.i.d. errors, the least squares estimator $\hat{\boldsymbol{\beta}}_{n}$ is distributed as a multivariate normal with $E\left(\hat{\boldsymbol{\beta}}_{n}\right)=\boldsymbol{\beta}_{o}$ and $\operatorname{var}\left(\hat{\boldsymbol{\beta}}_{n}\right)=\sigma_{o}^{2}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1}$ for any sample size $n$. This fact forms the basis for statistical tests of hypotheses, based typically on $t$ - and $F$-statistics. When the sample size is large, econometric estimators such as $\hat{\boldsymbol{\beta}}_{n}$ have a distribution that is approximately normal under much more general conditions, and this fact forms the basis for large sample statistical tests of hypotheses. In this chapter we study the tools used in determining the asymptotic distribution of $\hat{\boldsymbol{\beta}}_{n}$, how this asymptotic distribution can be used to test hypotheses in large samples, and how asymptotic efficiency can be obtained.
+
+\subsection*{4.1 Convergence in Distribution}
+The most fundamental concept is that of convergence in distribution.\\
+Definition 4.1 Let $\left\{\mathbf{b}_{n}\right\}$ be a sequence of random finite-dimensional vectors with joint distribution functions $\left\{F_{n}\right\}$. If $F_{n}(\mathbf{z}) \rightarrow F(\mathbf{z})$ as $n \rightarrow \infty$ for every continuity point $\mathbf{z}$, where $F$ is the distribution function of a random variable $\mathcal{Z}$, then $\mathbf{b}_{n}$ converges in distribution to the random variable $\mathcal{Z}$, denoted $\mathbf{b}_{n} \xrightarrow{d} \mathcal{Z}$.
+
+Heuristically, the distribution of $\mathbf{b}_{n}$ gets closer and closer to that of the random variable $\mathcal{Z}$, so the distribution $F$ can be used as an approximation to the distribution of $\mathbf{b}_{n}$. When $\mathbf{b}_{n} \xrightarrow{d} \mathcal{Z}$, we also say that $\mathbf{b}_{n}$ converges in law to $\mathcal{Z}$ (written $\mathbf{b}_{n} \xrightarrow{L} \mathcal{Z}$ ), or that $\mathbf{b}_{n}$ is asymptotically distributed as $F$, denoted $\mathbf{b}_{n} \stackrel{A}{\sim} F$. Then $F$ is called the limiting distribution of $\mathbf{b}_{n}$. Note that the convergence specified by this definition is pointwise and only has to occur at points $\mathbf{z}$ where $F$ is continuous (the "continuity points").
+
+Example 4.2 Let $\left\{\mathbf{b}_{n}\right\}$ be a sequence of i.i.d. random variables with distribution function $F$. Then (trivially) $F$ is the limiting distribution of $\mathbf{b}_{n}$.
+
+This illustrates the fact that convergence in distribution is a very weak convergence concept and by itself implies nothing about the convergence of the sequence of random variables.
+
+Example 4.3 Let $\left\{\mathcal{Z}_{t}\right\}$ be i.i.d. random variables with mean $\mu$ and finite variance $\sigma^{2}>0$. Define
+
+$$
+b_{n} \equiv \frac{\overline{\mathcal{Z}}_{n}-E\left(\overline{\mathcal{Z}}_{n}\right)}{\left(\operatorname{var}\left(\overline{\mathcal{Z}}_{n}\right)\right)^{1 / 2}}=n^{-1 / 2} \sum_{t=1}^{n}\left(\mathcal{Z}_{t}-\mu\right) / \sigma
+$$
+
+Then by the Lindeberg-Lévy central limit theorem (Theorem 5.2), $b_{n} \stackrel{A}{\sim} N(0,1)$.
+
+In other words, the sample mean $\overline{\mathcal{Z}}_{n}$ of i.i.d. observations, when standardized, has a distribution that approaches the standard normal distribution. This result actually holds under rather general conditions on the sequence $\left\{\mathcal{Z}_{t}\right\}$. The conditions under which this convergence occurs are studied at length in the next chapter. In this chapter, we simply assume that such conditions are satisfied, so convergence in distribution is guaranteed.
+
+Convergence in distribution is meaningful even when the limiting distribution is that of a degenerate random variable.
+
+Lemma 4.4 Suppose $b_{n} \xrightarrow{p} b$ (a constant). Then $b_{n} \stackrel{A}{\sim} F_{b}$, where $F_{b}$ is the distribution function of a random variable $\mathcal{Z}$ that takes the value $b$ with probability one (i.e., $b_{n} \xrightarrow{d} b$ ). Also, if $b_{n} \stackrel{A}{\sim} F_{b}$, then $b_{n} \xrightarrow{p} b$.
+
+Proof. See Rao (1973, p. 120).\\
+In other words, convergence in probability to a constant implies convergence in distribution to that constant. The converse is also true.
+
+A useful implication of convergence in distribution is the following lemma.
+
+Lemma 4.5 If $b_{n} \xrightarrow{d} \mathcal{Z}$, then $b_{n}$ is $O_{p}(1)$.\\
+Proof. Recall that $b_{n}$ is $O_{p}(1)$ if, given any $\delta>0, P\left[\left|b_{n}\right|>\Delta_{\delta}\right]<\delta$ for some $\Delta_{\delta}<\infty$ and all $n>N_{\delta}$. Because $b_{n} \rightarrow \mathcal{Z}, P\left[\left|b_{n}\right|>\Delta_{\delta}\right] \rightarrow P\left[|\mathcal{Z}|>\Delta_{\delta}\right]$, provided (without loss of generality) that $\Delta_{\delta}$ and $-\Delta_{\delta}$ are continuity points of the distribution of $\mathcal{Z}$. Thus $\mid P\left[\left|b_{n}\right|>\Delta_{\delta}\right]-P[|\mathcal{Z}|> \left.\Delta_{\delta}\right] \mid<\delta$ for all $n>N_{\delta}$, so that $P\left[\left|b_{n}\right|>\Delta_{\delta}\right]<\delta+P\left[|\mathcal{Z}|>\Delta_{\delta}\right]$ for all $n>N_{\delta}$. Because $P\left[|\mathcal{Z}|>\Delta_{\delta}\right]<\delta$ for $\Delta_{\delta}$ sufficiently large, we have $P\left[\left|b_{n}\right|>\Delta_{\delta}\right]<2 \delta$ for $\Delta_{\delta}$ sufficiently large and all $n>N_{\delta}$.
+
+This allows us to establish the next useful lemma.\\
+Lemma 4.6 (Product rule) Recall from Corollary 2.36 that if $\mathbf{A}_{n}= o_{p}(1)$ and $\mathbf{b}_{n}=O_{p}(1)$, then $\mathbf{A}_{n} \mathbf{b}_{n}=o_{p}(1)$. Hence, if $\mathbf{A}_{n} \xrightarrow{p} \mathbf{0}$ and $\mathbf{b}_{n} \xrightarrow{d} \mathcal{Z}$, then $\mathbf{A}_{n} \mathbf{b}_{n} \xrightarrow{p} \mathbf{0}$.
+
+In turn, this result is often used in conjunction with the following result, which is one of the most useful of those relating convergence in probability and convergence in distribution.
+
+Lemma 4.7 (Asymptotic equivalence) Let $\left\{\mathbf{a}_{n}\right\}$ and $\left\{\mathbf{b}_{n}\right\}$ be two sequences of random vectors. If $\mathbf{a}_{n}-\mathbf{b}_{n} \xrightarrow{p} \mathbf{0}$ and $\mathbf{b}_{n} \xrightarrow{d} \mathcal{Z}$, then $\mathbf{a}_{n} \xrightarrow{d} \mathcal{Z}$.
+
+Proof. See Rao (1973, p. 123).\\
+This result is helpful in situations in which we wish to find the asymptotic distribution of $\mathbf{a}_{n}$ but cannot easily do so directly. Often, however, it is easy to find $\mathbf{a} \mathbf{b}_{n}$ that has a known asymptotic distribution and that satisfies $\mathbf{a}_{n}-\mathbf{b}_{n} \xrightarrow{p} \mathbf{0}$. Lemma 4.7 then ensures that $\mathbf{a}_{n}$ has the same limiting distribution as $\mathbf{b}_{n}$ and we say that $\mathbf{a}_{n}$ is "asymptotically equivalent" to $\mathbf{b}_{n}$. The joint use of Lemmas 4.6 and 4.7 is the key to the proof of the asymptotic normality results for the OLS and IV estimators.
+
+Another useful tool in the study of convergence in distribution is the characteristic function.
+
+Definition 4.8 Let $\mathcal{Z}$ be a $k \times 1$ random vector with distribution function $F$. The characteristic function of $\mathcal{Z}$ is defined as $f(\boldsymbol{\lambda}) \equiv E\left(\exp \left(i \boldsymbol{\lambda}^{\prime} \mathcal{Z}\right)\right)$, where $i^{2}=-1$ and $\boldsymbol{\lambda}$ is a $k \times 1$ real vector.
+
+Example 4.9 Let $\mathcal{Z}$ be a nonstochastic real number, $\mathcal{Z}=c$. Then $f(\lambda)= E(\exp (i \lambda \mathcal{Z}))=E(\exp (i \lambda c))=\exp (i \lambda c)$.\\
+Example 4.10 (i) Let $\mathcal{Z} \sim N\left(\mu, \sigma^{2}\right)$. Then $f(\lambda)=\exp \left(i \lambda \mu-\lambda^{2} \sigma^{2} / 2\right)$. (ii) Let $\mathcal{Z} \sim N(\boldsymbol{\mu}, \boldsymbol{\Sigma})$, where $\boldsymbol{\mu}$ is $k \times 1$ and $\boldsymbol{\Sigma}$ is $k \times k$. Then $f(\boldsymbol{\lambda})= \exp \left(i \boldsymbol{\lambda}^{\prime} \boldsymbol{\mu}-\boldsymbol{\lambda}^{\prime} \boldsymbol{\Sigma} \boldsymbol{\lambda} / 2\right)$.
+
+A useful table of characteristic functions is given by Lukacs (1970, p. 18).\\
+Because the characteristic function is the Fourier transformation of the probability density function, it has the property that any characteristic function uniquely determines a distribution function, as formally expressed by the next result.
+
+Theorem 4.11 (Uniqueness theorem) Two distribution functions are identical if and only if their characteristic functions are identical.
+
+Proof. See Lukacs (1974, p. 14).\\
+Thus the behavior of a random variable can be studied either through its distribution function or its characteristic function, whichever is more convenient.
+
+Example 4.12 The distribution of a linear transformation of a random variable is easily found using the characteristic function. Consider $\mathcal{Y}= \mathbf{A} \mathcal{Z}$, where $\mathbf{A}$ is a $q \times k$ matrix and $\mathcal{Z}$ is a random $k$-vector. Let $\boldsymbol{\theta}$ be $q \times 1$. Then
+
+$$
+\begin{aligned}
+f_{\mathcal{Y}}(\boldsymbol{\theta}) & =E\left(\exp \left(i \boldsymbol{\theta}^{\prime} \mathcal{Y}\right)\right)=E\left(\exp \left(i \boldsymbol{\theta}^{\prime} \mathbf{A} \mathcal{Z}\right)\right) \\
+& =E\left(\exp \left(i \boldsymbol{\lambda}^{\prime} \mathcal{Z}\right)\right)=f_{\mathcal{Z}}(\boldsymbol{\lambda})
+\end{aligned}
+$$
+
+defining $\boldsymbol{\lambda}=\mathbf{A}^{\prime} \boldsymbol{\theta}$. Hence if $\mathcal{Z} \sim N(\boldsymbol{\mu}, \boldsymbol{\Sigma})$,
+
+$$
+\begin{aligned}
+f_{\mathcal{Y}}(\boldsymbol{\theta}) & =f_{\mathcal{Z}}(\boldsymbol{\lambda})=\exp \left(i \boldsymbol{\lambda}^{\prime} \boldsymbol{\mu}-\boldsymbol{\lambda}^{\prime} \boldsymbol{\Sigma} \boldsymbol{\lambda} / 2\right) \\
+& =\exp \left(i \boldsymbol{\theta}^{\prime} \mathbf{A} \boldsymbol{\mu}-\boldsymbol{\theta}^{\prime} \mathbf{A} \boldsymbol{\Sigma} \mathbf{A}^{\prime} \boldsymbol{\theta} / 2\right)
+\end{aligned}
+$$
+
+so that $\mathcal{Y} \sim N\left(\mathbf{A} \boldsymbol{\mu}, \mathbf{A} \boldsymbol{\Sigma} \mathbf{A}^{\prime}\right)$ by the uniqueness theorem.\\
+Other useful facts regarding characteristic functions are the following.\\
+Proposition 4.13 Let $\mathcal{Y}=a \mathcal{Z}+b, a, b \in \mathbb{R}$. Then
+
+$$
+f_{\mathcal{Y}}(\lambda)=f_{\mathcal{Z}}(a \lambda) \exp (i \lambda b)
+$$
+
+Proof.
+
+$$
+\begin{aligned}
+f_{\mathcal{Y}}(\lambda) & =E(\exp (i \lambda \mathcal{Y}))=E(\exp (i \lambda(a \mathcal{Z}+b))) \\
+& =E(\exp (i \lambda a \mathcal{Z}) \exp (i \lambda b)) \\
+& =E(\exp (i \lambda a \mathcal{Z})) \exp (i \lambda b)=f_{\mathcal{Z}}(\lambda a) \exp (i \lambda b)
+\end{aligned}
+$$
+
+Proposition 4.14 Let $\mathcal{Y}$ and $\mathcal{Z}$ be independent. Then if $\mathcal{X}=\mathcal{Y}+\mathcal{Z}$, $f_{\mathcal{X}}(\lambda)=f_{\mathcal{Y}}(\lambda) f_{\mathcal{Z}}(\lambda)$.
+
+\section*{Proof.}
+$$
+\begin{aligned}
+f_{\mathcal{X}}(\lambda) & =E(\exp (i \lambda \mathcal{X}))=E(\exp (i \lambda(\mathcal{Y}+\mathcal{Z}))) \\
+& =E(\exp (i \lambda \mathcal{Y}) \exp (i \lambda \mathcal{Z})) \\
+& =E(\exp (i \lambda \mathcal{Y})) E(\exp (i \lambda \mathcal{Z}))
+\end{aligned}
+$$
+
+by independence. Hence $f_{\mathcal{X}}(\lambda)=f_{\mathcal{Y}}(\lambda) f_{\mathcal{Z}}(\lambda)$.\\
+Proposition 4.15 If the $k$ th moment $\mu_{k}$ of a distribution function $F$ exists, then the characteristic function $f$ of $F$ can be differentiated $k$ times and $f^{(k)}(0)=i^{k} \mu_{k}$, where $f^{(k)}$ is the $k$ th derivative of $f$.
+
+Proof. This is an immediate corollary of Lukacs (1970, Corollary 3 to Theorem 2.3.1, p. 22).
+
+Example 4.16 Suppose that $\mathcal{Z} \sim N\left(0, \sigma^{2}\right)$. Then $f^{\prime}(0)=0, f^{\prime \prime}(0)=-\sigma^{2}$, $f^{\prime \prime \prime}(0)=0$, etc .
+
+The main result of use in studying convergence in distribution is the following.
+
+Theorem 4.17 (Continuity theorem) Let $\left\{\mathbf{b}_{n}\right\}$ be a sequence of random $k \times 1$ vectors with characteristic functions $\left\{f_{n}(\boldsymbol{\lambda})\right\}$. If $\mathbf{b}_{n} \xrightarrow{\boldsymbol{d}} \boldsymbol{\mathcal { Z }}$, then for every $\boldsymbol{\lambda}, f_{n}(\boldsymbol{\lambda}) \rightarrow f(\boldsymbol{\lambda})$, where $f(\boldsymbol{\lambda})=E\left(\exp \left(i \boldsymbol{\lambda}^{\prime} \boldsymbol{\mathcal { Z }}\right)\right)$. Further, if for every $\boldsymbol{\lambda}, f_{n}(\boldsymbol{\lambda}) \rightarrow f(\boldsymbol{\lambda})$ and $f$ is continuous at $\boldsymbol{\lambda}=\mathbf{0}$, then $\mathbf{b}_{n} \xrightarrow{d} \boldsymbol{\mathcal { Z }}$, where $f(\boldsymbol{\lambda})=E\left(\exp \left(i \boldsymbol{\lambda}^{\prime} \boldsymbol{\mathcal { Z }}\right)\right)$.
+
+Proof. See Lukacs (1970, pp. 49-50).\\
+This result essentially says that convergence in distribution is equivalent to convergence of characteristic functions. The usefulness of the result is that often it is much easier to study the limiting behavior of characteristic functions than distribution functions. If the sequence of characteristic functions $f_{n}$ converges to a function $f$ that is continuous at $\boldsymbol{\lambda}=\mathbf{0}$, this theorem guarantees that the function $f$ is a characteristic function and that the limiting distribution $F$ of $\mathbf{b}_{n}$ is that corresponding to the characteristic function $f(\boldsymbol{\lambda})$.
+
+In all the cases that follow, the limiting distribution $F$ will be either that of a degenerate random variable (following from convergence in probability to a constant) or a multivariate normal distribution (following from an\\
+appropriate central limit theorem). In the latter case, it is often convenient to standardize the random variables so that the asymptotic distribution is unit multivariate normal. To do this we can use the matrix square root.
+
+Exercise 4.18 Prove the following. Let $\mathbf{V}$ be a positive (semi) definite symmetric matrix. Then there exists a positive (semi) definite symmetric matrix square root $\mathbf{V}^{1 / 2}$ such that the elements of $\mathbf{V}^{1 / 2}$ are continuous functions of $\mathbf{V}$ and $\mathbf{V}^{1 / 2} \mathbf{V}^{1 / 2}=\mathbf{V}$. (Hint: Express $\mathbf{V}$ as $\mathbf{V}=\mathbf{Q}^{\prime} \mathbf{D Q}$, where $\mathbf{Q}$ is an orthogonal matrix and $\mathbf{D}$ is diagonal with the eigenvalues of $\mathbf{V}$ along the diagonal.)
+
+Exercise 4.19 Show that if $\mathcal{Z} \sim N(\mathbf{0}, \mathbf{V})$, then $\mathbf{V}^{-1 / 2} \mathcal{Z} \sim N(\mathbf{0}, \mathbf{I})$, provided $\mathbf{V}$ is positive definite, where $\mathbf{V}^{-1 / 2}=\left(\mathbf{V}^{1 / 2}\right)^{-1}$.
+
+Definition 4.20 Let $\left\{\mathbf{b}_{n}\right\}$ be a sequence of random vectors. If there exists a sequence of matrices $\left\{\mathbf{V}_{n}\right\}$ such that $\mathbf{V}_{n}$ is nonsingular for all $n$ sufficiently large and $\mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n} \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, then $\mathbf{V}_{n}$ is called the asymptotic covariance matrix of $\mathbf{b}_{n}$, denoted $\operatorname{avar}\left(\mathbf{b}_{n}\right)$.
+
+When $\operatorname{var}\left(\mathbf{b}_{n}\right)$ is finite, we can usually define $\mathbf{V}_{n}=\operatorname{var}\left(\mathbf{b}_{n}\right)$. Note that the behavior of $\mathbf{b}_{n}$ is not restricted to require that $\mathbf{V}_{n}$ converge to any limit, although it may. Generally, however, we will at least require that the smallest eigenvalues of $\mathbf{V}_{n}$ and $\mathbf{V}_{n}^{-1}$ are uniformly bounded away from zero for all $n$ sufficiently large. Even when $\operatorname{var}\left(\mathbf{b}_{n}\right)$ is not finite, the asymptotic covariance matrix can exist, although in such cases we cannot set $\mathbf{V}_{n}= \operatorname{var}\left(\mathbf{b}_{n}\right)$.
+
+Example 4.21 Define $b_{n}=\mathcal{Z}+\mathcal{Y} / n$, where $\mathcal{Z} \sim N(0,1)$ and $\mathcal{Y}$ is Cauchy, independent of $\mathcal{Z}$. Then $\operatorname{var}\left(b_{n}\right)$ is infinite for every $n$, but $b_{n} \stackrel{A}{\sim} N(0,1)$ as a consequence of Lemma 4.7. Hence $\operatorname{avar}\left(b_{n}\right)=1$.
+
+Given a sequence $\left\{\mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n}\right\}$ that converges in distribution, we shall often be interested in the behavior of linear combinations of $\mathbf{b}_{n}$, say, $\left\{\mathbf{A}_{n} \mathbf{b}_{n}\right\}$, where $\mathbf{A}_{n}$, like $\mathbf{V}_{n}^{-1 / 2}$, is not required to converge to a particular limit. We can use characteristic functions to study the behavior of these sequences by making use of the following corollary to the continuity theorem.
+
+Corollary 4.22 If $\boldsymbol{\lambda} \in \mathbb{R}^{k}$ and a sequence $\left\{f_{n}(\boldsymbol{\lambda})\right\}$ of characteristic functions converges to a characteristic function $f(\boldsymbol{\lambda})$, then the convergence is uniform in every compact subset of $\mathbb{R}^{k}$.
+
+Proof. This is a straightforward extension of Lukacs (1970, p. 50).
+
+This result says that in any compact subset of $\mathbb{R}^{k}$ the distance between $f_{n}(\boldsymbol{\lambda})$ and $f(\boldsymbol{\lambda})$ does not depend on $\boldsymbol{\lambda}$, but only on $n$. This fact is crucial to establishing the next result.
+
+Lemma 4.23 Let $\left\{\mathbf{b}_{n}\right\}$ be a sequence of random $k \times 1$ vectors with characteristic functions $\left\{f_{n}(\boldsymbol{\lambda})\right\}$, and suppose $f_{n}(\boldsymbol{\lambda}) \rightarrow f(\boldsymbol{\lambda})$. If $\left\{\mathbf{A}_{n}\right\}$ is any sequence of $q \times k$ nonstochastic matrices such that $\mathbf{A}_{n}=O(1)$, then the sequence $\left\{\mathbf{A}_{n} \mathbf{b}_{n}\right\}$ has characteristic functions $\left\{f_{\mathfrak{n}}^{*}(\boldsymbol{\theta})\right\}$, where $\boldsymbol{\theta}$ is $q \times 1$, such that for every $\boldsymbol{\theta}, f_{n}^{*}(\boldsymbol{\theta})-f\left(\mathbf{A}_{n}^{\prime} \boldsymbol{\theta}\right) \rightarrow 0$.
+
+Proof. From Example 4.12, $f_{n}^{*}(\boldsymbol{\theta})=f_{n}\left(\mathbf{A}_{n}^{\prime} \boldsymbol{\theta}\right)$. For fixed $\boldsymbol{\theta}, \boldsymbol{\lambda}_{n} \equiv \mathbf{A}_{n}^{\prime} \boldsymbol{\theta}$ takes values in a compact region of $\mathbb{R}^{k}$, say, $\mathcal{N}_{\theta}$, for all $n$ sufficiently large because $\mathbf{A}_{n}=O(1)$. Because $f_{n}(\boldsymbol{\lambda}) \rightarrow f(\boldsymbol{\lambda})$, we have $f_{n}\left(\boldsymbol{\lambda}_{n}\right)-f\left(\boldsymbol{\lambda}_{n}\right) \rightarrow 0$ uniformly for all $\boldsymbol{\lambda}_{n}$ in $\mathcal{N}_{\theta}$, by Corollary 4.22. Hence for fixed $\boldsymbol{\theta}, f_{n}\left(\mathbf{A}_{n}^{\prime} \boldsymbol{\theta}\right)-f\left(\mathbf{A}_{n}^{\prime} \boldsymbol{\theta}\right)= f_{n}^{*}(\boldsymbol{\theta})-f\left(\mathbf{A}_{n}^{\prime} \boldsymbol{\theta}\right) \rightarrow 0$ for any $O(1)$ sequence $\left\{\mathbf{A}_{n}\right\}$. Because $\boldsymbol{\theta}$ is arbitrary, the result follows. \(\square\)
+
+The following consequence of this result is used many times below.\\
+Corollary 4.24 Let $\left\{\mathbf{b}_{n}\right\}$ be a sequence of random $k \times 1$ vectors such that $\mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n} \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where $\left\{\mathbf{V}_{n}\right\}$ and $\left\{\mathbf{V}_{n}^{-1}\right\}$ are $O(1)$. Let $\left\{\mathbf{A}_{n}\right\}$ be a $O(1)$ sequence of (nonstochastic) $q \times k$ matrices with full row rank $q$ for all $n$ sufficiently large, uniformly in $n$. Then the sequence $\left\{\mathbf{A}_{n} \mathbf{b}_{n}\right\}$ is such that $\boldsymbol{\Gamma}_{n}^{-1 / 2} \mathbf{A}_{n} \mathbf{b}_{n} \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where $\boldsymbol{\Gamma}_{n} \equiv \mathbf{A}_{n} \mathbf{V}_{n} \mathbf{A}_{n}^{\prime}$ and $\boldsymbol{\Gamma}_{n}$ and $\boldsymbol{\Gamma}_{n}^{-1}$ are $O(1)$.
+
+Proof. $\boldsymbol{\Gamma}_{n}=O(1)$ by Lemma 2.19. $\boldsymbol{\Gamma}_{n}^{-1}=O(1)$ because $\boldsymbol{\Gamma}_{n}=O(1)$ and $\operatorname{det}\left(\boldsymbol{\Gamma}_{n}\right)>\delta>0$ for all $n$ sufficiently large, given the conditions on $\left\{\mathbf{A}_{n}\right\}$ and $\left\{\mathbf{V}_{n}\right\}$. Let $f_{n}^{*}(\boldsymbol{\theta})$ be the characteristic function of $\boldsymbol{\Gamma}_{n}^{-1 / 2} \mathbf{A}_{n} \mathbf{b}_{n}= \boldsymbol{\Gamma}_{n}^{-1 / 2} \mathbf{A}_{n} \mathbf{V}_{n}^{1 / 2} \mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n}$. Because $\boldsymbol{\Gamma}_{n}^{-1 / 2} \mathbf{A}_{n} \mathbf{V}_{n}^{1 / 2}=O(1)$, Lemma 4.23 applies, implying $f_{n}^{*}(\boldsymbol{\theta})-f\left(\mathbf{V}_{n}^{1 / 2} \mathbf{A}_{n}^{\prime} \boldsymbol{\Gamma}_{n}^{-1 / 2} \boldsymbol{\theta}\right) \rightarrow 0$, where $f(\boldsymbol{\lambda})=\exp \left(-\boldsymbol{\lambda}^{\prime} \boldsymbol{\lambda} / 2\right)$, the limiting characteristic function of $\mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n}$. Now $f\left(\mathbf{V}_{n}^{1 / 2} \mathbf{A}_{n}^{\prime} \boldsymbol{\Gamma}_{n}^{-1 / 2} \boldsymbol{\theta}\right)= \exp \left(-\boldsymbol{\theta}^{\prime} \boldsymbol{\Gamma}_{n}^{-1 / 2} \mathbf{A}_{n} \mathbf{V}_{n} \mathbf{A}_{n}^{\prime} \boldsymbol{\Gamma}_{n}^{-1 / 2} \boldsymbol{\theta} / 2\right)=\exp \left(-\boldsymbol{\theta}^{\prime} \boldsymbol{\theta} / 2\right)$ by definition of $\boldsymbol{\Gamma}_{n}^{-1 / 2}$. Hence $f_{n}^{*}(\boldsymbol{\lambda})-\exp \left(-\boldsymbol{\theta}^{\prime} \boldsymbol{\theta} / 2\right) \rightarrow 0$, so $\boldsymbol{\Gamma}_{n}^{-1 / 2} \mathbf{A}_{n} \mathbf{b}_{n} \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$ by the continuity theorem (Theorem 4.17). \(\square\)
+
+This result allows us to complete the proof of the following general asymptotic normality result for the least squares estimator.
+
+Theorem 4.25 Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\epsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon\right)$ is $O(1)$ and uniformly positive definite;\\
+(iii) $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M}_{n} \xrightarrow{p} \mathbf{0}$, where $\mathbf{M}_{n}=E\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ is $O(1)$ and uniformly positive definite.
+
+Then
+
+$$
+\mathrm{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I}),
+$$
+
+where $\mathbf{D}_{n} \equiv \mathbf{M}_{n}^{-1} \mathbf{V}_{n} \mathbf{M}_{n}^{-1}$ and $\mathbf{D}_{n}^{-1}$ are $O(1)$. Suppose in addition that (iv) there exists a matrix $\hat{\mathbf{V}}_{n}$ positive semidefinite and symmetric such that $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$. Then $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n} \equiv\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \hat{\mathbf{V}}_{n}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}
+$$
+
+Proof. Because $\mathbf{X}^{\prime} \mathbf{X} / n-\mathbf{M}_{n} \xrightarrow{p} \mathbf{0}$ and $\mathbf{M}_{n}$ is finite and nonsingular by (iii), $\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$ and $\hat{\boldsymbol{\beta}}_{n}$ exist in probability. Given (i) and the existence of $\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$,
+
+$$
+\sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)=\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon}
+$$
+
+Hence, given ( $i i$ ),
+
+$$
+\begin{aligned}
+\sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)-\mathbf{M}_{n}^{-1} n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon} & \\
+& =\left[\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}-\mathbf{M}_{n}^{-1}\right] \mathbf{V}_{n}^{1 / 2} \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon}
+\end{aligned}
+$$
+
+or, premultiplying by $\mathrm{D}_{n}^{-1 / 2}$,
+
+$$
+\begin{aligned}
+\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) & -\mathbf{D}_{n}^{-1 / 2} \mathbf{M}_{n}^{-1} n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon} \\
+= & \mathbf{D}_{n}^{-1 / 2}\left[\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}-\mathbf{M}_{n}^{-1}\right] \mathbf{V}_{n}^{1 / 2} \mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon}
+\end{aligned}
+$$
+
+The desired result will follow by applying the product rule Lemma 4.6 to the line immediately above, and the asymptotic equivalence Lemma 4.7 to the preceding line. Now $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$ by (ii); further, $\mathbf{D}_{n}^{-1 / 2}\left[\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}-\mathbf{M}_{n}^{-1}\right] \mathbf{V}_{n}^{1 / 2}$ is $o_{p}(1)$ because $\mathbf{D}_{n}^{-1 / 2}$ and $\mathbf{V}_{n}^{1 / 2}$ are $O(1)$ given (ii) and (iii), and $\left[\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}-\mathbf{M}_{n}^{-1}\right]$ is $o_{p}(1)$ by Proposition 2.30 given (iii). Hence, by Lemma 4.5,
+
+$$
+\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)-\mathbf{D}_{n}^{-1 / 2} \mathbf{M}_{n}^{-1} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \xrightarrow{p} \mathbf{0} .
+$$
+
+By Lemma 4.7, the asymptotic distribution of $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)$ is the same as that of $\mathbf{D}_{n}^{-1 / 2} \mathbf{M}_{n}^{-1} n^{-1 / 2} \mathbf{X}^{\prime} \boldsymbol{\varepsilon}$. We find the asymptotic distribution\\
+of this random variable by applying Corollary 4.24, which immediately yields $\mathbf{D}_{n}^{-1 / 2} \mathbf{M}_{n}^{-1} n^{-1 / 2} \mathbf{X}^{\prime} \varepsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathrm{I})$.
+
+Because (ii), (iii), and (iv) hold, $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$ is an immediate consequence of Proposition 2.30.
+
+The structure of this result is very straightforward. Given the linear data generating process, we require only that $\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ and $\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$ are $O_{p}(1)$ and that $n^{-1 / 2} \mathbf{X}^{\prime} \epsilon$ is asymptotically unit normal after standardizing by the inverse square root of its asymptotic covariance matrix. The asymptotic covariance (dispersion) matrix of $\sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)$ is $\mathbf{D}_{n}$, which can be consistently estimated by $\hat{\mathbf{D}}_{n}$. Note that this result allows the regressors to be stochastic and imposes no restriction on the serial correlation or heteroskedasticity of $\varepsilon_{t}$, except that needed to ensure that (ii) holds. As we shall see in the next chapter, only mild restrictions need to be imposed in guaranteeing (ii).
+
+In special cases, it may be known that $\mathbf{V}_{n}$ has a special form. For example, when $\varepsilon_{t}$ is an i.i.d. scalar with $E\left(\varepsilon_{t}\right)=0, E\left(\varepsilon_{t}^{2}\right)=\sigma_{o}^{2}$, and $\mathbf{X}_{t}$ is nonstochastic, then $\mathbf{V}_{n}=\sigma_{o}^{2} \mathbf{X}^{\prime} \mathbf{X} / n$. Finding a consistent estimator for $\mathbf{V}_{n}$ then requires no more than finding a consistent estimator for $\sigma_{o}^{2}$.
+
+In more general cases considered below it is often possible to write
+
+$$
+\mathbf{V}_{n}=E\left(\mathbf{X}^{\prime} \varepsilon \varepsilon^{\prime} \mathbf{X} / n\right)=E\left(\mathbf{X}^{\prime} \boldsymbol{\Omega}_{n} \mathbf{X} / n\right)
+$$
+
+Finding a consistent estimator for $\mathbf{V}_{n}$ in these cases is made easier by the knowledge of the structure of $\boldsymbol{\Omega}_{n}$. However, even when $\boldsymbol{\Omega}_{n}$ is unknown, it turns out that consistent estimators for $\mathbf{V}_{n}$ are generally available. The conditions under which $\mathbf{V}_{n}$ can be consistently estimated are treated in Chapter 6.
+
+A result analogous to Theorem 4.25 is available for instrumental variables estimators. Because the proof follows that of Theorem 4.25 very closely, proof of the following result is left as an exercise.
+
+Exercise 4.26 Prove the following result. Given\\
+(i) $\mathbf{Y}_{t}=\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}_{o} \in \mathbb{R}^{k}$;\\
+(ii) $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \epsilon \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \epsilon\right)$ is $O(1)$ and uniformly positive definite;\\
+(iii) (a) $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q}_{n} \xrightarrow{p} \mathbf{0}$, where $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ is $O(1)$ with uniformly full column rank;\\
+(b) There exists $\hat{\mathbf{P}}_{n}$ such that $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n} \xrightarrow{p} \mathbf{0}$ and $\mathbf{P}_{n}=O(1)$ and is symmetric and uniformly positive definite.
+
+Then $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\mathbf{D}_{n} \equiv\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{V}_{n} \mathbf{P}_{n} \mathbf{Q}_{n}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+and $\mathbf{D}_{n}^{-1}$ are $O(1)$.\\
+Suppose in addition that\\
+(iv) There exists a matrix $\hat{\mathbf{V}}_{n}$ positive semidefinite and symmetric such that $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$.\\
+Then $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\hat{\mathbf{D}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z} / n\right) \hat{\mathbf{P}}_{n} \hat{\mathbf{V}}_{n} \hat{\mathbf{P}}_{n}\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X} / n^{2}\right)^{-1}
+$$
+
+\subsection*{4.2 Hypothesis Testing}
+A direct and very important use of the asymptotic normality of a given estimator is in hypothesis testing. Often, hypotheses of interest can be expressed in terms of linear combinations of the parameters as
+
+$$
+\mathbf{R} \boldsymbol{\beta}_{\bullet}=\mathbf{r},
+$$
+
+where $\mathbf{R}$ is a given $q \times k$ matrix and $\mathbf{r}$ is a given $q \times 1$ vector that, through $\mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r}$, specify the hypotheses of interest. For example, if the hypothesis is that the elements of $\boldsymbol{\beta}_{o}$ sum to unity, $\mathbf{R}=[1, \ldots, 1]$ and $\mathbf{r}=1$.
+
+Several different approaches can be taken in computing a statistic to test the null hypothesis $\mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r}$ versus the alternative $\mathbf{R} \boldsymbol{\beta}_{o} \neq \mathbf{r}$. The methods that we consider here involve the use of Wald, Lagrange multiplier, and quasi-likelihood ratio statistics.
+
+Although the approaches to forming the test statistics differ, the way that we determine their asymptotic distributions is the same. In each case we exploit an underlying asymptotic normality property to obtain a statistic distributed asymptotically as chi-squared $\left(\chi^{2}\right)$. To do this we use the following results.
+
+Lemma 4.27 Let $\mathbf{g}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{l}$ be continuous on $\mathbb{R}^{k}$ and let $\mathbf{b}_{n} \xrightarrow{d} \mathcal{Z}$, a $k \times 1$ random vector. Then $\mathbf{g}\left(\mathbf{b}_{n}\right) \rightarrow \mathbf{g}(\mathcal{Z})$.
+
+Proof. See Rao (1973, p. 124).\\
+Corollary 4.28 Let $\mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n} \stackrel{A}{\sim} N\left(\mathbf{0}, \mathbf{I}_{k}\right)$. Then
+
+$$
+\mathbf{b}_{n}^{\prime} \mathbf{V}_{n}^{-1} \mathbf{b}_{n}=\mathbf{b}_{n}^{\prime} \mathbf{V}_{n}^{-1 / 2} \mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n} \stackrel{A}{\sim} \chi_{k}^{2},
+$$
+
+where $\chi_{k}^{2}$ is a chi-squared random variable with $k$ degrees of freedom.
+
+Proof. By hypothesis, $\mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n} \xrightarrow{d} \mathcal{Z} \sim N\left(\mathbf{0}, \mathbf{I}_{k}\right)$. The function $g(\mathbf{z})= \mathbf{z}^{\prime} \mathbf{z}$ is continuous on $\mathbb{R}^{k}$. Hence,
+
+$$
+\mathbf{b}_{n}^{\prime} \mathbf{V}_{n}^{-1} \mathbf{b}_{n}=g\left(\mathbf{V}^{-1 / 2} \mathbf{b}_{n}\right) \xrightarrow{d} g(\mathcal{Z})=\mathcal{Z}^{\prime} \mathcal{Z} \sim \chi_{k}^{2} .
+$$
+
+Typically, $\mathbf{V}_{n}$ will be unknown, but there will be a consistent estimator $\hat{\mathbf{V}}_{n}$ such that $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$. To replace $\mathbf{V}_{n}$ in Corollary 4.28 with $\hat{\mathbf{V}}_{n}$, we use the following result.
+
+Lemma 4.29 Let $\mathbf{g}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{l}$ be continuous on $\mathbb{R}^{k}$. If $\mathbf{a}_{n}-\mathbf{b}_{n} \xrightarrow{p} \mathbf{0}$ and $\mathbf{b}_{n} \xrightarrow{d} \mathcal{Z}$, then $\mathbf{g}\left(\mathbf{a}_{n}\right)-\mathbf{g}\left(\mathbf{b}_{n}\right) \xrightarrow{p} \mathbf{0}$ and $\mathbf{g}\left(\mathbf{a}_{n}\right) \xrightarrow{d} \mathbf{g}(\mathcal{Z})$.
+
+Proof. Rao (1973, p. 124) proves that $\mathbf{g}\left(\mathbf{a}_{n}\right)-\mathbf{g}\left(\mathbf{b}_{n}\right) \xrightarrow{p} \mathbf{0}$. That $\mathbf{g}\left(\mathbf{a}_{n}\right) \xrightarrow{d} \mathrm{g}(\mathcal{Z})$ follows from Lemmas 4.7 and 4.27.
+
+Now we can prove the result that is the basis for finding the asymptotic distribution of the Wald, Lagrange multiplier, and quasi-likelihood ratio tests.
+
+Theorem 4.30 Let $\mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n} \stackrel{A}{\sim} N\left(\mathbf{0}, \mathbf{I}_{k}\right)$, and suppose there exists $\hat{\mathbf{V}}_{n}$ positive semidefinite and symmetric such that $\hat{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$, where $\mathbf{V}_{n}$ is $O(1)$, and for all $n$ sufficiently large, $\operatorname{det}\left(\mathbf{V}_{n}\right)>\delta>0$. Then $\mathbf{b}_{n}^{\prime} \hat{\mathbf{V}}_{n}^{-1} \mathbf{b}_{n} \stackrel{A}{\sim} \chi_{k}^{2}$.
+
+Proof. We apply Lemma 4.29. Consider $\hat{\mathbf{V}}_{n}^{-1 / 2} \mathbf{b}_{n}-\mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n}$, where $\hat{\mathbf{V}}_{n}^{-1 / 2}$ exists in probability for all $n$ sufficiently large. Now
+
+$$
+\hat{\mathbf{V}}_{n}^{-1 / 2} \mathbf{b}_{n}-\mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n}=\left(\hat{\mathbf{V}}_{n}^{-1 / 2} \mathbf{V}_{n}^{1 / 2}-\mathbf{I}\right) \mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n}
+$$
+
+By hypothesis $\mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n} \stackrel{A}{\sim} N\left(\mathbf{0}, \mathbf{I}_{k}\right)$ and $\hat{\mathbf{V}}_{n}^{-1 / 2} \mathbf{V}_{n}^{1 / 2}-\mathbf{I} \xrightarrow{p} \mathbf{0}$ by Proposition 2.30. It follows from the product rule Lemma 4.6 that $\hat{\mathbf{V}}_{n}^{-1 / 2} \mathbf{b}_{n}- \mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n} \xrightarrow{p} \mathbf{0}$. Because $\mathbf{V}_{n}^{-1 / 2} \mathbf{b}_{n} \xrightarrow{d} \mathcal{Z} \sim N\left(\mathbf{0}, \mathbf{I}_{k}\right)$, it follows from Lemma 4.29 that $\mathbf{b}_{n}^{\prime} \hat{\mathbf{V}}_{n}^{-1} \mathbf{b}_{n} \stackrel{A}{\sim} \chi_{k}^{2}$.
+
+The Wald statistic allows the simplest analysis, although it may or may not be the easiest statistic to compute in a given situation. The motivation for the Wald statistic is that when the null hypothesis is correct, $\mathbf{R} \hat{\boldsymbol{\beta}}_{n}$ should be close to $\mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r}$, so a value of $\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}$ far from zero is evidence against the null hypothesis. To tell how far from zero $\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}$ must be before we reject the null hypothesis, we need to determine its asymptotic distribution.
+
+Theorem 4.31 (Wald test) Let the conditions of Theorem 4.25 hold and let $\operatorname{rank}(\mathbf{R})=q<k$. Then under $H_{0}: \mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r}$,\\
+(i) $\boldsymbol{\Gamma}_{n}^{-1 / 2} \sqrt{n}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\boldsymbol{\Gamma}_{n} \equiv \mathbf{R} \mathbf{D}_{n} \mathbf{R}^{\prime}=\mathbf{R} \mathbf{M}_{n}^{-1} \mathbf{V}_{n} \mathbf{M}_{n}^{-1} \mathbf{R}^{\prime}
+$$
+
+(ii) The Wald statistic $\mathcal{W}_{n} \equiv n\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right)^{\prime} \hat{\boldsymbol{\Gamma}}_{n}^{-1}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) \stackrel{A}{\sim} \chi_{q}^{2}$, where
+
+$$
+\hat{\boldsymbol{\Gamma}}_{n} \equiv \mathbf{R} \hat{\mathbf{D}}_{n} \mathbf{R}^{\prime}=\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \hat{\mathbf{V}}_{n}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}
+$$
+
+Proof. (i) Under $H_{0}, \mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}=\mathbf{R}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)$, so
+
+$$
+\boldsymbol{\Gamma}_{n}^{-1 / 2} \sqrt{n}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right)=\boldsymbol{\Gamma}_{n}^{-1 / 2} \mathbf{R D}_{n}^{1 / 2} \mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)
+$$
+
+It follows from Corollary 4.24 that $\boldsymbol{\Gamma}_{n}^{-1 / 2} \sqrt{n}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$.\\
+(ii) Because $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ from Theorem 4.25, it follows from Proposition 2.30 that $\hat{\boldsymbol{\Gamma}}_{\boldsymbol{n}}-\boldsymbol{\Gamma}_{\boldsymbol{n}} \xrightarrow{\boldsymbol{p}} \mathbf{0}$. Given the result in (i), (ii) follows from Theorem 4.30.
+
+This version of the Wald statistic is useful regardless of the presence of heteroskedasticity or serial correlation in the error terms because a consistent estimator ( $\hat{\mathbf{V}}_{n}$ ) for $\mathbf{V}_{n}$ is used in computing $\hat{\boldsymbol{\Gamma}}_{n}$. In the special case when $\mathbf{V}_{n}$ can be consistently estimated by $\hat{\sigma}_{n}^{2}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$, the Wald test has the form
+
+$$
+\mathcal{W}_{n}=n\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right)^{\prime}\left[\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}\right]^{-1}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) / \hat{\sigma}_{n}^{2}
+$$
+
+which is simply $q$ times the standard $F$-statistic for testing the hypothesis $\mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r}$. The validity of the asymptotic $\chi_{q}^{2}$ distribution for this statistic depends crucially on the consistency of $\hat{\mathrm{V}}_{n}=\hat{\sigma}_{n}^{2}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ for $\mathbf{V}_{n}$; if this $\hat{\mathbf{V}}_{n}$ is not consistent for $\mathbf{V}_{n}$, the asymptotic distribution of this form for $\mathcal{W}_{n}$ is not $\chi_{q}^{2}$ in general.
+
+The Wald statistic is most convenient in situations in which the restrictions $\mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r}$ are not easy to impose in estimating $\boldsymbol{\beta}_{o}$. When these restrictions are easily imposed (say, $\mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r}$ specifies that the last element of $\boldsymbol{\beta}_{o}$ is zero), the Lagrange multiplier statistic is more easily computed.
+
+The motivation for the Lagrange multiplier statistic is that a constrained least squares estimator can be obtained by solving the problem
+
+$$
+\min _{\boldsymbol{\beta}}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta}) / n, \quad \text { s.t. } \mathbf{R} \boldsymbol{\beta}=\mathbf{r}
+$$
+
+which is equivalent to finding the saddle point of the Lagrangian
+
+$$
+\mathcal{L}=(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta}) / n+(\mathbf{R} \boldsymbol{\beta}-\mathbf{r})^{\prime} \boldsymbol{\lambda} .
+$$
+
+The Lagrange multipliers $\boldsymbol{\lambda}$ can be thought of as giving the shadow price of the constraint and should therefore be small when the constraint is valid and large otherwise. (See Engle, 1981, for a general discussion.) The Lagrange multiplier test can be thought of as testing the hypothesis that $\boldsymbol{\lambda}=\mathbf{0}$.
+
+The first order conditions are
+
+$$
+\begin{aligned}
+& \partial \mathcal{L} / \partial \boldsymbol{\beta}=2\left(\mathbf{X}^{\prime} \mathbf{X} / n\right) \boldsymbol{\beta}-2 \mathbf{X}^{\prime} \mathbf{Y} / n+\mathbf{R}^{\prime} \boldsymbol{\lambda}=\mathbf{0} \\
+& \partial \mathcal{L} / \partial \boldsymbol{\lambda}=\mathbf{R} \boldsymbol{\beta}-\mathbf{r}=\mathbf{0} .
+\end{aligned}
+$$
+
+To solve for the estimate of the Lagrange multiplier, premultiply the first equation by $\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1}$ and set $\mathbf{R} \boldsymbol{\beta}=\mathbf{r}$. This yields
+
+$$
+\begin{aligned}
+\ddot{\boldsymbol{\lambda}}_{n} & =2\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}\right)^{-1}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) \\
+\ddot{\boldsymbol{\beta}}_{n} & =\hat{\boldsymbol{\beta}}_{n}-\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime} \ddot{\boldsymbol{\lambda}}_{n} / 2
+\end{aligned}
+$$
+
+where $\ddot{\boldsymbol{\beta}}_{n}$ is the constrained least squares estimator (which automatically satisfies $\mathbf{R} \ddot{\boldsymbol{\beta}}_{n}=\mathbf{r}$ ). In this form, $\ddot{\boldsymbol{\lambda}}_{n}$ is simply a nonsingular transformation of $\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}$. This allows the following result to be proved very simply.
+
+Theorem 4.32 (Lagrange multiplier test) Let the conditions of Theorem 4.25 hold and let $\operatorname{rank}(\mathbf{R})=q<k$. Then under $H_{0}: \mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r}$,\\
+(i) $\boldsymbol{\Lambda}_{n}^{-1 / 2} \sqrt{n} \ddot{\boldsymbol{\lambda}}_{n} \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\boldsymbol{\Lambda}_{n} \equiv 4\left(\mathbf{R} \mathbf{M}_{n}^{-1} \mathbf{R}^{\prime}\right)^{-1} \boldsymbol{\Gamma}_{n}\left(\mathbf{R} \mathbf{M}_{n}^{-1} \mathbf{R}^{\prime}\right)^{-1}
+$$
+
+and $\Gamma_{n}$ is as defined in Theorem 4.31.\\
+(ii) The Lagrange multiplier statistic $\mathcal{L} \mathcal{M}_{n} \equiv n \ddot{\boldsymbol{\lambda}}_{n}^{\prime} \hat{\boldsymbol{\Lambda}}_{n}^{-1} \ddot{\boldsymbol{\lambda}}_{n} \stackrel{A}{\sim} \chi_{q}^{2}$, where
+
+$$
+\begin{aligned}
+\hat{\mathbf{\Lambda}}_{n} \equiv & 4\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}\right)^{-1} \mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \ddot{\mathbf{V}}_{n}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime} \\
+& \times\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}\right)^{-1}
+\end{aligned}
+$$
+
+and $\ddot{\mathbf{V}}_{n}$ is computed from the constrained regression such that $\ddot{\mathbf{V}}_{n}- \mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$ under $H_{0}$.
+
+Proof. (i) Consider the difference
+
+$$
+\begin{aligned}
+& \boldsymbol{\Lambda}_{n}^{-1 / 2} \sqrt{n} \ddot{\boldsymbol{\lambda}}_{n}-2 \boldsymbol{\Lambda}_{n}^{-1 / 2}\left(\mathbf{R} \mathbf{M}_{n}^{-1} \mathbf{R}^{\prime}\right)^{-1} \sqrt{n}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) \\
+= & 2 \boldsymbol{\Lambda}_{n}^{-1 / 2}\left[\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}\right)^{-1}-\left(\mathbf{R} \mathbf{M}_{n}^{-1} \mathbf{R}^{\prime}\right)^{-1}\right] \boldsymbol{\Gamma}_{n}^{1 / 2} \boldsymbol{\Gamma}_{n}^{-1 / 2} \sqrt{n}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) .
+\end{aligned}
+$$
+
+From Theorem 4.31, $\boldsymbol{\Gamma}_{n}^{-1 / 2} \sqrt{n}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$. Because $\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)- \mathbf{M}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$, it follows from Proposition 2.30 and the fact that $\boldsymbol{\Lambda}_{n}^{-1 / 2}$ and $\boldsymbol{\Gamma}_{n}^{-1 / 2}$ are $O(1)$ that $\boldsymbol{\Lambda}_{n}^{-1 / 2}\left[\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}\right)^{-1}-\left(\mathbf{R} \mathbf{M}_{n} \mathbf{R}^{\prime}\right)^{-1}\right] \boldsymbol{\Gamma}_{n}^{1 / 2} \xrightarrow{p} \mathbf{0}$. Hence by the product rule Lemma 4.6,
+
+$$
+\mathbf{\Lambda}_{n}^{-1 / 2} \sqrt{n} \ddot{\boldsymbol{\lambda}}_{n}-2 \mathbf{\Lambda}_{n}^{-1 / 2}\left(\mathbf{R} \mathbf{M}_{n}^{-1} \mathbf{R}^{\prime}\right)^{-1} \sqrt{n}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) \xrightarrow{p} \mathbf{0} .
+$$
+
+It follows from Lemma 4.7 that $\boldsymbol{\Lambda}_{n}^{-1 / 2} \sqrt{n} \ddot{\boldsymbol{\lambda}}_{n}$ has the same asymptotic distribution as $2 \boldsymbol{\Lambda}_{n}^{-1 / 2}\left(\mathbf{R} \mathbf{M}_{n}^{-1} \mathbf{R}^{\prime}\right)^{-1} \sqrt{n}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right)$. It follows immediately from Corollary 4.24 that $2 \boldsymbol{\Lambda}_{n}^{-1 / 2}\left(\mathbf{R} \mathbf{M}_{n}^{-1} \mathbf{R}^{\prime}\right)^{-1} \sqrt{n}\left(\mathbf{R} \boldsymbol{\beta}_{n}-\mathbf{r}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$; hence $\boldsymbol{\Lambda}_{n}^{-1 / 2} \sqrt{n} \ddot{\boldsymbol{\lambda}}_{n} \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$.\\
+(ii) Because $\ddot{\mathbf{V}}_{n}-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$ by hypothesis and $\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)-\mathbf{M}_{n} \xrightarrow{p} \mathbf{0}$, $\hat{\boldsymbol{\Lambda}}_{n}-\boldsymbol{\Lambda}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ by Proposition 2.30, given the result in (i), (ii) follows from Theorem 4.30.
+
+Note that the Wald and Lagrange multiplier statistics would be identical if $\hat{\mathbf{V}}_{n}$ were used in place of $\ddot{\mathbf{V}}_{n}$. This suggests that the two statistics should be asymptotically equivalent.
+
+Exercise 4.33 Prove that under the conditions of Theorems 4.31 and 4.32, $\mathcal{W}_{n}-\mathcal{L} \mathcal{M}_{n} \xrightarrow{p} 0$.
+
+Although the fact that $\ddot{\boldsymbol{\lambda}}_{n}$ is a linear combination of $\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}$ simplifies the proof of Theorem 4.32, the whole point of using the Lagrange multiplier statistic is to avoid computing $\hat{\boldsymbol{\beta}}_{n}$ and to compute only the simpler $\ddot{\boldsymbol{\beta}}_{n}$. Computation of $\ddot{\boldsymbol{\beta}}_{n}$ is particularly simple when the data are generated as $\mathbf{Y}=\mathbf{X}_{\mathbf{1}} \boldsymbol{\beta}_{\mathbf{1}}+\mathbf{X}_{\mathbf{2}} \boldsymbol{\beta}_{\mathbf{2}}+\boldsymbol{\epsilon}$ and $H_{0}$ specifies that $\boldsymbol{\beta}_{\mathbf{2}}$ (a $q \times 1$ vector) is zero. Then
+
+$$
+\mathbf{R}=[\underset{(q \times(k-q))}{\mathbf{0}}: \underset{(q \times q)}{\mathbf{I}}], \quad \underset{(q \times 1)}{\mathbf{r}=\mathbf{0}}
+$$
+
+and $\ddot{\boldsymbol{\beta}}_{n}^{\prime}=\left(\ddot{\boldsymbol{\beta}}_{1 n}^{\prime}, \mathbf{0}\right)$ where $\ddot{\boldsymbol{\beta}}_{1 n}=\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{Y}$.\\
+Exercise 4.34 Define $\ddot{\varepsilon}=\mathbf{Y}-\mathbf{X}_{1} \ddot{\boldsymbol{\beta}}_{1 n}$. Show that under $H_{0}: \boldsymbol{\beta}_{2}=\mathbf{0}$,
+
+$$
+\begin{aligned}
+\ddot{\boldsymbol{\lambda}}_{n} & =2 \mathbf{X}_{2}^{\prime}\left(\mathbf{I}-\mathbf{X}_{1}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime}\right) \varepsilon / n \\
+& =2 \mathbf{X}_{2}^{\prime} \ddot{\varepsilon} / n
+\end{aligned}
+$$
+
+(Hint: $\left.\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}=\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{X}^{\prime}\left(\mathbf{Y}-\mathbf{X} \ddot{\boldsymbol{\beta}}_{n}\right) / n\right)$.\\
+By applying the particular form of $\mathbf{R}$ to the result of Theorem 4.32 (ii), we obtain\\
+$\mathcal{L} \mathcal{M}_{n}=n \ddot{\boldsymbol{\lambda}}_{n}^{\prime}\left[\left(-\mathbf{X}_{2}^{\prime} \mathbf{X}_{1}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1}: \mathbf{I}_{q}\right) \ddot{\mathbf{V}}_{n}\left(-\mathbf{X}_{2}^{\prime} \mathbf{X}_{1}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1}: \mathbf{I}_{q}\right)^{\prime}\right]^{-1} \ddot{\lambda}_{n} / 4$.
+
+When $\mathbf{V}_{n}$ can be consistently estimated by $\ddot{\mathbf{V}}_{n}=\ddot{\sigma}_{n}^{2}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$, where $\ddot{\sigma}_{n}^{2}= \ddot{\varepsilon}^{\prime} \ddot{\varepsilon} / n$, the $\mathcal{L} \mathcal{M}_{n}$ statistic simplifies even further.
+
+Exercise 4.35 If $\ddot{\sigma}_{n}^{2}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)-\mathbf{V}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ and $\boldsymbol{\beta}_{\mathbf{2}}=\mathbf{0}$, show that $\mathcal{L} \mathcal{M}_{n}= n \ddot{\varepsilon}^{\prime} \mathbf{X}\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \ddot{\varepsilon} /\left(\ddot{\varepsilon}^{\prime} \ddot{\varepsilon}\right)$, which is $n$ times the simple $R^{2}$ of the regression of $\ddot{\varepsilon}$ on $\mathbf{X}$.
+
+The result of this exercise implies a very simple procedure for testing $\boldsymbol{\beta}_{2}=\mathbf{0}$ when $\mathbf{V}_{n}=\sigma_{o}^{2} \mathbf{M}_{n}$. First, regress $\mathbf{Y}$ on $\mathbf{X}_{1}$ and form the constrained residuals $\ddot{\varepsilon}$. Then regress $\ddot{\varepsilon}$ on $\mathbf{X}$. The product of the sample size $n$ and the simple $R^{2}$ (i.e., without adjustment for the presence of a constant in the regression) from this regression is the $\mathcal{L} \mathcal{M}_{n}$ test statistic, which has the $\chi_{q}^{2}$ distribution asymptotically. As Engle (1981) showed, many interesting diagnostic statistics can be computed in this way.
+
+When the errors $\varepsilon_{t}$ are scalar i.i.d. $N\left(0, \sigma_{o}^{2}\right)$ random variables, the OLS estimator is also the maximum likelihood estimator (MLE) because $\hat{\boldsymbol{\beta}}_{n}$ solves the problem
+
+$$
+\max \mathcal{L}(\boldsymbol{\beta}, \sigma ; \mathbf{Y})=\exp \left[-n \log \sqrt{2 \pi}-n \log \sigma-\frac{1}{2} \sum_{t=1}^{n}\left(Y_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}\right)^{2} / \sigma^{2}\right]
+$$
+
+where $\mathcal{L}(\boldsymbol{\beta}, \sigma ; \mathbf{Y})$ is the sample likelihood based on the normality assumption. When $\boldsymbol{\varepsilon}_{t}$ is not i.i.d. $N\left(0, \sigma_{o}^{2}\right), \hat{\boldsymbol{\beta}}_{n}$ is said to be a quasi-maximum likelihood estimator (QMLE).
+
+When $\hat{\boldsymbol{\beta}}_{n}$ is the MLE, hypothesis tests can be based on the log-likelihood ratio
+
+$$
+\mathcal{L} \mathcal{R}_{n}=\log \left[\frac{\mathcal{L}\left(\ddot{\boldsymbol{\beta}}_{n}, \ddot{\sigma}_{n} ; \mathbf{Y}\right)}{\mathcal{L}\left(\hat{\boldsymbol{\beta}}_{n} \hat{\sigma}_{n} ; \mathbf{Y}\right)}\right]
+$$
+
+where $\hat{\sigma}_{n}^{2}=n^{-1} \sum_{t=1}^{n}\left(Y_{t}-\mathbf{X}_{t}^{\prime} \hat{\boldsymbol{\beta}}_{n}\right)^{2}$ as before and $\ddot{\boldsymbol{\beta}}_{n}, \ddot{\sigma}_{n}$ solve
+
+$$
+\max \mathcal{L}(\boldsymbol{\beta}, \sigma ; \mathbf{Y}), \quad \text { s.t. } \mathbf{R} \boldsymbol{\beta}=\mathbf{r} .
+$$
+
+It is easy to show that $\ddot{\boldsymbol{\beta}}_{n}$ is the constrained OLS estimator and $\ddot{\sigma}_{n}^{2}=\ddot{\varepsilon}^{\prime} \ddot{\varepsilon} / n$ as before. The likelihood ratio is nonnegative and always less than or equal to 1 . Simple algebra yields
+
+$$
+\mathcal{L} \mathcal{R}_{n}=(n / 2) \log \left(\hat{\sigma}_{n}^{2} / \ddot{\sigma}_{n}^{2}\right)
+$$
+
+Because $\ddot{\sigma}_{n}^{2}=\hat{\sigma}_{n}^{2}+\left(\hat{\boldsymbol{\beta}}_{n}-\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)\left(\hat{\boldsymbol{\beta}}_{n}-\ddot{\boldsymbol{\beta}}_{n}\right)$ (verify this),
+
+$$
+\mathcal{L} \mathcal{R}_{n}=-(n / 2) \log \left[1+\left(\hat{\boldsymbol{\beta}}_{n}-\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)\left(\hat{\boldsymbol{\beta}}_{n}-\ddot{\boldsymbol{\beta}}_{n}\right) / \hat{\sigma}_{n}^{2}\right]
+$$
+
+To find the asymptotic distribution of this statistic, we make use of the mean value theorem of calculus.
+
+Theorem 4.36 (Mean value theorem) Let $s: \mathbb{R}^{k} \rightarrow \mathbb{R}$ be defined on an open convex set $\Theta \subset \mathbb{R}^{k}$ such that $s$ is continuously differentiable on $\Theta$ with $k \times 1$ gradient $\nabla s$. Then for any points $\boldsymbol{\theta}$ and $\boldsymbol{\theta}_{o} \in \Theta$ there exists $\overline{\boldsymbol{\theta}}$ on the segment connecting $\boldsymbol{\theta}$ and $\boldsymbol{\theta}_{o}$ such that $s(\boldsymbol{\theta})=s\left(\boldsymbol{\theta}_{o}\right)+\nabla s(\overline{\boldsymbol{\theta}})^{\prime}\left(\boldsymbol{\theta}-\boldsymbol{\theta}_{o}\right)$.
+
+Proof. See Bartle (1976, p. 365). \(\square\)
+
+For the present application, we choose $s(\theta)=\log (1+\theta)$. If we also choose $\theta_{o}=0$, we have $s(\theta)=\log (1)+(1 /(1+\bar{\theta})) \theta=\theta /(1+\bar{\theta})$,where $\bar{\theta}$ lies between $\theta$ and zero. Let $\theta_{n}=\left(\hat{\boldsymbol{\beta}}_{n}-\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)\left(\hat{\boldsymbol{\beta}}_{n}-\ddot{\boldsymbol{\beta}}_{n}\right) / \ddot{\sigma}_{n}^{2}$ so that under $H_{0}$, $\left|\bar{\theta}_{n}\right|<\left|\theta_{n}\right| \xrightarrow{p} 0$; hence $\bar{\theta}_{n} \xrightarrow{p} 0$. Applying the mean value theorem now gives
+
+$$
+\mathcal{L} \mathcal{R}_{n}=-(n / 2)\left(1+\bar{\theta}_{n}\right)^{-1}\left(\hat{\boldsymbol{\beta}}_{n}-\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)\left(\hat{\boldsymbol{\beta}}_{n}-\ddot{\boldsymbol{\beta}}_{n}\right) / \ddot{\sigma}_{n}^{2} .
+$$
+
+Because $\left(1+\bar{\theta}_{n}\right)^{-1} \xrightarrow{p} 1$, it follows from Lemma 4.6 that
+
+$$
+-2 \mathcal{L} \mathcal{R}_{n}-n\left(\hat{\boldsymbol{\beta}}_{n}-\ddot{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)\left(\hat{\boldsymbol{\beta}}_{n}-\ddot{\boldsymbol{\beta}}_{n}\right) / \hat{\sigma}_{n}^{2} \xrightarrow{p} 0,
+$$
+
+provided the second term has a limiting distribution. Now
+
+$$
+\hat{\boldsymbol{\rho}}_{n}-\ddot{\boldsymbol{\rho}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}\left(\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}\right)^{-1}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) .
+$$
+
+Thus
+
+$$
+-2 \mathcal{L} \mathcal{R}_{n}-n\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right)^{\prime}\left[\mathbf{R}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \mathbf{R}^{\prime}\right]^{-1}\left(\mathbf{R} \hat{\boldsymbol{\beta}}_{n}-\mathbf{r}\right) / \hat{\sigma}_{n}^{2} \xrightarrow{p} 0 .
+$$
+
+This second term is the Wald statistic formed with $\hat{\mathbf{V}}_{n}=\hat{\sigma}_{n}^{2}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$, so $-2 \mathcal{L} \mathcal{R}_{n}$ is asymptotically equivalent to the Wald statistic and has the $\chi_{q}^{2}$ distribution asymptotically, provided $\hat{\sigma}_{n}^{2}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$ is a consistent estimator for $\mathbf{V}_{n}$. If this is not true, then $-2 \mathcal{L} \mathcal{R}_{n}$ does not in general have the $\chi_{q}^{2}$ distribution asymptotically. It does have a limiting distribution, but not a simple one that has been tabulated or is easily computable (see White, 1994, Ch. 6, for further details). Note that it is not violation of the normality assumption per se, but the failure of $\mathbf{V}_{n}$ to equal $\sigma_{o}^{2} \mathbf{M}_{n}$ that results in $-2 \mathcal{L} \mathcal{R}_{n}$ not having the $\chi_{q}^{2}$ distribution asymptotically.
+
+The formal statement of the result for the $\mathcal{L} \mathcal{R}_{n}$ statistic is the following.\\
+Theorem 4.37 (Likelihood ratio test) Let the conditions of Theorem 4.25 hold, let $\operatorname{rank}(\mathbf{R})=q<k$, and let $\hat{\sigma}_{n}^{2}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)-\mathbf{V}_{n} \xrightarrow{p} \mathbf{0}$. Then under $H_{0}: \mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r},-2 \mathcal{L} \mathcal{R}_{n} \stackrel{A}{\sim} \chi_{q}^{2}$.
+
+Proof. Set $\hat{\mathbf{V}}_{n}$ in Theorem 4.31 to $\hat{\mathbf{V}}_{n}=\hat{\sigma}_{n}^{2}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)$. Then from the argument preceding the theorem above $-2 \mathcal{L} \mathcal{R}_{n}-\mathcal{W}_{n} \xrightarrow{p} 0$. Because $\mathcal{W}_{n} \stackrel{A}{\sim} \chi_{q}^{2}$, it follows from Lemma 4.7 that $-2 \mathcal{L} \mathcal{R}_{n} \stackrel{A}{\sim} \chi_{q}^{2}$. \(\square\)
+
+The mean value theorem just introduced provides a convenient way to find the asymptotic distribution of statistics used to test nonlinear hypotheses. In general, nonlinear hypotheses can be conveniently represented as
+
+$$
+H_{0}: \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)=\mathbf{0},
+$$
+
+where $\mathbf{s}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{q}$ is a continuously differentiable function of $\boldsymbol{\beta}$.\\
+Example 4.38 Suppose $\mathbf{Y}=\mathbf{X}_{1} \beta_{1}+\mathbf{X}_{2} \beta_{2}+\mathbf{X}_{3} \beta_{3}+\varepsilon$, where $\mathbf{X}_{1}, \mathbf{X}_{2}$, and $\mathrm{X}_{3}$ are $n \times 1$ and $\beta_{1}, \beta_{2}$, and $\beta_{3}$ are scalars. Further, suppose we hypothesize that $\beta_{3}=\beta_{1} \beta_{2}$. Then $s\left(\boldsymbol{\beta}_{o}\right)=\beta_{3}-\beta_{1} \beta_{2}=0$ expresses the null hypothesis.
+
+Just as with linear restrictions, we can construct a Wald test based on the asymptotic distribution of $\mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)$; we can construct a Lagrange multiplier test based on the Lagrange multipliers derived from minimizing the least squares (or other estimation) objective function subject to the constraint; or we can form a log-likelihood ratio.
+
+To illustrate the approach, consider the Wald test based on $\mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)$. As before, a value of $\mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)$ far from zero is evidence against $H_{0}$. To tell how far $\mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)$ must be from zero to reject $H_{0}$, we need to determine its asymptotic distribution. This is provided by the next result.
+
+Theorem 4.39 (Wald test) Let the conditions of Theorem 4.25 hold and let rank $\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)=q<k$, where $\nabla \mathbf{s}$ is the $k \times q$ gradient matrix of $\mathbf{s}$. Then under $H_{0}: \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)=\mathbf{0}$,\\
+(i) $\boldsymbol{\Gamma}_{n}^{-1 / 2} \sqrt{n} \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$, where
+
+$$
+\boldsymbol{\Gamma}_{n} \equiv \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{D}_{n} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right) .
+$$
+
+(ii) The Wald statistic $\mathcal{W}_{n} \equiv n \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)^{\prime} \hat{\boldsymbol{\Gamma}}_{n}^{-1} \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right) \stackrel{A}{\sim} \chi_{q}^{2}$, where
+
+$$
+\begin{aligned}
+\hat{\boldsymbol{\Gamma}}_{n} & =\nabla \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)^{\prime} \hat{\mathbf{D}}_{n} \nabla \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right) \\
+& =\nabla \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \hat{\mathbf{V}}_{n}\left(\mathbf{X}^{\prime} \mathbf{X} / n\right)^{-1} \nabla \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)
+\end{aligned}
+$$
+
+Proof. (i) Because $\mathbf{s}(\boldsymbol{\beta})$ is a vector function, we apply the mean value theorem to each element $s_{i}(\boldsymbol{\beta}), i=1, \ldots, q$, to get
+
+$$
+s_{i}\left(\hat{\boldsymbol{\beta}}_{n}\right)=s_{i}\left(\boldsymbol{\beta}_{o}\right)+\nabla s_{i}\left(\overline{\boldsymbol{\beta}}_{n}^{(i)}\right)^{\prime}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right),
+$$
+
+where $\overline{\boldsymbol{\beta}}_{n}^{(i)}$ is a $k \times 1$ vector lying on the segment connecting $\hat{\boldsymbol{\beta}}_{n}$ and $\boldsymbol{\beta}_{o}$. The superscript (i) reflects the fact that the mean value may be different for each element $s_{i}(\boldsymbol{\beta})$ of $\mathbf{s}(\boldsymbol{\beta})$.
+
+Under $H_{0}, s_{i}\left(\boldsymbol{\beta}_{o}\right)=0, i=1, \ldots, q$, so
+
+$$
+\sqrt{n} s_{i}\left(\hat{\boldsymbol{\beta}}_{n}\right)=\nabla s_{i}\left(\overline{\boldsymbol{\beta}}_{n}^{(i)}\right)^{\prime} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) .
+$$
+
+This suggests considering the difference
+
+$$
+\begin{aligned}
+& \sqrt{n} s_{i}\left(\hat{\boldsymbol{\beta}}_{n}\right)-\nabla s_{i}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \\
+= & \left(\nabla s_{i}\left(\overline{\boldsymbol{\beta}}_{n}^{(i)}\right)-\nabla s_{i}\left(\boldsymbol{\beta}_{o}\right)\right)^{\prime} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \\
+= & \left(\nabla s_{i}\left(\overline{\boldsymbol{\beta}}_{n}^{(i)}\right)-\nabla s_{i}\left(\boldsymbol{\beta}_{o}\right)\right)^{\prime} \mathbf{D}_{n}^{1 / 2} \mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) .
+\end{aligned}
+$$
+
+By Theorem 4.25, $\mathbf{D}_{n}^{-1 / 2} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$. Because $\hat{\boldsymbol{\beta}}_{n} \xrightarrow{p} \boldsymbol{\beta}_{o}$, it follows that $\overline{\boldsymbol{\beta}}_{n}^{(i)} \xrightarrow{p} \boldsymbol{\beta}_{o}$ so $\nabla s_{i}\left(\overline{\boldsymbol{\beta}}_{n}^{(i)}\right)-\nabla s_{i}\left(\boldsymbol{\beta}_{o}\right) \xrightarrow{p} \mathbf{0}$ by Proposition 2.27. Because $\mathbf{D}_{n}^{1 / 2}$ is $O(1)$, we have $\left(\nabla s_{i}\left(\overline{\boldsymbol{\beta}}_{n}^{(i)}\right)-\nabla s_{i}\left(\boldsymbol{\beta}_{o}\right)\right)^{\prime} \mathbf{D}_{n}^{1 / 2} \xrightarrow{p} \mathbf{0}$. It follows from Lemma 4.6 that
+
+$$
+\sqrt{n} s_{i}\left(\hat{\boldsymbol{\beta}}_{n}\right)-\nabla s_{i}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \xrightarrow{\boldsymbol{p}} \mathbf{0}, i=1, \ldots, q .
+$$
+
+In vector form this becomes
+
+$$
+\sqrt{n} \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)-\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \xrightarrow{p} \mathbf{0},
+$$
+
+and because $\Gamma_{n}^{-1 / 2}$ is $O(1)$,
+
+$$
+\boldsymbol{\Gamma}_{n}^{-1 / 2} \sqrt{n} \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)-\boldsymbol{\Gamma}_{n}^{-1 / 2} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \xrightarrow{\boldsymbol{p}} \mathbf{0} .
+$$
+
+Corollary 4.24 immediately yields
+
+$$
+\boldsymbol{\Gamma}_{n}^{-1 / 2} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \sqrt{n}\left(\hat{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I}),
+$$
+
+so by Lemma 4.7, $\boldsymbol{\Gamma}_{n}^{-1 / 2} \sqrt{n} \mathbf{S}\left(\hat{\boldsymbol{\beta}}_{n}\right) \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})$.\\
+(ii) Because $\hat{\mathbf{D}}_{n}-\mathbf{D}_{n} \xrightarrow{p} \mathbf{0}$ from Theorem 4.25 and $\nabla \mathbf{s}\left(\hat{\boldsymbol{\beta}}_{n}\right)-\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right) \xrightarrow{p} \mathbf{0}$ by Proposition 2.27, $\hat{\mathbf{I}}_{n}-\boldsymbol{\Gamma}_{n} \xrightarrow{\boldsymbol{p}} \mathbf{0}$ by Proposition 2.30. Given the result in (i), (ii) follows from Theorem 4.30.
+
+Note the similarity of this result to Theorem 4.31 which gives the Wald test for the linear hypothesis $\mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r}$. In the present context, $\mathbf{s}\left(\boldsymbol{\beta}_{o}\right)$ plays the role of $\mathbf{R} \boldsymbol{\beta}_{o}-\mathbf{r}$, whereas $\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime}$ plays the role of $\mathbf{R}$ in computing the covariance matrix.
+
+Exercise 4.40 Write down the Wald statistic for testing the hypothesis of Example 4.38.
+
+Exercise 4.41 Give the Lagrange multiplier statistic for testing the hypothesis $H_{0}: \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)=\mathbf{0}$ versus $H_{1}: \mathbf{s}\left(\boldsymbol{\beta}_{o}\right) \neq \mathbf{0}$, and derive its limiting distribution under the conditions of Theorem 4.25.
+
+Exercise 4.42 Give the Wald and Lagrange multiplier statistics for testing the hypotheses $\mathbf{R} \boldsymbol{\beta}_{o}=\mathbf{r}$ and $\mathbf{s}\left(\boldsymbol{\beta}_{o}\right)=\mathbf{0}$ on the basis of the IV estimator $\tilde{\boldsymbol{\beta}}_{\boldsymbol{n}}$ and derive their limiting distributions under the conditions of Exercise 4.26.
+
+\subsection*{4.3 Asymptotic Efficiency}
+Given a class of estimators (e.g., the class of instrumental variables estimators), it is desirable to choose that member of the class that has the smallest asymptotic covariance matrix (assuming that this member exists and can be computed). The reason for this is that such estimators are obviously more precise, and in general allow construction of more powerful test statistics. In what follows, we shall abuse notation slightly and write $\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)$ instead of avar $\left(\sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)\right)$. A definition of asymptotic efficiency adequate for our purposes here is the following.
+
+Definition 4.43 Let $\mathcal{P}$ be a set of data generating processes such that each data generating process $P^{o} \in \mathcal{P}$ has a corresponding coefficient vector $\boldsymbol{\beta}^{o} \in \mathbb{R}^{k}$ and let $\mathcal{E}$ be a class of estimators $\left\{\tilde{\boldsymbol{\beta}}_{n}\right\}$ such that for each $P^{o} \in \mathcal{P}, \mathbf{D}_{n}^{o-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{\boldsymbol{n}}-\boldsymbol{\beta}^{o}\right) \xrightarrow{d^{o}} N(\mathbf{0}, \mathbf{I})$ for $\left\{\operatorname{avar}^{o}\left(\tilde{\boldsymbol{\beta}}_{\boldsymbol{n}}\right) \equiv \mathbf{D}_{n}^{o}\right\}$ nonstochastic, $O(1)$ and uniformly nonsingular. Then $\left\{\boldsymbol{\beta}_{n}^{*}\right\} \in \mathcal{E}$ is asymptotically efficient relative to $\left\{\tilde{\boldsymbol{\beta}}_{n}\right\} \in \mathcal{E}$ for $\mathcal{P}$ if for every $P^{o} \in \mathcal{P}$ the matrix $\operatorname{avar}^{o}\left(\overline{\boldsymbol{\beta}}_{n}\right)-\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right)$ is positive semidefinite for all $n$ sufficiently large. The estimator $\left\{\boldsymbol{\beta}_{n}^{*}\right\} \in \mathcal{E}$ is asymptotically efficient in $\mathcal{E}$ for $\mathcal{P}$ if it is asymptotically efficient relative to every other member of its class, $\mathcal{E}$, for $\mathcal{P}$.
+
+We write $\boldsymbol{\beta}^{o}$ instead of $\boldsymbol{\beta}_{o}$ to emphasize that $\boldsymbol{\beta}^{o}$ corresponds to (at least) one possible data generating process ( $P^{o}$ ) among many ( $P$ ).
+
+The class of estimators we consider is the class $\mathcal{E}$ of instrumental variables estimators
+
+$$
+\tilde{\boldsymbol{\beta}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+where different members of the class are defined by the different possible choices for $\hat{\mathbf{P}}_{n}$ and $\mathbf{Z}$. For any data generating process $P^{o}$ satisfying the conditions of Exercise 4.26, we have that the asymptotic covariance matrix of $\tilde{\boldsymbol{\beta}}_{n}$ is
+
+$$
+\mathbf{D}_{n}=\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{V}_{n} \mathbf{P}_{n} \mathbf{Q}_{n}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+We leave the dependence of $\mathbf{D}_{n}$ (and other quantities) on $P^{o}$ implicit for now, and begin our analysis by considering how to choose $\hat{\mathbf{P}}_{n}$ to make $\mathbf{D}_{n}$ as small as possible.
+
+Until now, we have let $\hat{\mathbf{P}}_{n}$ be any positive definite matrix. It turns out, however, that by choosing $\hat{\mathbf{P}}_{n}=\hat{\mathrm{V}}_{n}^{-1}$, one obtains an asymptotically efficient estimator for the class of IV estimators with given instrumental variables $\mathbf{Z}$. To prove this, we make use of the following proposition.
+
+Proposition 4.44 Let $\mathbf{A}$ and $\mathbf{B}$ be positive definite matrices of order $k$. Then $\mathbf{A}-\mathbf{B}$ is positive semidefinite if and only if $\mathbf{B}^{-1}-\mathbf{A}^{-1}$ is positive semidefinite.
+
+Proof. This follows from Goldberger (1964, Theorem 1.7.21, p. 38).\\
+This result is useful because in the cases of interest to us it will often be much easier to determine whether $\mathbf{B}^{-1}-\mathbf{A}^{-1}$ is positive semidefinite than to examine the positive semidefiniteness of $\mathbf{A}-\mathbf{B}$ directly.
+
+Proposition 4.45 Given instrumental variables $\mathbf{Z}$, let $\mathcal{P}$ be the collection of probability measures satisfying the conditions of Exercise 4.26. Then the choice $\hat{\mathbf{P}}_{n}=\hat{\mathbf{V}}_{n}^{-1}$ gives the IV estimator
+
+$$
+\boldsymbol{\beta}_{n}^{*}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+which is asymptotically efficient for $\mathcal{P}$ within the class $\mathcal{E}$ of instrumental variables estimators of the form
+
+$$
+\tilde{\boldsymbol{\beta}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{Y} .
+$$
+
+Proof. From Exercise 4.26, we have
+
+$$
+\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)=\left(\mathbf{Q}_{n}^{\prime} \mathbf{V}_{n}^{-1} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+From Proposition 4.44, $\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)-\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)$ is p.s.d. if and only if
+
+$$
+\left(\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)\right)^{-1}-\left(\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\right)^{-1}
+$$
+
+is p.s.d. Now for all $n$ sufficiently large,
+
+$$
+\begin{aligned}
+& \left(\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)\right)^{-1}-(\operatorname{avar}(\hat{\boldsymbol{\beta}}))^{-1} \\
+= & \mathbf{Q}_{n}^{\prime} \mathbf{V}_{n}^{-1} \mathbf{Q}_{n}-\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{V}_{n} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{Q}_{n} \\
+= & \mathbf{Q}_{n}^{\prime} \mathbf{V}_{n}^{-1 / 2}(\mathbf{I} \\
+& \left.-\mathbf{V}_{n}^{1 / 2} \mathbf{P}_{n} \mathbf{Q}_{n}\left(\mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{V}_{n}^{1 / 2} \mathbf{V}_{n}^{1 / 2} \mathbf{P}_{n} \mathbf{Q}_{n}\right)^{-1} \mathbf{Q}_{n}^{\prime} \mathbf{P}_{n} \mathbf{V}_{n}^{1 / 2}\right) \mathbf{V}_{n}^{-1 / 2} \mathbf{Q}_{n} \\
+= & \mathbf{Q}_{n}^{\prime} \mathbf{V}_{n}^{-1 / 2}\left(\mathbf{I}-\mathbf{G}_{n}\left(\mathbf{G}_{n}^{\prime} \mathbf{G}_{n}\right)^{-1} \mathbf{G}_{n}^{\prime}\right) \mathbf{V}_{n}^{-1 / 2} \mathbf{Q}_{n}
+\end{aligned}
+$$
+
+where $\mathbf{G}_{n} \equiv \mathbf{V}_{n}^{-1 / 2} \mathbf{P}_{n} \mathbf{Q}_{n}$. This is a quadratic form in an idempotent matrix and is therefore p.s.d. As this holds for all $P^{o}$ in $\mathcal{P}$, the result follows. \(\square\)
+
+Hansen (1982) considers estimators for coefficients $\boldsymbol{\beta}_{o}$ implicitly defined by moment conditions of the form $E\left(\mathbf{g}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \mathbf{Z}_{t}, \boldsymbol{\beta}_{o}\right)\right)=\mathbf{0}$, where $\mathbf{g}$ is an $l \times 1$ vector-valued function. Analogous to our construction of the IV estimator, Hansen's estimator is constructed by attempting to make the sample moment
+
+$$
+n^{-1} \sum_{t=1}^{n} \mathrm{~g}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \mathbf{Z}_{t}, \boldsymbol{\beta}\right)
+$$
+
+as close to zero as possible by solving the problem
+
+$$
+\min _{\boldsymbol{\beta}}\left[n^{-1} \sum_{t=1}^{n} \mathbf{g}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \mathbf{Z}_{t}, \boldsymbol{\beta}\right)\right]^{\prime} \hat{\mathbf{P}}_{n}\left[n^{-1} \sum_{t=1}^{n} \mathbf{g}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \mathbf{Z}_{t}, \boldsymbol{\beta}\right)\right] .
+$$
+
+Hansen establishes that the resulting "method of moments" estimator is consistent and asymptotically normal and that the choice $\hat{\mathbf{P}}_{n}=\hat{\mathbf{V}}_{n}^{-1}$, $\hat{\mathbf{V}}_{\boldsymbol{n}}-\mathbf{V}_{\boldsymbol{n}} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\mathbf{V}_{n}=\operatorname{var}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathbf{g}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \mathbf{Z}_{t}, \boldsymbol{\beta}_{o}\right)\right)
+$$
+
+delivers the asymptotically efficient estimator in the class of method of moment estimators. Hansen calls the method of moments estimator with $\hat{\mathbf{P}}_{n}=\hat{\mathbf{V}}_{n}^{-1}$ the generalized method of moments (GMM) estimator.
+
+Thus, the estimator $\boldsymbol{\beta}_{n}^{*}$ of Proposition 4.45 is the GMM estimator for the case in which
+
+$$
+\mathbf{g}\left(\mathbf{X}_{t}, \mathbf{Y}_{t}, \mathbf{Z}_{t}, \boldsymbol{\beta}_{o}\right)=\mathbf{Z}_{t}\left(\mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}\right) .
+$$
+
+We call $\boldsymbol{\beta}_{n}^{*}$ a "linear" GMM estimator because the defining moment con$\operatorname{dition} E\left(\mathbf{Z}_{t}\left(\mathbf{Y}_{t}-\mathbf{X}_{t}^{\prime} \boldsymbol{\beta}_{o}\right)\right)=\mathbf{0}$ is linear in $\boldsymbol{\beta}_{o}$.
+
+Exercise 4.46 Given instrumental variables $\mathbf{X}$, suppose that
+
+$$
+\mathbf{V}_{n}^{-1 / 2} \sum \mathbf{X}_{t} \varepsilon_{t} \stackrel{A}{\sim} N(\mathbf{0}, \mathbf{I})
+$$
+
+where $\mathbf{V}_{n}=\sigma_{o}^{2} \mathbf{M}_{n}$. Show that the asymptotically efficient IV estimator is the least squares estimator, $\hat{\boldsymbol{\beta}}_{n}$, according to Proposition 4.45.
+
+Exercise 4.47 Given instrumental variables $Z$, suppose that
+
+$$
+\mathbf{V}_{n}^{-1 / 2} \sum \mathbf{Z}_{t} \varepsilon_{t} \stackrel{\mathcal{A}}{\sim} N(\mathbf{0}, \mathbf{I}),
+$$
+
+where $\mathbf{V}_{n}=\sigma_{o}^{2} \mathbf{L}_{n}$ and $\mathbf{L}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)$. Show that the asymptotically efficient IV estimator is the two-stage least squares estimator
+
+$$
+\tilde{\boldsymbol{\beta}}_{2 S L S}=\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}
+$$
+
+according to Proposition 4.45.\\
+Note that the value of $\sigma_{o}^{2}$ plays no role in either Exercise 4.46 or Exercise 4.47 as long as it is finite. In what follows, we shall simply ignore $\sigma_{o}^{2}$, and proceed as if $\sigma_{o}^{2}=1$.
+
+If instead of testing the restrictions $\mathbf{s}\left(\boldsymbol{\beta}_{o}\right)=\mathbf{0}$, as considered in the previous section, we believe or know these restrictions to be true (because, for example, they are dictated by economic theory), then, as we discuss next, we can further improve asymptotic efficiency by imposing these restrictions. (Of course, for this to really work, the restrictions must in fact be true.)
+
+Thus, suppose we are given constraints $\mathbf{s}\left(\boldsymbol{\beta}_{o}\right)=\mathbf{0}$, where $\mathbf{s}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{q}$ is a known continuously differentiable function, such that $\operatorname{rank}\left(\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)\right)=q$ and $\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)(k \times q)$ is finite; The constrained instrumental variables estimator can be found as the solution to the problem
+
+$$
+\min _{\boldsymbol{\beta}}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta}), \quad \text { s.t. } \mathbf{s}(\boldsymbol{\beta})=\mathbf{0}
+$$
+
+which is equivalent to finding the saddle point of the Lagrangian
+
+$$
+\mathcal{L}=(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime}(\mathbf{Y}-\mathbf{X} \boldsymbol{\beta})+\mathbf{s}(\boldsymbol{\beta})^{\prime} \boldsymbol{\lambda} .
+$$
+
+The first-order conditions are
+
+$$
+\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial \boldsymbol{\beta}} & =2\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right) \boldsymbol{\beta}-2 \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{Y}+\nabla \mathbf{s}(\boldsymbol{\beta}) \boldsymbol{\lambda}=\mathbf{0} \\
+\frac{\partial \mathcal{L}}{\partial \boldsymbol{\lambda}} & =\mathbf{s}(\boldsymbol{\beta})=\mathbf{0}
+\end{aligned}
+$$
+
+Setting $\overline{\boldsymbol{\beta}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{Y}$ and taking a mean value expansion of $\mathbf{s}(\boldsymbol{\beta})$ around $\mathbf{s}(\hat{\boldsymbol{\beta}})$ yields the equations
+
+$$
+\begin{aligned}
+& \frac{\partial \mathcal{L}}{\partial \boldsymbol{\beta}}=2\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)\left(\boldsymbol{\beta}-\tilde{\boldsymbol{\beta}}_{n}\right)+\nabla \mathbf{s}(\boldsymbol{\beta}) \boldsymbol{\lambda}=\mathbf{0}, \\
+& \frac{\partial \mathcal{L}}{\partial \boldsymbol{\lambda}}=\mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)+\nabla \overline{\mathbf{s}}^{\prime}\left(\boldsymbol{\beta}-\tilde{\boldsymbol{\beta}}_{n}\right)=\mathbf{0},
+\end{aligned}
+$$
+
+where $\nabla \overline{\mathbf{s}}^{\prime}$ is the $q \times k$ Jacobian matrix with $i$ th row evaluated at a mean value $\overline{\boldsymbol{\beta}}_{n}^{(i)}$. To solve for $\boldsymbol{\lambda}$ in the first equation, premultiply by $\nabla \overline{\mathbf{s}}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z}\right. \left.\hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1}$ to get
+
+$$
+2 \nabla \overline{\mathbf{s}}\left(\boldsymbol{\beta}-\tilde{\boldsymbol{\beta}}_{n}\right)+\nabla \overline{\mathbf{s}}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}(\boldsymbol{\beta}) \boldsymbol{\lambda}=\mathbf{0},
+$$
+
+substitute $-\mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)=\nabla \overline{\mathbf{s}}^{\prime}\left(\boldsymbol{\beta}-\tilde{\boldsymbol{\beta}}_{n}\right)$, and invert $\nabla \overline{\mathbf{s}}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}(\boldsymbol{\beta})$ to obtain
+
+$$
+\boldsymbol{\lambda}=2\left[\nabla \overline{\mathbf{s}}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}(\boldsymbol{\beta})\right]^{-1} \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right) .
+$$
+
+The expression for $\partial \mathcal{L} / \partial \beta$ above yields
+
+$$
+\boldsymbol{\beta}-\tilde{\boldsymbol{\beta}}_{n}=-\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}(\boldsymbol{\beta}) \boldsymbol{\lambda} / 2
+$$
+
+so we obtain the solution for $\boldsymbol{\beta}$ by substituting for $\boldsymbol{\lambda}$ :
+
+$$
+\boldsymbol{\beta}=\tilde{\boldsymbol{\beta}}_{n}-\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}(\boldsymbol{\beta})\left[\nabla \overline{\mathbf{s}}^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}(\boldsymbol{\beta})\right]^{-1} \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right) .
+$$
+
+The difficulty with this solution is that it is not in closed form, because the unknown $\boldsymbol{\beta}$ appears on both sides of the equation. Further, appearing in this expression is $\nabla \overline{\mathbf{s}}$, which has $q$ rows each of which depends on a mean value lying between $\boldsymbol{\beta}$ and $\tilde{\boldsymbol{\beta}}_{n}$.
+
+Nevertheless, a computationally practical and asymptotically equivalent result can be obtained by replacing $\nabla \overline{\mathbf{s}}$ and $\nabla \mathbf{s}(\boldsymbol{\beta})$ by $\nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)$ on the righthand side of the expression above, which yields
+
+$$
+\begin{aligned}
+\boldsymbol{\beta}_{n}^{*}= & \tilde{\boldsymbol{\beta}}_{n}-\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\left[\nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime}\right. \\
+& \left.\times\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\right]^{-1} \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)
+\end{aligned}
+$$
+
+This gives us a convenient way of computing a constrained IV estimator. First we compute the unconstrained estimator, and then we "impose" the constraints by subtracting a "correction factor"
+
+$$
+\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\left[\nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\right]^{-1} \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)
+$$
+
+from the unconstrained estimator. We say "impose" because $\boldsymbol{\beta}_{n}^{*}$ will not satisfy the constraints exactly for any finite $n$. However, an estimator that does satisfy the constraints to any desired degree of accuracy can be obtained by iterating the procedure just described, that is, by replacing $\tilde{\boldsymbol{\beta}}_{n}$ by $\boldsymbol{\beta}_{n}^{*}$ in the formula above to get a second round estimator, say, $\boldsymbol{\beta}_{n}^{* *}$. This process could continue until the change in the resulting estimator was sufficiently small. Nevertheless, this iteration process has no effect on the asymptotic covariance matrix of the resulting estimator.
+
+Exercise 4.48 Define
+
+$$
+\begin{aligned}
+\boldsymbol{\beta}_{n}^{* *}= & \boldsymbol{\beta}_{n}^{*}-\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right) \\
+& \times\left[\nabla \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right)^{\prime}\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{P}}_{n} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right)\right]^{-1} \mathbf{s}\left(\boldsymbol{\beta}_{n}^{*}\right)
+\end{aligned}
+$$
+
+Show that under the conditions of Exercise 4.26 and the conditions on $\mathbf{s}$ that $\sqrt{n}\left(\boldsymbol{\beta}_{n}^{* *}-\boldsymbol{\beta}_{n}^{*}\right) \xrightarrow{\boldsymbol{p}} \mathbf{0}$, so that $\sqrt{n}\left(\boldsymbol{\beta}_{n}^{\boldsymbol{*}}-\boldsymbol{\beta}_{o}\right)$ has the same asymptotic distribution as $\sqrt{n}\left(\boldsymbol{\beta}_{n}^{* *}-\boldsymbol{\beta}_{o}\right)$. (Hint: Show that $\sqrt{n} \mathbf{S}\left(\boldsymbol{\beta}_{n}^{*}\right) \xrightarrow{\boldsymbol{p}} \mathbf{0}$.)
+
+Thus, in considering the effect of imposing the restriction $\mathbf{s}\left(\boldsymbol{\beta}_{o}\right)=\mathbf{0}$, we can just compare the asymptotic behavior of $\boldsymbol{\beta}_{n}^{*}$ to $\tilde{\boldsymbol{\beta}}_{n}$
+
+As we saw in Proposition 4.45, the asymptotically efficient IV estimator takes $\hat{\mathbf{P}}_{n}=\hat{\mathbf{V}}_{n}^{-1}$. We therefore consider the effect of imposing constraints on the IV estimator with $\hat{\mathbf{P}}_{n}=\hat{\mathbf{V}}_{n}^{-1}$.\\
+Theorem 4.49 Suppose the conditions of Exercise 4.26 hold for $\hat{\mathbf{P}}_{n}= \hat{\mathbf{V}}_{\boldsymbol{n}}^{-1}$ and that $\mathbf{s}: \mathbb{R}^{k} \rightarrow \mathbb{R}^{q}$ is a continuously differentiable function such that $\mathbf{s}\left(\boldsymbol{\beta}_{o}\right)=\mathbf{0}, \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)$ is finite and $\operatorname{rank}\left(\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)\right)=\boldsymbol{q}$. Define $\tilde{\boldsymbol{\beta}}_{n}= \left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$ and define $\boldsymbol{\beta}_{n}^{*}$ as the constrained IV estimator above with $\hat{\mathbf{P}}_{n}=\hat{\mathbf{V}}_{n}^{-1}$. Then
+
+$$
+\begin{aligned}
+& \operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)-\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right) \\
+& \quad=\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right) \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)\left[\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right) \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)\right]^{-1} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)
+\end{aligned}
+$$
+
+which is a positive semidefinite matrix.\\
+Proof. From Exercise 4.26 it follows that
+
+$$
+\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)=\left(\mathbf{Q}_{n}^{\prime} \mathbf{V}_{n}^{-1} \mathbf{Q}_{n}\right)^{-1}
+$$
+
+Taking a mean value expansion of $\mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)$ around $\boldsymbol{\beta}_{o}$ gives $\mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)=\mathbf{s}\left(\boldsymbol{\beta}_{o}\right)+ \nabla \overline{\mathbf{s}}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)$, and because $\mathbf{s}\left(\boldsymbol{\beta}_{o}\right)=\mathbf{0}$, we have $\mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)=\nabla \overline{\mathbf{s}}^{\prime}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)$. Substituting this in the formula for $\boldsymbol{\beta}_{n}^{*}$ allows us to write
+
+$$
+\sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}_{o}\right)=\tilde{\mathbf{A}}_{n} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)
+$$
+
+where
+
+$$
+\begin{aligned}
+\tilde{\mathbf{A}}_{n}= & \mathbf{I}-\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\left[\nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)^{\prime}\right. \\
+& \left.\times\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \nabla \mathbf{s}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\right]^{-1} \nabla \overline{\mathbf{s}}^{\prime}
+\end{aligned}
+$$
+
+Under the conditions of Exercise 4.26, $\overline{\boldsymbol{\beta}}_{n} \xrightarrow{\boldsymbol{p}} \boldsymbol{\beta}_{o}$ and Proposition 2.30 applies to ensure that $\tilde{\mathbf{A}}_{n}-\mathbf{A}_{n} \xrightarrow{p} \mathbf{0}$, where
+
+$$
+\mathbf{A}_{n}=\mathbf{I}-\operatorname{avar}\left(\overline{\boldsymbol{\beta}}_{n}\right) \nabla \mathbf{s}\left(\boldsymbol{\beta}_{0}\right)\left[\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \operatorname{avar}\left(\overline{\boldsymbol{\beta}}_{n}\right) \nabla \mathbf{s}\left(\boldsymbol{\beta}_{0}\right)\right]^{-1} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} .
+$$
+
+Hence, by Lemma 4.6,
+
+$$
+\sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}_{o}\right)-\mathbf{A}_{n} \sqrt{n}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)=\left(\overline{\mathbf{A}}_{n}-\mathbf{A}_{n}\right) \sqrt{n}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) \xrightarrow{p} \mathbf{0},
+$$
+
+because $\sqrt{n}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)$ is $O_{p}(1)$ as a consequence of Exercise 4.26. From the asymptotic equivalence Lemma 4.7 it follows that $\sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}_{o}\right)$ has the same asymptotic distribution as $\mathbf{A}_{n} \sqrt{n}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right)$. It follows from Lemma 4.23 that $\sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}_{o}\right)$ is asymptotically normal with mean zero and
+
+$$
+\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)=\boldsymbol{\Gamma}_{n}=\mathbf{A}_{n} \operatorname{avar}\left(\overline{\boldsymbol{\beta}}_{n}\right) \mathbf{A}_{n}^{\prime} .
+$$
+
+Straightforward algebra yields
+
+$$
+\begin{aligned}
+\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)= & \operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)-\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right) \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right) \\
+& \times\left[\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right) \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)\right]^{-1} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right),
+\end{aligned}
+$$
+
+and the result follows immediately.\\
+This result guarantees that imposing correct a priori restrictions leads to an efficiency improvement over the efficient IV estimator that does not impose these restrictions. Interestingly, imposing the restrictions using the formula for $\boldsymbol{\beta}_{n}^{*}$ with an inefficient estimator $\overline{\boldsymbol{\beta}}_{n}$ for given instrumental variables may or may not lead to efficiency gains relative to $\tilde{\boldsymbol{\beta}}_{n}$.
+
+A feature of this result worth noting is that the asymptotic distribution of the constrained estimator $\boldsymbol{\beta}_{n}^{*}$ is concentrated in a $k-q$-dimensional subspace of $\mathbb{R}^{k}$, so that $\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)$ will not be nonsingular. Instead, it has rank $k-q$. In particular, observe that
+
+$$
+\sqrt{n}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}_{o}\right)=\sqrt{n} \mathbf{A}_{n}\left(\overline{\boldsymbol{\beta}}_{n}-\boldsymbol{\beta}_{o}\right) .
+$$
+
+But
+
+$$
+\begin{aligned}
+\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \mathbf{A}_{n}= & \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime}\left(\mathbf{I}-\operatorname{avar}\left(\overline{\boldsymbol{\beta}}_{n}\right) \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)\right. \\
+& \left.\times\left[\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \operatorname{avar}\left(\overline{\boldsymbol{\beta}}_{n}\right) \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)\right]^{-1} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime}\right) \\
+= & \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime}-\nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime} \\
+= & \mathbf{0} .
+\end{aligned}
+$$
+
+Consequently, we have
+
+$$
+\operatorname{avar}\left(\sqrt{n} \nabla \mathbf{s}\left(\boldsymbol{\beta}_{o}\right)^{\prime}\left(\boldsymbol{\beta}_{n}^{*}-\boldsymbol{\beta}_{o}\right)\right)=\mathbf{0}
+$$
+
+An alternative way to improve the asymptotic efficiency of the IV estimator is to include additional valid instrumental variables. To establish this, we make use of the formula for the inverse of a partitioned matrix, which we now state for convenience.
+
+Proposition 4.50 Define the $k \times k$ nonsingular symmetric matrix
+
+$$
+\mathbf{A}=\left[\begin{array}{ll}
+\mathbf{B} & \mathbf{C}^{\prime} \\
+\mathbf{C} & \mathbf{D}
+\end{array}\right],
+$$
+
+where $\mathbf{B}$ is $k_{1} \times k_{1}, \mathbf{C}$ is $k_{2} \times k_{1}$ and $\mathbf{D}$ is $k_{2} \times k_{2}$. Then, defining $\mathbf{E} \equiv \mathbf{D}-\mathbf{C B}^{-1} \mathbf{C}^{\prime}$,
+
+$$
+\mathbf{A}^{-1}=\left[\begin{array}{cc}
+\mathbf{B}^{-1}\left(\mathbf{I}+\mathbf{C}^{\prime} \mathbf{E}^{-1} \mathbf{C B}^{-1}\right) & -\mathbf{B}^{-1} \mathbf{C}^{\prime} \mathbf{E}^{-1} \\
+-\mathbf{E}^{-1} \mathbf{C B}^{-1} & \mathbf{E}^{-1}
+\end{array}\right] .
+$$
+
+Proof. See Goldberger (1964, p. 27).\\
+Proposition 4.51 Partition $\mathbf{Z}$ as $\mathbf{Z}=\left(\mathbf{Z}_{1}, \mathbf{Z}_{2}\right)$ and let $\mathcal{P}$ be the collection of all probability measures such that the conditions of Exercise 4.26 hold for both $\mathbf{Z}_{1}$ and $\mathbf{Z}_{2}$. Define $\mathbf{V}_{1 n}=E\left(\mathbf{Z}_{1}^{\prime} \varepsilon \varepsilon^{\prime} \mathbf{Z}_{1} / n\right)$, and the estimators
+
+$$
+\begin{aligned}
+\tilde{\boldsymbol{\beta}}_{n} & =\left(\mathbf{X}^{\prime} \mathbf{Z}_{1} \hat{\mathbf{V}}_{1 n}^{-1} \mathbf{Z}_{1}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}_{1} \hat{\mathbf{V}}_{1 n}^{-1} \mathbf{Z}_{1}^{\prime} \mathbf{Y}, \\
+\boldsymbol{\beta}_{n}^{*} & =\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{Y} .
+\end{aligned}
+$$
+
+Then for each $P^{o}$ in $\mathcal{P}, \operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)-\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)$ is a positive semidefinite matrix for all $n$ sufficiently large.
+
+Proof. Partition $\mathbf{Q}_{n}$ as $\mathbf{Q}_{n}^{\prime}=\left(\mathbf{Q}_{1 n}^{\prime}, \mathbf{Q}_{2 n}^{\prime}\right)$, where $\mathbf{Q}_{1 n}=E\left(\mathbf{Z}_{1}^{\prime} \mathbf{X} / n\right), \mathbf{Q}_{2 n}= E\left(\mathbf{Z}_{2}^{\prime} \mathbf{X} / n\right)$, and partition $\mathbf{V}_{n}$ as
+
+$$
+\mathbf{V}_{n}=\left[\begin{array}{cc}
+\mathbf{V}_{1 n} & \mathbf{V}_{12 n} \\
+\mathbf{V}_{21 n} & \mathbf{V}_{2 n}
+\end{array}\right]
+$$
+
+The partitioned inverse formula gives
+
+$$
+\mathbf{V}_{n}^{-1}=\left[\begin{array}{cc}
+\mathbf{V}_{1 n}^{-1}\left(\mathbf{I}+\mathbf{V}_{12 n} \mathbf{E}_{n}^{-1} \mathbf{V}_{21 n}\right) \mathbf{V}_{1 n}^{-1} & -\mathbf{V}_{1 n}^{-1} \mathbf{V}_{12 n} \mathbf{E}_{n}^{-1} \\
+-\mathbf{E}_{n}^{-1} \mathbf{V}_{21 n} \mathbf{V}_{1 n}^{-1} & \mathbf{E}_{n}^{-1}
+\end{array}\right],
+$$
+
+where $\mathbf{E}_{n}=\mathbf{V}_{2 n}-\mathbf{V}_{21 n} \mathbf{V}_{1 n}^{-1} \mathbf{V}_{12 n}$. From Exercise 4.26, we have
+
+$$
+\begin{aligned}
+\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right) & =\left(\mathbf{Q}_{1 n}^{\prime} \mathbf{V}_{1 n}^{-1} \mathbf{Q}_{1 n}\right)^{-1}, \\
+\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right) & =\left(\mathbf{Q}_{n}^{\prime} \mathbf{V}_{n}^{-1} \mathbf{Q}_{n}\right)^{-1} .
+\end{aligned}
+$$
+
+We apply Proposition 4.44 and consider
+
+$$
+\begin{aligned}
+& \left(\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)\right)^{-1}-\left(\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\right)^{-1} \\
+= & \mathbf{Q}_{n}^{\prime} \mathbf{V}_{n}^{-1} \mathbf{Q}_{n}-\mathbf{Q}_{1 n}^{\prime} \mathbf{V}_{1 n}^{-1} \mathbf{Q}_{1 n} \\
+= & {\left[\mathbf{Q}_{1 n}^{\prime}, \mathbf{Q}_{2 n}^{\prime}\right] \mathbf{V}_{n}^{-1}\left[\mathbf{Q}_{1 n}^{\prime}, \mathbf{Q}_{2 n}^{\prime}\right]^{\prime}-\mathbf{Q}_{1 n}^{\prime} \mathbf{V}_{1 n}^{-1} \mathbf{Q}_{1 n} } \\
+= & \mathbf{Q}_{1 n}^{\prime}\left(\mathbf{V}_{1 n}^{-1}+\mathbf{V}_{1 n}^{-1} \mathbf{V}_{12 n} \mathbf{E}_{n}^{-1} \mathbf{V}_{21 n} \mathbf{V}_{1 n}^{-1}\right) \mathbf{Q}_{1 n} \\
+& -\mathbf{Q}_{2 n}^{\prime} \mathbf{E}_{n}^{-1} \mathbf{V}_{21 n} \mathbf{V}_{1 n}^{-1} \mathbf{Q}_{1 n}-\mathbf{Q}_{1 n}^{\prime} \mathbf{V}_{1 n}^{-1} \mathbf{V}_{12 n} \mathbf{E}_{n}^{-1} \mathbf{Q}_{2 n} \\
+& +\mathbf{Q}_{2 n}^{\prime} \mathbf{E}_{n}^{-1} \mathbf{Q}_{2 n}-\mathbf{Q}_{1 n}^{\prime} \mathbf{V}_{1 n}^{-1} \mathbf{Q}_{1 n} \\
+= & \left(\mathbf{Q}_{1 n}^{\prime} \mathbf{V}_{1 n}^{-1} \mathbf{V}_{12 n}-\mathbf{Q}_{2 n}^{\prime}\right) \mathbf{E}_{n}^{-1}\left(\mathbf{V}_{21 n} \mathbf{V}_{1 n}^{-1} \mathbf{Q}_{1 n}-\mathbf{Q}_{2 n}\right) .
+\end{aligned}
+$$
+
+Because $\mathbf{E}_{n}^{-1}$ is a symmetric positive definite matrix (why?), we can write $\mathbf{E}_{n}^{-1}=\mathbf{E}_{n}^{-1 / 2} \mathbf{E}_{n}^{-1 / 2}$, so that
+
+$$
+\begin{aligned}
+& \left(\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)\right)^{-1}-\left(\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\right)^{-1} \\
+& \quad=\left(\mathbf{Q}_{1 n}^{\prime} \mathbf{V}_{1 n}^{-1} \mathbf{V}_{12 n}-\mathbf{Q}_{2 n}^{\prime}\right) \mathbf{E}_{n}^{-1 / 2} \mathbf{E}_{n}^{-1 / 2}\left(\mathbf{V}_{21 n} \mathbf{V}_{1 n}^{-1} \mathbf{Q}_{1 n}-\mathbf{Q}_{2 n}\right)
+\end{aligned}
+$$
+
+Because this is the product of a matrix and its transpose, we immediately have $\left(\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)\right)^{-1}-\left(\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)\right)^{-1}$ is p.s.d. As this holds for all $P^{o}$ in $\mathcal{P}$ the result follows, which by Proposition 4.44 implies that $\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)-\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)$ is p.s.d. \(\square\)
+
+This result states essentially that the asymptotic precision of the IV estimator cannot be worsened by including additional instrumental variables. We can be more specific, however, and specify situations in which $\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)=\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)$, so that nothing is gained by adding an extra instrumental variable.
+
+Proposition 4.52 Let the conditions of Proposition 4.51 hold. Then we have $\operatorname{avar}\left(\tilde{\boldsymbol{\beta}}_{n}\right)=\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)$ if and only if
+
+$$
+E\left(\mathbf{X}^{\prime} \mathbf{Z}_{1} / n\right) E\left(\mathbf{Z}_{1}^{\prime} \varepsilon \varepsilon^{\prime} \mathbf{Z}_{1} / n\right)^{-1} E\left(\mathbf{Z}_{1}^{\prime} \varepsilon \varepsilon^{\prime} \mathbf{Z}_{2} / n\right)-E\left(\mathbf{X}^{\prime} \mathbf{Z}_{2} / n\right)=\mathbf{0} .
+$$
+
+Proof. Immediate from the final line of the proof of Proposition 4.51. \(\square\)
+
+To interpret this condition, consider the special case in which
+
+$$
+E\left(\mathbf{Z}^{\prime} \varepsilon \varepsilon^{\prime} \mathbf{Z} / n\right)=E\left(\mathbf{Z}^{\prime} \mathbf{Z} / n\right)
+$$
+
+In this case the difference in Proposition 4.52 can be consistently estimated by
+
+$$
+n^{-1}\left(\mathbf{X}^{\prime} \mathbf{Z}_{1}\left(\mathbf{Z}_{1}^{\prime} \mathbf{Z}^{1}\right)^{-1} \mathbf{Z}_{1}^{\prime} \mathbf{Z}_{2}-\mathbf{X}^{\prime} \mathbf{Z}_{2}\right)=n^{-1} \mathbf{X}\left[\mathbf{Z}_{1}\left(\mathbf{Z}_{1}^{\prime} \mathbf{Z}_{1}\right)^{-1} \mathbf{Z}_{1}^{\prime}-\mathbf{I}\right] \mathbf{Z}_{2} .
+$$
+
+This quantity is recognizable as the cross product of $\mathbf{Z}_{2}$ and the projection of $\mathbf{X}$ onto the space orthogonal to that spanned by the columns of $\mathbf{Z}_{1}$. If we write $\overline{\mathbf{X}}=\mathbf{X}\left(\mathbf{Z}_{1}\left(\mathbf{Z}_{1}^{\prime} \mathbf{Z}_{1}\right)^{-1} \mathbf{Z}_{1}^{\prime}-\mathbf{I}\right)$, the difference in Proposition 4.52 is consistently estimated by $\overline{\mathbf{X}}^{\prime} \mathbf{Z}_{2} / n$, so that $\operatorname{avar}\left(\overline{\boldsymbol{\beta}}_{n}\right)=\operatorname{avar}\left(\boldsymbol{\beta}_{n}^{*}\right)$ if and only if $\overline{\mathbf{X}}^{\prime} \mathbf{Z}_{2} / n \xrightarrow{p} \mathbf{0}$, which can be interpreted as saying that adding $\mathbf{Z}_{2}$ to the list of instrumental variables is of no use if it is uncorrelated with $\overline{\mathbf{X}}$, the matrix of residuals of the regression of $\mathbf{X}$ on $\mathbf{Z}_{1}$.
+
+One of the interesting consequences of Propositions 4.51 and 4.52 is that in the presence of heteroskedasticity or serial correlation of unknown form, there may exist estimators for the linear model more efficient than OLS. This result has been obtained independently by Cragg (1983) and Chamberlain (1982). To construct these estimators, it is necessary to find additional instrumental variables uncorrelated with $\varepsilon_{t}$. If $E\left(\varepsilon_{t} \mid \mathbf{X}_{t}\right)=\mathbf{0}$, such instrumental variables are easily found because any measurable function of $\mathbf{X}_{t}$ will be uncorrelated with $\varepsilon_{t}$. Hence, we can set $\mathbf{Z}_{t}=\left(\mathbf{X}_{t}^{\prime}, \mathbf{z}\left(\mathbf{X}_{t}\right)^{\prime}\right)^{\prime}$, where $\mathbf{z}\left(\mathbf{X}_{t}\right)$ is a $(l-k) \times 1$ vector of measurable functions of $\mathbf{X}_{t}$.
+
+Example 4.53 Let $p=k=1$ so $Y_{t}=X_{t} \beta_{o}+\varepsilon_{t}$, where $Y_{t}, X_{t}$ and $\varepsilon_{t}$ are scalars. Suppose that $X_{t}$ is nonstochastic, and for convenience suppose $M_{n} \equiv n^{-1} \sum X_{t}^{2} \rightarrow 1$. Let $\varepsilon_{t}$ be independent heterogeneously distributed such that $E\left(\varepsilon_{t}\right)=0$ and $E\left(\varepsilon_{t}^{2}\right)=\sigma_{t}^{2}$. Further, suppose $X_{t}>\delta>0$ for all $t$, and take $z\left(X_{t}\right)=X_{t}^{-1}$ so that $\mathbf{Z}_{t}=\left(X_{t}, X_{t}^{-1}\right)^{\prime}$. We consider $\hat{\beta}_{n}=\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Y}$ and $\beta_{n}^{*}=\left(\mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z} \hat{\mathbf{V}}_{n}^{-1} \mathbf{Z}^{\prime} \mathbf{Y}$, and suppose that sufficient other assumptions guarantee that the result of Exercise 4.26 holds for both estimators. By Propositions 4.51 and 4.52, it follows that $\operatorname{avar}\left(\hat{\beta}_{n}\right)>\operatorname{avar}\left(\beta_{n}^{*}\right)$ if and only if
+
+$$
+\left(n^{-1} \sum_{t=1}^{n} \sigma_{t}^{2} X_{t}^{2}\right)^{-1}\left(n^{-1} \sum_{t=1}^{n} \sigma_{t}^{2}\right)-1 \neq 0
+$$
+
+or equivalently, if and only if $n^{-1} \sum_{t=1}^{n} \sigma_{t}^{2} X_{t}^{2} \neq n^{-1} \sum_{t=1}^{n} \sigma_{t}^{2}$. This would certainly occur if $\sigma_{t}=X_{t}^{-1}$. (Verify this using Jensen's inequality.)
+
+It also follows from Propositions 4.51 and 4.52 that when $\mathbf{V}_{n} \neq \mathbf{L}_{n}$, there may exist estimators more efficient than two-stage least squares. If $l>k$, additional instrumental variables are not necessarily required to improve efficiency over 2SLS (see White, 1982); but as the result of Proposition 4.51 indicates, additional instrumental variables (e.g., functions of $\mathbf{Z}_{t}$ ) can nevertheless generate further improvements.
+
+The results so far suggest that in particular situations efficiency may or may not be improved by using additional instrumental variables. This leads us to ask whether there exists an optimal set of instrumental variables, that is, a set of instrumental variables that one could not improve upon by using additional instrumental variables. If so, we could in principle definitively know whether or not a given set of instrumental variables is best.
+
+To address this question, we introduce an approach developed by Bates and White (1993) that permits direct construction of the optimal instrumental variables. This is in sharp contrast to the approach taken when we considered the best choice for $\hat{\mathbf{P}}_{n}$. There, we seemingly pulled the best choice, $\hat{\mathbf{V}}_{\boldsymbol{n}}^{-1}$, out of a hat (as if by magic!), and simply verified its optimality. There was no hint of how we arrived at this choice. (This is a common feature of the efficiency literature, a feature that has endowed it with no little mystery.) With the Bates-White method, however, we will be able to see how to construct the optimal (most efficient) instrumental variables estimators, step-by-step.
+
+Bates and White consider classes of estimators $\mathcal{E}$ indexed by a parameter $\boldsymbol{\gamma}$ such that for each data generating process $P^{o}$ in a set $\mathcal{P}$,
+
+
+\begin{equation*}
+\sqrt{n}\left(\hat{\boldsymbol{\theta}}_{n}(\boldsymbol{\gamma})-\boldsymbol{\theta}^{o}\right)=\mathbf{H}_{n}^{o}(\boldsymbol{\gamma})^{-1} \sqrt{n} \mathbf{s}_{n}^{o}(\boldsymbol{\gamma})+o_{p^{o}}(1) \tag{4.1}
+\end{equation*}
+
+
+where: $\hat{\boldsymbol{\theta}}_{n}(\boldsymbol{\gamma})$ is an estimator indexed by $\boldsymbol{\gamma}$ taking values in a set $\Gamma ; \boldsymbol{\theta}^{o}= \boldsymbol{\theta}\left(P^{o}\right)$ is the $k \times 1$ parameter vector corresponding to the data generating process $P^{o} ; \mathbf{H}_{n}^{o}(\boldsymbol{\gamma})$ is a nonstochastic nonsingular $k \times k$ matrix depending on $\boldsymbol{\gamma}$ and $P^{o} ; \mathbf{s}_{n}^{o}(\boldsymbol{\gamma})$ is a random $k \times 1$ vector depending on $\boldsymbol{\gamma}$ and $P^{o}$ such that $\mathbf{I}_{n}^{o}(\boldsymbol{\gamma})^{-1 / 2} \sqrt{n} \mathbf{s}_{n}^{o}(\boldsymbol{\gamma}) \xrightarrow{d^{o}} N(\mathbf{0}, \mathbf{I})$, where $\mathbf{I}_{n}^{o}(\boldsymbol{\gamma}) \equiv \operatorname{var}^{o}\left(\sqrt{n} \mathbf{s}_{n}^{o}(\boldsymbol{\gamma})\right), \xrightarrow{d^{o}}$ denotes convergence in distribution under $P^{o}$, and varo denotes variance under $P^{o}$; and $o_{p^{o}}(1)$ denotes terms vanishing in probability- $P^{o}$. Bates and White consider how to choose $\boldsymbol{\gamma}$ in $\Gamma$ to obtain an asymptotically efficient estimator.
+
+Bates and White's method is actually formulated for a more general setting but (4.1) will suffice for us here.
+
+To relate the Bates-White method to our instrumental variables estimation framework, we begin by writing the process generating the dependent\\
+variables in a way that makes explicit the role of $P^{o}$. Specifically, we write
+
+$$
+\mathbf{Y}_{t}^{o}=\mathbf{X}_{t}^{o \prime} \boldsymbol{\beta}^{o}+\varepsilon_{t}, \quad t=1,2, \ldots
+$$
+
+The rationale for this is as follows. The data generating process $P^{o}$ governs the probabilistic behavior of all of the random variables (measurable mappings from the underlying measurable space $(\Omega, \mathcal{F})$ ) in our system. Given the way our data are generated, the probabilistic behavior of the mapping $\varepsilon_{t}$ is governed by $P^{o}$, but the mapping itself is not determined by $P^{o}$. We thus do not give a ${ }^{o}$ superscript to $\varepsilon_{t}$.
+
+On the other hand, different values $\boldsymbol{\beta}^{o}$ (corresponding to $\boldsymbol{\theta}^{o}$ in the BatesWhite setting) result in different mappings for the dependent variables; we acknowledge this by writing $\mathbf{Y}_{t}^{o}$, and we view $\boldsymbol{\beta}^{o}$ as determined by $P^{o}$, i.e., $\boldsymbol{\beta}^{o}=\boldsymbol{\beta}\left(P^{o}\right)$. Further, because lags of $\mathbf{Y}_{t}^{o}$ or elements of $\mathbf{Y}_{t}^{o}$ itself (recall the simultaneous equations framework) may appear as elements of the explanatory variable matrix, different values for $\boldsymbol{\beta}^{o}$ may also result in different mappings for the explanatory variables. We acknowledge this by writing $\mathbf{X}_{t}^{o}$.
+
+Next, consider the instrumental variables. These also are measurable mappings from $\{\Omega, \mathcal{F}\}$ whose probabilistic behavior is governed by $P^{o}$. As we will see, it is useful to permit these mappings to depend on $P^{o}$ as well. Consequently, we write $\mathbf{Z}_{t}^{o}$. Because our goal is the choice of optimal instrumental variables, we let $\mathbf{Z}_{t}^{o}$ depend on $\gamma$ and write $\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma})$ to emphasize this dependence. The optimal choice of $\gamma$ will then deliver the optimal choice of instrumental variables. Later, we will revisit and extend this interpretation of $\boldsymbol{\gamma}$.
+
+In Exercise 4.26 (ii), we assume $\mathbf{V}_{n}^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon \xrightarrow{d} N(\mathbf{0}, \mathbf{I})$, where $\mathbf{V}_{n} \equiv \operatorname{var}\left(n^{-1 / 2} \mathbf{Z}^{\prime} \varepsilon\right)$. For the Bates-White framework with $\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma})$, this becomes $\mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1 / 2} n^{-1 / 2} \mathbf{Z}^{o}(\boldsymbol{\gamma})^{\prime} \boldsymbol{\varepsilon} \xrightarrow{d^{o}} N(\mathbf{0}, \mathbf{I})$, where $\mathbf{V}_{n}^{o}(\boldsymbol{\gamma}) \equiv \operatorname{var}^{o}\left(n^{-1 / 2}\right. \mathbf{Z}^{o}(\boldsymbol{\gamma})^{\prime} \boldsymbol{\varepsilon}$ ), and $\mathbf{Z}^{o}(\boldsymbol{\gamma})$ is the $n p \times l$ matrix with blocks $\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma})^{\prime}$. In (iii.a) we assume $\mathbf{Z}^{\prime} \mathbf{X} / n-\mathbf{Q}_{n}=o_{p}(1)$, where $\mathbf{Q}_{n} \equiv E\left(\mathbf{Z}^{\prime} \mathbf{X} / n\right)$ is $O(1)$ with uniformly full column rank. This becomes $\mathbf{Z}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{X}^{o} / n-\mathbf{Q}_{n}^{o}=o_{p^{o}}(1)$, where $\mathbf{Q}_{n}^{o} \equiv E^{o}\left(\mathbf{Z}^{o}(\gamma)^{\prime} \mathbf{X}^{o} / n\right)$ is $O(1)$ with uniformly full column rank; $E^{o}(\cdot)$ denotes expectation with respect to $P^{o}$. In (iii.b) we assume $\hat{\mathbf{P}}_{n}-\mathbf{P}_{n}= o_{p}(1)$, where $\mathbf{P}_{n}$ is $O(1)$ and uniformly positive definite. This becomes $\hat{\mathbf{P}}_{n}(\boldsymbol{\gamma})-\mathbf{P}_{n}^{o}(\boldsymbol{\gamma})=o_{p^{o}}(1)$, where $\mathbf{P}_{n}^{o}(\boldsymbol{\gamma})$ is $O(1)$ and uniformly positive definite. Finally, the instrumental variables estimator has the form
+
+$$
+\tilde{\boldsymbol{\beta}}_{n}(\gamma)=\left(\mathbf{X}^{o \prime} \mathbf{Z}^{o}(\gamma) \hat{\mathbf{P}}_{n}(\gamma) \mathbf{Z}^{o}(\gamma)^{\prime} \mathbf{X}^{o}\right)^{-1} \mathbf{X}^{o \prime} \mathbf{Z}^{o}(\gamma) \hat{\mathbf{P}}_{n}(\gamma) \mathbf{Z}^{o}(\gamma)^{\prime} \mathbf{Y}^{o} .
+$$
+
+We will use the following further extension of Exercise 4.26.
+
+Theorem 4.54 Let $\mathcal{P}$ be a set of probability measures $P^{o}$ on $(\Omega, \mathcal{F})$, and let $\Gamma$ be a set with elements $\gamma$. Suppose that for each $P^{o}$ in $\mathcal{P}$\\
+(i) $\mathbf{Y}_{t}^{o}=\mathbf{X}_{t}^{o \prime} \boldsymbol{\beta}^{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}^{o} \in \mathbb{R}^{k}$.
+
+For each $\boldsymbol{\gamma}$ in $\Gamma$ and each $P^{o}$ in $\mathcal{P}$, let $\left\{\mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma})\right\}$ be a double array of random $p \times l$ matrices, such that\\
+(ii) $n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma}) \varepsilon_{t}-n^{1 / 2} \mathbf{m}_{n}^{o}(\boldsymbol{\gamma})=o_{p^{o}}(1)$, where
+
+$$
+\mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1 / 2} n^{1 / 2} \mathbf{m}_{n}^{o}(\boldsymbol{\gamma}) \xrightarrow{d^{o}} N(\mathbf{0}, \mathbf{I}),
+$$
+
+and $\mathbf{V}_{n}^{o}(\boldsymbol{\gamma}) \equiv \operatorname{var}^{o}\left(n^{1 / 2} \mathbf{m}_{n}^{o}(\boldsymbol{\gamma})\right)$ is $O(1)$ and uniformly positive definite;\\
+(iii) (a) $n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma}) \mathbf{X}_{t}^{o \prime}-\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})=o_{p^{o}}(1)$, where $\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})$ is $O(1)$ with uniformly full column rank;\\
+(b) There exists $\hat{\mathbf{P}}_{n}(\boldsymbol{\gamma})$ such that $\hat{\mathbf{P}}_{n}(\boldsymbol{\gamma})-\mathbf{P}_{n}^{o}(\boldsymbol{\gamma})=o_{p^{o}}(1)$ and $\mathbf{P}_{n}^{o}(\boldsymbol{\gamma})= O(1)$ and is symmetric and uniformly positive definite.
+
+Then for each $P^{o}$ in $\mathcal{P}$ and $\gamma$ in $\Gamma$
+
+$$
+\mathbf{D}_{n}^{o}(\boldsymbol{\gamma})^{-1 / 2} \sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}(\boldsymbol{\gamma})-\boldsymbol{\beta}^{o}\right) \xrightarrow{d^{o}} N(\mathbf{0}, \mathbf{I}),
+$$
+
+where
+
+$$
+\begin{aligned}
+\mathbf{D}_{n}^{o}(\boldsymbol{\gamma}) \equiv & \left(\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{P}_{n}^{o}(\boldsymbol{\gamma}) \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})\right)^{-1} \\
+& \times \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{P}_{n}^{o}(\boldsymbol{\gamma}) \mathbf{V}_{n}^{o}(\boldsymbol{\gamma}) \mathbf{P}_{n}^{o}(\boldsymbol{\gamma}) \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})\left(\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{P}_{n}^{o}(\boldsymbol{\gamma}) \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})\right)^{-1}
+\end{aligned}
+$$
+
+and $\mathbf{D}_{n}^{o}(\boldsymbol{\gamma})^{-1}$ are $O(1)$.\\
+Proof. Apply the proof of Exercise 4.26 for each $P^{o}$ in $\mathcal{P}$ and $\gamma$ in $\Gamma$.\\
+This result is stated with features that permit fairly general applications, discussed further next. In particular, we let $\left\{\mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma})\right\}$ be a double array of matrices. In some cases a single array (sequence) $\left\{\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma})\right\}$ suffices. In such cases we can simply put $\mathbf{m}_{n}^{o}(\boldsymbol{\gamma})=n^{-1} \mathbf{Z}^{o}(\boldsymbol{\gamma})^{\prime} \boldsymbol{\varepsilon}$, so that $\mathbf{V}_{n}^{o}(\boldsymbol{\gamma}) \equiv \operatorname{var}^{o}\left(n^{-1 / 2} \mathbf{Z}^{o}(\boldsymbol{\gamma})^{\prime} \boldsymbol{\varepsilon}\right)$, parallel to Exercise 4.26. In this case we also have $\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})=E^{o}\left(\mathbf{Z}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{X}^{o} / n\right)$. These identifications will suffice for now, but the additional flexibility permitted in Theorem 4.54 will become useful shortly. Recall that the proof of Exercise 4.26 gives
+
+$$
+\begin{aligned}
+\sqrt{n}\left(\tilde{\boldsymbol{\beta}}_{n}(\boldsymbol{\gamma})-\boldsymbol{\beta}^{o}\right)= & \left(\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})\right)^{-1} \\
+& \times \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} n^{-1 / 2} \mathbf{Z}^{o}(\boldsymbol{\gamma})^{\prime} \varepsilon+o_{p^{o}}(1)
+\end{aligned}
+$$
+
+when we choose $\hat{\mathbf{P}}_{n}(\boldsymbol{\gamma})$ so that $\mathbf{P}_{n}^{o}(\boldsymbol{\gamma})=\mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1}$, the asymptotically efficient choice. Comparing this expression to (4.1) we see that $\overline{\boldsymbol{\beta}}_{n}(\boldsymbol{\gamma})$ corresponds to $\hat{\boldsymbol{\theta}}_{n}(\boldsymbol{\gamma}), \mathcal{E}$ is the set of estimators $\mathcal{E} \equiv\left\{\left\{\tilde{\boldsymbol{\beta}}_{n}(\boldsymbol{\gamma})\right\}, \boldsymbol{\gamma} \in \Gamma\right\}, \boldsymbol{\beta}^{o}$ corresponds to $\boldsymbol{\theta}^{o}$, and we can put
+
+$$
+\begin{aligned}
+\mathbf{H}_{n}^{o}(\boldsymbol{\gamma}) & =\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma}) \\
+\mathbf{s}_{n}^{o}(\boldsymbol{\gamma}) & =\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} n^{-1} \mathbf{Z}^{o}(\boldsymbol{\gamma})^{\prime} \varepsilon \\
+\mathbf{I}_{n}^{o}(\boldsymbol{\gamma}) & =\mathbf{H}_{n}^{o}(\boldsymbol{\gamma})
+\end{aligned}
+$$
+
+Our consideration of the construction of the optimal instrumental variables estimator makes essential use of these correspondences.
+
+The key to applying the Bates-White constructive method here is the following result, a version of Theorem 2.6 of Bates and White (1993).
+
+Proposition 4.55 Let $\hat{\boldsymbol{\theta}}_{n}(\boldsymbol{\gamma})$ satisfy (4.1) for all $\boldsymbol{\gamma}$ in a nonempty set $\Gamma$ and all $P^{o}$ in $\mathcal{P}$, and suppose there exists $\gamma^{*}$ in $\Gamma$ such that
+
+
+\begin{equation*}
+\mathbf{H}_{n}^{o}(\boldsymbol{\gamma})=\operatorname{cov}^{o}\left(\sqrt{n} \mathbf{s}_{n}^{o}(\boldsymbol{\gamma}), \sqrt{n} \mathbf{s}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)\right) \tag{4.2}
+\end{equation*}
+
+
+for all $\gamma \in \Gamma$ and all $P^{o}$ in $\mathcal{P}$. Then for all $\gamma \in \Gamma$ and all $P^{o}$ in $\mathcal{P}$
+
+$$
+\operatorname{avar}^{o}\left(\hat{\boldsymbol{\theta}}_{n}(\boldsymbol{\gamma})\right)-\operatorname{avar}^{o}\left(\hat{\boldsymbol{\theta}}_{n}\left(\boldsymbol{\gamma}^{*}\right)\right)
+$$
+
+is positive semidefinite for all $n$ sufficiently large.\\
+Proof. Given (4.1), we have that for all $\gamma$ in $\Gamma$, all $P^{o}$ in $\mathcal{P}$, and all $n$ sufficiently large
+
+$$
+\begin{aligned}
+\operatorname{avar}^{o}\left(\hat{\boldsymbol{\theta}}_{n}(\boldsymbol{\gamma})\right) & =\mathbf{H}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{I}_{n}^{o}(\boldsymbol{\gamma}) \mathbf{H}_{n}^{o}(\boldsymbol{\gamma})^{-1} \\
+\operatorname{avar}^{o}\left(\hat{\boldsymbol{\theta}}_{n}\left(\boldsymbol{\gamma}^{*}\right)\right) & =\mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} \mathbf{I}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right) \mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1}=\mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1},
+\end{aligned}
+$$
+
+so
+
+$$
+\operatorname{avar}^{o}\left(\hat{\theta}_{n}(\gamma)\right)-\operatorname{avar}^{o}\left(\hat{\theta}_{n}\left(\gamma^{*}\right)\right)=\mathbf{H}_{n}^{o}(\gamma)^{-1} \mathbf{I}_{n}^{o}(\gamma) \mathbf{H}_{n}^{o}(\gamma)^{-1}-\mathbf{H}_{n}^{o}\left(\gamma^{*}\right)^{-1} .
+$$
+
+We now show that this quantity equals
+
+$$
+\operatorname{var}^{o}\left(\mathbf{H}_{n}^{o}(\boldsymbol{\gamma})^{-1} \sqrt{n} \mathbf{s}_{n}^{o}(\boldsymbol{\gamma})-\mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} \sqrt{n} \mathbf{s}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)\right) .
+$$
+
+Note that (4.2) implies
+
+$$
+\operatorname{var}^{o}\binom{\sqrt{n} \mathbf{s}_{n}^{o}(\boldsymbol{\gamma})}{\sqrt{n} \mathbf{s}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)}=\left(\begin{array}{cc}
+\mathbf{I}_{n}^{o}(\boldsymbol{\gamma}) & \mathbf{H}_{n}^{o}(\boldsymbol{\gamma}) \\
+\mathbf{H}_{n}^{o}(\boldsymbol{\gamma}) & \mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)
+\end{array}\right),
+$$
+
+So the variance of $\mathbf{H}_{n}^{o}(\boldsymbol{\gamma})^{-1} \sqrt{n} \mathbf{s}_{n}^{o}(\boldsymbol{\gamma})-\mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} \sqrt{n} \mathbf{s}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)$ is given by
+
+$$
+\begin{aligned}
+& \mathbf{H}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{I}_{n}^{o}(\boldsymbol{\gamma}) \mathbf{H}_{n}^{o}(\boldsymbol{\gamma})^{-1}+ \mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} \mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right) \mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} \\
+&-\mathbf{H}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{H}_{n}^{o}(\boldsymbol{\gamma}) \mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1}-\mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} \mathbf{H}_{n}^{o}(\boldsymbol{\gamma}) \mathbf{H}_{n}^{o}(\boldsymbol{\gamma})^{-1} \\
+&=\mathbf{H}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{I}_{n}^{o}(\boldsymbol{\gamma}) \mathbf{H}_{n}^{o}(\boldsymbol{\gamma})^{-1}-\mathbf{H}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1}
+\end{aligned}
+$$
+
+as claimed. Since this quantity is a variance-covariance matrix it is positive semidefinite, and the proof is complete.
+
+The key to finding the asymptotically efficient estimator in a given class is thus to find $\boldsymbol{\gamma}^{*}$ such that for all $P^{o}$ in $\mathcal{P}$ and $\boldsymbol{\gamma}$ in $\Gamma$
+
+$$
+\mathbf{H}_{n}^{o}(\boldsymbol{\gamma})=\operatorname{cov}^{o}\left(\sqrt{n} \mathbf{s}_{n}^{o}(\boldsymbol{\gamma}), \sqrt{n} \mathbf{s}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)\right) .
+$$
+
+Finding the optimal instrumental variables turns out to be somewhat involved, but key insight can be gained by initially considering $\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma})$ as previously suggested and by requiring that the errors $\left\{\varepsilon_{t}\right\}$ be sufficiently well behaved. Thus, consider applying (4.2) with $\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma})$. The correspondences previously identified give
+
+$$
+\begin{aligned}
+& \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})= \\
+& \operatorname{cov}^{o}\left(\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} n^{-1 / 2} \mathbf{Z}^{o}(\boldsymbol{\gamma})^{\prime} \varepsilon, \mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{\prime} \mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} n^{-1 / 2} \mathbf{Z}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{\prime} \varepsilon\right)
+\end{aligned}
+$$
+
+Defining $\mathbf{C}_{n}^{o}\left(\boldsymbol{\gamma}, \boldsymbol{\gamma}^{*}\right) \equiv \operatorname{cov}^{o}\left(n^{-1 / 2} \mathbf{Z}^{o}(\boldsymbol{\gamma})^{\prime} \varepsilon, n^{-1 / 2} \mathbf{Z}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{\prime} \varepsilon\right)$, we have the simpler expression
+
+$$
+\begin{aligned}
+\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})= & \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} \\
+& \times \mathbf{C}_{n}^{o}\left(\boldsymbol{\gamma}, \boldsymbol{\gamma}^{*}\right) \mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} \mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)
+\end{aligned}
+$$
+
+It therefore suffices to find $\boldsymbol{\gamma}^{*}$ such that for all $\boldsymbol{\gamma}$
+
+$$
+\mathbf{Q}_{n}^{o}(\gamma)=\mathbf{C}_{n}^{o}\left(\gamma, \gamma^{*}\right) \mathbf{V}_{n}^{o}\left(\gamma^{*}\right)^{-1} \mathbf{Q}_{n}^{o}\left(\gamma^{*}\right)
+$$
+
+To make this choice tractable, we impose plausible structure on $\varepsilon_{t}$. Specifically, we suppose there is an increasing sequence of $\sigma$-fields $\left\{\mathcal{F}_{t}\right\}$ adapted to $\left\{\varepsilon_{t}\right\}$ such that for each $P^{o}$ in $\mathcal{P}\left\{\varepsilon_{t}, \mathcal{F}_{t}\right\}$ is a martingale difference sequence. That is, $E^{o}\left(\varepsilon_{t} \mid \mathcal{F}_{t-1}\right)=0$. Recall that the instrumental variables $\left\{\mathbf{Z}_{t}^{o}\right\}$ must be uncorrelated with $\varepsilon_{t}$. It is therefore natural to restrict attention to instrumental variables $\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma})$ that are measurable $-\mathcal{F}_{t-1}$, as then
+
+$$
+\begin{aligned}
+E^{o}\left(\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma}) \varepsilon_{t}\right) & =E^{o}\left(E^{o}\left(\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma}) \varepsilon_{t} \mid \mathcal{F}_{t-1}\right)\right) \\
+& =E^{o}\left(\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma}) E^{o}\left(\varepsilon_{t} \mid \mathcal{F}_{t-1}\right)\right)=\mathbf{0}
+\end{aligned}
+$$
+
+Imposing these requirements on $\left\{\varepsilon_{t}\right\}$ and $\left\{\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma})\right\}$, we have that
+
+$$
+\begin{aligned}
+\mathbf{C}_{n}^{o}\left(\gamma, \gamma^{*}\right) & =\operatorname{cov}^{o}\left(n^{-1 / 2} \mathbf{Z}^{o}(\gamma)^{\prime} \varepsilon, n^{-1 / 2} \mathbf{Z}^{o}\left(\gamma^{*}\right)^{\prime} \varepsilon\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}(\gamma) \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)^{\prime}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(E^{o}\left(\mathbf{Z}_{t}^{o}(\gamma) \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)^{\prime} \mid \mathcal{F}_{t-1}\right)\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}(\gamma) E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathcal{F}_{t-1}\right) \mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)^{\prime}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}(\gamma) \Omega_{t}^{o} \mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)^{\prime}\right)
+\end{aligned}
+$$
+
+where $\boldsymbol{\Omega}_{t}^{o} \equiv E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathcal{F}_{t-1}\right)$. The first equality is by definition, the second follows from the martingale difference property of $\varepsilon_{t}$, the third uses the law of iterated expectations, and the fourth applies Proposition 3.63.
+
+Consequently, we seek $\gamma^{*}$ such that
+
+$$
+n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma}) \mathbf{X}_{t}^{o \prime}\right)=n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma}) \boldsymbol{\Omega}_{t}^{o} \mathbf{Z}_{t}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{\prime}\right) \mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} \mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)
+$$
+
+or, by the law of iterated expectations,
+
+$$
+\begin{aligned}
+n^{-1} \sum_{t=1}^{n} & E^{o}\left(E^{o}\left(\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma}) \mathbf{X}_{t}^{o \prime} \mid \mathcal{F}_{t-1}\right)\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma}) E^{o}\left(\mathbf{X}_{t}^{o \prime} \mid \mathcal{F}_{t-1}\right)\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma}) \tilde{\mathbf{X}}_{t}^{o \prime}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma}) \boldsymbol{\Omega}_{t}^{o} \mathbf{Z}_{t}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{\prime}\right) \mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} \mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)
+\end{aligned}
+$$
+
+where we define $\tilde{\mathbf{X}}_{t}^{o} \equiv E^{o}\left(\mathbf{X}_{t}^{o} \mid \mathcal{F}_{t-1}\right)$.\\
+Inspecting the last equation, we see that equality holds provided we choose $\gamma^{*}$ such that
+
+
+\begin{equation*}
+\mathbf{Q}_{n}^{o}\left(\gamma^{*}\right)^{\prime} \mathbf{V}_{n}^{o}\left(\gamma^{*}\right)^{-1} \mathbf{Z}_{t}^{o}\left(\gamma^{*}\right) \boldsymbol{\Omega}_{t}^{o}=\tilde{\mathbf{X}}_{t}^{o} \tag{4.3}
+\end{equation*}
+
+
+If $\Omega_{t}^{o} \equiv E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathcal{F}_{t-1}\right)$ is nonsingular, as is plausible, this becomes
+
+$$
+\mathbf{Q}_{n}^{o}\left(\gamma^{*}\right)^{\prime} \mathbf{V}_{n}^{o}\left(\gamma^{*}\right)^{-1} \mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)=\tilde{\mathbf{X}}_{t}^{o} \Omega_{t}^{o-1}
+$$
+
+which looks promising, as both sides are measurable- $\mathcal{F}_{t-1}$. We must therefore choose $\mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)$ so that a particular linear combination of $\mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)$ equals $\tilde{\mathrm{X}}_{t}^{o} \Omega_{t}^{o-1}$.
+
+This still looks challenging, however, because $\boldsymbol{\gamma}^{*}$ also appears in $\mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)$ and $\mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)$. Nevertheless, consider the simplest possible choice for $\mathbf{Z}_{t}^{o}\left(\boldsymbol{\gamma}^{*}\right)$,
+
+$$
+\mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)=\tilde{\mathbf{X}}_{t}^{o} \Omega_{t}^{o-1}
+$$
+
+For this to be valid, it must happen that $\mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{\prime}=\mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)$, so that $\mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{\prime} \mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1}=\mathbf{I}$. Now with this choice for $\mathbf{Z}_{t}^{o}\left(\boldsymbol{\gamma}^{*}\right)$
+
+$$
+\begin{aligned}
+\mathbf{V}_{n}^{o}\left(\gamma^{*}\right) & =\operatorname{var}^{o}\left(n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o}\left(\gamma^{*}\right) \varepsilon_{t}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}\left(\gamma^{*}\right) \varepsilon_{t} \varepsilon_{t}^{\prime} \mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)^{\prime}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}\left(\gamma^{*}\right) \boldsymbol{\Omega}_{t}^{o} \mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)^{\prime}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \boldsymbol{\Omega}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \tilde{\mathbf{X}}_{t}^{o \prime}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \tilde{\mathbf{X}}_{t}^{o \prime}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}\left(\gamma^{*}\right) \tilde{\mathbf{X}}_{t}^{o \prime}\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}\left(\gamma^{*}\right) E^{o}\left(\mathbf{X}_{t}^{o \prime} \mid \mathcal{F}_{t-1}\right)\right) \\
+& =n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{Z}_{t}^{o}\left(\gamma^{*}\right) \mathbf{X}_{t}^{o \prime}\right) \\
+& =\mathbf{Q}_{n}^{o}\left(\gamma^{*}\right)
+\end{aligned}
+$$
+
+The choice $\mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)=\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1}$ thus satisfies the sufficient condition (4.2), and therefore delivers the optimal instrumental variables.
+
+Nevertheless, using these optimal instrumental variables presents apparent obstacles in that neither $\Omega_{t}^{o} \equiv E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathcal{F}_{t-1}\right)$ nor $\overline{\mathbf{X}}_{t}^{o}=E^{o}\left(\mathbf{X}_{t}^{o} \mid \mathcal{F}_{t-1}\right)$\\
+are necessarily known or observable. We shall see that these obstacles can be overcome under reasonable assumptions. Before dealing with the general case, however, we consider two important special cases in which these obstacles are removed. This provides insight useful in dealing with the general case, and leads us naturally to procedures having general applicability.
+
+Thus, suppose for the moment
+
+$$
+E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathcal{F}_{t-1}\right)=\boldsymbol{\Omega}_{t}, \quad t=1,2, \ldots,
+$$
+
+where $\boldsymbol{\Omega}_{t}$ is a known $p \times p$ matrix. (We consider the consequences of not knowing $\boldsymbol{\Omega}_{t}$ later.) Although this restricts $\mathcal{P}$, it does not restrict it completely - different choices for $P^{o}$ can imply different distributions for $\varepsilon_{t}$, even though $\boldsymbol{\Omega}_{t}$ is identical.
+
+If we then also require that $\mathbf{X}_{t}^{o}$ is measurable $-\mathcal{F}_{t-1}$ it follows that
+
+$$
+\begin{aligned}
+\overline{\mathbf{X}}_{t}^{o} & =E^{o}\left(\mathbf{X}_{t}^{o} \mid \mathcal{F}_{t-1}\right) \\
+& =\mathbf{X}_{t}^{o}
+\end{aligned}
+$$
+
+so that $\tilde{\mathrm{X}}_{t}^{o}=\mathrm{X}_{t}^{o}$ is observable. Note that this also implies
+
+$$
+E^{o}\left(\mathbf{Y}_{t}^{o} \mid \mathcal{F}_{t-1}\right)=E^{o}\left(\mathbf{X}_{t}^{o \prime} \boldsymbol{\beta}^{o}+\varepsilon_{t} \mid \mathcal{F}_{t-1}\right)=\mathbf{X}_{t}^{o \prime} \boldsymbol{\beta}^{o}
+$$
+
+so that the conditional mean of $\mathbf{Y}_{t}^{o}$ still depends on $P^{o}$ through $\boldsymbol{\beta}^{o}$, but we can view ( $i^{\prime}$ ) as defining a relation useful for prediction. This requirement rules out a system of simultaneous equations, but still permits $\mathbf{X}_{t}^{o}$ to contain lags of elements of $\mathbf{Y}_{t}^{o}$.
+
+With these restrictions on $\mathcal{P}$ we have that $\mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)=\overline{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1}=\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1}$ delivers a usable set of optimal instrumental variables. Observe that this clearly illustrates the way in which the existence of an optimal IV estimator depends on the collection $\mathcal{P}$ of candidate data generating processes.
+
+Let us now examine the estimator resulting from choosing the optimal instrumental variables in this setting.
+
+Exercise 4.56 Let $\mathbf{X}_{t}$ be $\mathcal{F}_{t-1-\text { measurable and suppose that } \Omega_{t}}=E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid\right. \mathcal{F}_{t-1}$ ) for all $P^{o}$ in $\mathcal{P}$. Show that with the choice $\mathbf{Z}_{t}^{o}\left(\gamma^{*}\right)=\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1}$ then $\mathbf{V}_{\boldsymbol{n}}\left(\boldsymbol{\gamma}^{*}\right)=E\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)$ and show that with $\hat{\mathbf{V}}_{\boldsymbol{n}}\left(\boldsymbol{\gamma}^{*}\right)=n^{-1} \sum_{t=1}^{n} \mathrm{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathrm{X}_{t}^{o \prime}$ this yields the GLS estimator
+
+$$
+\begin{aligned}
+\boldsymbol{\beta}_{n}^{*} & =\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{Y}_{t}^{o} \\
+& =\left(\mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{Y}
+\end{aligned}
+$$
+
+where $\boldsymbol{\Omega}$ is the $n p \times n p$ block diagonal matrix with $p \times p$ diagonal blocks $\boldsymbol{\Omega}_{t}$, $t=1, \ldots, n$ and zeroes elsewhere, and we drop the ${ }^{o}$ superscript in writing $\mathbf{X}$ and $\mathbf{Y}$.
+
+This is the generalized least squares estimator whose finite sample efficiency properties we discussed in Chapter 1. Our current discussion shows that these finite sample properties have large sample analogs in a setting that neither requires normality for the errors $\varepsilon_{t}$ nor requires that the regressors $\mathbf{X}_{t}^{o}$ be nonstochastic.
+
+In fact, we have now proven part (a) of the following asymptotic efficiency result for the generalized least squares estimator.
+
+Theorem 4.57 (Efficiency of GLS) Suppose the conditions of Theorem 4.54 hold and that in addition $\mathcal{P}$ is such that for each $P^{o}$ in $\mathcal{P}$\\
+(i) $\mathbf{Y}_{t}^{o}=\mathbf{X}_{t}^{o \prime} \boldsymbol{\beta}^{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}^{o} \in \mathbb{R}^{k}$, where $\left\{\left(\mathbf{X}_{t+1}^{o}, \varepsilon_{t}\right), \mathcal{F}_{t}\right\}$ is an adapted stochastic sequence with $E^{o}\left(\varepsilon_{t} \mid\right. \left.\mathcal{F}_{t-1}\right)=\mathbf{0}, t=1,2, \ldots$; and\\
+(ii) $E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathcal{F}_{t-1}\right)=\boldsymbol{\Omega}_{t}$ is a known finite and nonsingular $p \times p$ matrix $t=1,2, \ldots$.\\
+(iii) For each $\gamma \in \Gamma, \mathbf{Z}_{t}^{o}(\gamma)$ is $\mathcal{F}_{t-1}$-measurable, $t=1,2, \ldots$, and $\mathbf{Q}_{n}^{o}(\gamma)= n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t}^{o}(\boldsymbol{\gamma}) \mathbf{X}_{t}^{o \prime}\right)$.\\
+Then\\
+(a) $\mathbf{Z}_{t}^{o}\left(\boldsymbol{\gamma}^{*}\right)=\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1}$ delivers
+
+$$
+\boldsymbol{\beta}_{n}^{*}=\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{Y}_{t}^{o}
+$$
+
+which is asymptotically efficient in $\mathcal{E}$ for $\mathcal{P}$.\\
+(b) Further, the asymptotic covariance matrix of $\boldsymbol{\beta}_{n}^{*}$ is given by
+
+$$
+\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right)=\left[n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right)\right]^{-1},
+$$
+
+which is consistently estimated by
+
+$$
+\hat{\mathbf{D}}_{n}=\left[n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{-1} \mathbf{X}_{t}^{o \prime}\right]^{-1},
+$$
+
+i.e., $\hat{\mathbf{D}}_{n}-\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right) \xrightarrow{p^{o}} \mathbf{0}$.
+
+We leave the proof of (b) as an exercise:\\
+Exercise 4.58 Prove Theorem 4.57 (b).\\
+As we remarked in Chapter 1, the GLS estimator typically is not feasible because the conditional covariances $\left\{\boldsymbol{\Omega}_{t}\right\}$ are usually unknown. Nevertheless, we might be willing to model $\boldsymbol{\Omega}_{\boldsymbol{t}}$ based on an assumed data generating process for $\varepsilon_{t} \varepsilon_{t}^{\prime}$, say
+
+$$
+E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathcal{F}_{t-1}\right)=\mathbf{h}\left(\mathbf{W}_{t}^{o}, \boldsymbol{\alpha}^{o}\right)
+$$
+
+where $\mathbf{h}$ is a known function mapping $\mathcal{F}_{t-1}$-measurable random variables $\mathbf{W}_{t}^{o}$ and unknown parameters $\boldsymbol{\alpha}^{o}$ into $p \times p$ matrices. Note that different $P^{o}$ 's can now be accommodated by different values for $\boldsymbol{\alpha}^{o}$, and that $\mathbf{W}_{t}^{o}$ may depend on $P^{o}$.
+
+An example is the $\operatorname{ARCH}(q)$ data generating process of Engle (1982) in which $\mathbf{h}\left(\mathbf{W}_{t}^{o}, \boldsymbol{\alpha}^{o}\right)=\boldsymbol{\alpha}_{0}^{o}+\boldsymbol{\alpha}_{1}^{o} \varepsilon_{t-1}^{2}+\cdots+\boldsymbol{\alpha}_{q}^{o} \varepsilon_{t-q}^{2}$ for the scalar $(p=1)$ case. Here, $\mathbf{W}_{t}^{o}=\left(\varepsilon_{t-1}^{2}, \ldots, \varepsilon_{t-q}^{2}\right)$. The popular $\operatorname{GARCH}(1,1)$ DGP of Bollerslev (1986) can be similarly treated by viewing it as an $\operatorname{ARCH}(\infty)$ DGP, in which case $\mathbf{W}_{t}^{o}=\left(\varepsilon_{t-1}^{2}, \varepsilon_{t-2}^{2}, \ldots\right)$.
+
+If we can obtain an estimator, say $\hat{\boldsymbol{\alpha}}_{n}$, consistent for $\boldsymbol{\alpha}^{o}$ regardless of which $P^{o}$ in $\mathcal{P}$ generated the data, then we can hope that replacing the unknown $\boldsymbol{\Omega}_{t}=\mathbf{h}\left(\mathbf{W}_{t}^{o}, \boldsymbol{\alpha}^{o}\right)$ with the estimator $\hat{\boldsymbol{\Omega}}_{n t}=\mathbf{h}\left(\mathbf{W}_{t}^{o}, \hat{\boldsymbol{\alpha}}_{n}\right)$ might still deliver an efficient estimator of the form
+
+$$
+\boldsymbol{\beta}_{n}^{*}=\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\mathbf{\Omega}}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\mathbf{\Omega}}_{n t}^{-1} \mathbf{Y}_{t}^{o} .
+$$
+
+Such estimators are called "feasible" GLS (FGLS) estimators, because they can feasibly be computed whereas, in the absence of knowledge of $\boldsymbol{\Omega}_{\boldsymbol{t}}$, GLS cannot.
+
+Inspecting the FGLS estimator, we see that it is also an IV estimator with
+
+$$
+\begin{aligned}
+\mathbf{Z}_{n t}^{o} & =\mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \\
+\hat{\mathbf{P}}_{n} & =n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathbf{X}_{t}^{o \prime} .
+\end{aligned}
+$$
+
+Observe that $\mathbf{Z}_{n t}^{o}=\mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1}$ is now double subscripted to make explicit its dependence on both $n$ and $t$. This double subscripting is explicitly allowed for in Theorem 4.54, and we can now see the usefulness of the flexibility\\
+this affords. To accommodate this choice as well as other similar choices, we now elaborate our specifications of $\mathbf{Z}_{n t}^{o}$ and $\boldsymbol{\gamma}$. Specifically, we put
+
+$$
+\mathbf{Z}_{n t}^{o}(\gamma)=\mathbf{Z}_{t 2}^{o}\left(\gamma_{2}\right) \zeta\left(\mathbf{Z}_{t 1}^{o}\left(\gamma_{1}\right), \gamma_{3 n}\right) .
+$$
+
+Now $\boldsymbol{\gamma}$ has three components: $\boldsymbol{\gamma}=\left(\boldsymbol{\gamma}_{1}, \boldsymbol{\gamma}_{2}, \boldsymbol{\gamma}_{3}\right)$, where $\boldsymbol{\gamma}_{3}=\left\{\boldsymbol{\gamma}_{3 n}\right\}$ is a sequence of $\mathcal{F}_{t-1-\text { measurable mappings, } \zeta}$ is a known function such that $\zeta\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right), \boldsymbol{\gamma}_{3 n}\right)$ is a $p \times p$ matrix, and $\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)$ and $\mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}\right)$ are $\mathcal{F}_{t-1^{-}}$ measurable for all $\boldsymbol{\gamma}_{1}, \boldsymbol{\gamma}_{2}$, where $\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)$ is an $l \times p$ random matrix.
+
+By putting $\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)=\mathbf{X}_{t}^{o}, \mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}\right)=\mathbf{W}_{t}^{o}, \boldsymbol{\gamma}_{3 n}=\hat{\boldsymbol{\alpha}}_{n}$, and $\zeta=(\mathbf{h})^{-1}$ we obtain
+
+$$
+\begin{aligned}
+\mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma}) & =\mathbf{X}_{t}^{o}\left(\mathbf{h}\left(\mathbf{W}_{t}^{o}, \hat{\boldsymbol{\alpha}}_{n}\right)\right)^{-1} \\
+& =\mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1}
+\end{aligned}
+$$
+
+Many other choices that yield consistent asymptotically normal IV estimators are also permitted.
+
+The requirement that $\zeta$ be known is not restrictive; in particular, we can choose $\zeta$ such that $\zeta\left(\mathbf{z}_{1}, \boldsymbol{\gamma}_{3 n}\right)=\boldsymbol{\gamma}_{3 n}\left(\mathbf{z}_{1}\right)$ (the evaluation functional) which allows consideration of nonparametric estimators of the inverse covariance matrix, $\Omega_{t}^{o-1}$, as well as parametric estimators such as ARCH (set $\gamma_{3 n}(\cdot)= \left.\left[h\left(\cdot, \hat{\alpha}_{n}\right)\right]^{-1}\right)$.
+
+To see what choices for $\gamma$ are permitted, it suffices to apply Theorem 4.54 with $\mathbf{Z}^{o}(\boldsymbol{\gamma})$ interpreted as the $n p \times l$ matrix with blocks $\mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma})^{\prime}$. We expand $\mathcal{P}$ to include data generating processes such that $\Omega_{t}^{o-1}$ can be sufficiently well estimated by $\zeta\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right), \boldsymbol{\gamma}_{3 n}\right)$ for some choice of $\left(\boldsymbol{\gamma}_{1}, \boldsymbol{\gamma}_{3}\right)$. (What is meant by "sufficiently well" is that conditions (ii) and (iii) of Theorem 4.54 hold.) It is here that the generality afforded by Theorem 4.54 (ii) is required, as we can no longer necessarily take $\mathbf{m}_{n}^{o}(\boldsymbol{\gamma})= n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma}) \varepsilon_{t}$. The presence of $\gamma_{3 n}$ and the nature of the function $\zeta$ may cause $n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma}) \varepsilon_{t}$ to fail to have a finite second moment, even though $n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma}) \varepsilon_{t}-n^{1 / 2} \mathbf{m}_{n}^{o}(\boldsymbol{\gamma})=o_{p^{o}}(1)$ for well behaved $\mathbf{m}_{n}^{o}(\boldsymbol{\gamma})$. Similarly, there is no guarantee that $E^{o}\left(\mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma}) \mathbf{X}_{t}^{o \prime}\right)$ exists, although the sample average $n^{-1} \sum_{t=1}^{n} \mathrm{Z}_{n t}^{o}(\boldsymbol{\gamma}) \mathrm{X}_{t}^{o \prime}$ may have a well defined probability limit $\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})$.
+
+Consider first the form of $\mathbf{m}_{n}^{o}$. For notational economy, let $\boldsymbol{\gamma}_{t 1}^{o} \equiv \mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)$ and $\boldsymbol{\gamma}_{t 2}^{o} \equiv \mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}\right)$. Then with
+
+$$
+\mathbf{Z}_{n t}^{o}(\gamma)=\mathbf{Z}_{t 2}^{o}\left(\gamma_{2}\right) \zeta\left(\mathbf{Z}_{t 1}^{o}\left(\gamma_{1}\right), \gamma_{3 n}\right) \equiv \gamma_{t 2}^{o} \zeta\left(\gamma_{t 1}^{o}, \gamma_{3 n}\right)
+$$
+
+we have
+
+$$
+\begin{aligned}
+n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma}) \varepsilon_{t}= & n^{-1 / 2} \sum_{t=1}^{n} \gamma_{t 2}^{o} \zeta\left(\gamma_{t 1}^{o}, \gamma_{3 n}\right) \varepsilon_{t} \\
+= & n^{-1 / 2} \sum_{t=1}^{n} \gamma_{t 2}^{o} \zeta\left(\gamma_{t 1}^{o}, \gamma_{3}^{o}\right) \varepsilon_{t} \\
+& +n^{-1 / 2} \sum_{t=1}^{n} \gamma_{t 2}^{o}\left[\zeta\left(\gamma_{t 1}^{o}, \gamma_{3 n}\right)-\zeta\left(\gamma_{t 1}^{o}, \gamma_{3}^{o}\right)\right] \varepsilon_{t}
+\end{aligned}
+$$
+
+where we view $\gamma_{3}^{o}$ as the probability limit of $\gamma_{3 n}$ under $P^{o}$. If sufficient regularity is available to ensure that the second term vanishes in probability, i.e.,
+
+$$
+n^{-1 / 2} \sum_{t=1}^{n} \gamma_{t 2}^{o}\left[\zeta\left(\gamma_{t 1}^{o}, \gamma_{3 n}\right)-\zeta\left(\gamma_{t 1}^{o}, \gamma_{3}^{o}\right)\right] \varepsilon_{t}=o_{p^{o}}(\mathbf{1})
+$$
+
+then we can take
+
+$$
+n^{1 / 2} \mathbf{m}_{n}^{o}(\boldsymbol{\gamma})=n^{-1 / 2} \sum_{t=1}^{n} \gamma_{t 2}^{o} \zeta\left(\gamma_{t 1}^{o}, \gamma_{3}^{o}\right) \varepsilon_{t}
+$$
+
+We ensure "sufficient regularity" simply by assuming that $\Gamma$ and $\mathcal{P}$ are chosen so that the desired convergence holds for all $\gamma \in \Gamma$ and $P^{o}$ in $\mathcal{P}$.
+
+The form of $\mathbf{Q}_{n}^{o}$ follows similarly. With $\mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma})=\boldsymbol{\gamma}_{t 2}^{o} \boldsymbol{\zeta}\left(\boldsymbol{\gamma}_{t 1}^{o}, \boldsymbol{\gamma}_{3 n}\right)$ we have
+
+$$
+\begin{aligned}
+n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma}) \mathbf{X}_{t}^{o \prime}= & n^{-1} \sum_{t=1}^{n} \gamma_{t 2}^{o} \boldsymbol{\zeta}\left(\gamma_{t 1}^{o}, \gamma_{3 n}\right) \mathbf{X}_{t}^{o \prime} \\
+= & n^{-1} \sum_{t=1}^{n} \gamma_{t 2}^{o} \boldsymbol{\zeta}\left(\gamma_{t 1}^{o}, \gamma_{3}^{o}\right) \mathbf{X}_{t}^{o \prime} \\
+& +n^{-1} \sum_{t=1}^{n} \gamma_{t 2}^{o}\left[\boldsymbol{\zeta}\left(\gamma_{t 1}^{o}, \gamma_{3 n}\right)-\zeta\left(\gamma_{t 1}^{o}, \gamma_{3}^{o}\right)\right] \mathbf{X}_{t}^{o \prime}
+\end{aligned}
+$$
+
+If $\Gamma$ and $\mathcal{P}$ are assumed chosen such that
+
+$$
+n^{-1} \sum_{t=1}^{n} \gamma_{t 2}^{o} \zeta\left(\gamma_{t 1}^{o}, \gamma_{3}^{o}\right) \mathbf{X}_{t}^{o \prime}-n^{-1} \sum_{t=1}^{n} E^{o}\left[\gamma_{t 2}^{o} \zeta\left(\gamma_{t 1}^{o}, \gamma_{3}^{o}\right) \mathbf{X}_{t}^{o \prime}\right]=o_{p^{o}}(1)
+$$
+
+and
+
+$$
+n^{-1} \sum_{t=1}^{n} \gamma_{t 2}^{o}\left[\zeta\left(\gamma_{t 1}^{o}, \gamma_{3 n}\right)-\zeta\left(\gamma_{t 1}^{o}, \gamma_{3}^{o}\right)\right] \mathbf{X}_{t}^{o \prime}=o_{p^{o}}(1)
+$$
+
+then we can take
+
+$$
+\mathbf{Q}_{n}^{o}(\gamma)=n^{-1} \sum_{t=1}^{n} E^{o}\left[\gamma_{t 2}^{o} \zeta\left(\gamma_{t 1}^{o}, \gamma_{3}^{o}\right) \mathbf{X}_{t}^{o \prime}\right]
+$$
+
+With $\mathbf{V}_{n}^{o}(\boldsymbol{\gamma}) \equiv \operatorname{var}^{o}\left(n^{1 / 2} \mathbf{m}_{n}^{o}(\boldsymbol{\gamma})\right)$, the Bates-White correspondences are now
+
+$$
+\begin{aligned}
+\mathbf{H}_{n}^{o}(\boldsymbol{\gamma}) & =\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma}) \\
+\mathbf{s}_{n}^{o}(\boldsymbol{\gamma}) & =\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{m}_{n}^{o}(\boldsymbol{\gamma}) \\
+\mathbf{I}_{n}^{o}(\boldsymbol{\gamma}) & =\mathbf{H}_{n}^{o}(\boldsymbol{\gamma})
+\end{aligned}
+$$
+
+(As before, we set $\mathbf{P}_{n}^{o}=\mathbf{V}_{n}^{o-1}$.) By argument parallel to that following Proposition 4.55, the sufficient condition for efficiency is
+
+$$
+\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})=\mathbf{C}_{n}^{o}\left(\boldsymbol{\gamma}, \boldsymbol{\gamma}^{*}\right) \mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1} \mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)
+$$
+
+where now $\mathbf{C}_{n}^{o}\left(\boldsymbol{\gamma}, \boldsymbol{\gamma}^{*}\right)=\operatorname{cov}^{o}\left(n^{1 / 2} \mathbf{m}_{n}^{o}(\boldsymbol{\gamma}), n^{1 / 2} \mathbf{m}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)\right)$.\\
+Following arguments exactly parallel to those leading to Equation (4.3), we find that the sufficient condition holds if
+
+$$
+\mathbf{Q}_{n}^{o}\left(\gamma^{*}\right)^{\prime} \mathbf{V}_{n}^{o}\left(\gamma^{*}\right)^{-1} \mathbf{Z}_{t 2}^{o}\left(\gamma_{2}^{*}\right) \zeta\left(\mathbf{Z}_{t 1}^{o}\left(\gamma_{1}^{*}\right), \gamma_{3}^{* o}\right) \Omega_{t}^{o}=\mathbf{X}_{t}^{o}
+$$
+
+Choosing $\mathbf{Z}_{t 2}^{o}\left(\gamma_{2}^{*}\right)=\mathbf{X}_{t}^{o}$ and $\zeta\left(\mathbf{Z}_{t 1}^{o}\left(\gamma_{1}^{*}\right), \gamma_{3}^{* o}\right)=\Omega_{t}^{o-1}$ can be verified to ensure $\mathbf{Q}_{n}^{o}\left(\gamma^{*}\right)^{\prime}=\mathbf{V}_{n}^{o}\left(\gamma^{*}\right)$ as before, so optimality follows. Thus, the optimal choice for $\mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma})$ is
+
+$$
+\mathbf{Z}_{n t}^{o}\left(\gamma^{*}\right)=\mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1}
+$$
+
+where $\hat{\Omega}_{n t}^{-1}=\zeta\left(\mathbf{Z}_{t 1}^{o}\left(\gamma_{1}^{*}\right), \gamma_{3 n}^{*}\right)$ is such that $\zeta\left(\mathbf{Z}_{t 1}^{o}\left(\gamma_{1}^{*}\right), \gamma_{3}^{* o}\right)=\Omega_{t}^{o-1}$. In particular, if $\Omega_{t}^{o}=\mathbf{h}\left(\mathbf{W}_{t}^{o}, \boldsymbol{\alpha}^{o}\right)$, then taking $\zeta\left(\mathbf{z}_{1}, \boldsymbol{\gamma}_{3 n}\right)=\boldsymbol{\gamma}_{3 n}\left(\mathbf{z}_{1}\right), \mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}^{*}\right)= \mathbf{W}_{t}^{o}$ and $\gamma_{3}^{* o}=\left[\mathbf{h}\left(\cdot, \alpha^{o}\right)\right]^{-1}$ gives the optimal choice of instrumental variables.
+
+We formalize this result as follows.\\
+Theorem 4.59 (Efficiency of FGLS) Suppose the conditions of Theorem 4.54 hold and that in addition $\mathcal{P}$ is such that for each $P^{o}$ in $\mathcal{P}$\\
+(i) $\mathbf{Y}_{t}^{o}=\mathbf{X}_{t}^{o \prime} \boldsymbol{\beta}^{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}^{o} \in \mathbb{R}^{k}$, where $\left\{\left(\mathbf{X}_{t+1}^{o}, \varepsilon_{t}\right), \mathcal{F}_{t}\right\}$ is an adapted stochastic sequence with $E^{o}\left(\varepsilon_{t} \mid\right. \left.\mathcal{F}_{t-1}\right)=\mathbf{0}, t=1,2, \ldots ;$ and\\
+(ii) $E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathcal{F}_{t-1}\right)=\Omega_{t}^{o}$ is an unknown finite and nonsingular $p \times p$ matrix $t=1,2, \ldots$.\\
+(iii) For each $\gamma \in \Gamma$,
+
+$$
+\mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma})=\mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}\right) \boldsymbol{\gamma}_{3 n}\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)\right)
+$$
+
+where $\boldsymbol{\gamma} \equiv\left(\boldsymbol{\gamma}_{1}, \boldsymbol{\gamma}_{2}, \boldsymbol{\gamma}_{3}\right)$, and $\boldsymbol{\gamma}_{3} \equiv\left\{\boldsymbol{\gamma}_{3 n}\right\}$ is such that $\boldsymbol{\gamma}_{3 n}$ is $\mathcal{F}$ measurable for all $n=1,2, \ldots$, and $\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)$ and $\mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}\right)$ are $\mathcal{F}_{t-1-}$ measurable for all $\gamma_{1}$ and $\gamma_{2}, t=1,2, \ldots$; and there exists $\gamma_{3}^{o}$ such that
+
+$$
+\mathbf{m}_{n}^{o}(\boldsymbol{\gamma})=n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}\right) \boldsymbol{\gamma}_{3}^{o}\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)\right) \varepsilon_{t}
+$$
+
+and
+
+$$
+\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})=n^{-1} \sum_{t=1}^{n} E\left(\mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}\right) \boldsymbol{\gamma}_{3}^{o}\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)\right) \mathbf{X}_{t}^{o \prime}\right)
+$$
+
+(iv) for some $\boldsymbol{\gamma}_{1}^{*}, \boldsymbol{\gamma}_{3}^{*}, \hat{\boldsymbol{\Omega}}_{n t}^{-1}=\boldsymbol{\gamma}_{3 n}^{*}\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}^{*}\right)\right)$, where $\boldsymbol{\gamma}_{3}^{* o}\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}^{*}\right)\right)=\boldsymbol{\Omega}_{t}^{o-1}$.
+
+Then\\
+(a) $\mathbf{Z}_{n t}\left(\gamma^{*}\right)=\mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1}$ delivers
+
+$$
+\boldsymbol{\beta}_{n}^{*}=\left(n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathbf{Y}_{t}^{o}
+$$
+
+which is asymptotically efficient in $\mathcal{E}$ for $\mathcal{P}$;\\
+(b) the asymptotic covariance matrix of $\boldsymbol{\beta}_{n}^{*}$ is given by
+
+$$
+\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right)=\left[n^{-1} \sum_{t=1}^{n} E^{o}\left(\mathbf{X}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \mathbf{X}_{t}^{o \prime}\right)\right]^{-1},
+$$
+
+which is consistently estimated by
+
+$$
+\hat{\mathbf{D}}_{n}=\left[n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\Omega}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}\right]^{-1}
+$$
+
+i.e., $\hat{\mathbf{D}}_{n}-\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right) \xrightarrow{p^{o}} \mathbf{0}$.\\
+Proof. (a) Apply Proposition 4.55 and the argument preceding the statement of Theorem 4.59. We leave the proof of part (b) as an exercise.
+
+Exercise 4.60 Prove part (b) of Theorem 4.59.\\
+The arguments needed to verify that
+
+$$
+n^{-1} \sum_{t=1}^{n} \gamma_{t 2}^{o}\left[\gamma_{3 n}\left(\gamma_{t 1}^{o}\right)-\gamma_{3}^{o}\left(\gamma_{t 1}^{o}\right)\right] \varepsilon_{t}=o_{p^{o}}(1)
+$$
+
+and
+
+$$
+n^{-1} \sum_{t=1}^{n} \gamma_{t 2}^{o}\left[\gamma_{3 n}\left(\gamma_{t 1}^{o}\right)-\gamma_{3}^{o}\left(\gamma_{t 1}^{o}\right)\right] \mathrm{X}_{t}^{o \prime}=o_{p^{o}}(1)
+$$
+
+depend on what is known about $\boldsymbol{\Omega}_{t}^{o}$ and how it is estimated. The next exercise illustrates one possibility.
+
+Exercise 4.61 Suppose that conditions 4.59 (i) and 4.59 (ii) hold with $p=1$ and that
+
+$$
+\Omega_{t}^{o}=\alpha_{1}^{o}+\alpha_{2}^{o} W_{t}^{o}, \quad t=1,2, \ldots,
+$$
+
+where $W_{t}^{o}=1$ during recessions and $W_{t}^{o}=0$ otherwise.\\
+(i) Let $\hat{\varepsilon}_{t}=Y_{t}^{o}-\mathbf{X}_{t}^{o \prime} \hat{\boldsymbol{\beta}}_{n}$, where $\hat{\boldsymbol{\beta}}_{n}$ is the OLS estimator, and let $\hat{\boldsymbol{\alpha}}_{n}= \left(\hat{\alpha}_{1 n}, \hat{\alpha}_{2 n}\right)^{\prime}$ be the OLS estimator from the regression of $\hat{\varepsilon}_{t}^{2}$ on a constant and $W_{t}^{o}$. Prove that $\hat{\boldsymbol{\alpha}}_{n}=\boldsymbol{\alpha}^{o}+o_{p^{o}}(1)$, where $\boldsymbol{\alpha}^{o}=\left(\alpha_{1}^{o}, \alpha_{2}^{o}\right)^{\prime}$, providing any needed additional conditions.\\
+(ii) Next, verify that conditions 4.59 (iii) and (iv) hold for
+
+$$
+\mathbf{Z}_{n t}^{o}\left(\gamma^{*}\right)=\mathbf{X}_{t}^{o}\left(\hat{\alpha}_{1 n}+\hat{\alpha}_{2 n} W_{t}^{o}\right)^{-1}
+$$
+
+When less is known about the structure of $\Omega_{t}^{o}$, nonparametric estimators can be used. See, for example, White and Stinchcombe (1991). The notion of stochastic equicontinuity (see Andrews, 1994a,b) plays a key role in such situations, but will not be explored here.
+
+We are now in a position to see how to treat the general situation in which $\overline{\mathbf{X}}_{t}^{o} \equiv E\left(\mathbf{X}_{t}^{o} \mid \mathcal{F}_{t-1}\right)$ appears instead of $\mathbf{X}_{t}^{o}$. By taking
+
+$$
+\mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma})=\boldsymbol{\gamma}_{4 n}\left(\underset{l \times p}{\mathbf{Z}_{t 2}^{o}}\left(\boldsymbol{\gamma}_{2}\right)\right) \boldsymbol{\gamma}_{3 n}\left(\underset{p \times p}{\mathbf{Z}_{t 1}^{o}}\left(\boldsymbol{\gamma}_{1}\right)\right)
+$$
+
+we can accommodate the choice
+
+$$
+\mathbf{Z}_{n t}(\gamma)=\hat{\mathbf{X}}_{t} \hat{\Omega}_{n t}^{-1}
+$$
+
+where $\hat{\mathbf{X}}_{n t}=\gamma_{4 n}\left(\mathbf{Z}_{t 2}^{o}\left(\gamma_{2}\right)\right)=\gamma_{4 n}\left(\boldsymbol{\gamma}_{t 2}^{o}\right)$ is an estimator of $\tilde{\mathbf{X}}_{t}^{o}$. As we might now expect, this choice delivers the optimal IV estimator.
+
+To see this, we examine $\mathbf{m}_{n}^{o}$ and $\mathbf{Q}_{n}^{o}$. We have
+
+$$
+\begin{aligned}
+n^{-1 / 2} \sum_{t=1}^{n} \mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma}) \varepsilon_{t}= & n^{-1 / 2} \sum_{t=1}^{n} \gamma_{4 n}\left(\gamma_{t 2}^{o}\right) \gamma_{3 n}\left(\gamma_{t 1}^{o}\right) \varepsilon_{t} \\
+= & n^{-1 / 2} \sum_{t=1}^{n} \gamma_{4}^{o}\left(\gamma_{t 2}^{o}\right) \gamma_{3}^{o}\left(\gamma_{t 1}^{o}\right) \varepsilon_{t} \\
+& +n^{-1 / 2} \sum_{t=1}^{n}\left[\gamma_{4 n}\left(\gamma_{t 2}^{o}\right) \gamma_{3 n}\left(\gamma_{t 1}^{o}\right)-\gamma_{4}^{o}\left(\gamma_{t 2}^{o}\right) \gamma_{3}^{o}\left(\gamma_{t 1}^{o}\right)\right] \varepsilon_{t} \\
+= & n^{1 / 2} \mathbf{m}_{n}^{o}(\gamma)+o_{p^{o}}(1)
+\end{aligned}
+$$
+
+provided we set $\mathbf{m}_{n}^{o}(\boldsymbol{\gamma})=n^{-1} \sum_{t=1}^{n} \boldsymbol{\gamma}_{4}^{o}\left(\boldsymbol{\gamma}_{t 2}^{o}\right) \boldsymbol{\gamma}_{3}^{o}\left(\boldsymbol{\gamma}_{t 1}^{o}\right) \varepsilon_{t}$ and
+
+$$
+n^{-1} \sum_{t=1}^{n}\left[\gamma_{4 n}\left(\gamma_{t 2}^{o}\right) \gamma_{3 n}\left(\gamma_{t 1}^{o}\right)-\gamma_{4}^{o}\left(\gamma_{t 2}^{o}\right) \gamma_{3}^{o}\left(\gamma_{t 1}^{o}\right)\right] \varepsilon_{t}=o_{p^{o}}(1)
+$$
+
+Similarly,
+
+$$
+\begin{aligned}
+n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma}) \mathbf{X}_{t}^{o \prime} & =n^{-1} \sum_{t=1}^{n} \gamma_{4 n}\left(\gamma_{t 2}^{o}\right) \gamma_{3 n}\left(\gamma_{t 1}^{o}\right) \mathbf{X}_{t}^{o \prime} \\
+& =n^{-1} \sum_{t=1}^{n} \gamma_{4}^{o}\left(\gamma_{t 2}^{o}\right) \gamma_{3}^{o}\left(\gamma_{t 1}^{o}\right) \mathbf{X}_{t}^{o \prime} \\
+& +n^{-1} \sum_{t=1}^{n}\left[\gamma_{4 n}\left(\gamma_{t 2}^{o}\right) \gamma_{3 n}\left(\gamma_{t 1}^{o}\right)-\gamma_{4}^{o}\left(\gamma_{t 2}^{o}\right) \gamma_{3}^{o}\left(\gamma_{t 1}^{o}\right)\right] \mathbf{X}_{t}^{o \prime}
+\end{aligned}
+$$
+
+Provided the second term vanishes in probability ( $-P^{o}$ ) and a law of large numbers applies to the first term, we can take
+
+$$
+\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})=n^{-1} \sum_{t=1}^{n} E^{o}\left(\boldsymbol{\gamma}_{4}^{o}\left(\boldsymbol{\gamma}_{t 2}^{o}\right) \boldsymbol{\gamma}_{3}^{o}\left(\boldsymbol{\gamma}_{t 1}^{o}\right) \mathbf{X}_{t}^{o \prime}\right)
+$$
+
+With $\mathbf{V}_{n}^{o}(\boldsymbol{\gamma}) \equiv \operatorname{var}^{o}\left(n^{1 / 2} \mathbf{m}_{n}^{o}(\boldsymbol{\gamma})\right)$, the Bates-White correspondences are again
+
+$$
+\begin{aligned}
+\mathbf{H}_{n}^{o}(\boldsymbol{\gamma}) & =\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{Q}_{n}^{o}(\boldsymbol{\gamma}) \\
+\mathbf{s}_{n}^{o}(\boldsymbol{\gamma}) & =\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})^{\prime} \mathbf{V}_{n}^{o}(\boldsymbol{\gamma})^{-1} \mathbf{m}_{n}^{o}(\boldsymbol{\gamma}) \\
+\mathbf{I}_{n}^{o}(\boldsymbol{\gamma}) & =\mathbf{H}_{n}^{o}(\boldsymbol{\gamma})
+\end{aligned}
+$$
+
+and the sufficient condition for asymptotic efficiency is again
+
+$$
+\mathbf{Q}_{n}^{o}(\gamma)=\mathbf{C}_{n}^{o}\left(\gamma, \gamma^{*}\right) \mathbf{V}_{n}^{o}\left(\gamma^{*}\right)^{-1} \mathbf{Q}_{n}^{o}\left(\gamma^{*}\right)
+$$
+
+Arguments parallel to those leading to Equation (4.3) show that the sufficient condition holds if
+
+$$
+\mathbf{Q}_{n}^{o}\left(\gamma^{*}\right)^{\prime} \mathbf{V}_{n}^{o}\left(\gamma^{*}\right)^{-1} \gamma_{4}^{* o}\left(\mathbf{Z}_{t 2}^{o}\left(\gamma_{2}^{*}\right)\right) \gamma_{3}^{* o}\left(\mathbf{Z}_{t 1}^{o}\left(\gamma_{1}^{*}\right)\right) \boldsymbol{\Omega}_{t}^{o}=\tilde{\mathbf{X}}_{t}^{o}
+$$
+
+It suffices that $\gamma_{3}^{* o}\left(\mathbf{Z}_{t 1}^{o}\left(\gamma_{1}^{*}\right)\right)=\boldsymbol{\Omega}_{t}^{o-1}$ and $\boldsymbol{\gamma}_{4}^{* o}\left(\mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}^{*}\right)\right)=\tilde{\mathbf{X}}_{t}^{o}$, as this ensures $\mathbf{Q}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{\prime}=\mathbf{V}_{n}^{o}\left(\boldsymbol{\gamma}^{*}\right)^{-1}$.
+
+We can now state our asymptotic efficiency result for the IV estimator.\\
+Theorem 4.62 (Efficient IV) Suppose the conditions of Theorem 4.54 hold and that in addition $\mathcal{P}$ is such that for each $P^{o}$ in $\mathcal{P}$\\
+(i) $\mathbf{Y}_{t}^{o}=\mathbf{X}_{t}^{o \prime} \boldsymbol{\beta}^{o}+\varepsilon_{t}, \quad t=1,2, \ldots, \boldsymbol{\beta}^{o} \in \mathbb{R}^{k}$, where $\left\{\varepsilon_{t}, \mathcal{F}_{t}\right\}$ is an adapted stochastic sequence with $E^{o}\left(\varepsilon_{t} \mid \mathcal{F}_{t-1}\right)=\mathbf{0}$, $t=1,2, \ldots$; and\\
+(ii) $E^{o}\left(\varepsilon_{t} \varepsilon_{t}^{\prime} \mid \mathcal{F}_{t-1}\right)=\Omega_{t}^{o}$ is an unknown finite and nonsingular $p \times p$ matrix $t=1,2, \ldots$.\\
+(iii) For each $\gamma \in \Gamma$,
+
+$$
+\mathbf{Z}_{n t}^{o}(\boldsymbol{\gamma})=\boldsymbol{\gamma}_{4 n}\left(\mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}\right)\right) \boldsymbol{\gamma}_{3 n}\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)\right)
+$$
+
+where $\boldsymbol{\gamma} \equiv\left(\boldsymbol{\gamma}_{1}, \boldsymbol{\gamma}_{2}, \boldsymbol{\gamma}_{3}, \boldsymbol{\gamma}_{4}\right)$, and $\boldsymbol{\gamma}_{3} \equiv\left\{\boldsymbol{\gamma}_{3 n}\right\}$ and $\boldsymbol{\gamma}_{4} \equiv\left\{\boldsymbol{\gamma}_{4 n}\right\}$, are such that $\gamma_{3 n}$ and $\gamma_{4 n}$ are $\mathcal{F}$-measurable for all $n=1,2, \ldots$ and $\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)$ and $\mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}\right)$ are $\mathcal{F}_{t-1 \text {-measurable for all } \boldsymbol{\gamma}_{1}}$ and $\boldsymbol{\gamma}_{2}, t=1,2, \ldots$; and there exist $\gamma_{3}^{o}$ and $\gamma_{4}^{o}$ such that
+
+$$
+\mathbf{m}_{n}^{o}(\boldsymbol{\gamma})=n^{-1} \sum_{t=1}^{n} \boldsymbol{\gamma}_{4}^{o}\left(\mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}\right)\right) \boldsymbol{\gamma}_{3}^{o}\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)\right) \boldsymbol{\varepsilon}_{t}
+$$
+
+and
+
+$$
+\mathbf{Q}_{n}^{o}(\boldsymbol{\gamma})=n^{-1} \sum_{t=1}^{n} E^{o}\left(\boldsymbol{\gamma}_{4}^{o}\left(\mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}\right)\right) \boldsymbol{\gamma}_{3}^{o}\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}\right)\right) \mathbf{X}_{t}^{o \prime}\right)
+$$
+
+(iv) for some $\boldsymbol{\gamma}_{1}^{*}$ and $\boldsymbol{\gamma}_{3}^{*}, \hat{\boldsymbol{\Omega}}_{n t}^{-1}=\boldsymbol{\gamma}_{3 n}^{*}\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}^{*}\right)\right)$, where $\boldsymbol{\gamma}_{3}^{* o}\left(\mathbf{Z}_{t 1}^{o}\left(\boldsymbol{\gamma}_{1}^{*}\right)\right)= \boldsymbol{\Omega}_{t}^{o-1}$ and for some $\boldsymbol{\gamma}_{2}^{*}$ and $\boldsymbol{\gamma}_{4}^{*}, \hat{\mathbf{X}}_{t}=\boldsymbol{\gamma}_{4 n}^{*}\left(\mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}^{*}\right)\right)$, where $\boldsymbol{\gamma}_{4}^{* o}\left(\mathbf{Z}_{t 2}^{o}\left(\boldsymbol{\gamma}_{2}^{*}\right)\right) =E^{o}\left(\mathbf{X}_{t}^{o} \mid \mathcal{F}_{t-1}\right)$.\\
+Then\\
+(a) $\mathbf{Z}_{n t}^{o}\left(\gamma^{*}\right)=\hat{\mathbf{X}}_{n t} \hat{\Omega}_{n t}^{-1}$ delivers
+
+$$
+\boldsymbol{\beta}_{n}^{*}=\left(n^{-1} \sum_{t=1}^{n} \hat{\mathbf{X}}_{n t} \hat{\Omega}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \hat{\mathbf{X}}_{n t} \hat{\Omega}_{n t}^{-1} \mathbf{Y}_{t}^{o}
+$$
+
+which is asymptotically efficient in $\mathcal{E}$ for $\mathcal{P}$;\\
+(b) the asymptotic covariance matrix of $\boldsymbol{\beta}_{n}^{*}$ is given by
+
+$$
+\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right)=\left[n^{-1} \sum_{t=1}^{n} E^{o}\left(\tilde{\mathbf{X}}_{t}^{o} \boldsymbol{\Omega}_{t}^{o-1} \tilde{\mathbf{X}}_{t}^{o \prime}\right)\right]^{-1},
+$$
+
+which is consistently estimated by
+
+$$
+\hat{\mathbf{D}}_{n}=2\left[n^{-1} \sum_{t=1}^{n} \hat{\mathbf{X}}_{n t} \hat{\mathbf{\Omega}}_{n t}^{-1} \mathbf{X}_{t}^{o \prime}+n^{-1} \sum_{t=1}^{n} \mathbf{X}_{t}^{o} \hat{\mathbf{\Omega}}_{n t}^{-1} \hat{\mathbf{X}}_{n t}^{\prime}\right]^{-1}
+$$
+
+i.e., $\hat{\mathbf{D}}_{n}-\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right) \xrightarrow{p^{o}} \mathbf{0}$.\\
+Proof. (a) Apply Proposition 4.55 and the argument preceding the statement of Theorem 4.62. We leave the proof of part (b) as an exercise.
+
+Exercise 4.63 Prove Theorem 4.62 (b).\\
+Other consistent estimators for $\operatorname{avar}^{o}\left(\boldsymbol{\beta}_{n}^{*}\right)$ are available, for example
+
+$$
+\tilde{\mathbf{D}}_{n}=\left[n^{-1} \sum_{t=1}^{n} \hat{\mathbf{X}}_{n t} \hat{\Omega}_{n t}^{-1} \hat{\mathbf{X}}_{n t}^{\prime}\right]^{-1}
+$$
+
+This requires additional conditions, however. The estimator $\hat{\mathbf{D}}_{n}$ above is consistent without further assumptions.
+
+Exercise 4.64 Suppose condition 4.62 (i) and (ii) hold and that
+
+$$
+\begin{aligned}
+\boldsymbol{\Omega}_{t}^{o} & =\boldsymbol{\Sigma}^{o} \\
+E^{o}\left(\mathbf{X}_{t}^{o \prime} \mid \mathcal{F}_{t-1}\right) & =\mathbf{Z}_{t}^{o \prime} \boldsymbol{\pi}^{o}, \quad t=1,2, \ldots,
+\end{aligned}
+$$
+
+where $\boldsymbol{\pi}^{o}$ is an $l \times k$ matrix.\\
+(i) (a) Let $\hat{\pi}_{n}=\left(n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \mathbf{Z}_{t}^{o \prime}\right)^{-1} n^{-1} \sum_{t=1}^{n} \mathbf{Z}_{t}^{o} \mathbf{X}_{t}^{o \prime}$.
+
+Give simple conditions under which $\hat{\boldsymbol{\pi}}_{n}=\boldsymbol{\pi}^{o}+o_{p^{o}}(1)$.
+
+$$
+\begin{array}{r}
+\text { (b) Let } \hat{\boldsymbol{\Sigma}}_{n}=n^{-1} \sum_{t=1}^{n} \hat{\varepsilon}_{t} \hat{\varepsilon}_{t}^{\prime}, \text { where } \hat{\varepsilon}_{t}=\mathbf{Y}_{t}^{o}-\mathbf{X}_{t}^{o} \tilde{\boldsymbol{\beta}}_{n}, \\
+\tilde{\boldsymbol{\beta}}_{n}=\left(\mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \mathbf{Z}\left(\mathbf{Z}^{\prime} \mathbf{Z}\right)^{-1} \mathbf{Z}^{\prime} \mathbf{Y}
+\end{array}
+$$
+
+(the 2 SLS estimator). Give simple conditions under which $\hat{\boldsymbol{\Sigma}}_{n}=\boldsymbol{\Sigma}^{o}+ o_{p^{o}}(1)$.\\
+(ii) Next, verify that conditions 4.62 (iii) and 4.62 (iv) hold for $\mathbf{Z}_{n t}^{o}\left(\gamma^{*}\right)= \hat{\boldsymbol{\pi}}_{n}^{\prime} \mathbf{Z}_{t}^{o} \hat{\boldsymbol{\Sigma}}_{n}^{-1}$. The resulting estimator is the three stage least squares ( $3 S L S$ ) estimator.
+
+\section*{References}
+Andrews, A. (1994a). "Asymptotics for semiparametric econometric-models via stochastic equicontinuity." Econometrica, 62, 43-72.
+
+\begin{itemize}
+  \item (1994b). "Empirical process methods in econometrics." In Handbook of Econometrics, 4. Engle, R. F. and D. L. McFadden, eds., pp. 2247-2294. North Holland, Amsterdam.
+\end{itemize}
+
+Bartle, R. G. (1976). The Elements of Real Analysis. Wiley, New York.\\
+Bates C. E. and H. White (1993). "Determination of estimtors with minimum asymptotic covariance matrices." Econometric Theory, 9, 633-648.
+
+Bollerslev, T. (1986). "Generalized autoregressive conditional heteroskedasticity." Journal of Econometrics, 31, 307-327.\\
+Chamberlain, G. (1982). "Multivariate regression models for panel data." Journal of Econometrics, 18, 5-46.\\
+Cragg, J. (1983). "More efficient estimation in the presence of heteroskedasticity of unknown form." Econometrica, 51, 751-764.\\
+Engle, R. F. (1981). "Wald, likelihood ratio, and Lagrange multiplier tests in econometrics." In Handbook of Econometrics, 2, Z. Griliches and M. Intrilligator, eds., North Holland, Amsterdam.\\
+(1982). "Autoregressive conditional heteroskedasticity with estimates of the variance of United Kingdom inflation." Econometrica, 50, 987-1008.\\
+Goldberger, A. S. (1964). Econometric Theory. Wiley, New York.\\
+Hansen, L. P. (1982). "Large Sample Properties of Generalized Method of Moments Estimators." Econometrica, 50, 1029-1054.\\
+Lukacs, E. (1970). Characteristic Functions. Griffin, London.\\
+(1975). Stochastic Convergence. Academic Press, New York.
+
+Rao, C. R. (1973). Linear Statistical Inference and Its Applications. Wiley, New York.
+
+White, H. (1982). "Instrumental variables regression with independent observations." Econometrica, 50, 483-500.\\
+(1994). Estimation, Inference and Specification Analysis. Cambridge University Press, New York.\\
+and M. Stinchcombe (1991). "Adaptive efficient weighted least squares with dependent observations." In Directions in Robust Statistics and Diagnostics, W. Stahel and S. Weisberg, eds., pp. 337-364. IMA Volumes in Mathemaics and Its Applications. Springer-Verlag, New York.
+
+\section*{Central Limit Theory}
+
+\end{document}

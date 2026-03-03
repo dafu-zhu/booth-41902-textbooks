@@ -1,0 +1,831 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 9: Simultaneous Equations Models}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsection*{9.1 Scope of Simultaneous Equations Models}
+The emphasis in this chapter is on situations where two or more variables are jointly determined by a system of equations. Nevertheless, the population model, the identification analysis, and the estimation methods apply to a much broader range of problems. In Chapter 8, we saw that the omitted variables problem described in Example 8.2 has the same statistical structure as the true simultaneous equations model in Example 8.1. In fact, any or all of simultaneity, omitted variables, and measurement error can be present in a system of equations. Because the omitted variable and measurement error problems are conceptually easier-and it was for this reason that we discussed them in single-equation contexts in Chapters 4 and 5-our examples and discussion in this chapter are geared mostly toward true simultaneous equations models (SEMs).
+
+For effective application of true SEMs, we must understand the kinds of situations suitable for SEM analysis. The labor supply and wage offer example, Example 8.1, is a legitimate SEM application. The labor supply function describes individual behavior, and it is derivable from basic economic principles of individual utility maximization. Holding other factors fixed, the labor supply function gives the hours of labor supply at any potential wage facing the individual. The wage offer function describes firm behavior, and, like the labor supply function, the wage offer function is self-contained.
+
+When an equation in an SEM has economic meaning in isolation from the other equations in the system, we say that the equation is autonomous. One way to think about autonomy is in terms of counterfactual reasoning, as in Example 8.1. If we know the parameters of the labor supply function, then, for any individual, we can find labor hours given any value of the potential wage (and values of the other observed and unobserved factors affecting labor supply). In other words, we could, in principle, trace out the individual labor supply function for given levels of the other observed and unobserved variables.
+
+Causality is closely tied to the autonomy requirement. An equation in an SEM should represent a causal relationship; therefore, we should be interested in varying each of the explanatory variables-including any that are endogenous-while holding all the others fixed. Put another way, each equation in an SEM should represent some underlying conditional expectation that has a causal structure. What complicates matters is that the conditional expectations are in terms of counterfactual variables. In the labor supply example, if we could run a controlled experiment where we exogenously varied the wage offer across individuals, then the labor supply function could be estimated without ever considering the wage offer function. In fact, in the\\
+absence of omitted variables or measurement error, ordinary least squares would be an appropriate estimation method.
+
+Generally, supply and demand examples satisfy the autonomy requirement, regardless of the level of aggregation (individual, household, firm, city, and so on), and simultaneous equations systems were originally developed for such applications. (See, for example, Haavelmo (1943) and Kiefer's (1989) interview of Arthur S. Goldberger.) Unfortunately, many recent applications of SEMs fail the autonomy requirement; as a result, it is difficult to interpret what has actually been estimated. Examples that fail the autonomy requirement often have the same feature: the endogenous variables in the system are all choice variables of the same economic unit.
+
+As an example, consider an individual's choice of weekly hours spent in legal market activities and hours spent in criminal behavior. An economic model of crime can be derived from utility maximization; for simplicity, suppose the choice is only between hours working legally (work) and hours involved in crime (crime). The factors assumed to be exogenous to the individual's choice are things like wage in legal activities, other income sources, probability of arrest, expected punishment, and so on. The utility function can depend on education, work experience, gender, race, and other demographic variables.
+
+Two structural equations fall out of the individual's optimization problem: one has work as a function of the exogenous factors, demographics, and unobservables; the other has crime as a function of these same factors. Of course, it is always possible that factors treated as exogenous by the individual cannot be treated as exogenous by the econometrician: unobservables that affect the choice of work and crime could be correlated with the observable factors. But this possibility is an omitted variables problem. (Measurement error could also be an important issue in this example.) Whether or not omitted variables or measurement error are problems, each equation has a causal interpretation.
+
+In the crime example, and many similar examples, it may be tempting to stop before completely solving the model-or to circumvent economic theory altogetherand specify a simultaneous equations system consisting of two equations. The first equation would describe work in terms of crime, while the second would have crime as a function of work (with other factors appearing in both equations). While it is often possible to write the first-order conditions for an optimization problem in this way, these equations are not the structural equations of interest. Neither equation can stand on its own, and neither has a causal interpretation. For example, what would it mean to study the effect of changing the market wage on hours spent in criminal activity, holding hours spent in legal employment fixed? An individual will generally adjust the time spent in both activities to a change in the market wage.
+
+Often it is useful to determine how one endogenous choice variable trades off against another, but in such cases the goal is not-and should not be-to infer causality. For example, Biddle and Hamermesh (1990) present OLS regressions of minutes spent per week sleeping on minutes per week working (controlling for education, age, and other demographic and health factors). Biddle and Hamermesh recognize that there is nothing "structural" about such an analysis. (In fact, the choice of the dependent variable is largely arbitrary.) Biddle and Hamermesh (1990) do derive a structural model of the demand for sleep (along with a labor supply function) where a key explanatory variable is the wage offer. The demand for sleep has a causal interpretation, and it does not include labor supply on the right-hand side.
+
+Why are SEM applications that do not satisfy the autonomy requirement so prevalent in applied work? One possibility is that there appears to be a general misperception that "structural" and "simultaneous" are synonymous. However, we already know that structural models need not be systems of simultaneous equations. And, as the crime/work example shows, a simultaneous system is not necessarily structural.
+
+\subsection*{9.2 Identification in a Linear System}
+\subsection*{9.2.1 Exclusion Restrictions and Reduced Forms}
+Write a system of linear simultaneous equations for the population as
+
+
+\begin{equation*}
+y_{1}=\mathbf{y}_{(1)} \gamma_{(1)}+\mathbf{z}_{(1)} \boldsymbol{\delta}_{(1)}+u_{1} \tag{9.1}
+\end{equation*}
+
+
+$y_{G}=\mathbf{y}_{(G)} \gamma_{(G)}+\mathbf{z}_{(G)} \boldsymbol{\delta}_{(G)}+u_{G}$,\\
+where $\mathbf{y}_{(h)}$ is $1 \times G_{h}, \boldsymbol{\gamma}_{(h)}$ is $G_{h} \times 1, \mathbf{z}_{(h)}$ is $1 \times M_{h}$, and $\boldsymbol{\delta}_{(h)}$ is $M_{h} \times 1, h=1,2, \ldots, G$. These are structural equations for the endogenous variables $y_{1}, y_{2}, \ldots, y_{G}$. We will assume that, if the system (9.1) represents a true SEM, then equilibrium conditions have been imposed. Hopefully, each equation is autonomous, but, of course, they do not need to be for the statistical analysis.
+
+The vector $\mathbf{y}_{(h)}$ denotes endogenous variables that appear on the right-hand side of the $h$ th structural equation. By convention, $\mathbf{y}_{(h)}$ can contain any of the endogenous variables $y_{1}, y_{2}, \ldots, y_{G}$ except for $y_{h}$. The variables in $\mathbf{z}_{(h)}$ are the exogenous variables appearing in equation $h$. Usually there is some overlap in the exogenous variables across different equations; for example, except in special circumstances, each $\mathbf{z}_{(h)}$ would contain unity to allow for nonzero intercepts. The restrictions imposed in\\
+system (9.1) are called exclusion restrictions because certain endogenous and exogenous variables are excluded from some equations.
+
+The $1 \times M$ vector of all exogenous variables $\mathbf{z}$ is assumed to satisfy\\
+$\mathrm{E}\left(\mathbf{z}^{\prime} u_{g}\right)=\mathbf{0}, \quad g=1,2, \ldots, G$.
+
+When all of the equations in system (9.1) are truly structural, we are usually willing to assume\\
+$\mathrm{E}\left(u_{g} \mid \mathbf{z}\right)=0, \quad g=1,2, \ldots, G$.
+
+However, we know from Chapters 5 and 8 that assumption (9.2) is sufficient for consistent estimation. Sometimes, especially in omitted variables and measurement error applications, one or more of the equations in system (9.1) will simply represent a linear projection onto exogenous variables, as in Example 8.2. It is for this reason that we use assumption (9.2) for most of our identification and estimation analysis. We assume throughout that $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$ is nonsingular, so that there are no exact linear dependencies among the exogenous variables in the population.
+
+Assumption (9.2) implies that the exogenous variables appearing anywhere in the system are orthogonal to all the structural errors. If some elements in, say, $\mathbf{z}_{(1)}$ do not appear in the second equation, then we are explicitly assuming that they do not enter the structural equation for $y_{2}$. If there are no reasonable exclusion restrictions in an SEM, it may be that the system fails the autonomy requirement.
+
+Generally, in the system (9.1), the error $u_{g}$ in equation $g$ will be correlated with $\mathbf{y}_{(g)}$ (we show this correlation explicitly later), and so OLS and GLS will be inconsistent. Nevertheless, under certain identification assumptions, we can estimate this system using the instrumental variables procedures covered in Chapter 8.
+
+In addition to the exclusion restrictions in system (9.1), another possible source of identifying information is on the $G \times G$ variance matrix $\boldsymbol{\Sigma} \equiv \operatorname{Var}(\mathbf{u})$. For now, $\boldsymbol{\Sigma}$ is unrestricted and therefore contains no identifying information.
+
+To motivate the general analysis, consider specific labor supply and demand functions for some population:\\
+$h^{s}(\omega)=\gamma_{1} \log (\omega)+\mathbf{z}_{(1)} \boldsymbol{\delta}_{(1)}+u_{1}$\\
+$h^{d}(\omega)=\gamma_{2} \log (\omega)+\mathbf{z}_{(2)} \boldsymbol{\delta}_{(2)}+u_{2}$,\\
+where $w$ is the dummy argument in the labor supply and labor demand functions. We assume that observed hours, $h$, and observed wage, $w$, equate supply and demand:\\
+$h=h^{s}(w)=h^{d}(w)$.
+
+The variables in $\mathbf{z}_{(1)}$ shift the labor supply curve, and $\mathbf{z}_{(2)}$ contains labor demand shifters. By defining $y_{1}=h$ and $y_{2}=\log (w)$ we can write the equations in equilibrium as a linear simultaneous equations model:\\
+$y_{1}=\gamma_{1} y_{2}+\mathbf{z}_{(1)} \boldsymbol{\delta}_{(1)}+u_{1}$,\\
+$y_{1}=\gamma_{2} y_{2}+\mathbf{z}_{(2)} \boldsymbol{\delta}_{(2)}+u_{2}$.
+
+Nothing about the general system (9.1) rules out having the same variable on the lefthand side of more than one equation.
+
+What is needed to identify the parameters in, say, the supply curve? Intuitively, since we observe only the equilibrium quantities of hours and wages, we cannot distinguish the supply function from the demand function if $\mathbf{z}_{(1)}$ and $\mathbf{z}_{(2)}$ contain exactly the same elements. If, however, $\mathbf{z}_{(2)}$ contains an element not in $\mathbf{z}_{(1)}$-that is, if there is some factor that exogenously shifts the demand curve but not the supply curve-then we can hope to estimate the parameters of the supply curve. To identify the demand curve, we need at least one element in $\mathbf{z}_{(1)}$ that is not also in $\mathbf{z}_{(2)}$.
+
+To formally study identification, assume that $\gamma_{1} \neq \gamma_{2}$; this assumption just means that the supply and demand curves have different slopes. Subtracting equation (9.5) from equation (9.4), dividing by $\gamma_{2}-\gamma_{1}$, and rearranging gives\\
+$y_{2}=\mathbf{z}_{(1)} \boldsymbol{\pi}_{21}+\mathbf{z}_{(2)} \boldsymbol{\pi}_{22}+v_{2}$,\\
+where $\boldsymbol{\pi}_{21} \equiv \boldsymbol{\delta}_{(1)} /\left(\gamma_{2}-\gamma_{1}\right), \boldsymbol{\pi}_{22}=-\boldsymbol{\delta}_{(2)} /\left(\gamma_{2}-\gamma_{1}\right)$, and $v_{2} \equiv\left(u_{1}-u_{2}\right) /\left(\gamma_{2}-\gamma_{1}\right)$. This is the reduced form for $y_{2}$ because it expresses $y_{2}$ as a linear function of all of the exogenous variables and an error $v_{2}$ which, by assumption (9.2), is orthogonal to all exogenous variables: $\mathrm{E}\left(\mathbf{z}^{\prime} v_{2}\right)=\mathbf{0}$. Importantly, the reduced form for $y_{2}$ is obtained from the two structural equations (9.4) and (9.5).
+
+Given equation (9.4) and the reduced form (9.6), we can now use the identification condition from Chapter 5 for a linear model with a single right-hand-side endogenous variable. This condition is easy to state: the reduced form for $y_{2}$ must contain at least one exogenous variable not also in equation (9.4). This means there must be at least one element of $\mathbf{z}_{(2)}$ not in $\mathbf{z}_{(1)}$ with coefficient in equation (9.6) different from zero. Now we use the structural equations. Because $\boldsymbol{\pi}_{22}$ is proportional to $\boldsymbol{\delta}_{(2)}$, the condition is easily restated in terms of the structural parameters: in equation (9.5) at least one element of $\mathbf{z}_{(2)}$ not in $\mathbf{z}_{(1)}$ must have nonzero coefficient. In the supply and demand example, identification of the supply function requires at least one exogenous variable appearing in the demand function that does not also appear in the supply function; this conclusion corresponds exactly with our earlier intuition.
+
+The condition for identifying equation (9.5) is just the mirror image: there must be at least one element of $\mathbf{z}_{(1)}$ actually appearing in equation (9.4) that is not also an element of $\mathbf{z}_{(2)}$.
+
+Example 9.1 (Labor Supply for Married Women): Consider labor supply and demand equations for married women, with the equilibrium condition imposed:\\
+hours $=\gamma_{1} \log ($ wage $)+\delta_{10}+\delta_{11}$ educ $+\delta_{12}$ age $+\delta_{13}$ kids $+\delta_{14}$ othinc $+u_{1}$.\\
+hours $=\gamma_{2} \log ($ wage $)+\delta_{20}+\delta_{21}$ educ $+\delta_{22}$ exper $+u_{2}$.\\
+The supply equation is identified because, by assumption, exper appears in the demand function (assuming $\delta_{22} \neq 0$ ) but not in the supply equation. The assumption that past experience has no direct effect on labor supply can be questioned, but it has been used by labor economists. The demand equation is identified provided that at least one of the three variables age, kids, and othinc actually appears in the supply equation.
+
+We now extend this analysis to the general system (9.1). For concreteness, we study identification of the first equation:\\
+$y_{1}=\mathbf{y}_{(1)} \boldsymbol{\gamma}_{(1)}+\mathbf{z}_{(1)} \boldsymbol{\delta}_{(1)}+u_{1}=\mathbf{x}_{(1)} \boldsymbol{\beta}_{(1)}+u_{1}$,\\
+where the notation used for the subscripts is needed to distinguish an equation with exclusion restrictions from the general equation that we study in Section 9.2.2. Assuming that the reduced forms exist, write the reduced form for $\mathbf{y}_{(1)}$ as\\
+$\mathbf{y}_{(1)}=\mathbf{z} \Pi_{(1)}+\mathbf{v}_{(1)}$,\\
+where $\mathrm{E}\left[\mathbf{z}^{\prime} \mathbf{v}_{(1)}\right]=\mathbf{0}$. Further, define the $M \times M_{1}$ matrix selection matrix $\mathbf{S}_{(1)}$, which consists of zeros and ones, such that $\mathbf{z}_{(1)}=\mathbf{z} \mathbf{S}_{(1)}$. The rank condition from Chapter 5, Assumption 2SLS.2b, can be stated as\\
+$\operatorname{rank} \mathrm{E}\left[\mathbf{z}^{\prime} \mathbf{x}_{(1)}\right]=K_{1}$,\\
+where $K_{1} \equiv G_{1}+M_{1}$. But $\mathrm{E}\left[\mathbf{z}^{\prime} \mathbf{x}_{(1)}\right]=\mathrm{E}\left[\mathbf{z}^{\prime}\left(\mathbf{z} \boldsymbol{\Pi}_{(1)}, \mathbf{z} \mathbf{S}_{(1)}\right)\right]=\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)\left[\boldsymbol{\Pi}_{(1)} \mid \mathbf{S}_{(1)}\right]$. Since we always assume that $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$ has full rank $M$, assumption (9.9) is the same as\\
+$\operatorname{rank}\left[\boldsymbol{\Pi}_{(1)} \mid \mathbf{S}_{(1)}\right]=G_{1}+M_{1}$.
+
+In other words, $\left[\boldsymbol{\Pi}_{(1)} \mid \mathbf{S}_{(1)}\right]$ must have full column rank. If the reduced form for $\mathbf{y}_{(1)}$ has been found, this condition can be checked directly. But there is one thing we can conclude immediately: because $\left[\boldsymbol{\Pi}_{(1)} \mid \mathbf{S}_{(1)}\right]$ is an $M \times\left(G_{1}+M_{1}\right)$ matrix, a necessary\\
+condition for assumption (9.10) is $M \geq G_{1}+M_{1}$, or\\
+$M-M_{1} \geq G_{1}$.
+
+We have already encountered condition (9.11) in Chapter 5: the number of exogenous variables not appearing in the first equation, $M-M_{1}$, must be at least as great as the number of endogenous variables appearing on the right-hand side of the first equation (9.7), $G_{1}$. This is the order condition for identification of the first equation. We have proven the following theorem:\\
+theorem 9.1 (Order Condition with Exclusion Restrictions): In a linear system of equations with exclusion restrictions, a necessary condition for identifying any particular equation is that the number of excluded exogenous variables from the equation must be at least as large as the number of included right-hand-side endogenous variables in the equation.
+
+It is important to remember that the order condition is only necessary, not sufficient, for identification. If the order condition fails for a particular equation, there is no hope of estimating the parameters in that equation. If the order condition is met, the equation might be identified.
+
+\subsection*{9.2.2 General Linear Restrictions and Structural Equations}
+The identification analysis of the preceding subsection is useful when reduced forms are appended to structural equations. When an entire structural system has been specified, it is best to study identification entirely in terms of the structural parameters.
+
+To this end, we now write the $G$ equations in the population as
+
+
+\begin{align*}
+& \mathbf{y} \gamma_{1}+\mathbf{z} \boldsymbol{\delta}_{1}+u_{1}=0 \\
+& \vdots  \tag{9.12}\\
+& \mathbf{y} \gamma_{G}+\mathbf{z} \boldsymbol{\delta}_{G}+u_{G}=0,
+\end{align*}
+
+
+where $\mathbf{y} \equiv\left(y_{1}, y_{2}, \ldots, y_{G}\right)$ is the $1 \times G$ vector of all endogenous variables and $\mathbf{z} \equiv \left(z_{1}, \ldots, z_{M}\right)$ is still the $1 \times M$ vector of all exogenous variables, and probably contains unity. We maintain assumption (9.2) throughout this section and also assume that $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$ is nonsingular. The notation here differs from that in Section 9.2.1. Here, $\gamma_{g}$ is $G \times 1$ and $\boldsymbol{\delta}_{g}$ is $M \times 1$ for all $g=1,2, \ldots, G$, so that the system (9.12) is the general linear system without any restrictions on the structural parameters.
+
+We can write this system compactly as
+
+
+\begin{equation*}
+\mathbf{y} \boldsymbol{\Gamma}+\mathbf{z} \boldsymbol{\Delta}+\mathbf{u}=\mathbf{0} \tag{9.13}
+\end{equation*}
+
+
+where $\mathbf{u} \equiv\left(u_{1}, \ldots, u_{G}\right)$ is the $1 \times G$ vector of structural errors, $\boldsymbol{\Gamma}$ is the $G \times G$ matrix with $g$ th column $\gamma_{g}$, and $\boldsymbol{\Delta}$ is the $M \times G$ matrix with $g$ th column $\boldsymbol{\delta}_{g}$. So that a reduced form exists, we assume that $\boldsymbol{\Gamma}$ is nonsingular. Let $\boldsymbol{\Sigma} \equiv \mathrm{E}\left(\mathbf{u}^{\prime} \mathbf{u}\right)$ denote the $G \times G$ variance matrix of $\mathbf{u}$, which we assume to be nonsingular. At this point, we have placed no other restrictions on $\boldsymbol{\Gamma}, \boldsymbol{\Delta}$, or $\boldsymbol{\Sigma}$.
+
+The reduced form is easily expressed as\\
+$\mathbf{y}=\mathbf{z}\left(-\boldsymbol{\Delta} \boldsymbol{\Gamma}^{-1}\right)+\mathbf{u}\left(-\boldsymbol{\Gamma}^{-1}\right) \equiv \mathbf{z} \boldsymbol{\Pi}+\mathbf{v}$,\\
+where $\boldsymbol{\Pi} \equiv\left(-\boldsymbol{\Delta} \boldsymbol{\Gamma}^{-1}\right)$ and $\mathbf{v} \equiv \mathbf{u}\left(-\boldsymbol{\Gamma}^{-1}\right)$. Define $\boldsymbol{\Lambda} \equiv \mathrm{E}\left(\mathbf{v}^{\prime} \mathbf{v}\right)=\boldsymbol{\Gamma}^{-1} \boldsymbol{\Sigma} \boldsymbol{\Gamma}^{-1}$ as the reduced form variance matrix. Because $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{v}\right)=\mathbf{0}$ and $\mathrm{E}\left(\mathbf{z}^{\prime} \mathbf{z}\right)$ is nonsingular, $\boldsymbol{\Pi}$ and $\boldsymbol{\Lambda}$ are identified because they can be consistently estimated given a random sample on $\mathbf{y}$ and $\mathbf{z}$ by OLS equation by equation. The question is, under what assumptions can we recover the structural parameters $\boldsymbol{\Gamma}, \boldsymbol{\Delta}$, and $\boldsymbol{\Sigma}$ from the reduced form parameters?
+
+It is easy to see that, without some restrictions, we will not be able to identify any of the parameters in the structural system. Let $\mathbf{F}$ be any $G \times G$ nonsingular matrix, and postmultiply equation (9.13) by $\mathbf{F}$ :\\
+$\mathbf{y} \boldsymbol{\Gamma} \mathbf{F}+\mathbf{z} \boldsymbol{\Delta} \mathbf{F}+\mathbf{u} \mathbf{F}=\mathbf{0} \quad$ or $\quad \mathbf{y} \boldsymbol{\Gamma}^{*}+\mathbf{z} \boldsymbol{\Delta}^{*}+\mathbf{u}^{*}=\mathbf{0}$,\\
+where $\boldsymbol{\Gamma}^{*} \equiv \boldsymbol{\Gamma} \mathbf{F}, \boldsymbol{\Delta}^{*} \equiv \boldsymbol{\Delta} \mathbf{F}$, and $\mathbf{u}^{*} \equiv \mathbf{u F}$; note that $\operatorname{Var}\left(\mathbf{u}^{*}\right)=\mathbf{F}^{\prime} \boldsymbol{\Sigma} \mathbf{F}$. Simple algebra shows that equations (9.15) and (9.13) have identical reduced forms. This result means that, without restrictions on the structural parameters, there are many equivalent structures in the sense that they lead to the same reduced form. In fact, there is an equivalent structure for each nonsingular $\mathbf{F}$.
+
+Let $\mathbf{B} \equiv\binom{\boldsymbol{\Gamma}}{\boldsymbol{\Delta}}$ be the $(G+M) \times G$ matrix of structural parameters in equation (9.13). If $\mathbf{F}$ is any nonsingular $G \times G$ matrix, then $\mathbf{F}$ represents an admissible linear transformation if
+
+\begin{enumerate}
+  \item BF satisfies all restrictions on $\mathbf{B}$.
+  \item $\mathbf{F}^{\prime} \mathbf{\Sigma} \mathbf{F}$ satisfies all restrictions on $\mathbf{\Sigma}$.
+\end{enumerate}
+
+To identify the system, we need enough prior information on the structural parameters $(\mathbf{B}, \boldsymbol{\Sigma})$ so that $\mathbf{F}=\mathbf{I}_{G}$ is the only admissible linear transformation.
+
+In most applications identification of $\mathbf{B}$ is of primary interest, and this identification is achieved by putting restrictions directly on $\mathbf{B}$. As we will touch on in Section 9.4.2, it is possible to put restrictions on $\boldsymbol{\Sigma}$ in order to identify $\mathbf{B}$, but this approach is somewhat rare in practice. Until we come to Section 9.4.2, $\boldsymbol{\Sigma}$ is an unrestricted $G \times G$ positive definite matrix.
+
+As before, we consider identification of the first equation:
+
+
+\begin{equation*}
+\mathbf{y} \gamma_{1}+\mathbf{z} \boldsymbol{\delta}_{1}+u_{1}=0 \tag{9.16}
+\end{equation*}
+
+
+or $\gamma_{11} y_{1}+\gamma_{12} y_{2}+\cdots+\gamma_{1 G} y_{G}+\delta_{11} z_{1}+\delta_{12} z_{2}+\cdots+\delta_{1 M} z_{M}+u_{1}=0$. The first restriction we make on the parameters in equation (9.16) is the normalization restriction that one element of $\gamma_{1}$ is -1 . Each equation in the system (9.1) has a normalization restriction because one variable is taken to be the left-hand-side explained variable. In applications, there is usually a natural normalization for each equation. If there is not, we should ask whether the system satisfies the autonomy requirement discussed in Section 9.1. (Even in models that satisfy the autonomy requirement, we often have to choose between reasonable normalization conditions. For example, in Example 9.1, we could have specified the second equation to be a wage offer equation rather than a labor demand equation.)
+
+Let $\boldsymbol{\beta}_{1} \equiv\left(\boldsymbol{\gamma}_{1}^{\prime}, \boldsymbol{\delta}_{1}^{\prime}\right)^{\prime}$ be the $(G+M) \times 1$ vector of structural parameters in the first equation. With a normalization restriction there are $(G+M)-1$ unknown elements in $\boldsymbol{\beta}_{1}$. Assume that prior knowledge about $\boldsymbol{\beta}_{1}$ can be expressed as
+
+
+\begin{equation*}
+\mathbf{R}_{1} \boldsymbol{\beta}_{1}=\mathbf{0} \tag{9.17}
+\end{equation*}
+
+
+where $\mathbf{R}_{1}$ is a $J_{1} \times(G+M)$ matrix of known constants and $J_{1}$ is the number of restrictions on $\boldsymbol{\beta}_{1}$ (in addition to the normalization restriction). We assume that rank $\mathbf{R}_{1}=J_{1}$, so that there are no redundant restrictions. The restrictions in assumption (9.17) are sometimes called homogeneous linear restrictions, but, when coupled with a normalization assumption, equation (9.17) actually allows for nonhomogeneous restrictions.
+
+Example 9.2 (Three-Equation System): Consider the first equation in a system with $G=3$ and $M=4$ :\\
+$y_{1}=\gamma_{12} y_{2}+\gamma_{13} y_{3}+\delta_{11} z_{1}+\delta_{12} z_{2}+\delta_{13} z_{3}+\delta_{14} z_{4}+u_{1}$\\
+so that $\boldsymbol{\gamma}_{1}=\left(-1, \boldsymbol{\gamma}_{12}, \boldsymbol{\gamma}_{13}\right)^{\prime}, \boldsymbol{\delta}_{1}=\left(\delta_{11}, \delta_{12}, \delta_{13}, \delta_{14}\right)^{\prime}$, and $\boldsymbol{\beta}_{1}=\left(-1, \gamma_{12}, \gamma_{13}, \delta_{11}, \delta_{12}, \delta_{13}\right.$, $\left.\delta_{14}\right)^{\prime}$. (We can set $z_{1}=1$ to allow an intercept.) Suppose the restrictions on the structural parameters are $\gamma_{12}=0$ and $\delta_{13}+\delta_{14}=3$. Then $J_{1}=2$ and
+
+$$
+\mathbf{R}_{1}=\left(\begin{array}{lllllll}
+0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+3 & 0 & 0 & 0 & 0 & 1 & 1
+\end{array}\right)
+$$
+
+Straightforward multiplication gives $\mathbf{R}_{1} \boldsymbol{\beta}_{1}=\left(\gamma_{12}, \delta_{13}+\delta_{14}-3\right)^{\prime}$, and setting this vector to zero as in equation (9.17) incorporates the restrictions on $\boldsymbol{\beta}_{1}$.
+
+Given the linear restrictions in equation (9.17), when are these and the normalization restriction enough to identify $\boldsymbol{\beta}_{1}$ ? Let $\mathbf{F}$ again be any $G \times G$ nonsingular matrix, and write it in terms of its columns as $\mathbf{F}=\left(\mathbf{f}_{1}, \mathbf{f}_{2}, \ldots, \mathbf{f}_{G}\right)$. Define a linear transformation of $\mathbf{B}$ as $\mathbf{B}^{*}=\mathbf{B F}$, so that the first column of $\mathbf{B}^{*}$ is $\boldsymbol{\beta}_{1}^{*} \equiv \mathbf{B f}_{1}$. We need to find a condition so that equation (9.17) allows us to distinguish $\boldsymbol{\beta}_{1}$ from any other $\boldsymbol{\beta}_{1}^{*}$. For the moment, ignore the normalization condition. The vector $\boldsymbol{\beta}_{1}^{*}$ satisfies the linear restrictions embodied by $\mathbf{R}_{1}$ if and only if\\
+$\mathbf{R}_{1} \boldsymbol{\beta}_{1}^{*}=\mathbf{R}_{1}\left(B \mathbf{f}_{1}\right)=\left(\mathbf{R}_{1} \mathbf{B}\right) \mathbf{f}_{1}=\mathbf{0}$.
+
+Naturally, $\left(\mathbf{R}_{1} \mathbf{B}\right) \mathbf{f}_{1}=\mathbf{0}$ is true for $\mathbf{f}_{1}=\mathbf{e}_{1} \equiv(1,0,0, \ldots, 0)^{\prime}$, since then $\boldsymbol{\beta}_{1}^{*}=\mathbf{B f}_{1}= \boldsymbol{\beta}_{1}$. Since assumption (9.18) holds for $\mathbf{f}_{1}=\mathbf{e}_{1}$ it clearly holds for any scalar multiple of $\mathbf{e}_{1}$. The key to identification is that vectors of the form $c_{1} \mathbf{e}_{1}$, for some constant $c_{1}$, are the only vectors $\mathbf{f}_{1}$ satisfying condition (9.18). If condition (9.18) holds for vectors $\mathbf{f}_{1}$ other than scalar multiples of $\mathbf{e}_{1}$, then we have no hope of identifying $\boldsymbol{\beta}_{1}$.
+
+Stating that condition (9.18) holds only for vectors of the form $c_{1} \mathbf{e}_{1}$ just means that the null space of $\mathbf{R}_{1} \mathbf{B}$ has dimension unity. Equivalently, because $\mathbf{R}_{1} \mathbf{B}$ has $G$ columns,\\
+$\operatorname{rank} \mathbf{R}_{1} \mathbf{B}=G-1$.
+
+This is the rank condition for identification of $\boldsymbol{\beta}_{1}$ in the first structural equation under general linear restrictions. Once condition (9.19) is known to hold, the normalization restriction allows us to distinguish $\boldsymbol{\beta}_{1}$ from any other scalar multiple of $\boldsymbol{\beta}_{1}$.\\
+theorem 9.2 (Rank Condition for Identification): Let $\boldsymbol{\beta}_{1}$ be the $(G+M) \times 1$ vector of structural parameters in the first equation, with the normalization restriction that one of the coefficients on an endogenous variable is -1 . Let the additional information on $\boldsymbol{\beta}_{1}$ be given by restriction (9.17). Then $\boldsymbol{\beta}_{1}$ is identified if and only if the rank condition (9.19) holds.
+
+As promised earlier, the rank condition in this subsection depends on the structural parameters, $\mathbf{B}$. We can determine whether the first equation is identified by studying the matrix $\mathbf{R}_{1} \mathbf{B}$. Since this matrix can depend on all structural parameters, we must generally specify the entire structural model.
+
+The $J_{1} \times G$ matrix $\mathbf{R}_{1} \mathbf{B}$ can be written as $\mathbf{R}_{1} \mathbf{B}=\left[\mathbf{R}_{1} \boldsymbol{\beta}_{1}, \mathbf{R}_{1} \boldsymbol{\beta}_{2}, \ldots, \mathbf{R}_{1} \boldsymbol{\beta}_{\mathrm{G}}\right]$, where $\boldsymbol{\beta}_{g}$ is the $(G+M) \times 1$ vector of structural parameters in equation $g$. By assumption (9.17), the first column of $\mathbf{R}_{1} \mathbf{B}$ is the zero vector. Therefore, $\mathbf{R}_{1} \mathbf{B}$ cannot have rank larger than $G-1$. What we must check is whether the columns of $\mathbf{R}_{1} \mathbf{B}$ other than the first form a linearly independent set.
+
+Using condition (9.19), we can get a more general form of the order condition. Because $\boldsymbol{\Gamma}$ is nonsingular, $\mathbf{B}$ necessarily has rank $G$ (full column rank). Therefore, for\\
+condition (9.19) to hold, we must have rank $\mathbf{R}_{1} \geq G-1$. But we have assumed that rank $\mathbf{R}_{1}=J_{1}$, which is the row dimension of $\mathbf{R}_{1}$.\\
+theorem 9.3 (Order Condition for Identification): In system (9.12) under assumption (9.17), a necessary condition for the first equation to be identified is\\
+$J_{1} \geq G-1$,\\
+where $J_{1}$ is the row dimension of $\mathbf{R}_{1}$. Equation (9.20) is the general form of the order condition.
+
+We can summarize the steps for checking whether the first equation in the system is identified.
+
+\begin{enumerate}
+  \item Set one element of $\gamma_{1}$ to -1 as a normalization.
+  \item Define the $J_{1} \times(G+M)$ matrix $\mathbf{R}_{1}$ such that equation (9.17) captures all restrictions on $\boldsymbol{\beta}_{1}$.
+  \item If $J_{1}<G-1$, the first equation is not identified.
+  \item If $J_{1} \geq G-1$, the equation might be identified. Let $\mathbf{B}$ be the matrix of all structural parameters with only the normalization restrictions imposed, and compute $\mathbf{R}_{1} \mathbf{B}$. Now impose the restrictions in the entire system and check the rank condition (9.19).
+\end{enumerate}
+
+The simplicity of the order condition makes it attractive as a tool for studying identification. Nevertheless, it is not difficult to write down examples where the order condition is satisfied but the rank condition fails.
+
+Example 9.3 (Failure of the Rank Condition): Consider the following three-equation structural model in the population $(G=3, M=4)$ :\\
+$y_{1}=\gamma_{12} y_{2}+\gamma_{13} y_{3}+\delta_{11} z_{1}+\delta_{13} z_{3}+u_{1}$,\\
+$y_{2}=\gamma_{21} y_{1}+\delta_{21} z_{1}+u_{2}$,\\
+$y_{3}=\delta_{31} z_{1}+\delta_{32} z_{2}+\delta_{33} z_{3}+\delta_{34} z_{4}+u_{3}$,\\
+where $z_{1} \equiv 1, \mathrm{E}\left(u_{g}\right)=0, g=1,2,3$, and each $z_{j}$ is uncorrelated with each $u_{g}$. Note that the third equation is already a reduced form equation (although it may also have a structural interpretation). In equation (9.21) we have set $\gamma_{11}=-1, \delta_{12}=0$, and $\delta_{14}=0$. Since this equation contains two right-hand-side endogenous variables and there are two excluded exogenous variables, it passes the order condition.
+
+To check the rank condition, let $\boldsymbol{\beta}_{1}$ denote the $7 \times 1$ vector of parameters in the first equation with only the normalization restriction imposed: $\boldsymbol{\beta}_{1}=\left(-1, \gamma_{12}, \gamma_{13}, \delta_{11}\right.$, $\left.\delta_{12}, \delta_{13}, \delta_{14}\right)^{\prime}$. The restrictions $\delta_{12}=0$ and $\delta_{14}=0$ are obtained by choosing
+
+$$
+\mathbf{R}_{1}=\left(\begin{array}{lllllll}
+0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1
+\end{array}\right) .
+$$
+
+Let $\mathbf{B}$ be the full $7 \times 3$ matrix of parameters with only the three normalizations imposed (so that $\boldsymbol{\beta}_{2}=\left(\gamma_{21},-1, \gamma_{23}, \delta_{21}, \delta_{22}, \delta_{23}, \delta_{24}\right)^{\prime}$ and $\boldsymbol{\beta}_{3}=\left(\gamma_{31}, \gamma_{32},-1, \delta_{31}, \delta_{32}\right.$, $\left.\delta_{33}, \delta_{34}\right)^{\prime}$ ). Matrix multiplication gives\\
+$\mathbf{R}_{1} \mathbf{B}=\left(\begin{array}{lll}\delta_{12} & \delta_{22} & \delta_{32} \\ \delta_{14} & \delta_{24} & \delta_{34}\end{array}\right)$.\\
+Now we impose all of the restrictions in the system. In addition to the restrictions $\delta_{12}=0$ and $\delta_{14}=0$ from equation (9.21), we also have $\delta_{22}=0$ and $\delta_{24}=0$ from equation (9.22). Therefore, with all restrictions imposed,
+
+\[
+\mathbf{R}_{1} \mathbf{B}=\left(\begin{array}{ccc}
+0 & 0 & \delta_{32}  \tag{9.24}\\
+0 & 0 & \delta_{34}
+\end{array}\right) .
+\]
+
+The rank of this matrix is at most unity, and so the rank condition fails because $G-1=2$.
+
+Equation (9.22) easily passes the order condition. What about the rank condition? If $\mathbf{R}_{2}$ is the $4 \times 7$ matrix imposing the restrictions on $\boldsymbol{\beta}_{2}$, namely, $\gamma_{23}=0, \delta_{22}=0$, $\delta_{23}=0$, and $\delta_{24}=0$, then it is easily seen that, with the restrictions on the entire system imposed,\\
+$\mathbf{R}_{2} \mathbf{B}=\left(\begin{array}{ccc}\gamma_{13} & 0 & -1 \\ 0 & 0 & \delta_{32} \\ \delta_{13} & 0 & \delta_{33} \\ 0 & 0 & \delta_{34}\end{array}\right)$,\\
+and we need this matrix to have rank equal to two if (9.22) is identified. A sufficient condition is $\delta_{13} \neq 0$ and at least one of $\delta_{32}$ and $\delta_{34}$ is different from zero. The rank condition fails if $\gamma_{13}=\delta_{13}=0$, in which case $y_{1}$ and $y_{2}$ form a two-equation system with only one exogenous variable, $z_{1}$, appearing in both equations. The third equation, (9.23), is identified because it contains no endogenous explanatory variables.
+
+When the restrictions on $\boldsymbol{\beta}_{1}$ consist entirely of normalization and exclusion restrictions, the order condition (9.20) reduces to the order condition (9.11), as can be\\
+seen by the following argument. When all restrictions are exclusion restrictions, the matrix $\mathbf{R}_{1}$ consists only of zeros and ones, and the number of rows in $\mathbf{R}_{1}$ equals the number of excluded right-hand-side endogenous variables, $G-G_{1}-1$, plus the number of excluded exogenous variables, $M-M_{1}$. In other words, $J_{1}=\left(G-G_{1}-1\right)+ \left(M-M_{1}\right)$, and so the order condition (9.20) becomes $\left(G-G_{1}-1\right)+\left(M-M_{1}\right) \geq G-1$, which, upon rearrangement, becomes condition (9.11).
+
+\subsection*{9.2.3 Unidentified, Just Identified, and Overidentified Equations}
+We have seen that, for identifying a single equation, the rank condition (9.19) is necessary and sufficient. When condition (9.19) fails, we say that the equation is unidentified.
+
+When the rank condition holds, it is useful to refine the sense in which the equation is identified. If $J_{1}=G-1$, then we have just enough identifying information. If we were to drop one restriction in $\mathbf{R}_{1}$, we would necessarily lose identification of the first equation because the order condition would fail. Therefore, when $J_{1}=G-1$, we say that the equation is just identified.
+
+If $J_{1}>G-1$, it is often possible to drop one or more restrictions on the parameters of the first equation and still achieve identification. In this case we say the equation is overidentified. Necessary but not sufficient for overidentification is $J_{1}>G-1$. It is possible that $J_{1}$ is strictly greater than $G-1$ but the restrictions are such that dropping one restriction loses identification, in which case the equation is not overidentified.
+
+In practice, we often appeal to the order condition to determine the degree of overidentification. While in special circumstances this approach can fail to be accurate, for most applications it is reasonable. Thus, for the first equation, $J_{1}-(G-1)$ is usually intepreted as the number of overidentifying restrictions.
+
+Example 9.4 (Overidentifying Restrictions): Consider the two-equation system\\
+$y_{1}=\gamma_{12} y_{2}+\delta_{11} z_{1}+\delta_{12} z_{2}+\delta_{13} z_{3}+\delta_{14} z_{4}+u_{1}$,\\
+$y_{2}=\gamma_{21} y_{1}+\delta_{21} z_{1}+\delta_{22} z_{2}+u_{2}$,\\
+where $\mathrm{E}\left(z_{j} u_{g}\right)=0$, all $j$ and $g$. Without further restrictions, equation (9.25) fails the order condition because every exogenous variable appears on the right-hand side, and the equation contains an endogenous variable. Using the order condition, equation (9.26) is overidentified, with one overidentifying restriction. If $z_{3}$ does not actually appear in equation (9.25), then equation (9.26) is just identified, assuming that $\delta_{14} \neq 0$.
+
+\subsection*{9.3 Estimation after Identification}
+\subsection*{9.3.1 Robustness-Efficiency Trade-off}
+All SEMs with linearly homogeneous restrictions within each equation can be written with exclusion restrictions as in the system (9.1); doing so may require redefining some of the variables. If we let $\mathbf{x}_{(g)}=\left(\mathbf{y}_{(g)}, \mathbf{z}_{(g)}\right)$ and $\boldsymbol{\beta}_{(g)}=\left(\boldsymbol{\gamma}_{(g)}^{\prime}, \boldsymbol{\delta}_{(g)}^{\prime}\right)^{\prime}$, then the system (9.1) is in the general form (8.11) with the slight change in notation. Under assumption (9.2) the matrix of instruments for observation $i$ is the $G \times G M$ matrix\\
+$\mathbf{Z}_{i} \equiv \mathbf{I}_{G} \otimes \mathbf{z}_{i}$.
+
+If every equation in the system passes the rank condition, a system estimation procedure-such as 3SLS or the more general minimum chi-square estimator-can be used. Alternatively, the equations of interest can be estimated by 2SLS. The bottom line is that the methods studied in Chapters 5 and 8 are directly applicable. All of the tests we have covered apply, including the tests of overidentifying restrictions in Chapters 6 and 8 and the single-equation tests for endogeneity in Chapter 6.
+
+When estimating a simultaneous equations system, it is important to remember the pros and cons of full system estimation. If all equations are correctly specified, system procedures are asymptotically more efficient than a single-equation procedure such as 2SLS. But single-equation methods are more robust. If interest lies, say, in the first equation of a system, 2SLS is consistent and asymptotically normal, provided the first equation is correctly specified and the instruments are exogenous. However, if one equation in a system is misspecified, the 3SLS or GMM estimates of all the parameters are generally inconsistent.
+
+Example 9.5 (Labor Supply for Married, Working Women): Using the data in MROZ.RAW, we estimate a labor supply function for working, married women. Rather than specify a demand function, we specify the second equation as a wage offer function and impose the equilibrium condition:
+
+
+\begin{align*}
+& \text { hours }= \gamma_{12} \log (\text { wage })+\delta_{10}+\delta_{11} \text { educ }+\delta_{12} \text { age }+\delta_{13} \text { kidslt6 } \\
+&+\delta_{14} \text { kidsge6 }+\delta_{15} \text { nwifeinc }+u_{1},  \tag{9.28}\\
+& \log (\text { wage })=\gamma_{21} \text { hours }+\delta_{20}+\delta_{21} \text { educ }+\delta_{22} \text { exper }+\delta_{23} \text { exper }^{2}+u_{2}, \tag{9.29}
+\end{align*}
+
+
+where kidslto is number of children less than 6, kidsge6 is number of children between 6 and 18, and nwifeinc is income other than the woman's labor income. We assume that $u_{1}$ and $u_{2}$ have zero mean conditional on educ, age, kidslt6, kidsge6, nwifeinc, and exper.
+
+The key restriction on the labor supply function is that exper (and exper ${ }^{2}$ ) have no direct effect on current annual hours. This identifies the labor supply function with one overidentifying restriction, as used by Mroz (1987). We estimate the labor supply function first by OLS (to see what ignoring the endogeneity of $\log$ (wage) does) and then by 2SLS, using as instruments all exogenous variables in equations (9.28) and (9.29).
+
+There are 428 women who worked at some time during the survey year, 1975. The average annual hours are about 1,303 , with a minimum of 12 and a maximum of 4,950 .
+
+We first estimate the labor supply function by OLS:
+
+$$
+\begin{aligned}
+\widehat{\text { hours }}= & 2,114.7-\underset{(54.22)}{17.41 \log (\text { wage })-\underset{(17.97)}{14.44 ~ e d u c}-\underset{(5.53)}{7.73 ~ a g e}} \\
+& \underset{(340.1)}{342.50 ~ k i d s l t 6-115.02 \text { kidsge6 }-\underset{(30.83)}{4.35} \text { nwifeinc } .}
+\end{aligned}
+$$
+
+The OLS estimates indicate a downward-sloping labor supply function, although the estimate on $\log$ (wage) is statistically insignificant.
+
+The estimates are much different when we use 2SLS:
+
+$$
+\begin{aligned}
+\widehat{\text { hours }}= & \underset{(594.2) \quad \underset{(480.74)}{2,432.2}+\underset{(58.14)}{1,544.82} \log (\text { wage })-\underset{(9.58)}{177.45} \text { educ }-\underset{(56.92)}{10.78} \text { age }}{ } \\
+& -\underset{(176.93)}{210.83 \text { kidslto }-\underset{(56.98)}{47.56 \text { kidsge6 }-\underset{(56)}{9.25} \text { nwifeinc } .}}
+\end{aligned}
+$$
+
+The estimated labor supply elasticity is $1,544.82 /$ hours . At the mean hours for working women, 1,303 , the estimated elasticity is about 1.2 , which is quite large.
+
+The supply equation has a single overidentifying restriction. The regression of the 2SLS residuals $\hat{u}_{1}$ on all exogenous variables produces $R_{u}^{2}=.002$, and so the test statistic is $428(.002) \approx .856$ with $p$-value $\approx .355$; the overidentifying restriction is not rejected.
+
+Under the exclusion restrictions we have imposed, the wage offer function (9.29) is also identified. Before estimating the equation by 2SLS, we first estimate the reduced form for hours to ensure that the exogenous variables excluded from equation (9.29) are jointly significant. The $p$-value for the $F$ test of joint significance of age, kidsltb, kidsge6, and nwifeinc is about .0009 . Therefore, we can proceed with 2SLS estimation of the wage offer equation. The coefficient on hours is about .00016 (standard error $\approx .00022$ ), and so the wage offer does not appear to differ by hours worked. The\\
+remaining coefficients are similar to what is obtained by dropping hours from equation (9.29) and estimating the equation by OLS. (For example, the 2SLS coefficient on education is about .111 with se $\approx .015$.)
+
+Interestingly, while the wage offer function (9.29) is identified, the analogous labor demand function is apparently unidentified. (This finding shows that choosing the normalization-that is, choosing between a labor demand function and a wage offer function-is not innocuous.) The labor demand function, written in equilibrium, would look like this:\\
+hours $=\gamma_{22} \log ($ wage $)+\delta_{20}+\delta_{21}$ educ $+\delta_{22}$ exper $+\delta_{23}$ exper $^{2}+u_{2}$.
+
+Estimating the reduced form for $\log ($ wage $)$ and testing for joint significance of age, kidslt6, kidsge6, and nwifeinc yields a p-value of about .46, and so the exogenous variables excluded from equation (9.30) would not seem to appear in the reduced form for $\log$ (wage). Estimation of equation (9.30) by 2SLS would be pointless. (You are invited to estimate equation (9.30) by 2SLS to see what happens.)
+
+It would be more efficient to estimate equations (9.28) and (9.29) by 3SLS, since each equation is overidentified (assuming the homoskedasticity assumption SIV.5). If heteroskedasticity is suspected, we could use the general minimum chi-square estimator. A system procedure is more efficient for estimating the labor supply function because it uses the information that age, kidslt6, kidsge6, and nwifeinc do not appear in the $\log$ (wage) equation. If these exclusion restrictions are wrong, the 3SLS estimators of parameters in both equations are generally inconsistent. Problem 9.9 asks you to obtain the 3SLS estimates for this example.
+
+\subsection*{9.3.2 When Are 2SLS and 3SLS Equivalent?}
+In Section 8.4 we discussed the relationship between system 2SLS and (GMM) 3SLS for a general linear system. Applying that discussion to linear SEMs, we can immediately draw the following conclusions. First, if each equation is just identified, 2SLS equation by equation and 3SLS are identical; in fact, each is identical to the system IV estimator. Basically, there is only one consistent estimator, the IV estimator on each equation. Second, regardless of the degree of overidentification, 2SLS equation by equation and 3SLS are identical when $\hat{\boldsymbol{\Sigma}}$ is diagonal. (As a practical matter, this occurs only if we force $\hat{\boldsymbol{\Sigma}}$ to be diagonal.)
+
+There are several other useful algebraic equivalences that have been derived elsewhere. Suppose that the first equation in the system is overidentified but every other equation in the system is just identified. Then the 2SLS estimator of the first equation is identical to its 3SLS estimates of the entire system. (A special case occurs when the\\
+first equation is a structural equation and all other equations are unrestricted reduced forms.) As an extension of this result, suppose for an identified system we put each equation in an identified system into two groups, just identified and overidentified. Then for the overidentified set of equations, the 3SLS estimates based on the entire system are identical to the 3SLS estimates obtained using only the overidentified subset. Of course, 3SLS estimation on the just identified set of equations is equivalent to 2SLS estimation on each equation, and this generally differs from the 3SLS estimates based on the entire system. See Schmidt (1976, Theorem 5.2.13) for verification.
+
+\subsection*{9.3.3 Estimating the Reduced Form Parameters}
+So far, we have discussed estimation of the structural parameters. The usual justifications for focusing on the structural parameters are as follows: (1) we are interested in estimates of "economic parameters" (such as labor supply elasticities) for curiosity's sake; (2) estimates of structural parameters allow us to obtain the effects of a variety of policy interventions (such as changes in tax rates); and (3) even if we want to estimate the reduced form parameters, we often can do so more efficiently by first estimating the structural parameters. Concerning the second reason, if the goal is to estimate, say, the equilibrium change in hours worked given an exogenous change in a marginal tax rate, we must ultimately estimate the reduced form.
+
+As another example, we might want to estimate the effect on county-level alcohol consumption due to an increase in exogenous alcohol taxes. In other words, we are interested in $\partial \mathrm{E}\left(y_{g} \mid \mathbf{z}\right) / \partial z_{j}=\pi_{g j}$, where $y_{g}$ is alcohol consumption and $z_{j}$ is the tax on alcohol. Under weak assumptions, reduced form equations exist, and each equation of the reduced form can be estimated by ordinary least squares. Without placing any restrictions on the reduced form, OLS equation by equation is identical to SUR estimation (see Section 7.7). In other words, we do not need to analyze the structural equations at all in order to consistently estimate the reduced form parameters. Ordinary least squares estimates of the reduced form parameters are robust in the sense that they do not rely on any identification assumptions imposed on the structural system.
+
+If the structural model is correctly specified and at least one equation is overidentified, we obtain asymptotically more efficient estimators of the reduced form parameters by deriving the estimates from the structural parameter estimates. In particular, given the structural parameter estimates $\hat{\boldsymbol{\Delta}}$ and $\hat{\boldsymbol{\Gamma}}$, we can obtain the reduced form estimates as $\hat{\boldsymbol{\Pi}}=-\hat{\boldsymbol{\Delta}} \hat{\boldsymbol{\Gamma}}^{-1}$ (see equation (9.14)). These are consistent, $\sqrt{N}$ asymptotically normal estimators (although the asymptotic variance matrix is somewhat complicated). From Problem 3.9, we obtain the most efficient estimator of $\boldsymbol{\Pi}$ by\\
+using the most efficient estimators of $\boldsymbol{\Delta}$ and $\boldsymbol{\Gamma}$ (minimum chi-square or, under system homoskedasticity, 3SLS).
+
+Just as in estimating the structural parameters, there is a robustness-efficiency trade-off in estimating the $\pi_{g j}$. As mentioned earlier, the OLS estimators of each reduced form are robust to misspecification of any restrictions on the structural equations (although, as always, each element of $\mathbf{z}$ should be exogenous for OLS to be consistent). The estimators of the $\pi_{g j}$ derived from estimators of $\boldsymbol{\Delta}$ and $\boldsymbol{\Gamma}$-whether the latter are 2SLS or system estimators-are generally nonrobust to incorrect restrictions on the structural system. See Problem 9.11 for a simple illustration.
+
+\subsection*{9.4 Additional Topics in Linear Simultaneous Equations Methods}
+\subsection*{9.4.1 Using Cross Equation Restrictions to Achieve Identification}
+So far we have discussed identification of a single equation using only within-equation parameter restrictions (see assumption (9.17)). This is by far the leading case, especially when the system represents a simultaneous equations model with truly autonomous equations. In fact, it is hard to think of a sensible example with true simultaneity where one would feel comfortable imposing restrictions across equations. In supply and demand applications we typically do not think supply and demand parameters, which represent different sides of a market, would satisfy any known restrictions. In studying the relationship between college crime rates and arrest rates, any restrictions on the parameters across the two equations would be arbitrary. Nevertheless, there are examples where endogeneity is caused by omitted variables or measurement error where economic theory imposes cross equation restrictions. An example is a system of expenditure shares when total expenditures or prices are thought to be measured with error: the symmetry condition imposes cross equation restrictions. Not surprisingly, such cross equation restrictions are generally useful for identifying equations. A general treatment is beyond the scope of our analysis. Here we just give an example to show how identification and estimation work.
+
+Consider the two-equation system
+
+
+\begin{align*}
+& y_{1}=\gamma_{12} y_{2}+\delta_{11} z_{1}+\delta_{12} z_{2}+\delta_{13} z_{3}+u_{1},  \tag{9.31}\\
+& y_{2}=\gamma_{21} y_{1}+\delta_{21} z_{1}+\delta_{22} z_{2}+u_{2}, \tag{9.32}
+\end{align*}
+
+
+where each $z_{j}$ is uncorrelated with $u_{1}$ and $u_{2}\left(z_{1}\right.$ can be unity to allow for an intercept). Without further information, equation (9.31) is unidentified, and equation (9.32) is just identified if and only if $\delta_{13} \neq 0$. We maintain these assumptions in what follows.
+
+Now suppose that $\delta_{12}=\delta_{22}$. Because $\delta_{22}$ is identified in equation (9.32) we can treat it as known for studying identification of equation (9.31). But $\delta_{12}=\delta_{22}$, and so we can write\\
+$y_{1}-\delta_{12} z_{2}=\gamma_{12} y_{2}+\delta_{11} z_{1}+\delta_{13} z_{3}+u_{1}$,\\
+where $y_{1}-\delta_{12} z_{2}$ is effectively known. Now the right-hand side of equation (9.33) has one endogenous variable, $y_{2}$, and the two exogenous variables $z_{1}$ and $z_{3}$. Because $z_{2}$ is excluded from the right-hand side, we can use $z_{2}$ as an instrument for $y_{2}$, as long as $z_{2}$ appears in the reduced form for $y_{2}$. This is the case provided $\delta_{12}=\delta_{22} \neq 0$.
+
+This approach to showing that equation (9.31) is identified also suggests a consistent estimation procedure: first, estimate equation (9.32) by 2SLS using $\left(z_{1}, z_{2}, z_{3}\right)$ as instruments, and let $\hat{\delta}_{22}$ be the estimator of $\delta_{22}$. Then, estimate\\
+$y_{1}-\hat{\delta}_{22} z_{2}=\gamma_{12} y_{2}+\delta_{11} z_{1}+\delta_{13} z_{3}+$ error\\
+by 2SLS using $\left(z_{1}, z_{2}, z_{3}\right)$ as instruments. Since $\hat{\delta}_{22} \xrightarrow{p} \delta_{12}$ when $\delta_{12}=\delta_{22} \neq 0$, this last step produces consistent estimators of $\gamma_{12}, \delta_{11}$, and $\delta_{13}$. Unfortunately, the usual 2SLS standard errors obtained from the final estimation would not be valid because of the preliminary estimation of $\delta_{22}$.
+
+It is easier to use a system procedure when cross equation restrictions are present because the asymptotic variance can be obtained directly. We can always rewrite the system in a linear form with the restrictions imposed. For this example, one way to do so is to write the system as\\
+$\binom{y_{1}}{y_{2}}=\left(\begin{array}{cccccc}y_{2} & z_{1} & z_{2} & z_{3} & 0 & 0 \\ 0 & 0 & z_{2} & 0 & y_{1} & z_{1}\end{array}\right) \boldsymbol{\beta}+\binom{u_{1}}{u_{2}}$,\\
+where $\boldsymbol{\beta}=\left(\gamma_{12}, \delta_{11}, \delta_{12}, \delta_{13}, \gamma_{21}, \delta_{21}\right)^{\prime}$. The parameter $\delta_{22}$ does not show up in $\boldsymbol{\beta}$ because we have imposed the restriction $\delta_{12}=\delta_{22}$ by appropriate choice of the matrix of explanatory variables.
+
+The matrix of instruments is $\mathbf{I}_{2} \otimes \mathbf{z}$, meaning that we just use all exogenous variables as instruments in each equation. Since $\mathbf{I}_{2} \otimes \mathbf{z}$ has six columns, the order condition is exactly satisfied (there are six elements of $\boldsymbol{\beta}$ ), and we have already seen when the rank condition holds. The system can be consistently estimated using GMM or 3SLS.
+
+\subsection*{9.4.2 Using Covariance Restrictions to Achieve Identification}
+In most applications of linear SEMs, identification is obtained by putting restrictions on the matrix of structural parameters $\mathbf{B}$. It is also possible to identify the elements of
+
+B by placing restrictions on the variance matrix $\boldsymbol{\Sigma}$ of the structural errors. Usually the restrictions come in the form of zero covariance assumptions. In microeconomic applications of models with true simultaneity, it is difficult to think of examples of autonomous systems of equations where it makes sense to assume the errors across the different structural equations are uncorrelated. For example, in individual-level labor supply and demand functions, what would be the justification for assuming that unobserved factors affecting a person's labor supply decisions are uncorrelated with unobserved factors that make the person a more or less desirable worker? In a model of city crime rates and spending on law enforcement, it hardly makes sense to assume that unobserved city features that affect crime rates are uncorrelated with those determining law enforcement expenditures. Nevertheless, there are applications where zero covariance assumptions can make sense, and so we provide a brief treatment here, using examples to illustrate the approach. General analyses of identification with restrictions on $\boldsymbol{\Sigma}$ are given in Hausman (1983) and Hausman, Newey, and Taylor (1987).
+
+The first example is the two-equation system
+
+
+\begin{align*}
+& y_{1}=\gamma_{12} y_{2}+\delta_{11} z_{1}+\delta_{13} z_{3}+u_{1}  \tag{9.35}\\
+& y_{2}=\gamma_{21} y_{1}+\delta_{21} z_{1}+\delta_{22} z_{2}+\delta_{23} z_{3}+u_{2} \tag{9.36}
+\end{align*}
+
+
+Equation (9.35) is just identified if $\delta_{22} \neq 0$, which we assume, while equation (9.36) is unidentified without more information. Suppose that we have one piece of additional information in terms of a covariance restriction:
+
+
+\begin{equation*}
+\operatorname{Cov}\left(u_{1}, u_{2}\right)=\mathrm{E}\left(u_{1} u_{2}\right)=0 . \tag{9.37}
+\end{equation*}
+
+
+In other words, if $\boldsymbol{\Sigma}$ is the $2 \times 2$ structural variance matrix, we are assuming that $\boldsymbol{\Sigma}$ is diagonal. Assumption (9.37), along with $\delta_{22} \neq 0$, is enough to identify equation (9.36).
+
+Here is a simple way to see how assumption (9.37) identifies equation (9.36). First, because $\gamma_{12}, \delta_{11}$, and $\delta_{13}$ are identified, we can treat them as known when studying identification of equation (9.36). But if the parameters in equation (9.35) are known, $u_{1}$ is effectively known. By assumption (9.37), $u_{1}$ is uncorrelated with $u_{2}$, and $u_{1}$ is certainly partially correlated with $y_{1}$. Thus, we effectively have $\left(z_{1}, z_{2}, z_{3}, u_{1}\right)$ as instruments available for estimating equation (9.36), and this result shows that equation (9.36) is identified.
+
+We can use this method for verifying identification to obtain consistent estimators. First, estimate equation (9.35) by 2SLS using instruments $\left(z_{1}, z_{2}, z_{3}\right)$ and save the 2SLS residuals, $\hat{u}_{1}$. Then estimate equation (9.36) by 2SLS using instruments $\left(z_{1}, z_{2}, z_{3}, \hat{u}_{1}\right)$. The fact that $\hat{u}_{1}$ depends on estimates from a prior stage does not affect\\
+consistency. But inference is complicated because of the estimation of $u_{1}$ : condition (6.8) does not hold because $u_{1}$ depends on $y_{2}$, which is correlated with $u_{2}$.
+
+The most efficient way to use covariance restrictions is to write the entire set of orthogonality conditions as $\mathrm{E}\left[\mathbf{z}^{\prime} u_{1}\left(\boldsymbol{\beta}_{1}\right)\right]=\mathbf{0}, \mathrm{E}\left[\mathbf{z}^{\prime} u_{2}\left(\boldsymbol{\beta}_{2}\right)\right]=\mathbf{0}$, and\\
+$\mathrm{E}\left[u_{1}\left(\boldsymbol{\beta}_{1}\right) u_{2}\left(\boldsymbol{\beta}_{2}\right)\right]=0$,\\
+where the notation $u_{1}\left(\boldsymbol{\beta}_{1}\right)$ emphasizes that the errors are functions of the structural parameters $\boldsymbol{\beta}_{1}$-with normalization and exclusion restrictions imposed-and similarly for $u_{2}\left(\boldsymbol{\beta}_{2}\right)$. For example, from equation (9.35), $u_{1}\left(\boldsymbol{\beta}_{1}\right)=y_{1}-\gamma_{12} y_{2}-\delta_{11} z_{1}- \delta_{13} z_{3}$. Equation (9.38), because it is nonlinear in $\boldsymbol{\beta}_{1}$ and $\boldsymbol{\beta}_{2}$, takes us outside the realm of linear moment restrictions. In Chapter 14 we will use nonlinear moment conditions in GMM estimation.
+
+A general example with covariance restrictions is a fully recursive system. First, a recursive system can be written as\\
+$y_{1}=\mathbf{z} \boldsymbol{\delta}_{1}+u_{1}$,\\
+$y_{2}=\gamma_{21} y_{1}+\mathbf{z} \boldsymbol{\delta}_{2}+u_{2}$,\\
+$y_{3}=\gamma_{31} y_{1}+\gamma_{32} y_{2}+\mathbf{z} \boldsymbol{\delta}_{3}+u_{3}$,\\
+⋮\\
+$y_{G}=\gamma_{G 1} y_{1}+\cdots+\gamma_{G, G-1} y_{G-1}+\mathbf{z} \boldsymbol{\delta}_{G}+u_{G}$,\\
+so that in each equation, only endogenous variables from previous equations appear on the right-hand side. We have allowed all exogenous variables to appear in each equation, and we maintain assumption (9.2).
+
+The first equation in the system (9.39) is clearly identified and can be estimated by OLS. Without further exclusion restrictions none of the remaining equations is identified, but each is identified if we assume that the structural errors are pairwise uncorrelated:\\
+$\operatorname{Cov}\left(u_{g}, u_{h}\right)=0, \quad g \neq h$.
+
+This assumption means that $\boldsymbol{\Sigma}$ is a $G \times G$ diagonal matrix. Equations (9.39) and (9.40) define a fully recursive system. Under these assumptions, the right-hand-side variables in equation $g$ are each uncorrelated with $u_{g}$; this fact is easily seen by starting with the first equation and noting that $y_{1}$ is a linear function of $\mathbf{z}$ and $u_{1}$. Then, in the second equation, $y_{1}$ is uncorrelated with $u_{2}$ under assumption (9.40). But $y_{2}$ is a linear function of $\mathbf{z}, u_{1}$, and $u_{2}$, and so $y_{2}$ and $y_{1}$ are both uncorrelated with $u_{3}$\\
+in the third equation. And so on. It follows that each equation in the system is consistently estimated by ordinary least squares.
+
+It turns out that OLS equation by equation is not necessarily the most efficient estimator in fully recursive systems, even though $\boldsymbol{\Sigma}$ is a diagonal matrix. Generally, efficiency can be improved by adding the zero covariance restrictions to the orthogonality conditions, as in equation (9.38), and applying nonlinear GMM estimation. See Lahiri and Schmidt (1978) and Hausman, Newey, and Taylor (1987).
+
+\subsection*{9.4.3 Subtleties Concerning Identification and Efficiency in Linear Systems}
+So far we have discussed identification and estimation under the assumption that each exogenous variable appearing in the system, $z_{j}$, is uncorrelated with each structural error, $u_{g}$. It is important to assume only zero correlation in the general treatment because we often add a reduced form equation for an endogenous variable to a structural system, and zero correlation is all we should impose in linear reduced forms.
+
+For entirely structural systems, it is often natural to assume that the structural errors satisfy the zero conditional mean assumption\\
+$\mathrm{E}\left(u_{g} \mid \mathbf{z}\right)=0, \quad g=1,2, \ldots, G$.
+
+In addition to giving the parameters in the structural equations the appropriate partial effect interpretations, assumption (9.41) has some interesting statistical implications: any function of $\mathbf{z}$ is uncorrelated with each error $u_{g}$. Therefore, in the labor supply example (9.28), age ${ }^{2}, \log ($ age $)$, educ•exper, and so on (there are too many functions to list) are all uncorrelated with $u_{1}$ and $u_{2}$. Realizing this fact, we might ask, why not use nonlinear functions of $\mathbf{z}$ as additional instruments in estimation?
+
+We need to break the answer to this question into two parts. The first concerns identification and the second concerns efficiency. For identification, the bottom line is this: adding nonlinear functions of $\mathbf{z}$ to the instrument list cannot help with identification in linear systems. You were asked to show this generally in Problem 8.4, but the main points can be illustrated with a simple model:\\
+$y_{1}=\gamma_{12} y_{2}+\delta_{11} z_{1}+\delta_{12} z_{2}+u_{1}$,\\
+$y_{2}=\gamma_{21} y_{1}+\delta_{21} z_{1}+u_{2}$,\\
+$\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=\mathrm{E}\left(u_{2} \mid \mathbf{z}\right)=0$.
+
+From the order condition in Section 9.2.2, equation (9.42) is not identified, and equation (9.43) is identified if and only if $\delta_{12} \neq 0$. Knowing properties of conditional\\
+expectations, we might try something clever to identify equation (9.42): since, say, $z_{1}^{2}$ is uncorrelated with $u_{1}$ under assumption (9.41), and $z_{1}^{2}$ would appear to be correlated with $y_{2}$, we can use it as an instrument for $y_{2}$ in equation (9.42). Under this reasoning, we would have enough instruments- $z_{1}, z_{2}, z_{1}^{2}$-to identify equation (9.42). In fact, any number of functions of $z_{1}$ and $z_{2}$ can be added to the instrument list.
+
+The fact that this argument is faulty is fortunate because our identification analysis in Section 9.2.2 says that equation (9.42) is not identified. In this example it is clear that $z_{1}^{2}$ cannot appear in the reduced form for $y_{2}$ because $z_{1}^{2}$ appears nowhere in the system. Technically, because $\mathrm{E}\left(y_{2} \mid \mathbf{z}\right)$ is linear in $z_{1}$ and $z_{2}$ under assumption (9.44), the linear projection of $y_{2}$ onto $\left(z_{1}, z_{2}, z_{1}^{2}\right)$ does not depend on $z_{1}^{2}$ :
+
+
+\begin{equation*}
+\mathrm{L}\left(y_{2} \mid z_{1}, z_{2}, z_{1}^{2}\right)=\mathrm{L}\left(y_{2} \mid z_{1}, z_{2}\right)=\pi_{21} z_{1}+\pi_{22} z_{2} . \tag{9.45}
+\end{equation*}
+
+
+In other words, there is no partial correlation between $y_{2}$ and $z_{1}^{2}$ once $z_{1}$ and $z_{2}$ are included in the projection.
+
+The zero conditional mean assumptions (9.41) can have some relevance for choosing an efficient estimator, although not always. If assumption (9.41) holds and $\operatorname{Var}(\mathbf{u} \mid \mathbf{z})=\operatorname{Var}(\mathbf{u})=\mathbf{\Sigma}$, 3SLS using instruments $\mathbf{z}$ for each equation is the asymptotically efficient estimator that uses the orthogonality conditions in assumption (9.41); this conclusion follows from Theorem 8.5. In other words, if $\operatorname{Var}(\mathbf{u} \mid \mathbf{z})$ is constant, it does not help to expand the instrument list beyond the functions of the exogenous variables actually appearing in the system.
+
+If assumption (9.41) holds but $\operatorname{Var}(\mathbf{u} \mid \mathbf{z})$ is not constant, then we know from Chapter 8 that the GMM 3SLS estimator is not an efficient GMM estimator when the system is overidentified. In fact, under (9.41), without homoskedasticity there is no need to stop at instruments $\mathbf{z}$, at least in theory. Why? As we discussed in Section 8.6, one never does worse asymptotically by adding more valid instruments. Under (9.41), any functions of $\mathbf{z}$, collected in the vector $\mathbf{h}(\mathbf{z})$, are uncorrelated with every element of $\mathbf{u}$. Therefore, we can generally improve over the optimal GMM (minimum chi-square) estimator that uses IVs $\mathbf{z}$ by applying optimal GMM with instruments $[\mathbf{z}, \mathbf{h}(\mathbf{z})]$. This result was discovered independently by Hansen (1982) and White (1982b). Expanding the IV list to arbitrary functions of $\mathbf{z}$ and applying full GMM is not used very much in practice: it is usually not clear how to choose $\mathbf{h}(\mathbf{z})$, and, if we use too many additional instruments, the finite sample properties of the GMM estimator can be poor, as we discussed in Section 8.6.
+
+For SEMs linear in the parameters but nonlinear in endogenous variables (in a sense to be made precise), adding nonlinear functions of the exogenous variables to the instruments not only is desirable but is often needed to achieve identification. We turn to this topic next.
+
+\subsection*{9.5 Simultaneous Equations Models Nonlinear in Endogenous Variables}
+We now study models that are nonlinear in some endogenous variables. While the general estimation methods we have covered are still applicable, identification and choice of instruments require special attention.
+
+\subsection*{9.5.1 Identification}
+The issues that arise in identifying models nonlinear in endogenous variables are most easily illustrated with a simple example. Suppose that supply and demand are given by
+
+
+\begin{align*}
+& \log (q)=\gamma_{12} \log (p)+\gamma_{13}[\log (p)]^{2}+\delta_{11} z_{1}+u_{1},  \tag{9.46}\\
+& \log (q)=\gamma_{22} \log (p)+\delta_{22} z_{2}+u_{2},  \tag{9.47}\\
+& \mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=\mathrm{E}\left(u_{2} \mid \mathbf{z}\right)=0, \tag{9.48}
+\end{align*}
+
+
+where the first equation is the supply equation, the second equation is the demand equation, and the equilibrium condition that supply equals demand has been imposed. For simplicity, we do not include an intercept in either equation, but no important conclusions hinge on this omission. The exogenous variable $z_{1}$ shifts the supply function but not the demand function; $z_{2}$ shifts the demand function but not the supply function. The vector of exogenous variables appearing somewhere in the system is $\mathbf{z}=\left(z_{1}, z_{2}\right)$.
+
+It is important to understand why equations (9.46) and (9.47) constitute a "nonlinear" system. This system is still linear in parameters, which is important because it means that the IV procedures we have learned up to this point are still applicable. Further, it is not the presence of the logarithmic transformations of $q$ and $p$ that makes the system nonlinear. In fact, if we set $\gamma_{13}=0$, then the model is linear for the purposes of identification and estimation: defining $y_{1} \equiv \log (q)$ and $y_{2} \equiv \log (p)$, we can write equations (9.46) and (9.47) as a standard two-equation system.
+
+When we include $[\log (p)]^{2}$ we have the model
+
+
+\begin{align*}
+& y_{1}=\gamma_{12} y_{2}+\gamma_{13} y_{2}^{2}+\delta_{11} z_{1}+u_{1},  \tag{9.49}\\
+& y_{1}=\gamma_{22} y_{2}+\delta_{22} z_{2}+u_{2} . \tag{9.50}
+\end{align*}
+
+
+With this system there is no way to define two endogenous variables such that the system is a two-equation system linear in two endogenous variables. The presence of $y_{2}^{2}$ in equation (9.49) makes this model different from those we have studied up until\\
+now. We say that this is a system nonlinear in endogenous variables, and this entails a different treatment of identification.
+
+If we used equations (9.49) and (9.50) to obtain $y_{2}$ as a function of the $z_{1}, z_{2}, u_{1}, u_{2}$, and the parameters, the result would not be linear in $\mathbf{z}$ and $\mathbf{u}$. In this particular case we can find the solution for $y_{2}$ using the quadratic formula (assuming a real solution exists). However, $\mathrm{E}\left(y_{2} \mid \mathbf{z}\right)$ would not be linear in $\mathbf{z}$ unless $y_{13}=0$, and $\mathrm{E}\left(y_{2}^{2} \mid \mathbf{z}\right)$ would not be linear in $\mathbf{z}$ regardless of the value of $\gamma_{13}$. These observations have important implications for identification of equation (9.49) and for choosing instruments.
+
+Before considering equations (9.49) and (9.50) further, consider a second example where closed form expressions for the endogenous variables in terms of the exogenous variables and structural errors do not even exist. Suppose that a system describing crime rates in terms of law enforcement spending is\\
+crime $=\gamma_{12} \log ($ spending $)+\mathbf{z}_{(1)} \boldsymbol{\delta}_{(1)}+u_{1}$,\\
+spending $=\gamma_{21}$ crime $+\gamma_{22}$ crime $^{2}+\mathbf{z}_{(2)} \boldsymbol{\delta}_{(2)}+u_{2}$,\\
+where the errors have zero mean given $\mathbf{z}$. Here, we cannot solve for either crime or spending (or any other transformation of them) in terms of $\mathbf{z}, u_{1}, u_{2}$, and the parameters. And there is no way to define $y_{1}$ and $y_{2}$ to yield a linear SEM in two endogenous variables. The model is still linear in parameters, but E (crime $\mid \mathbf{z}$ ), $\mathrm{E}[\log ($ spending $) \mid \mathbf{z}]$, and E (spending $\mid \mathbf{z}$ ) are not linear in $\mathbf{z}$ (nor can we find closed forms for these expectations).
+
+One possible approach to identification in nonlinear SEMs is to ignore the fact that the same endogenous variables show up differently in different equations. In the supply and demand example, define $y_{3} \equiv y_{2}^{2}$ and rewrite equation (9.49) as\\
+$y_{1}=\gamma_{12} y_{2}+\gamma_{13} y_{3}+\delta_{11} z_{1}+u_{1}$.
+
+Or, in equations (9.51) and (9.52) define $y_{1}=$ crime, $y_{2}=$ spending, $y_{3}= \log ($ spending $)$, and $y_{4}=$ crime $^{2}$, and write\\
+$y_{1}=\gamma_{12} y_{3}+\mathbf{z}_{(1)} \boldsymbol{\delta}_{(1)}+u_{1}$,\\
+$y_{2}=\gamma_{21} y_{1}+\gamma_{22} y_{4}+\mathbf{z}_{(2)} \boldsymbol{\delta}_{(2)}+u_{2}$.
+
+Defining nonlinear functions of endogenous variables as new endogenous variables turns out to work fairly generally, provided we apply the rank and order conditions properly. The key question is, what kinds of equations do we add to the system for the newly defined endogenous variables?
+
+If we add linear projections of the newly defined endogenous variables in terms of the original exogenous variables appearing somewhere in the system-that is, the\\
+linear projection onto $\mathbf{z}$-then we are being much too restrictive. For example, suppose to equations (9.53) and (9.50) we add the linear equation\\
+$y_{3}=\pi_{31} z_{1}+\pi_{32} z_{2}+v_{3}$,\\
+where, by definition, $\mathrm{E}\left(z_{1} v_{3}\right)=\mathrm{E}\left(z_{2} v_{3}\right)=0$. With equation (9.56) to round out the system, the order condition for identification of equation (9.53) clearly fails: we have two endogenous variables in equation (9.53) but only one excluded exogenous variable, $z_{2}$.
+
+The conclusion that equation (9.53) is not identified is too pessimistic. There are many other possible instruments available for $y_{2}^{2}$. Because $\mathrm{E}\left(y_{2}^{2} \mid \mathbf{z}\right)$ is not linear in $z_{1}$ and $z_{2}$ (even if $\gamma_{13}=0$ ), other functions of $z_{1}$ and $z_{2}$ will appear in a linear projection involving $y_{2}^{2}$ as the dependent variable. To see what the most useful of these are likely to be, suppose that the structural system actually is linear, so that $\gamma_{13}=0$. Then $y_{2}=\pi_{21} z_{1}+\pi_{22} z_{2}+v_{2}$, where $v_{2}$ is a linear combination of $u_{1}$ and $u_{2}$. Squaring this reduced form and using $\mathrm{E}\left(v_{2} \mid \mathbf{z}\right)=0$ gives\\
+$\mathrm{E}\left(y_{2}^{2} \mid \mathbf{z}\right)=\pi_{21}^{2} z_{1}^{2}+\pi_{22}^{2} z_{2}^{2}+2 \pi_{21} \pi_{22} z_{1} z_{2}+\mathrm{E}\left(v_{2}^{2} \mid \mathbf{z}\right)$.
+
+If $\mathrm{E}\left(v_{2}^{2} \mid \mathbf{z}\right)$ is constant, an assumption that holds under homoskedasticity of the structural errors, then equation (9.57) shows that $y_{2}^{2}$ is correlated with $z_{1}^{2}, z_{2}^{2}$, and $z_{1} z_{2}$, which makes these functions natural instruments for $y_{2}^{2}$. The only case where no functions of $\mathbf{z}$ are correlated with $y_{2}^{2}$ occurs when both $\pi_{21}$ and $\pi_{22}$ equal zero, in which case the linear version of equation (9.49) (with $\gamma_{13}=0$ ) is also unidentified.
+
+Because we derived equation (9.57) under the restrictive assumptions $\gamma_{13}=0$ and homoskedasticity of $v_{2}$, we would not want our linear projection for $y_{2}^{2}$ to omit the exogenous variables that originally appear in the system. (Plus, for simplicity, we omitted intercepts from the equations.) In practice, we would augment equations (9.53) and (9.50) with the linear projection\\
+$y_{3}=\pi_{31} z_{1}+\pi_{32} z_{2}+\pi_{33} z_{1}^{2}+\pi_{34} z_{2}^{2}+\pi_{35} z_{1} z_{2}+v_{3}$,\\
+where $v_{3}$ is, by definition, uncorrelated with $z_{1}, z_{2}, z_{1}^{2}, z_{2}^{2}$, and $z_{1} z_{2}$. The system (9.53), (9.50), and (9.58) can now be studied using the usual rank condition.
+
+Adding equation (9.58) to the original system and then studying the rank condition of the first two equations is equivalent to studying the rank condition in the smaller system (9.53) and (9.50). What we mean by this statement is that we do not explicitly add an equation for $y_{3}=y_{2}^{2}$, but we $d o$ include $y_{3}$ in equation (9.53). Therefore, when applying the rank condition to equation (9.53), we use $G=2$ (not $G=3$ ). The reason this approach is the same as studying the rank condition in the three-equation system (9.53), (9.50), and (9.58) is that adding the third equation increases the rank of\\
+$\mathbf{R}_{1} \mathbf{B}$ by one whenever at least one additional nonlinear function of $\mathbf{z}$ appears in equation (9.58). (The functions $z_{1}^{2}, z_{2}^{2}$, and $z_{1} z_{2}$ appear nowhere else in the system.)
+
+As a general approach to identification in models where the nonlinear functions of the endogenous variables depend only on a single endogenous variable-such as the two examples that we have already covered-Fisher (1965) argues that the following method is sufficient for identification:
+
+\begin{enumerate}
+  \item Relabel the nonredundant functions of the endogenous variables to be new endogenous variables, as in equation (9.53) or in equations (9.54) and (9.55).
+  \item Apply the rank condition to the original system without increasing the number of equations. If the equation of interest satisfies the rank condition, then it is identified.
+\end{enumerate}
+
+The proof that this method works is complicated, and it requires more assumptions than we have made (such as $\mathbf{u}$ being independent of $\mathbf{z}$ ). Intuitively, we can expect each additional nonlinear function of the endogenous variables to have a linear projection that depends on new functions of the exogenous variables. Each time we add another function of an endogenous variable, it effectively comes with its own instruments.
+
+Fisher's method can be expected to work in all but the most pathological cases. One case where it does not work is if $\mathrm{E}\left(v_{2}^{2} \mid \mathbf{z}\right)$ in equation (9.57) is heteroskedastic in such a way as to cancel out the squares and cross product terms in $z_{1}$ and $z_{2}$; then $\mathrm{E}\left(y_{2}^{2} \mid \mathbf{z}\right)$ would be constant. Such unfortunate coincidences are not practically important.
+
+It is tempting to think that Fisher's rank condition is also necessary for identification, but this is not the case. To see why, consider the two-equation system\\
+$y_{1}=\gamma_{12} y_{2}+\gamma_{13} y_{2}^{2}+\delta_{11} z_{1}+\delta_{12} z_{2}+u_{1}$,\\
+$y_{2}=\gamma_{21} y_{1}+\delta_{21} z_{1}+u_{2}$.
+
+The first equation clearly fails the modified rank condition because it fails the order condition: there are no restrictions on the first equation except the normalization restriction. However, if $\gamma_{13} \neq 0$ and $\gamma_{21} \neq 0$, then $\mathrm{E}\left(y_{2} \mid \mathbf{z}\right)$ is a nonlinear function of $\mathbf{z}$ (which we cannot obtain in closed form). The result is that functions such as $z_{1}^{2}, z_{2}^{2}$, and $z_{1} z_{2}$ (and others) will appear in the linear projections of $y_{2}$ and $y_{2}^{2}$ even after $z_{1}$ and $z_{2}$ have been included, and these can then be used as instruments for $y_{2}$ and $y_{2}^{2}$. But if $\gamma_{13}=0$, the first equation cannot be identified by adding nonlinear functions of $z_{1}$ and $z_{2}$ to the instrument list: the linear projection of $y_{2}$ on $z_{1}, z_{2}$, and any function of $\left(z_{1}, z_{2}\right)$ will only depend on $z_{1}$ and $z_{2}$.
+
+Equation (9.59) is an example of a poorly identified model because, when it is identified, it is identified due to a nonlinearity ( $\gamma_{13} \neq 0$ in this case). Such identification\\
+is especially tenuous because the hypothesis $\mathrm{H}_{0}: \gamma_{13}=0$ cannot be tested by estimating the structural equation (since the structural equation is not identified when $\mathrm{H}_{0}$ holds).
+
+There are other models where identification can be verified using reasoning similar to that used in the labor supply example. Models with interactions between exogenous variables and endogenous variables can be shown to be identified when the model without the interactions is identified (see Example 6.2 and Problem 9.6). Models with interactions among endogenous variables are also fairly easy to handle. Generally, it is good practice to check whether the most general linear version of the model would be identified. If it is, then the nonlinear version of the model is probably identified. We saw this result in equation (9.46): if this equation is identified when $\gamma_{13}=0$, then it is identified for any value of $\gamma_{13}$. If the most general linear version of a nonlinear model is not identified, we should be very wary about proceeding, since identification hinges on the presence of nonlinearities that we usually will not be able to test.
+
+\subsection*{9.5.2 Estimation}
+In practice, it is difficult to know which additional functions we should add to the instrument list for nonlinear SEMs. Naturally, we must always include the exogenous variables appearing somewhere in the system instruments in every equation. After that, the choice is somewhat arbitrary, although the functional forms appearing in the structural equations can be helpful.
+
+A general approach is to always use some squares and cross products of the exogenous variables appearing somewhere in the system. If exper and exper ${ }^{2}$ appear in the system, additional terms such as exper ${ }^{3}$ and exper ${ }^{4}$ are natural additions to the instrument list.
+
+Once we decide on a set of instruments, any equation in a nonlinear SEM can be estimated by 2SLS. Because each equation satisfies the assumptions of single-equation analysis, we can use everything we have learned up to now for inference and specification testing for 2SLS. A system method can also be used, where linear projections for the functions of endogenous variables are explicitly added to the system. Then, all exogenous variables included in these linear projections can be used as the instruments for every equation. The minimum chi-square estimator is generally more appropriate than 3SLS because the homoskedasticity assumption will rarely be satisfied in the linear projections.
+
+It is important to apply the instrumental variables procedures directly to the structural equation or equations. In other words, we should directly use the formulas for 2SLS, 3SLS, or GMM. Trying to mimic 2SLS or 3SLS by substituting fitted values for some of the endogenous variables inside the nonlinear functions is usually\\
+a mistake: neither the conditional expectation nor the linear projection operator passes through nonlinear functions, and so such attempts rarely produce consistent estimators in nonlinear systems.
+
+Example 9.6 (Nonlinear Labor Supply Function): We add $[\log (\text { wage })]^{2}$ to the labor supply function in Example 9.5:
+
+
+\begin{align*}
+& \text { hours }= \gamma_{12} \log (\text { wage })+\gamma_{13}[\log (\text { wage })]^{2}+\delta_{10}+\delta_{11} \text { educ }+\delta_{12} \text { age } \\
+&+\delta_{13} \text { kidslt6 }+\delta_{14} \text { kidsge6 }+\delta_{15} \text { nwifeinc }+u_{1}  \tag{9.61}\\
+& \log (\text { wage })=\delta_{20}+\delta_{21} \text { educ }+\delta_{22} \text { exper }+\delta_{23} \text { exper }^{2}+u_{2} \tag{9.62}
+\end{align*}
+
+
+where we have dropped hours from the wage offer function because it was insignificant in Example 9.5. The natural assumptions in this system are $\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)= \mathrm{E}\left(u_{2} \mid \mathbf{z}\right)=0$, where $\mathbf{z}$ contains all variables other than hours and $\log ($ wage $)$.
+
+There are many possibilities as additional instruments for $[\log (\text { wage })]^{2}$. Here, we add three quadratic terms to the list-age ${ }^{2}, e d u c^{2}$, and $n$ wifeinc ${ }^{2}$-and we estimate equation (9.61) by 2SLS. We obtain $\hat{\gamma}_{12}=1,873.62(\mathrm{se}=635.99)$ and $\hat{\gamma}_{13}=-437.29 (\mathrm{se}=350.08)$. The $t$ statistic on $[\log (\text { wage })]^{2}$ is about -1.25 , so we would be justified in dropping it from the labor supply function. Regressing the 2SLS residuals $\hat{u}_{1}$ on all variables used as instruments in the supply equation gives $R$-squared $=.0061$, and so the $N$ - $R$-squared statistic is 2.61 . With a $\chi_{3}^{2}$ distribution this gives $p$-value $=.456$. Thus, we fail to reject the overidentifying restrictions.
+
+In the previous example we may be tempted to estimate the labor supply function using a two-step procedure that appears to mimic 2SLS:
+
+\begin{enumerate}
+  \item Regress $\log$ (wage) on all exogenous variables appearing in equations (9.61) and (9.62) and obtain the predicted values. For emphasis, call these $\hat{y}_{2}$.
+  \item Estimate the labor supply function from the OLS regression hours on $1, \hat{y}_{2},\left(\hat{y}_{2}\right)^{2}$, educ, . . , nwifeinc.
+\end{enumerate}
+
+This two-step procedure is not the same as estimating equation (9.61) by 2SLS, and, except in special circumstances, it does not produce consistent estimators of the structural parameters. The regression in step 2 is an example of what is sometimes called a forbidden regression, a phrase that describes replacing a nonlinear function of an endogenous explanatory variable with the same nonlinear function of fitted values from a first-stage estimation. In plugging fitted values into equation (9.61), our mistake is in thinking that the linear projection of the square is the square of the linear projection. What the 2 SLS estimator does in the first stage is project each of $y_{2}$ and\\
+$y_{2}^{2}$ onto the original exogenous variables and the additional nonlinear functions of these that we have chosen. The fitted values from the reduced form regression for $y_{2}^{2}$, say $\hat{y}_{3}$, are not the same as the squared fitted values from the reduced form regression for $y_{2},\left(\hat{y}_{2}\right)^{2}$. This distinction is the difference between a consistent estimator and an inconsistent estimator.
+
+If we apply the forbidden regression to equation (9.61), some of the estimates are very different from the 2SLS estimates. For example, the coefficient on educ, when equation (9.61) is properly estimated by 2SLS, is about -87.85 with a $t$ statistic of -1.32 . The forbidden regression gives a coefficient on educ of about -176.68 with a $t$ statistic of -5.36 . Unfortunately, the $t$ statistic from the forbidden regression is generally invalid, even asymptotically. (The forbidden regression will produce consistent estimators in the special case $\gamma_{13}=0$ if $\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=0$; see Problem 9.12.)
+
+Many more functions of the exogenous variables could be added to the instrument list in estimating the labor supply function. From Chapter 8, we know that efficiency of GMM never falls by adding more nonlinear functions of the exogenous variables to the instrument list (even under the homoskedasticity assumption). This statement is true whether we use a single-equation or system method. Unfortunately, the fact that we do no worse asymptotically by adding instruments is of limited practical help, since we do not want to use too many instruments for a given data set. In Example 9.6, rather than using a long list of additional nonlinear functions, we might use $\left(\hat{y}_{2}\right)^{2}$ as a single IV for $y_{2}^{2}$. (This method is not the same as the forbidden regression!) If it happens that $\gamma_{13}=0$ and the structural errors are homoskedastic, this would be the optimal IV. (See Problem 9.12.)
+
+A general system linear in parameters can be written as
+
+
+\begin{align*}
+& y_{1}=\mathbf{q}_{1}(\mathbf{y}, \mathbf{z}) \boldsymbol{\beta}_{1}+u_{1} \\
+& \vdots  \tag{9.63}\\
+& y_{G}=\mathbf{q}_{G}(\mathbf{y}, \mathbf{z}) \boldsymbol{\beta}_{G}+u_{G},
+\end{align*}
+
+
+where $\mathrm{E}\left(u_{g} \mid \mathbf{z}\right)=0, g=1,2, \ldots, G$. Among other things this system allows for complicated interactions among endogenous and exogenous variables. We will not give a general analysis of such systems because identification and choice of instruments are too abstract to be very useful. Either single-equation or system methods can be used for estimation.
+
+\subsection*{9.5.3 Control Function Estimation for Triangular Systems}
+A triangular system of equations is similar to a recursive system, defined in Section 9.4.2, except that we now allow several endogenous variables to be determined by\\
+only exogenous variables (and errors) and then assume those appear in a set of equations for another set of endogenous variables. Allowing for nonlinear functions of endogenous and exogenous variables, we can write\\
+$\mathbf{y}_{1}=\mathbf{F}_{1}\left(\mathbf{y}_{2}, \mathbf{z}\right) \boldsymbol{\beta}_{1}+\mathbf{u}_{1}$,\\
+$\mathbf{y}_{2}=\mathbf{F}_{2}(\mathbf{z}) \boldsymbol{\beta}_{2}+\mathbf{u}_{2}$,\\
+where $\mathbf{y}_{1}$ is $G_{1} \times 1, \mathbf{y}_{2}$ is $G_{2} \times 1$, and the functions $\mathbf{F}_{1}(\cdot)$ and $\mathbf{F}_{2}(\cdot)$ are known matrix functions. We maintain the exogeneity assumptions\\
+$\mathrm{E}\left(\mathbf{u}_{1} \mid \mathbf{z}\right)=\mathbf{0}, \quad \mathrm{E}\left(\mathbf{u}_{2} \mid \mathbf{z}\right)=\mathbf{0}$,\\
+without which nonlinear systems are rarely identified. Typically our interest is in (9.64). In fact, (9.65) is often a set of reduced form equations; in any case, $\mathrm{E}\left(\mathbf{y}_{2} \mid \mathbf{z}\right)=\mathbf{F}_{2}(\mathbf{z})$. A potentially important point is that a nonlinear structural model, where (9.64) is augmented with an equation where $\mathbf{y}_{2}$ is a function of $\mathbf{y}_{1}$, could rarely be solved to produce (9.65) with known $\mathbf{F}_{2}(\cdot)$ and an additive error with zero conditional mean. Nevertheless, we might simply think of (9.65), with $\mathbf{F}_{2}(\cdot)$ sufficiently flexible, as a way to approximate $\mathrm{E}\left(\mathbf{y}_{2} \mid \mathbf{z}\right)$.
+
+Without further assumptions, we can estimate (9.64) and (9.65) by GMM methods, provided (9.64) is identified. (Remember, unless $\mathbf{F}_{2}(\mathbf{z})$ contains exact linear dependencies, (9.65) would always be identified.) Given $\mathbf{F}_{1}(\cdot)$ and $\mathbf{F}_{2}(\cdot)$, instruments might suggest themselves, or we might use polynomials of low orders. Here, we discuss a control function approach under an additional assumption, a special case of which we saw in Section 6.2:\\
+$\mathrm{E}\left(\mathbf{u}_{1} \mid \mathbf{u}_{2}, \mathbf{z}\right)=\mathrm{E}\left(\mathbf{u}_{1} \mid \mathbf{u}_{2}\right)$.
+
+A sufficient condition for (9.67) is that ( $\mathbf{u}_{1}, \mathbf{u}_{2}$ ) is independent of $\mathbf{z}$, but independence is a pretty strong assumption, especially if (9.65) is simply supposed to be a way to specify a model for $\mathrm{E}\left(\mathbf{y}_{2} \mid \mathbf{z}\right)$. Assuming that (9.65) holds with $\mathbf{u}_{2}$ independent of $\mathbf{z}$ effectively rules out discreteness in the elements of $\mathbf{y}_{2}$, as will become clear in Part IV of the text. But sometimes (9.67) is reasonable.
+
+The power of (9.67) is that we can write
+
+
+\begin{align*}
+\mathrm{E}\left(\mathbf{y}_{1} \mid \mathbf{y}_{2}, \mathbf{z}\right) & =\mathrm{E}\left(\mathbf{y}_{1} \mid \mathbf{u}_{2}, \mathbf{z}\right)=\mathbf{F}_{1}\left(\mathbf{y}_{2}, \mathbf{z}\right) \boldsymbol{\beta}_{1}+\mathrm{E}\left(\mathbf{u}_{1} \mid \mathbf{u}_{2}, \mathbf{z}\right) \\
+& =\mathbf{F}_{1}\left(\mathbf{y}_{2}, \mathbf{z}\right) \boldsymbol{\beta}_{1}+\mathrm{E}\left(\mathbf{u}_{1} \mid \mathbf{u}_{2}\right) \equiv \mathbf{F}_{1}\left(\mathbf{y}_{2}, \mathbf{z}\right) \boldsymbol{\beta}_{1}+\mathbf{H}_{1}\left(\mathbf{u}_{2}\right) . \tag{9.68}
+\end{align*}
+
+
+Therefore, if we knew $\mathbf{H}_{1}(\cdot)$ and could observe $\mathbf{u}_{2}$, we could estimate $\boldsymbol{\beta}_{1}$ by a system estimation method, perhaps system OLS or FGLS. We might be willing to assume\\
+$\mathbf{H}_{1}(\cdot)$ is linear, so $\mathrm{E}\left(\mathbf{u}_{1} \mid \mathbf{u}_{2}\right)=\boldsymbol{\Lambda}_{1} \mathbf{u}_{2}=\left(\mathbf{u}_{2}^{\prime} \otimes \mathbf{I}_{G_{1}}\right) \operatorname{vec}\left(\boldsymbol{\Lambda}_{1}\right) \equiv \mathbf{U}_{2} \boldsymbol{\lambda}_{1}$. Then, in a first stage, we can estimate (9.65) by a standard system method and obtain $\hat{\boldsymbol{\beta}}_{2}$ and the residuals, $\hat{\mathbf{u}}_{i 2}$. Next, form $\hat{\mathbf{U}}_{i 2}=\left(\hat{\mathbf{u}}_{i 2}^{\prime} \otimes \mathbf{I}_{G_{1}}\right)$ and estimate
+
+
+\begin{equation*}
+\mathbf{y}_{i 1}=\mathbf{F}_{i 1} \boldsymbol{\beta}_{1}+\hat{\mathbf{U}}_{i 2} \lambda_{1}+\operatorname{error}_{i 1} \tag{9.69}
+\end{equation*}
+
+
+using a system estimation method for exogenous variables (OLS or FGLS), where $\mathbf{F}_{i 1}=\mathbf{F}_{1}\left(\mathbf{y}_{i 2}, \mathbf{z}_{i}\right)$ and error $_{i 1}$ includes the estimation error from having to estimate $\boldsymbol{\beta}_{2}$ in the first stage. As in Chapter 6, the asymptotic variance matrix should be adjusted for the two-step estimation. Alternatively, we will show how to use a more general GMM setup in Chapter 14 to obtain the asymptotic variance from a larger GMM problem.
+
+As a specific example, suppose we are interested in the single equation\\
+$y_{1}=\mathbf{z}_{1} \boldsymbol{\delta}_{1}+\alpha_{11} y_{2}+\alpha_{12} y_{3}+\alpha_{13} y_{2} y_{3}+y_{2} \mathbf{z}_{1} \gamma_{11}+y_{3} \mathbf{z}_{1} \gamma_{12}+u_{1}$,\\
+which allows for interactive effects among endogenous variables and for each endogenous variable and exogenous variables in $\mathbf{z}_{1}$. We assume that $y_{2}$ and $y_{3}$ have reduced forms\\
+$y_{2}=\mathbf{z} \boldsymbol{\beta}_{2}+u_{2}, \quad y_{3}=\mathbf{z} \boldsymbol{\beta}_{3}+u_{3}$,\\
+where all errors have zero conditional means. (The vector $\mathbf{z}$ might include nonlinear functions of the exogenous variables.) If, in addition,
+
+
+\begin{equation*}
+\mathrm{E}\left(u_{1} \mid \mathbf{z}, u_{2}, u_{3}\right)=\lambda_{11} u_{2}+\lambda_{12} u_{3} \tag{9.72}
+\end{equation*}
+
+
+then the OLS regression\\
+$y_{i 1}$ on $\mathbf{z}_{i 1}, y_{i 2}, y_{i 3}, y_{i 2} y_{i 3}, y_{i 2} \mathbf{z}_{i 1}, y_{i 3} \mathbf{z}_{i 1}, \hat{u}_{i 2}, \hat{u}_{i 3}, \quad i=1, \ldots, N$\\
+consistently estimates the parameters, where $\hat{u}_{i 2}$ and $\hat{u}_{i 3}$ are the OLS residuals from the first-stage regressions. Notice that we only have to add two control functions to account for the endogeneity of $y_{2}, y_{3}, y_{2} y_{3}, y_{2} \mathbf{z}_{1}$ and $y_{3} \mathbf{z}_{1}$. Of course, this control function approach uses assumption (9.72); otherwise it is generally inconsistent. The control function approach can be made more flexible by adding, say, the interaction $\hat{u}_{i 2} \hat{u}_{i 3}$ to (9.73), and maybe even $\hat{u}_{i 2}^{2}$ and $\hat{u}_{i 3}^{2}$ (especially if $y_{2}^{2}$ and $y_{3}^{2}$ were in the model). The standard errors of the structural estimates should generally account for the first-stage estimation, as discussed in Chapter 6. A simple test of the null hypothesis that $y_{2}$ and $y_{3}$ are exogenous is that all terms involving $\hat{u}_{i 2}$ and $\hat{u}_{i 3}$ are jointly insignificant; under the null hypothesis, we can ignore the generated regressor problem.
+
+As discussed in Section 6.2, the control function approach for nonlinear models is less robust than applying IV methods directly to equation (9.64) (with equation (9.70) as a special case), but the CF estimator can be more precise, especially if we can get by with few functions of the first-stage residuals. Plus, as shown by Newey, Powell, and Vella (1999), one can extend the CF approach without imposing functional form assumptions at all. Such nonparametric methods are beyond the scope of this text, but they are easily motivated by equation (9.68). In practice, choosing interactions, quadratics, and maybe higher-order polynomials (along with judicious taking of logarithms) might be sufficient.
+
+\subsection*{9.6 Different Instruments for Different Equations}
+There are general classes of SEMs where the same instruments cannot be used for every equation. We already encountered one such example, the fully recursive system. Another general class of models is SEMs where, in addition to simultaneous determination of some variables, some equations contain variables that are endogenous as a result of omitted variables or measurement error.
+
+As an example, reconsider the labor supply and wage offer equations (9.28) and (9.62), respectively. On the one hand, in the supply function it is not unreasonable to assume that variables other than $\log$ (wage) are uncorrelated with $u_{1}$. On the other hand, ability is a variable omitted from the $\log ($ wage $)$ equation, and so educ might be correlated with $u_{2}$. This is an omitted variable, not a simultaneity, issue, but the statistical problem is the same: correlation between the error and an explanatory variable.
+
+Equation (9.28) is still identified as it was before, because educ is exogenous in equation (9.28). What about equation (9.62)? It satisfies the order condition because we have excluded four exogenous variables from equation (9.62): age, kidslt6, kidsge6, and nwifeinc. How can we analyze the rank condition for this equation? We need to add to the system the linear projection of educ on all exogenous variables:
+
+
+\begin{align*}
+e d u c= & \delta_{30}+\delta_{31} \text { exper }+\delta_{32} \text { exper }^{2}+\delta_{33} \text { age } \\
+& +\delta_{34} \text { kidslt6 }+\delta_{35} \text { kidsge6 }+\delta_{36} \text { nwifeinc }+u_{3} \tag{9.74}
+\end{align*}
+
+
+Provided the variables other than exper and exper ${ }^{2}$ are sufficiently partially correlated with educ, the $\log$ (wage) equation is identified. However, the 2SLS estimators might be poorly behaved if the instruments are not very good. If possible, we would add other exogenous factors to equation (9.74) that are partially correlated with educ, such as mother's and father's education. In a system procedure, because we have\\
+assumed that educ is uncorrelated with $u_{1}$, educ can, and should, be included in the list of instruments for estimating equation (9.28).
+
+This example shows that having different instruments for different equations changes nothing for single-equation analysis: we simply determine the valid list of instruments for the endogenous variables in the equation of interest and then estimate the equations separately by 2 SLS. Instruments may be required to deal with simultaneity, omitted variables, or measurement error, in any combination.
+
+Estimation is more complicated for system methods. First, if 3SLS is to be used, then the GMM 3SLS version must be used to produce consistent estimators of any equation; the more traditional 3SLS estimator discussed in Section 8.3.5 is generally valid only when all instruments are uncorrelated with all errors. When we have different instruments for different equations, the instrument matrix has the form in equation (8.15).
+
+There is a more subtle issue that arises in system analysis with different instruments for different equations. While it is still popular to use 3SLS methods for such problems, it turns out that the key assumption that makes 3SLS the efficient GMM estimator, Assumption SIV.5, is often violated. In such cases the GMM estimator with general weighting matrix enhances asymptotic efficiency and simplifies inference.
+
+As a simple example, consider a two-equation system\\
+$y_{1}=\delta_{10}+\gamma_{12} y_{2}+\delta_{11} z_{1}+u_{1}$,\\
+$y_{2}=\delta_{20}+\gamma_{21} y_{1}+\delta_{22} z_{2}+\delta_{23} z_{3}+u_{2}$,\\
+where ( $u_{1}, u_{2}$ ) has mean zero and variance matrix $\boldsymbol{\Sigma}$. Suppose that $z_{1}, z_{2}$, and $z_{3}$ are uncorrelated with $u_{2}$ but we can only assume that $z_{1}$ and $z_{3}$ are uncorrelated with $u_{1}$. In other words, $z_{2}$ is not exogenous in equation (9.75). Each equation is still identified by the order condition, and we just assume that the rank conditions also hold. The instruments for equation (9.75) are ( $1, z_{1}, z_{3}$ ), and the instruments for equation (9.76) are $\left(1, z_{1}, z_{2}, z_{3}\right)$. Write these as $\mathbf{z}_{1} \equiv\left(1, z_{1}, z_{3}\right)$ and $\mathbf{z}_{2} \equiv\left(1, z_{1}, z_{2}, z_{3}\right)$. Assumption SIV. 5 requires the following three conditions:\\
+$\mathrm{E}\left(u_{1}^{2} \mathbf{z}_{1}^{\prime} \mathbf{z}_{1}\right)=\sigma_{1}^{2} \mathrm{E}\left(\mathbf{z}_{1}^{\prime} \mathbf{z}_{1}\right)$.\\
+$\mathrm{E}\left(u_{2}^{2} \mathbf{z}_{2}^{\prime} \mathbf{z}_{2}\right)=\sigma_{2}^{2} \mathrm{E}\left(\mathbf{z}_{2}^{\prime} \mathbf{z}_{2}\right)$.\\
+$\mathrm{E}\left(u_{1} u_{2} \mathbf{z}_{1}^{\prime} \mathbf{z}_{2}\right)=\sigma_{12} \mathrm{E}\left(\mathbf{z}_{1}^{\prime} \mathbf{z}_{2}\right)$.
+
+The first two conditions hold if $\mathrm{E}\left(u_{1} \mid \mathbf{z}_{1}\right)=\mathrm{E}\left(u_{2} \mid \mathbf{z}_{2}\right)=0$ and $\operatorname{Var}\left(u_{1} \mid \mathbf{z}_{1}\right)=\sigma_{1}^{2}$, $\operatorname{Var}\left(u_{2} \mid \mathbf{z}_{2}\right)=\sigma_{2}^{2}$. These are standard zero conditional mean and homoskedasticity\\
+assumptions. The potential problem comes with condition (9.79). Since $u_{1}$ is correlated with one of the elements in $\mathbf{z}_{2}$, we can hardly just assume condition (9.79). Generally, there is no conditioning argument that implies condition (9.79). One case where condition (9.79) holds is if $\mathrm{E}\left(u_{2} \mid u_{1}, z_{1}, z_{2}, z_{3}\right)=0$, which implies that $u_{2}$ and $u_{1}$ are uncorrelated. The left-hand side of condition (9.79) is also easily shown to equal zero. But 3SLS with $\sigma_{12}=0$ imposed is just 2SLS equation by equation. If $u_{1}$ and $u_{2}$ are correlated, we should not expect condition (9.79) to hold, and therefore the general minimum chi-square estimator should be used for estimation and inference.
+
+Wooldridge (1996) provides a general discussion and contains other examples of cases in which Assumption SIV. 5 can and cannot be expected to hold. Whenever a system contains linear projections for nonlinear functions of endogenous variables, we should expect Assumption SIV. 5 to fail.
+
+\section*{Problems}
+9.1. Discuss whether each example satisfies the autonomy requirement for true simultaneous equations analysis. The specification of $y_{1}$ and $y_{2}$ means that each is to be written as a function of the other in a two-equation system.\\
+a. For an employee, $y_{1}=$ hourly wage, $y_{2}=$ hourly fringe benefits.\\
+b. At the city level, $y_{1}=$ per capita crime rate, $y_{2}=$ per capita law enforcement expenditures.\\
+c. For a firm operating in a developing country, $y_{1}=$ firm research and development expenditures, $y_{2}=$ firm foreign technology purchases.\\
+d. For an individual, $y_{1}=$ hourly wage, $y_{2}=$ alcohol consumption.\\
+e. For a family, $y_{1}=$ annual housing expenditures, $y_{2}=$ annual savings.\\
+f. For a profit maximizing firm, $y_{1}=$ price markup, $y_{2}=$ advertising expenditures.\\
+g. For a single-output firm, $y_{1}=$ quantity demanded of its good, $y_{2}=$ advertising expenditure.\\
+h. At the city level, $y_{1}=$ incidence of HIV, $y_{2}=$ per capita condom sales.\\
+9.2 Write a two-equation system in the form\\
+$y_{1}=\gamma_{1} y_{2}+\mathbf{z}_{(1)} \boldsymbol{\delta}_{(1)}+u_{1}$,\\
+$y_{2}=\gamma_{2} y_{1}+\mathbf{z}_{(2)} \boldsymbol{\delta}_{(2)}+u_{2}$.\\
+a. Show that reduced forms exist if and only if $\gamma_{1} \gamma_{2} \neq 1$.\\
+b. State in words the rank condition for identifying each equation.\\
+9.3. The following model jointly determines monthly child support payments and monthly visitation rights for divorced couples with children:
+
+$$
+\begin{aligned}
+& \text { support }=\delta_{10}+\gamma_{12} \text { visits }+\delta_{11} \text { finc }+\delta_{12} \text { fremarr }+\delta_{13} \text { dist }+u_{1}, \\
+& \text { visits }=\delta_{20}+\gamma_{21} \text { support }+\delta_{21} \text { mremarr }+\delta_{22} \text { dist }+u_{2} .
+\end{aligned}
+$$
+
+For expository purposes, assume that children live with their mothers, so that fathers pay child support. Thus, the first equation is the father's "reaction function": it describes the amount of child support paid for any given level of visitation rights and the other exogenous variables finc (father's income), fremarr (binary indicator if father remarried), and dist (miles currently between the mother and father). Similarly, the second equation is the mother's reaction function: it describes visitation rights for a given amount of child support; mremarr is a binary indicator for whether the mother is remarried.\\
+a. Discuss identification of each equation.\\
+b. How would you estimate each equation using a single-equation method?\\
+c. How would you test for endogeneity of visits in the father's reaction function?\\
+d. How many overidentification restrictions are there in the mother's reaction function? Explain how to test the overidentifying restriction(s).\\
+9.4. Consider the following three-equation structural model:\\
+$y_{1}=\gamma_{12} y_{2}+\delta_{11} z_{1}+\delta_{12} z_{2}+\delta_{13} z_{3}+u_{1}$,\\
+$y_{1}=\gamma_{22} y_{2}+\gamma_{23} y_{3}+\delta_{21} z_{1}+u_{2}$,\\
+$y_{3}=\delta_{31} z_{1}+\delta_{32} z_{2}+\delta_{33} z_{3}+u_{3}$,\\
+where $z_{1} \equiv 1$ (to allow an intercept), $\mathrm{E}\left(u_{g}\right)=0$, all $g$, and each $z_{j}$ is uncorrelated with each $u_{g}$. You might think of the first two equations as demand and supply equations, where the supply equation depends on a possibly endogenous variable $y_{3}$ (such as wage costs) that might be correlated with $u_{2}$. For example, $u_{2}$ might contain managerial quality.\\
+a. Show that a well-defined reduced form exists as long as $\gamma_{12} \neq \gamma_{22}$.\\
+b. Allowing for the structural errors to be arbitrarily correlated, determine which of these equations is identified. First consider the order condition, and then the rank condition.\\
+9.5 The following three-equation structural model describes a population:\\
+$y_{1}=\gamma_{12} y_{2}+\gamma_{13} y_{3}+\delta_{11} z_{1}+\delta_{13} z_{3}+\delta_{14} z_{4}+u_{1}$,\\
+$y_{2}=\gamma_{21} y_{1}+\delta_{21} z_{1}+u_{2}$,\\
+$y_{3}=\delta_{31} z_{1}+\delta_{32} z_{2}+\delta_{33} z_{3}+\delta_{34} z_{4}+u_{3}$,\\
+where you may set $z_{1}=1$ to allow an intercept. Make the usual assumptions that $\mathrm{E}\left(u_{g}\right)=0, g=1,2,3$ and that each $z_{j}$ is uncorrelated with each $u_{g}$. In addition to the exclusion restrictions that have already been imposed, assume that $\delta_{13}+\delta_{14}=1$.\\
+a. Check the order and rank conditions for the first equation. Determine necessary and sufficient conditions for the rank condition to hold.\\
+b. Assuming that the first equation is identified, propose a single-equation estimation method with all restrictions imposed. Be very precise.\\
+9.6. The following two-equation model contains an interaction between an endogenous and exogenous variable (see Example 6.2 for such a model in an omitted variable context):\\
+$y_{1}=\delta_{10}+\gamma_{12} y_{2}+\gamma_{13} y_{2} z_{1}+\delta_{11} z_{1}+\delta_{12} z_{2}+u_{1}$,\\
+$y_{2}=\delta_{20}+\gamma_{21} y_{1}+\delta_{21} z_{1}+\delta_{23} z_{3}+u_{2}$.\\
+a. Initially, assume that $\gamma_{13}=0$, so that the model is a linear SEM. Discuss identification of each equation in this case.\\
+b. For any value of $\gamma_{13}$, find the reduced form for $y_{1}$ (assuming it exists) in terms of the $z_{j}$, the $u_{g}$, and the parameters.\\
+c. Assuming that $\mathrm{E}\left(u_{1} \mid \mathbf{z}\right)=\mathrm{E}\left(u_{2} \mid \mathbf{z}\right)=0$, find $\mathrm{E}\left(y_{1} \mid \mathbf{z}\right)$.\\
+d. Argue that, under the conditions in part a, the model is identified regardless of the value of $\gamma_{13}$.\\
+e. Suggest a 2SLS procedure for estimating the first equation.\\
+f. Define a matrix of instruments suitable for 3SLS estimation.\\
+g. Suppose that $\delta_{23}=0$, but we also know that $\gamma_{13} \neq 0$. Can the parameters in the first equation be consistently estimated? If so, how? Can $\mathrm{H}_{0}: \gamma_{13}=0$ be tested?\\
+9.7. Assume that wage and alcohol consumption are determined by the system\\
+wage $=\gamma_{12}$ alcohol $+\gamma_{13}$ educ $+\mathbf{z}_{(1)} \boldsymbol{\delta}_{(1)}+u_{1}$,\\
+alcohol $=\gamma_{21}$ wage $+\gamma_{23}$ educ $+\mathbf{z}_{(2)} \boldsymbol{\delta}_{(2)}+u_{2}$,\\
+educ $=\mathbf{z}_{(3)} \boldsymbol{\delta}_{(3)}+u_{3}$.\\
+The third equation is a reduced form for years of education.\\
+Elements in $\mathbf{z}_{(1)}$ include a constant, experience, gender, marital status, and amount of job training. The vector $\mathbf{z}_{(2)}$ contains a constant, experience, gender, marital status, and local prices (including taxes) on various alcoholic beverages. The vector $\mathbf{z}_{(3)}$ can contain elements in $\mathbf{z}_{(1)}$ and $\mathbf{z}_{(2)}$ and, in addition, exogenous factors affecting education; for concreteness, suppose one element of $\mathbf{z}_{(3)}$ is distance to nearest college at age 16. Let $\mathbf{z}$ denote the vector containing all nonredundant elements of $\mathbf{z}_{(1)}, \mathbf{z}_{(2)}$, and $\mathbf{z}_{(3)}$. In addition to assuming that $\mathbf{z}$ is uncorrelated with each of $u_{1}, u_{2}$, and $u_{3}$, assume that educ is uncorrelated with $u_{2}$, but educ might be correlated with $u_{1}$.\\
+a. When does the order condition hold for the first equation?\\
+b. State carefully how you would estimate the first equation using a single-equation method.\\
+c. For each observation $i$ define the matrix of instruments for system estimation of all three equations.\\
+d. In a system procedure, how should you choose $\mathbf{z}_{(3)}$ to make the analysis as robust as possible to factors appearing in the reduced form for educ?\\
+9.8. a. Extend Problem 5.4b using CARD.RAW to allow $e d u c^{2}$ to appear in the $\log$ (wage) equation, without using nearc2 as an instrument. Specifically, use interactions of nearc4 with some or all of the other exogenous variables in the $\log ($ wage $)$ equation as instruments for $e d u c^{2}$. Compute a heteroskedasticity-robust test to be sure that at least one of these additional instruments appears in the linear projection of $e d u c^{2}$ onto your entire list of instruments. Test whether $e d u c^{2}$ needs to be in the $\log$ (wage) equation.\\
+b. Start again with the model estimated in Problem 5.4b, but suppose we add the interaction black ⋅ educ. Explain why black $\cdot z_{j}$ is a potential IV for black ⋅ educ, where $z_{j}$ is any exogenous variable in the system (including nearc4).\\
+c. In Example 6.2 we used black•nearc4 as the IV for black•educ. Now use 2SLS with black ⋅ $\widehat{e d u c}$ as the IV for black ⋅ educ, where $\widehat{e d u c}$ are the fitted values from the firststage regression of educ on all exogenous variables (including nearc4). What do you find?\\
+d. If $\mathrm{E}(e d u c \mid \mathbf{z})$ is linear and $\operatorname{Var}\left(u_{1} \mid \mathbf{z}\right)=\sigma_{1}^{2}$, where $\mathbf{z}$ is the set of all exogenous variables and $u_{1}$ is the error in the $\log$ (wage) equation, explain why the estimator using black• educ as the IV is asymptotically more efficient than the estimator using black•nearc4 as the IV.\\
+9.9. Use the data in MROZ.RAW for this question.\\
+a. Estimate equations (9.28) and (9.29) jointly by 3SLS, and compare the 3SLS estimates with the 2SLS estimates for equations (9.28) and (9.29).\\
+b. Now allow educ to be endogenous in equation (9.29), but assume it is exogenous in equation (9.28). Estimate a three-equation system using different instruments for different equations, where motheduc, fatheduc, and huseduc are assumed exogenous in equations (9.28) and (9.29).\\
+9.10. Consider a two-equation system of the form\\
+$y_{1}=\gamma_{1} y_{2}+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+u_{1}$,\\
+$y_{2}=\mathbf{z}_{2} \boldsymbol{\delta}_{2}+u_{2}$.\\
+Assume that $\mathbf{z}_{1}$ contains at least one element not also in $\mathbf{z}_{2}$, and $\mathbf{z}_{2}$ contains at least one element not in $\mathbf{z}_{1}$. The second equation is also the reduced form for $y_{2}$, but restrictions have been imposed to make it a structural equation. (For example, it could be a wage offer equation with exclusion restrictions imposed, whereas the first equation is a labor supply function.)\\
+a. If we estimate the first equation by 2SLS using all exogenous variables as IVs, are we imposing the exclusion restrictions in the second equation? (Hint: Does the firststage regression in 2SLS impose any restrictions on the reduced form?)\\
+b. Will the 3SLS estimates of the first equation be the same as the 2SLS estimates? Explain.\\
+c. Explain why 2SLS is more robust than 3SLS for estimating the parameters of the first equation.\\
+9.11. Consider a two-equation SEM:\\
+$y_{1}=\gamma_{12} y_{2}+\delta_{11} z_{1}+u_{1}$,\\
+$y_{2}=\gamma_{21} y_{1}+\delta_{22} z_{2}+\delta_{23} z_{3}+u_{2}$,\\
+$\mathrm{E}\left(u_{1} \mid z_{1}, z_{2}, z_{3}\right)=\mathrm{E}\left(u_{2} \mid z_{1}, z_{2}, z_{3}\right)=0$,\\
+where, for simplicity, we omit intercepts. The exogenous variable $z_{1}$ is a policy variable, such as a tax rate. Assume that $\gamma_{12} \gamma_{21} \neq 1$. The structural errors, $u_{1}$ and $u_{2}$, may be correlated.\\
+a. Under what assumptions is each equation identified?\\
+b. The reduced form for $y_{1}$ can be written in conditional expectation form as $\mathrm{E}\left(y_{1} \mid \mathbf{z}\right)= \pi_{11} z_{1}+\pi_{12} z_{2}+\pi_{13} z_{3}$, where $\mathbf{z}=\left(z_{1}, z_{2}, z_{3}\right)$. Find $\pi_{11}$ in terms of the $\gamma_{g j}$ and $\delta_{g j}$.\\
+c. How would you estimate the structural parameters? How would you obtain $\hat{\pi}_{11}$ in terms of the structural parameter estimates?\\
+d. Suppose that $z_{2}$ should be in the first equation, but it is left out in the estimation from part c . What effect does this omission have on estimating $\partial \mathrm{E}\left(y_{1} \mid \mathbf{z}\right) / \partial z_{1}$ ? Does it matter whether you use single-equation or system estimators of the structural parameters?\\
+e. If you are only interested in $\partial \mathrm{E}\left(y_{1} \mid \mathbf{z}\right) / \partial z_{1}$, what could you do instead of estimating an SEM?\\
+f. Would you say estimating a simultaneous equations model is a robust method for estimating $\partial \mathrm{E}\left(y_{1} \mid \mathbf{z}\right) / \partial z_{1}$ ? Explain.\\
+9.12. The following is a two-equation, nonlinear SEM:\\
+$y_{1}=\delta_{10}+\gamma_{12} y_{2}+\gamma_{13} y_{2}^{2}+\mathbf{z}_{1} \boldsymbol{\delta}_{1}+u_{1}$,\\
+$y_{2}=\delta_{20}+\gamma_{12} y_{1}+\mathbf{z}_{2} \boldsymbol{\delta}_{2}+u_{2}$,\\
+where $u_{1}$ and $u_{2}$ have zero means conditional on all exogenous variables, $\mathbf{z}$. (For emphasis, we have included separate intercepts.) Assume that both equations are identified when $\gamma_{13}=0$.\\
+a. When $\gamma_{13}=0, \mathrm{E}\left(y_{2} \mid \mathbf{z}\right)=\pi_{20}+\mathbf{z} \boldsymbol{\pi}_{2}$. What is $\mathrm{E}\left(y_{2}^{2} \mid \mathbf{z}\right)$ under homoskedasticity assumptions for $u_{1}$ and $u_{2}$ ?\\
+b. Use part a to find $\mathrm{E}\left(y_{1} \mid \mathbf{z}\right)$ when $\gamma_{13}=0$.\\
+c. Use part b to argue that, when $\gamma_{13}=0$, the forbidden regression consistently estimates the parameters in the first equation, including $\gamma_{13}=0$.\\
+d. If $u_{1}$ and $u_{2}$ have constant variances conditional on $\mathbf{z}$, and $\gamma_{13}$ happens to be zero, show that the optimal instrumental variables for estimating the first equation are $\left\{1, \mathbf{z},\left[\mathrm{E}\left(y_{2} \mid \mathbf{z}\right)\right]^{2}\right\}$. (Hint: Use Theorem 8.5; for a similar problem, see Problem 8.11.) e. Reestimate equation (9.61) using IVs $\left[1, \mathbf{z},\left(\hat{y}_{2}\right)^{2}\right]$, where $\mathbf{z}$ is all exogenous variables appearing in equations (9.61) and (9.62) and $\hat{y}_{2}$ denotes the fitted values from regressing $\log$ (wage) on $1, \mathbf{z}$. Discuss the results.\\
+9.13. For this question use the data in OPENNESS.RAW, taken from Romer (1993). a. A simple simultaneous equations model to test whether "openness" (open) leads to lower inflation rates (inf) is\\
+inf $=\delta_{10}+\gamma_{12}$ open $+\delta_{11} \log ($ pcinc $)+u_{1}$,\\
+open $=\delta_{20}+\gamma_{21}$ inf $+\delta_{21} \log ($ pcinc $)+\delta_{22} \log ($ land $)+u_{2}$.
+
+Assuming that pcinc (per capita income) and land (land area) are exogenous, under what assumption is the first equation identified?\\
+b. Estimate the reduced form for open to verify that $\log$ (land) is statistically significant.\\
+c. Estimate the first equation from part a by 2SLS. Compare the estimate of $\gamma_{12}$ with the OLS estimate.\\
+d. Add the term $\gamma_{13}{ }^{\text {open }}{ }^{2}$ to the first equation, and propose a way to test whether it is statistically significant. (Use only one more IV than you used in part c.)\\
+e. With $\gamma_{13}$ open $^{2}$ in the first equation, use the following method to estimate $\delta_{10}, \gamma_{12}$, $\gamma_{13}$, and $\delta_{11}$ : (1) Regress open on $1, \log$ (pcinc) and $\log$ (land), and obtain the fitted values, $\widehat{\text { open. }}$ (2) Regress inf on 1, $\widehat{\text { open }},(\widehat{\text { open }})^{2}$, and $\log ($ pcinc $)$. Compare the results with those from part d. Which estimates do you prefer?\\
+9.14. Answer "agree" or "disagree" to each of the following statements, and provide justification.\\
+a. "In the general SEM (9.13), if the matrix of structural parameters $\boldsymbol{\Gamma}$ is identified, then so is the variance matrix $\boldsymbol{\Sigma}$ of the structural errors."\\
+b. "Identification in a nonlinear structural equation when the errors are independent of the exogenous variables can always be assured by adding enough nonlinear functions of exogenous variables to the instrument list."\\
+c. "If in a system of equations $\mathrm{E}(\mathbf{u} \mid \mathbf{z})=\mathbf{0}$ but $\operatorname{Var}(\mathbf{u} \mid \mathbf{z}) \neq \operatorname{Var}(\mathbf{u})$, the 3SLS estimator is inconsistent."\\
+d. "In a well-specified simultaneous equations model, any variable exogenous in one equation should be exogenous in all equations."\\
+e. "In a triangular system of three equations, control function methods are preferred to standard IV approaches."\\
+9.15. Consider the triangular system in equations (9.70) and (9.71) under the assumption $E\left(u_{1} \mid \mathbf{z}\right)=\mathbf{0}$, where $\mathbf{z}(1 \times L)$ contains all exogenous variables in the three equations and $\mathbf{z}_{1}$ is $1 \times L_{1}$, with $L_{1} \leq L-2$.\\
+a. Suppose that the model is identified when $\alpha_{13}=0, \boldsymbol{\gamma}_{11}=\mathbf{0}$, and $\boldsymbol{\gamma}_{12}=\mathbf{0}$. Argue that the general model is identified.\\
+b. Let $\hat{y}_{i 2}$ and $\hat{y}_{i 3}$ be the first-stage fitted values from the regressions $y_{i 2}$ on $\mathbf{z}_{i}$ and $y_{i 3}$ on $\mathbf{z}_{i}$, respectively. Suppose you estimate (9.70) by IV using instruments $\left(\mathbf{z}_{i 1}, \hat{y}_{i 2}, \hat{y}_{i 3}, \hat{y}_{i 2} \hat{y}_{i 3}, \hat{y}_{i 2} \mathbf{z}_{i 1}, \hat{y}_{i 3} \mathbf{z}_{i 1}\right)$. Are there any overidentification restrictions to test? Explain.\\
+c. Suppose $L>L_{1}+2$ and you estimate (9.70) by 2SLS using instruments $\left(\mathbf{z}_{i}, \hat{y}_{i 2} \hat{y}_{i 3}, \hat{y}_{i 2} \mathbf{z}_{i 1}, \hat{y}_{i 3} \mathbf{z}_{i 1}\right)$. How many overidentifying restrictions are there, and how would you test them?\\
+d. Propose a method that gives even more overidentifying restrictions.\\
+e. If you add the assumptions $\mathrm{E}\left(u_{i 2} \mid \mathbf{z}_{i}\right)=\mathrm{E}\left(u_{i 3} \mid \mathbf{z}_{i}\right)=0$ and $\mathrm{E}\left(u_{i 1}^{2} \mid \mathbf{z}_{i}\right)=\sigma_{1}^{2}$, argue that the estimator from part $b$ is an asymptotically efficient IV estimator. What can you conclude about the estimators from parts c and d ?
+
+\section*{\begin{center}
+
+\end{document}

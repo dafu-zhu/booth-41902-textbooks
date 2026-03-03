@@ -1,0 +1,170 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{mathrsfs}
+\usepackage{caption}
+\usepackage{multirow}
+
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+\DeclareUnicodeCharacter{22C5}{\ifmmode\cdot\else{$\cdot$}\fi}
+\DeclareUnicodeCharacter{0394}{\ifmmode\Delta\else{$\Delta$}\fi}
+\DeclareUnicodeCharacter{22EE}{\ifmmode\vdots\else{$\vdots$}\fi}
+\title{Chapter 1: Introduction}
+
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsection*{1.1 Causal Relationships and Ceteris Paribus Analysis}
+The goal of most empirical studies in economics and other social sciences is to determine whether a change in one variable, say $w$, causes a change in another variable, say $y$. For example, does having another year of education cause an increase in monthly salary? Does reducing class size cause an improvement in student performance? Does lowering the business property tax rate cause an increase in city economic activity? Because economic variables are properly interpreted as random variables, we should use ideas from probability to formalize the sense in which a change in $w$ causes a change in $y$.
+
+The notion of ceteris paribus-that is, holding all other (relevant) factors fixed-is at the crux of establishing a causal relationship. Simply finding that two variables are correlated is rarely enough to conclude that a change in one variable causes a change in another. After all, rarely can we run a controlled experiment that allows a simple correlation analysis to uncover causality. Instead, we can use econometric methods to effectively hold other factors fixed.
+
+If we focus on the average, or expected, response, a ceteris paribus analysis entails estimating $\mathrm{E}(y \mid w, \mathbf{c})$, the expected value of $y$ conditional on $w$ and $\mathbf{c}$. The vector $\mathbf{c}$ whose dimension is not important for this discussion-denotes a set of control variables that we would like to explicitly hold fixed when studying the effect of $w$ on the expected value of $y$. The reason we control for these variables is that we think $w$ is correlated with other factors that also influence $y$. If $w$ is continuous, interest centers on $\partial \mathrm{E}(y \mid w, \mathbf{c}) / \partial w$, which is usually called the partial effect of $w$ on $\mathrm{E}(y \mid w, \mathbf{c})$. If $w$ is discrete, we are interested in $\mathrm{E}(y \mid w, \mathbf{c})$ evaluated at different values of $w$, with the elements of $\mathbf{c}$ fixed at the same specified values. Or, we might average across the distribution of $\mathbf{c}$.
+
+Deciding on the list of proper controls is not always straightforward, and using different controls can lead to different conclusions about a causal relationship between $y$ and $w$. This is where establishing causality gets tricky: it is up to us to decide which factors need to be held fixed. If we settle on a list of controls, and if all elements of $\mathbf{c}$ can be observed, then estimating the partial effect of $w$ on $\mathrm{E}(y \mid w, \mathbf{c})$ is relatively straightforward. Unfortunately, in economics and other social sciences, many elements of $\mathbf{c}$ are not observed. For example, in estimating the causal effect of education on wage, we might focus on E (wage | educ, exper, abil) where educ is years of schooling, exper is years of workforce experience, and abil is innate ability. In this case, $\mathbf{c}=($ exper, abil $)$, where exper is observed but abil is not. (It is widely agreed among labor economists that experience and ability are two factors we should hold fixed to obtain the causal effect of education on wages. Other factors, such as years\\
+with the current employer, might belong as well. We can all agree that something such as the last digit of one's social security number need not be included as a control, as it has nothing to do with wage or education.)
+
+As a second example, consider establishing a causal relationship between student attendance and performance on a final exam in a principles of economics class. We might be interested in E (score $\mid$ attend, $S A T$, priGPA), where score is the final exam score, attend is the attendance rate, $S A T$ is score on the scholastic aptitude test, and priGPA is grade point average at the beginning of the term. We can reasonably collect data on all of these variables for a large group of students. Is this setup enough to decide whether attendance has a causal effect on performance? Maybe not. While $S A T$ and priGPA are general measures reflecting student ability and study habits, they do not necessarily measure one's interest in or aptitude for econonomics. Such attributes, which are difficult to quantify, may nevertheless belong in the list of controls if we are going to be able to infer that attendance rate has a causal effect on performance.
+
+In addition to not being able to obtain data on all desired controls, other problems can interfere with estimating causal relationships. For example, even if we have good measures of the elements of $\mathbf{c}$, we might not have very good measures of $y$ or $w$. A more subtle problem-which we study in detail in Chapter 9-is that we may only observe equilibrium values of $y$ and $w$ when these variables are simultaneously determined. An example is determining the causal effect of conviction rates ( $w$ ) on city crime rates ( $y$ ).
+
+A first course in econometrics teaches students how to apply multiple regression analysis to estimate ceteris paribus effects of explanatory variables on a response variable. In the rest of this book, we will study how to estimate such effects in a variety of situations. Unlike most introductory treatments, we rely heavily on conditional expectations. In Chapter 2 we provide a detailed summary of properties of conditional expectations.
+
+\subsection*{1.2 Stochastic Setting and Asymptotic Analysis}
+\subsection*{1.2.1 Data Structures}
+In order to give proper treatment to modern cross section and panel data methods, we must choose a stochastic setting that is appropriate for the kinds of cross section and panel data sets collected for most econometric applications. Naturally, all else equal, it is best if the setting is as simple as possible. It should allow us to focus on\\
+interpreting assumptions with economic content while not having to worry too much about technical regularity conditions. (Regularity conditions are assumptions involving things such as the number of absolute moments of a random variable that must be finite.)
+
+For much of this book we adopt a random sampling assumption. More precisely, we assume that (1) a population model has been specified and (2) an independent, identically distributed (i.i.d.) sample can be drawn from the population. Specifying a population model-which may be a model of $\mathrm{E}(y \mid w, \mathbf{c})$, as in Section 1.1-requires us first to clearly define the population of interest. Defining the relevant population may seem to be an obvious requirement. Nevertheless, as we will see in later chapters, it can be subtle in some cases.
+
+An important virtue of the random sampling assumption is that it allows us to separate the sampling assumption from the assumptions made on the population model. In addition to putting the proper emphasis on assumptions that impinge on economic behavior, stating all assumptions in terms of the population is actually much easier than the traditional approach of stating assumptions in terms of full data matrices.
+
+Because we will rely heavily on random sampling, it is important to know what it allows and what it rules out. Random sampling is often reasonable for cross section data, where, at a given point in time, units are selected at random from the population. In this setup, any explanatory variables are treated as random outcomes, along with data on response variables. Fixed regressors cannot be identically distributed across observations, and so the random sampling assumption technically excludes the classical linear model. This feature is actually desirable for our purposes. In Section 1.4 we provide a brief discussion of why it is important to treat explanatory variables as random for modern econometric analysis.
+
+We should not confuse the random sampling assumption with so-called experimental data. Experimental data fall under the fixed explanatory variables paradigm. With experimental data, researchers set values of the explanatory variables and then observe values of the response variable. Unfortunately, true experiments are quite rare in economics, and in any case nothing practically important is lost by treating explanatory variables that are set ahead of time as being random. It is safe to say that no one ever went astray by assuming random sampling in place of independent sampling with fixed explanatory variables.
+
+Random sampling does exclude cases of some interest for cross section analysis. For example, the identical distribution assumption is unlikely to hold for a pooled cross section, where random samples are obtained from the population at different\\
+points in time. This case is covered by independent, not identically distributed (i.n.i.d.) observations. Allowing for non-identically distributed observations under independent sampling is not difficult, and its practical effects are easy to deal with. We will mention this case at several points in the book after the analyis is done under random sampling. We do not cover the i.n.i.d. case explicitly in derivations because little is to be gained from the additional complication.
+
+A situation that does require special consideration occurs when cross section observations are not independent of one another. An example is spatial correlation models. This situation arises when dealing with large geographical units that cannot be assumed to be independent draws from a large population, such as the 50 states in the United States. It is reasonable to expect that the unemployment rate in one state is correlated with the unemployment rate in neighboring states. While standard estimation methods-such as ordinary least squares and two-stage least squares-can usually be applied in these cases, the asymptotic theory needs to be altered. Key statistics often (although not always) need to be modified. We will briefly discuss some of the issues that arise in this case for single-equation linear models, but otherwise this subject is beyond the scope of this book. For better or worse, spatial correlation is often ignored in applied work because correcting the problem can be difficult.
+
+Cluster sampling also induces correlation in a cross section data set, but in many cases it is relatively easy to deal with econometrically. For example, retirement saving of employees within a firm may be correlated because of common (often unobserved) characteristics of workers within a firm or because of features of the firm itself (such as type of retirement plan). Each firm represents a group or cluster, and we may sample several workers from a large number of firms. As we will see in Chapter 21, provided the number of clusters is large relative to the cluster sizes, standard methods can correct for the presence of within-cluster correlation.
+
+Another important issue is that cross section samples often are, either intentionally or unintentionally, chosen so that they are not random samples from the population of interest. In Chapter 21 we discuss such problems at length, including sample selection and stratified sampling. As we will see, even in cases of nonrandom samples, the assumptions on the population model play a central role.
+
+For panel data (or longitudinal data), which consist of repeated observations on the same cross section of, say, individuals, households, firms, or cities over time, the random sampling assumption initially appears much too restrictive. After all, any reasonable stochastic setting should allow for correlation in individual or firm behavior over time. But the random sampling assumption, properly stated, does allow for temporal correlation. What we will do is assume random sampling in the cross section dimension. The dependence in the time series dimension can be entirely un-\\
+restricted. As we will see, this approach is justified in panel data applications with many cross section observations spanning a relatively short time period. We will also be able to cover panel data sample selection and stratification issues within this paradigm.
+
+A panel data setup that we will not adequately cover-although the estimation methods we cover can usually be used-is seen when the cross section dimension and time series dimension are roughly of the same magnitude, such as when the sample consists of countries over the post-World War II period. In this case it makes little sense to fix the time series dimension and let the cross section dimension grow. The research on asymptotic analysis with these kinds of panel data sets is still in its early stages, and it requires special limit theory. See, for example, Quah (1994), Pesaran and Smith (1995), Kao (1999), Moon and Phillips (2000), Phillips and Moon (2000), and Alvarez and Arellano (2003).
+
+\subsection*{1.2.2 Asymptotic Analysis}
+Throughout this book we focus on asymptotic properties, as opposed to finite sample properties, of estimators. The primary reason for this emphasis is that finite sample properties are intractable for most of the estimators we study in this book. In fact, most of the estimators we cover will not have desirable finite sample properties such as unbiasedness. Asymptotic analysis allows for a unified treatment of estimation procedures, and it (along with the random sampling assumption) allows us to state all assumptions in terms of the underlying population. Naturally, asymptotic analysis is not without its drawbacks. Occasionally, we will mention when asymptotics can lead one astray. In those cases where finite sample properties can be derived, you are sometimes asked to derive such properties in the problems.
+
+In cross section analysis the asymptotics is as the number of observations, denoted $N$ throughout this book, tends to infinity. Usually what is meant by this statement is obvious. For panel data analysis, the asymptotics is as the cross section dimension gets large while the time series dimension is fixed.
+
+\subsection*{1.3 Some Examples}
+In this section we provide two examples to emphasize some of the concepts from the previous sections. We begin with a standard example from labor economics.
+
+Example 1.1 (Wage Offer Function): Suppose that the natural $\log$ of the wage offer, wage ${ }^{o}$, is determined as
+
+
+\begin{equation*}
+\log \left(\text { wage }^{o}\right)=\beta_{0}+\beta_{1} \text { educ }+\beta_{2} \text { exper }+\beta_{3} \text { married }+u, \tag{1.1}
+\end{equation*}
+
+
+where educ is years of schooling, exper is years of labor market experience, and married is a binary variable indicating marital status. The variable $u$, called the error term or disturbance, contains unobserved factors that affect the wage offer. Interest lies in the unknown parameters, the $\beta_{j}$.
+
+We should have a concrete population in mind when specifying equation (1.1). For example, equation (1.1) could be for the population of all working women. In this case, it will not be difficult to obtain a random sample from the population.
+
+All assumptions can be stated in terms of the population model. The crucial assumptions involve the relationship between $u$ and the observable explanatory variables, educ, exper, and married. For example, is the expected value of $u$ given the explanatory variables educ, exper, and married equal to zero? Is the variance of $u$ conditional on the explanatory variables constant? There are reasons to think the answer to both of these questions is no, something we discuss at some length in Chapters 4 and 5. The point of raising them here is to emphasize that all such questions are most easily couched in terms of the population model.
+
+What happens if the relevant population is all women over age 18 ? A problem arises because a random sample from this population will include women for whom the wage offer cannot be observed because they are not working. Nevertheless, we can think of a random sample being obtained, but then wage ${ }^{o}$ is unobserved for women not working.
+
+For deriving the properties of estimators, it is often useful to write the population model for a generic draw from the population. Equation (1.1) becomes\\
+$\log \left(\right.$ wage $\left._{i}^{o}\right)=\beta_{0}+\beta_{1}$ educ $_{i}+\beta_{2}$ exper $_{i}+\beta_{3}$ married $_{i}+u_{i}$,\\
+where $i$ indexes person. Stating assumptions in terms of $u_{i}$ and $\mathbf{x}_{i} \equiv\left(\right.$ educ $_{i}$, exper $_{i}$, married $_{i}$ ) is the same as stating assumptions in terms of $u$ and $\mathbf{x}$. Throughout this book, the $i$ subscript is reserved for indexing cross section units, such as individual, firm, city, and so on. Letters such as $j, g$, and $h$ will be used to index variables, parameters, and equations.
+
+Before ending this example, we note that using matrix notation to write equation (1.2) for all $N$ observations adds nothing to our understanding of the model or sampling scheme; in fact, it just gets in the way because it gives the mistaken impression that the matrices tell us something about the assumptions in the underlying population. It is much better to focus on the population model (1.1).
+
+The next example is illustrative of panel data applications.\\
+Example 1.2 (Effect of Spillovers on Firm Output): Suppose that the population is all manufacturing firms in a country operating during a given three-year period. A\\
+production function describing output in the population of firms is
+
+
+\begin{align*}
+\log \left(\text { output }_{t}\right)= & \delta_{t}+\beta_{1} \log \left(\text { labor }_{t}\right)+\beta_{2} \log \left(\text { capital }_{t}\right) \\
+& +\beta_{3} \text { spillover }_{t}+\text { quality }_{t}+u_{t}, \quad t=1,2,3 . \tag{1.3}
+\end{align*}
+
+
+Here, spillover $_{t}$ is a measure of foreign firm concentration in the region containing the firm. The term quality contains unobserved factors-such as unobserved managerial or worker quality-that affect productivity and are constant over time. The error $u_{t}$ represents unobserved shocks in each time period. The presence of the parameters $\delta_{t}$, which represent different intercepts in each year, allows for aggregate productivity to change over time. The coefficients on labor $_{t}$, capital $_{t}$, and spillover $_{t}$ are assumed constant across years.
+
+As we will see when we study panel data methods, there are several issues in deciding how best to estimate the $\beta_{j}$. An important one is whether the unobserved productivity factors (quality) are correlated with the observable inputs. Also, can we assume that spillover $_{t}$ at, say, $t=3$ is uncorrelated with the error terms in all time periods?
+
+For panel data it is especially useful to add an $i$ subscript indicating a generic cross section observation-in this case, a randomly sampled firm:
+
+
+\begin{align*}
+\log \left(\text { output }_{i t}\right)= & \delta_{t}+\beta_{1} \log \left(\text { labor }_{i t}\right)+\beta_{2} \log \left(\text { capital }_{i t}\right) \\
+& +\beta_{3} \text { spillover }_{i t}+\text { quality }_{i}+u_{i t}, \quad t=1,2,3 . \tag{1.4}
+\end{align*}
+
+
+Equation (1.4) makes it clear that quality ${ }_{i}$ is a firm-specific term that is constant over time and also has the same effect in each time period, while $u_{i t}$ changes across time and firm. Nevertheless, the key issues that we must address for estimation can be discussed for a generic $i$, since the draws are assumed to be randomly made from the population of all manufacturing firms.
+
+Equation (1.4) is an example of another convention we use throughout the book: the subscript $t$ is reserved to index time, just as $i$ is reserved for indexing the cross section.
+
+\subsection*{1.4 Why Not Fixed Explanatory Variables?}
+We have seen two examples where, generally speaking, the error in an equation can be correlated with one or more of the explanatory variables. This possibility is so prevalent in social science applications that it makes little sense to adopt an assumption - namely, the assumption of fixed explanatory variables - that rules out such correlation a priori.
+
+In a first course in econometrics, the method of ordinary least squares (OLS) and its extensions are usually learned under the fixed regressor assumption. This is appropriate for understanding the mechanics of least squares and for gaining experience with statistical derivations. Unfortunately, reliance on fixed regressors or, more generally, fixed "exogenous" variables can have unintended consequences, especially in more advanced settings. For example, in Chapters 7 through 11 we will see that assuming fixed regressors or fixed instrumental variables in panel data models imposes often unrealistic restrictions on dynamic economic behavior. This is not just a technical point: estimation methods that are consistent under the fixed regressor assumption, such as generalized least squares, are no longer consistent when the fixed regressor assumption is relaxed in interesting ways.
+
+To illustrate the shortcomings of the fixed regressor assumption in a familiar context, consider a linear model for cross section data, written for each observation $i$ as
+
+
+\begin{equation*}
+y_{i}=\beta_{0}+\mathbf{x}_{i} \boldsymbol{\beta}+u_{i}, \quad i=1,2, \ldots, N \tag{1.5}
+\end{equation*}
+
+
+where $\mathbf{x}_{i}$ is a $1 \times K$ vector and $\boldsymbol{\beta}$ is a $K \times 1$ vector. It is common to see the "ideal" assumptions for this model stated as "The errors $\left\{u_{i}: i=1,2, \ldots, N\right\}$ are i.i.d. with $\mathrm{E}\left(u_{i}\right)=0$ and $\operatorname{Var}\left(u_{i}\right)=\sigma^{2} . "$ (Sometimes the $u_{i}$ are also assumed to be normally distributed.) The problem with this statement is that it omits the most important consideration: What is assumed about the relationship between $u_{i}$ and $\mathbf{x}_{i}$ ? If the $\mathbf{x}_{i}$ are taken as nonrandom-which, evidently, is very often the implicit assumption-then $u_{i}$ and $\mathbf{x}_{i}$ are independent of one another. In nonexperimental environments this assumption rules out too many situations of interest. Some important questions, such as efficiency comparisons across models with different explanatory variables, cannot even be asked in the context of fixed regressors. (See Problems 4.5 and 4.15 of Chapter 4 for specific examples.)
+
+In a random sampling context, the $u_{i}$ are always independent and identically distributed, regardless of how they are related to the $\mathbf{x}_{i}$. Assuming that the population mean of the error is zero is without loss of generality when an intercept is included in the model. Thus, the statement "The errors $\left\{u_{i}: i=1,2, \ldots, N\right\}$ are i.i.d. with $\mathrm{E}\left(u_{i}\right)=0$ and $\operatorname{Var}\left(u_{i}\right)=\sigma^{2}$ " is vacuous in a random sampling context. Viewing the $\mathbf{x}_{i}$ as random draws along with $y_{i}$ forces us to think about the relationship between the error and the explanatory variables in the population. For example, in the population model $y=\beta_{0}+\mathbf{x} \boldsymbol{\beta}+u$, is the expected value of $u$ given $\mathbf{x}$ equal to zero? Is $u$ correlated with one or more elements of $\mathbf{x}$ ? Is the variance of $u$ given $\mathbf{x}$ constant, or does it depend on $\mathbf{x}$ ? These are the questions that are relevant for estimating $\boldsymbol{\beta}$ and for determining how to perform statistical inference.
+
+Because our focus is on asymptotic analysis, we have the luxury of allowing for random explanatory variables throughout the book, whether the setting is linear models, nonlinear models, single-equation analysis, or system analysis. An incidental but nontrivial benefit is that, compared with frameworks that assume fixed explanatory variables, the unifying theme of random sampling actually simplifies the asymptotic analysis. We will never state assumptions in terms of full data matrices, because such assumptions can be imprecise and can impose unintended restrictions on the population model.
+
+\section*{2 Conditional Expectations and Related Concepts in Econometrics}
+
+\end{document}
